@@ -146,6 +146,8 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
     /////////////////////////////////////
     // Perform clean up
     SAFE_RELEASE( g_pPerFrameCB );
+    SAFE_RELEASE( g_pTexture );
+    SAFE_RELEASE( g_pSampler );
     SAFE_DELETE( g_pMesh );
     SAFE_DELETE( g_pVertexShader );
     SAFE_DELETE( g_pPixelShader );
