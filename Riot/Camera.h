@@ -31,7 +31,8 @@ public:
     XMMATRIX GetWorld( void ) { return m_mWorld; }
     XMMATRIX GetView( void ) { return m_mView; }
     XMMATRIX GetProj( void ) { return m_mProj; }
-    XMMATRIX GetWorldViewProj( void ) { return m_mProj * m_mView * m_mWorld; }
+    //XMMATRIX GetWorldViewProj( void ) { return m_mProj * m_mView * m_mWorld; }
+    XMMATRIX GetWorldViewProj( void ) { return m_mView * m_mProj; } // * m_mWorld; }
     XMMATRIX GetViewProj( void ) { return m_mProj * m_mView; }
     XMVECTOR GetEye( void ) { return m_vEye; }
     XMVECTOR GetLookAt( void ) { return m_vLookAt; }

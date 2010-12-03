@@ -120,6 +120,8 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
         // Perform Game update
         g_pVertexShader->SetShader();
         g_pPixelShader->SetShader();
+        // Set the constant buffer
+        g_pD3D->GetContext()->VSSetConstantBuffers( 0, 1, &g_pPerFrameCB );
         g_pMesh->Draw();
 
         g_pD3D->Render();
@@ -130,13 +132,15 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
         {
             char szTitle[256];
             sprintf_s( szTitle, 256, "FrameTime = %f ms", fElapsedTime * 1000.0f );
-            SetWindowText( g_hWnd, szTitle );
+            // TODO: Add real text rendering, SetWindowText isn't a good idea...
+            //SetWindowText( g_hWnd, szTitle );
         }
     }
 
     
     /////////////////////////////////////
     // Perform clean up
+    SAFE_RELEASE( g_pPerFrameCB );
     SAFE_DELETE( g_pMesh );
     SAFE_DELETE( g_pVertexShader );
     SAFE_DELETE( g_pPixelShader );
@@ -272,13 +276,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 int InitializeGame( void )
 {
     // Init Camera
-    XMVECTOR vEye = XMVectorSet( 0.0f, 0.0f, -10.0f, 0.0f );
+    XMVECTOR vEye = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
     XMVECTOR vLookAt = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-    g_Camera.Init( vEye, vLookAt, XM_PIDIV4, gs_nWidth / gs_nHeight, 2.0f, 1000.0f );
+    g_Camera.Init( vEye, vLookAt, XM_PIDIV4, gs_nWidth / gs_nHeight, 0.01f, 100000.0f );
 
     unsigned int hr = 0;
     // Load the vertex shader
-    hr = g_pD3D->CreateShader( "DefaultShader.hlsl", "DefaultVertexShader", "vs_4_0", &g_pVertexShader );
+    hr = g_pD3D->CreateShader( "DefaultShader.hlsl", "DefaultVertexShader", "vs_5_0", &g_pVertexShader );
     if( hr != 0 )
     {
         // TODO: Handle error more gracefully
@@ -286,7 +290,7 @@ int InitializeGame( void )
     }
     
     // Load the pixel shader
-    hr = g_pD3D->CreateShader( "DefaultShader.hlsl", "DefaultPixelShader", "ps_4_0", &g_pPixelShader );
+    hr = g_pD3D->CreateShader( "DefaultShader.hlsl", "DefaultPixelShader", "ps_5_0", &g_pPixelShader );
     if( hr != 0 )
     {
         // TODO: Handle error more gracefully
@@ -315,9 +319,9 @@ int InitializeGame( void )
 
     D3D11_SUBRESOURCE_DATA cbInitData = { 0 };
     // TODO: Remove the hacked identity matrix
-    XMMATRIX ident = XMMatrixIdentity();
-    //cbInitData.pSysMem = &( g_Camera.GetWorldViewProj() );
-    cbInitData.pSysMem = &ident;
+    XMMATRIX camera = g_Camera.GetWorldViewProj();
+    camera = XMMatrixTranspose( camera );
+    cbInitData.pSysMem = &camera;
     hr = g_pD3D->GetDevice()->CreateBuffer( &bufferDesc, &cbInitData, &g_pPerFrameCB );
     if( FAILED( hr ) )
     {
@@ -326,8 +330,6 @@ int InitializeGame( void )
         return hr;
     }
 
-    // Set the constant buffer
-    g_pD3D->GetContext()->VSSetConstantBuffers( 0, 1, &g_pPerFrameCB );
 
     return hr;
 }
