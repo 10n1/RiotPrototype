@@ -288,6 +288,30 @@ int Direct3DDevice::CreateShader( const char* szFilename, const char* szEntryPoi
     return hr;
 }
 
+int Direct3DDevice::CreateMesh( void* pVertices, 
+                                unsigned int nVertexSize, 
+                                unsigned int nNumVertices,
+                                void* pIndices,
+                                unsigned int nNumIndices,
+                                Mesh** pMesh )
+{
+    HRESULT hr = S_OK;
+
+    // Create the mesh
+    Mesh* pNewMesh = new Mesh;
+
+    hr = pNewMesh->Create( m_pDevice, m_pContext, pVertices, nVertexSize, nNumVertices, pIndices, nNumIndices );
+    if( hr != 0 )
+    {
+        MessageBox( 0, "Mesh could not be created", "Error", 0 );
+        SAFE_DELETE( pNewMesh );
+        return hr;
+    }
+
+    *pMesh = pNewMesh;
+
+    return hr;
+}
 
 //-----------------------------------------------------------------------------
 //  CompileShader

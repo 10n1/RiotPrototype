@@ -1,6 +1,8 @@
 #include "Mesh.h"
 #include "Direct3DDevice.h"
 
+static const int snIndexSize = sizeof( unsigned short );
+
 Mesh::Mesh(void)
     : m_pVertices( NULL )
     , m_pIndices( NULL )
@@ -31,6 +33,15 @@ int Mesh::Create( ID3D11Device* pDevice,
                   void* pIndices,
                   unsigned int nNumIndices )
 {
+    HRESULT hr = S_OK;
+    m_pDevice = pDevice;
+    m_pContext = pContext;
+
+    m_nVertexSize = nVertexSize;
+    m_nNumVertices = nNumVertices;
+    m_nNumIndices = nNumIndices;
+
+    // Create the vertex buffer
     D3D11_BUFFER_DESC bufferDesc = { 0 };
     bufferDesc.ByteWidth = nNumVertices * nVertexSize;
     bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -39,18 +50,45 @@ int Mesh::Create( ID3D11Device* pDevice,
     D3D11_SUBRESOURCE_DATA initData = { 0 };
     initData.pSysMem = pVertices;
 
-    pDevice->CreateBuffer( &bufferDesc, &initData, &m_pVertexBuffer );
+    hr = pDevice->CreateBuffer( &bufferDesc, &initData, &m_pVertexBuffer );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle for real
+        MessageBox( 0, "Vertex buffer could not be created", "Error", 0 );
+        return hr;
+    }
 
-    bufferDesc.ByteWidth = nNumIndices * sizeof( unsigned int );
+    // Create the index buffer
+#if 0 // TODO: Currently disabled so we can render an unindexed triangle
+    bufferDesc.ByteWidth = nNumIndices * snIndexSize;
     bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
     initData.pSysMem = pIndices;
 
-    pDevice->CreateBuffer( &bufferDesc, &initData, &m_pIndexBuffer );
+    hr = pDevice->CreateBuffer( &bufferDesc, &initData, &m_pIndexBuffer );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle for real
+        MessageBox( 0, "Index buffer could not be created", "Error", 0 );
+        return hr;
+    }
+#endif
 
-    return 0;
+    // TODO: Should we maintain the verts and indices in
+    //  m_pVerts/m_pIndices, or just let the GPU maintain them
+    //  I think the GPU should, theres no reason to keep
+    //  a copy CPU side
+
+    return hr;
 }
 
 void Mesh::Draw( void )
 {
+    // Set the buffers
+    unsigned int stride = m_nVertexSize;
+    unsigned int offset = 0;
+    m_pContext->IASetVertexBuffers( 0, 1, &m_pVertexBuffer, &stride, &offset );
+    m_pContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+    //m_pContext->IASetIndexBuffer( m_pIndexBuffer, DXGI_FORMAT_R16_FLOAT, 0 );
+    m_pContext->Draw( 3, 0 );
 }

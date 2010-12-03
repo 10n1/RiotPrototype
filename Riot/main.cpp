@@ -35,7 +35,7 @@ bool                g_bRunning = true;
 // Ground plane
 VertexShader*       g_pVertexShader = NULL;
 PixelShader*        g_pPixelShader = NULL;
-ID3D11Buffer*       g_pVertexBuffer = NULL;
+Mesh*               g_pMesh = NULL;
 
 //-----------------------------------------------------------------------------
 // Methods
@@ -120,7 +120,7 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
         // Perform Game update
         g_pVertexShader->SetShader();
         g_pPixelShader->SetShader();
-        g_pD3D->GetContext()->Draw( 3, 0 );
+        g_pMesh->Draw();
 
         g_pD3D->Render();
         //-----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
     
     /////////////////////////////////////
     // Perform clean up
-    SAFE_RELEASE( g_pVertexBuffer );
+    SAFE_DELETE( g_pMesh );
     SAFE_DELETE( g_pVertexShader );
     SAFE_DELETE( g_pPixelShader );
     SAFE_DELETE( g_pD3D );
@@ -306,24 +306,10 @@ int InitializeGame( void )
         { -0.5f, -0.5f, 0.5f },
     };
 
-    D3D11_BUFFER_DESC bufferDesc = { 0 };
-    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth = sizeof( Vertex ) * 3;
-    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    bufferDesc.CPUAccessFlags = 0;
-
-    D3D11_SUBRESOURCE_DATA initData = { 0 };
-    initData.pSysMem = pVertices;
-
-    hr = g_pD3D->GetDevice()->CreateBuffer( &bufferDesc, &initData, &g_pVertexBuffer );
-    if( FAILED( hr ) )
-    {
-        // TODO: Handle for real
-        MessageBox( 0, "Vertex buffer could not be created", "Error", 0 );
-        return hr;
-    }
+    hr = g_pD3D->CreateMesh( pVertices, sizeof( Vertex ), 3, NULL, 0, &g_pMesh );
 
     // Create the constant buffer
+    D3D11_BUFFER_DESC bufferDesc = { 0 };
     bufferDesc.ByteWidth = sizeof( XMMATRIX );
     bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
@@ -337,12 +323,8 @@ int InitializeGame( void )
         return hr;
     }
 
-    // Set vertex info
-    unsigned int stride = sizeof( Vertex );
-    unsigned int offset = 0;
-    g_pD3D->GetContext()->IASetVertexBuffers( 0, 1, &g_pVertexBuffer, &stride, &offset );
+    // Set the constant buffer
     g_pD3D->GetContext()->VSSetConstantBuffers( 0, 1, &g_pPerFrameCB );
-    g_pD3D->GetContext()->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
     return hr;
 }

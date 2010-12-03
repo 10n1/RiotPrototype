@@ -9,6 +9,7 @@ File:           main.cpp
 #include "VertexShader.h"
 #include "GeometryShader.h"
 #include "PixelShader.h"
+#include "Mesh.h"
 
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p) if(p) { p->Release(); p = NULL; } 
@@ -50,6 +51,17 @@ public:
     int CreateShader( const char* szFilename, const char* szEntryPoint, const char* szShaderModel, VertexShader** pShader );
     int CreateShader( const char* szFilename, const char* szEntryPoint, const char* szShaderModel, PixelShader** pShader );
     int CreateShader( const char* szFilename, const char* szEntryPoint, const char* szShaderModel, GeometryShader** pShader );
+
+    //-----------------------------------------------------------------------------
+    //  CreateMesh
+    //  Creates a shader from raw data
+    //-----------------------------------------------------------------------------
+    int CreateMesh( void* pVertices, 
+                    unsigned int nVertexSize, 
+                    unsigned int nNumVertices,
+                    void* pIndices,
+                    unsigned int nNumIndices,
+                    Mesh** pMesh );
 
     //-----------------------------------------------------------------------------
     //  Accessors
