@@ -314,7 +314,10 @@ int InitializeGame( void )
     bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
     D3D11_SUBRESOURCE_DATA cbInitData = { 0 };
-    cbInitData.pSysMem = &( g_Camera.GetWorldViewProj() );
+    // TODO: Remove the hacked identity matrix
+    XMMATRIX ident = XMMatrixIdentity();
+    //cbInitData.pSysMem = &( g_Camera.GetWorldViewProj() );
+    cbInitData.pSysMem = &ident;
     hr = g_pD3D->GetDevice()->CreateBuffer( &bufferDesc, &cbInitData, &g_pPerFrameCB );
     if( FAILED( hr ) )
     {

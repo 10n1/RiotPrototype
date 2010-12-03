@@ -8,7 +8,7 @@ cbuffer PerFrame
 //--------------------------------------------------------------------------------------
 float4 DefaultVertexShader( float4 Pos : POSITION ) : SV_POSITION
 {
-    return Pos; //mul( Pos, mWorldViewProj );
+    return mul( Pos, mWorldViewProj );
 }
 
 
