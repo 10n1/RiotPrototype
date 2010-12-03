@@ -308,12 +308,14 @@ int InitializeGame( void )
         { -10.0f, 0.0f,  10.0f },
         {  10.0f, 0.0f, -10.0f },
         { -10.0f, 0.0f, -10.0f },
+        {  10.0f, 0.0f,  10.0f },
     };
     int nNumVertices = sizeof( pVertices ) / sizeof( Vertex );
 
     unsigned short pIndices[] = 
     { 
         0, 1, 2,
+        0, 3, 1
     };
     int nNumIndices = sizeof( pIndices ) / sizeof( unsigned short );
 
