@@ -309,8 +309,15 @@ int InitializeGame( void )
         {  10.0f, 0.0f, -10.0f },
         { -10.0f, 0.0f, -10.0f },
     };
+    int nNumVertices = sizeof( pVertices ) / sizeof( Vertex );
 
-    hr = g_pD3D->CreateMesh( pVertices, sizeof( Vertex ), 3, NULL, 0, &g_pMesh );
+    unsigned short pIndices[] = 
+    { 
+        0, 1, 2,
+    };
+    int nNumIndices = sizeof( pIndices ) / sizeof( unsigned short );
+
+    hr = g_pD3D->CreateMesh( pVertices, sizeof( Vertex ), nNumVertices, pIndices, nNumIndices, &g_pMesh );
 
     // Create the constant buffer
     D3D11_BUFFER_DESC bufferDesc = { 0 };

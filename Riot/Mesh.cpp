@@ -59,7 +59,7 @@ int Mesh::Create( ID3D11Device* pDevice,
     }
 
     // Create the index buffer
-#if 0 // TODO: Currently disabled so we can render an unindexed triangle
+#if 1 // TODO: Currently disabled so we can render an unindexed triangle
     bufferDesc.ByteWidth = nNumIndices * snIndexSize;
     bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
@@ -89,6 +89,6 @@ void Mesh::Draw( void )
     unsigned int offset = 0;
     m_pContext->IASetVertexBuffers( 0, 1, &m_pVertexBuffer, &stride, &offset );
     m_pContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-    //m_pContext->IASetIndexBuffer( m_pIndexBuffer, DXGI_FORMAT_R16_FLOAT, 0 );
-    m_pContext->Draw( 3, 0 );
+    m_pContext->IASetIndexBuffer( m_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0 );
+    m_pContext->DrawIndexed( m_nNumIndices, 0, 0 );
 }
