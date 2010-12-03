@@ -314,9 +314,9 @@ int InitializeGame( void )
     Vertex pVertices[] =
     {
         { { -10.0f, 0.0f,  10.0f }, { 0.0f, 0.0f }, }, 
-        { {  10.0f, 0.0f,  10.0f }, { 1.0f, 0.0f }, }, 
-        { {  10.0f, 0.0f, -10.0f }, { 1.0f, 1.0f }, }, 
-        { { -10.0f, 0.0f, -10.0f }, { 0.0f, 1.0f }, }, 
+        { {  10.0f, 0.0f,  10.0f }, { 20.0f, 0.0f }, }, 
+        { {  10.0f, 0.0f, -10.0f }, { 20.0f, 20.0f }, }, 
+        { { -10.0f, 0.0f, -10.0f }, { 0.0f, 20.0f }, }, 
     };
     int nNumVertices = sizeof( pVertices ) / sizeof( Vertex );
 
@@ -363,9 +363,9 @@ int InitializeGame( void )
     D3D11_SAMPLER_DESC samplerDesc;
     memset( &samplerDesc, 0, sizeof(samplerDesc) );
     samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
     samplerDesc.MaxAnisotropy = 16;
     hr = g_pD3D->GetDevice()->CreateSamplerState( &samplerDesc, &g_pSampler );
     if( FAILED( hr ) )
