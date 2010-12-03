@@ -18,7 +18,6 @@ static const unsigned int gs_nWidth = 1024;
 static const unsigned int gs_nHeight = 768;
 static const bool         gs_bFullscreen = false;
 
-ID3D11Buffer*             g_pPerFrameCB = NULL;
 
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p) if(p) { p->Release(); p = NULL; } 
@@ -36,6 +35,10 @@ bool                g_bRunning = true;
 VertexShader*       g_pVertexShader = NULL;
 PixelShader*        g_pPixelShader = NULL;
 Mesh*               g_pMesh = NULL;
+
+ID3D11Buffer*               g_pPerFrameCB = NULL;
+ID3D11ShaderResourceView*   g_pTexture = NULL;
+ID3D11SamplerState*         g_pSampler = NULL;
 
 //-----------------------------------------------------------------------------
 // Methods
@@ -122,6 +125,8 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
         g_pPixelShader->SetShader();
         // Set the constant buffer
         g_pD3D->GetContext()->VSSetConstantBuffers( 0, 1, &g_pPerFrameCB );
+        g_pD3D->GetContext()->PSSetShaderResources( 0, 1, &g_pTexture );
+        g_pD3D->GetContext()->PSSetSamplers( 0, 1, &g_pSampler );
         g_pMesh->Draw();
 
         g_pD3D->Render();
@@ -276,7 +281,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 int InitializeGame( void )
 {
     // Init Camera
-    XMVECTOR vEye = XMVectorSet( 0.0f, 1.75f, -5.0f, 0.0f );
+    XMVECTOR vEye = XMVectorSet( 0.0f, 1.75f, -15.0f, 0.0f );
     XMVECTOR vLookAt = XMVectorSet( 0.0f, 1.75f, 0.0f, 0.0f );
     g_Camera.Init( vEye, vLookAt, XM_PIDIV4, gs_nWidth / gs_nHeight, 0.01f, 100000.0f );
 
@@ -301,21 +306,22 @@ int InitializeGame( void )
     struct Vertex
     {
         float fPos[3];
+        float fTexCoord[2];
     };
 
     Vertex pVertices[] =
     {
-        { -10.0f, 0.0f,  10.0f },
-        {  10.0f, 0.0f, -10.0f },
-        { -10.0f, 0.0f, -10.0f },
-        {  10.0f, 0.0f,  10.0f },
+        { { -10.0f, 0.0f,  10.0f }, { 0.0f, 0.0f }, }, 
+        { {  10.0f, 0.0f,  10.0f }, { 1.0f, 0.0f }, }, 
+        { {  10.0f, 0.0f, -10.0f }, { 1.0f, 1.0f }, }, 
+        { { -10.0f, 0.0f, -10.0f }, { 0.0f, 1.0f }, }, 
     };
     int nNumVertices = sizeof( pVertices ) / sizeof( Vertex );
 
     unsigned short pIndices[] = 
     { 
-        0, 1, 2,
-        0, 3, 1
+        0, 2, 3,
+        0, 1, 2
     };
     int nNumIndices = sizeof( pIndices ) / sizeof( unsigned short );
 
@@ -339,6 +345,33 @@ int InitializeGame( void )
         return hr;
     }
 
+    // Create the texture
+    char szTexture[] = "default_texture.png";
+    hr = D3DX11CreateShaderResourceViewFromFile( g_pD3D->GetDevice(), szTexture, NULL, NULL, &g_pTexture, NULL );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle for real
+        char szError[256] = { 0 };
+        sprintf( szError, "Could not load texture: %s", szTexture );
+        MessageBox( 0, szError, "Error", 0 );
+        return hr;
+    }
+
+    // Create the sampler
+    D3D11_SAMPLER_DESC samplerDesc;
+    memset( &samplerDesc, 0, sizeof(samplerDesc) );
+    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    samplerDesc.MaxAnisotropy = 16;
+    hr = g_pD3D->GetDevice()->CreateSamplerState( &samplerDesc, &g_pSampler );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle for real
+        MessageBox( 0, "Could not create sampler", "Error", 0 );
+        return hr;
+    }
 
     return hr;
 }

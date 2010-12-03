@@ -1,21 +1,33 @@
+Texture2D		DiffuseTexture : register( t0 );
+SamplerState	DiffuseTextureSampler : register( s0 );
+
 cbuffer PerFrame
 {
     matrix mWorldViewProj;
 }
 
+struct VSOut
+{
+    float4 Pos : SV_POSITION;
+    float2 TexCoord : TEXCOORD0;
+};
+
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-float4 DefaultVertexShader( float4 Pos : POSITION ) : SV_POSITION
+VSOut DefaultVertexShader( float4 Pos : POSITION, float2 TexCoord : TEXCOORD )
 {
-    return mul( Pos, mWorldViewProj );
+    VSOut output;
+    output.Pos = mul( Pos, mWorldViewProj );
+    output.TexCoord = TexCoord;
+    return output;
 }
 
 
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-float4 DefaultPixelShader( float4 Pos : SV_POSITION ) : SV_Target
+float4 DefaultPixelShader( VSOut Input ) : SV_Target
 {
-    return float4( 1.0f, 1.0f, 1.0f, 1.0f );
+    return DiffuseTexture.Sample(DiffuseTextureSampler, Input.TexCoord); // float4( 1.0f, 1.0f, 1.0f, 1.0f );
 }

@@ -182,6 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="DefaultShader.hlsl" />
+    <None Include="default_texture.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
