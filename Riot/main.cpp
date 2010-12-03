@@ -276,8 +276,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 int InitializeGame( void )
 {
     // Init Camera
-    XMVECTOR vEye = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
-    XMVECTOR vLookAt = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+    XMVECTOR vEye = XMVectorSet( 0.0f, 1.75f, -5.0f, 0.0f );
+    XMVECTOR vLookAt = XMVectorSet( 0.0f, 1.75f, 0.0f, 0.0f );
     g_Camera.Init( vEye, vLookAt, XM_PIDIV4, gs_nWidth / gs_nHeight, 0.01f, 100000.0f );
 
     unsigned int hr = 0;
@@ -305,9 +305,9 @@ int InitializeGame( void )
 
     Vertex pVertices[] =
     {
-        { 0.0f, 0.5f, 0.5f },
-        { 0.5f, -0.5f, 0.5f },
-        { -0.5f, -0.5f, 0.5f },
+        { -10.0f, 0.0f,  10.0f },
+        {  10.0f, 0.0f, -10.0f },
+        { -10.0f, 0.0f, -10.0f },
     };
 
     hr = g_pD3D->CreateMesh( pVertices, sizeof( Vertex ), 3, NULL, 0, &g_pMesh );
