@@ -148,12 +148,13 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
         //-----------------------------------------------------------------------------
         fElapsedTime = (float)g_Timer.GetTime();
         nFrameCount++;
-        if( (nFrameCount & 10000) == 10000 )
+        if( nFrameCount == 1000 )
         {
             char szTitle[256];
             sprintf_s( szTitle, 256, "FrameTime = %f ms", fElapsedTime * 1000.0f );
             // TODO: Add real text rendering, SetWindowText isn't a good idea...
-            //SetWindowText( g_hWnd, szTitle );
+            SetWindowText( g_hWnd, szTitle );
+            nFrameCount = 0;
         }
     }
 
