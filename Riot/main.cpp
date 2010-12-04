@@ -19,7 +19,8 @@ static const unsigned int gs_nWidth = 1024;
 static const unsigned int gs_nHeight = 768;
 static const bool         gs_bFullscreen = false;
 static const float        gs_fWorldSize = 1000.0f;
-
+static const unsigned int gs_nCitySize = 8;
+static const unsigned int gs_nCitySizeSq = gs_nCitySize*gs_nCitySize;
 
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p) if(p) { p->Release(); p = NULL; } 
@@ -35,7 +36,7 @@ bool                g_bRunning = true;
 
 // Ground plane
 RiotObject*         g_pGroundPlane = NULL;
-RiotObject*         g_pBuilding = NULL;
+RiotObject*         g_pBuildings[gs_nCitySize*gs_nCitySize] = { NULL };
 
 ID3D11SamplerState*         g_pSampler = NULL;
 
@@ -61,6 +62,7 @@ int InitializeWindow( HWND* phWnd,
 int InitializeGame( void );
 void CreatePlane( float fWidth, float fHeight, float fU, float fV, RiotObject** ppObject );
 void CreateBox( float fLength, float fWidth, float fHeight, RiotObject** ppObject );
+void CreateCity( int nWidth, int nHeight );
 
 //-----------------------------------------------------------------------------
 //  WinMain
@@ -135,7 +137,10 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
         g_pD3D->SetViewProjMatrix( mViewProj );
         g_pD3D->GetContext()->PSSetSamplers( 0, 1, &g_pSampler );
         g_pGroundPlane->Render();
-        g_pBuilding->Render();
+        for( int i = 0; i < gs_nCitySizeSq; ++i )
+        {
+            g_pBuildings[i]->Render();
+        }
 
         g_pD3D->Render();
         //-----------------------------------------------------------------------------
@@ -154,7 +159,10 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
     /////////////////////////////////////
     // Perform clean up
     SAFE_DELETE( g_pGroundPlane );
-    SAFE_DELETE( g_pBuilding );
+    for( int i = 0; i < gs_nCitySizeSq; ++i )
+    {
+        SAFE_DELETE( g_pBuildings[i] );
+    }
     SAFE_RELEASE( g_pSampler );
     SAFE_DELETE( g_pD3D );
 
@@ -288,7 +296,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 int InitializeGame( void )
 {
     // Init Camera
-    XMVECTOR vEye = XMVectorSet( 0.0f, 1.75f, -15.0f, 0.0f );
+    XMVECTOR vEye = XMVectorSet( 0.0f, 1.75f, -100.0f, 0.0f );
     XMVECTOR vLookAt = XMVectorSet( 0.0f, 1.75f, 0.0f, 0.0f );
     g_Camera.Init( vEye, vLookAt, XM_PIDIV4, gs_nWidth / gs_nHeight, 0.01f, 100000.0f );
 
@@ -312,9 +320,11 @@ int InitializeGame( void )
 
     // Create the plane
     CreatePlane( gs_fWorldSize, gs_fWorldSize, gs_fWorldSize, gs_fWorldSize, &g_pGroundPlane );
+    XMMATRIX mWorld = XMMatrixTranslation( -gs_fWorldSize/2, 0.0f, -gs_fWorldSize/2 );
+    g_pGroundPlane->SetWorldMatrix( mWorld );
 
-    // Create a building
-    CreateBox( 5.0f, 5.0f, 5.0f, &g_pBuilding );
+    // Create the city scape
+    CreateCity( gs_nCitySize, gs_nCitySize );
 
     return hr;
 }
@@ -388,9 +398,6 @@ void CreatePlane( float fWidth, float fHeight, float fU, float fV, RiotObject** 
     // Create the ground plane object
     pObject = new RiotObject;
     pObject->_Create( pMesh, pVShader, pPShader, pTexture );
-
-    XMMATRIX mWorld = XMMatrixTranslation( -gs_fWorldSize/2, 0.0f, -gs_fWorldSize/2 );
-    pObject->SetWorldMatrix( mWorld );
 
     // Return it
     *ppObject = pObject; 
@@ -542,4 +549,65 @@ void CreateBox( float fLength, float fWidth, float fHeight, RiotObject** ppObjec
 
     // Return it
     *ppObject = pObject; 
+}
+
+void CreateCity( int nWidth, int nHeight )
+{
+    static const float fBlockSize = 100.0f;
+    static const float fLaneWidth = 3.66f;
+    static const float fSidewalkWidth = 2.0f;
+    static const float fStoryHeight = 3.96f;
+
+    int nBuilding = 0;
+    for( int x = -nWidth/2; x < 0; ++x )
+    {
+        for( int z = -nHeight/2; z < 0; ++z )
+        {
+            CreateBox( fBlockSize, fStoryHeight*5.0f, fBlockSize, &g_pBuildings[nBuilding] );
+
+            float fXPos = x * fBlockSize/2.0f + (x*fSidewalkWidth*2-1) + (x*fLaneWidth*4-2);
+            float fZPos = z * fBlockSize/2.0f + (z*fSidewalkWidth*2-1) + (z*fLaneWidth*4-2);
+            XMMATRIX mWorld = XMMatrixTranslation( fXPos, 0.0f, fZPos );
+            g_pBuildings[nBuilding++]->SetWorldMatrix( mWorld );
+        }
+    }
+
+    for( int x = -nWidth/2; x < 0; ++x )
+    {
+        for( int z = 1; z <= nHeight/2; ++z )
+        {
+            CreateBox( fBlockSize, fStoryHeight*5.0f, fBlockSize, &g_pBuildings[nBuilding] );
+
+            float fXPos = x * fBlockSize/2.0f + (x*fSidewalkWidth*2-1) + (x*fLaneWidth*4-2);
+            float fZPos = z * fBlockSize/2.0f + (z*fSidewalkWidth*2-1) + (z*fLaneWidth*4-2);
+            XMMATRIX mWorld = XMMatrixTranslation( fXPos, 0.0f, fZPos );
+            g_pBuildings[nBuilding++]->SetWorldMatrix( mWorld );
+        }
+    }
+
+    for( int x = 1; x <= nWidth/2; ++x )
+    {
+        for( int z = -nHeight/2; z < 0; ++z )
+        {
+            CreateBox( fBlockSize, fStoryHeight*5.0f, fBlockSize, &g_pBuildings[nBuilding] );
+
+            float fXPos = x * fBlockSize/2.0f + (x*fSidewalkWidth*2-1) + (x*fLaneWidth*4-2);
+            float fZPos = z * fBlockSize/2.0f + (z*fSidewalkWidth*2-1) + (z*fLaneWidth*4-2);
+            XMMATRIX mWorld = XMMatrixTranslation( fXPos, 0.0f, fZPos );
+            g_pBuildings[nBuilding++]->SetWorldMatrix( mWorld );
+        }
+    }
+
+    for( int x = 1; x <= nWidth/2; ++x )
+    {
+        for( int z = 1; z <= nHeight/2; ++z )
+        {
+            CreateBox( fBlockSize, fStoryHeight*5.0f, fBlockSize, &g_pBuildings[nBuilding] );
+
+            float fXPos = x * fBlockSize/2.0f + (x*fSidewalkWidth*2-1) + (x*fLaneWidth*4-2);
+            float fZPos = z * fBlockSize/2.0f + (z*fSidewalkWidth*2-1) + (z*fLaneWidth*4-2);
+            XMMATRIX mWorld = XMMatrixTranslation( fXPos, 0.0f, fZPos );
+            g_pBuildings[nBuilding++]->SetWorldMatrix( mWorld );
+        }
+    }
 }
