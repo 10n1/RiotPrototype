@@ -6,6 +6,7 @@ File:           main.cpp
 #include <D3D11.h>
 #include <D3DX11.h>
 #include <D3Dcompiler.h>
+#include <xnamath.h>
 #include "VertexShader.h"
 #include "GeometryShader.h"
 #include "PixelShader.h"

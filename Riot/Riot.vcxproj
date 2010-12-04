@@ -169,6 +169,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PixelShader.cpp" />
+    <ClCompile Include="RiotObject.cpp" />
     <ClCompile Include="VertexShader.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -177,6 +178,7 @@
     <ClInclude Include="GeometryShader.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PixelShader.h" />
+    <ClInclude Include="RiotObject.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="VertexShader.h" />
   </ItemGroup>

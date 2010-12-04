@@ -1,8 +1,7 @@
 #include "Camera.h"
 
 Camera::Camera( void )
-    : m_mWorld( XMMatrixIdentity() )
-    , m_mView( XMMatrixIdentity() )
+    : m_mView( XMMatrixIdentity() )
     , m_mProj( XMMatrixIdentity() )
     , m_vEye( XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ) )
     , m_vLookAt( XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ) )

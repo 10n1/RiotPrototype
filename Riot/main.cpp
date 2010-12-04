@@ -8,6 +8,7 @@ File:           main.cpp
 #include "Direct3DDevice.h"
 #include "Camera.h"
 #include <xnamath.h>
+#include "RiotObject.h"
 
 //-----------------------------------------------------------------------------
 // Defines
@@ -17,6 +18,7 @@ static const char         gs_szName[] = "3D World";
 static const unsigned int gs_nWidth = 1024;
 static const unsigned int gs_nHeight = 768;
 static const bool         gs_bFullscreen = false;
+static const float        gs_fWorldSize = 1000.0f;
 
 
 #ifndef SAFE_RELEASE
@@ -35,7 +37,9 @@ bool                g_bRunning = true;
 VertexShader*       g_pVertexShader = NULL;
 PixelShader*        g_pPixelShader = NULL;
 Mesh*               g_pMesh = NULL;
-XMMATRIX            g_mWorld = XMMatrixTranslation( -10.0f, 0.0f, -10.0f );
+XMMATRIX            g_mWorld = XMMatrixTranslation( -gs_fWorldSize/2, 0.0f, -gs_fWorldSize/2 );
+
+RiotObject*         g_pGroundPlane = NULL;
 
 ID3D11Buffer*               g_pPerFrameCB = NULL;
 ID3D11Buffer*               g_pPerDrawCB = NULL;
@@ -123,14 +127,11 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
         
         //-----------------------------------------------------------------------------
         // Perform Game update
-        g_pVertexShader->SetShader();
-        g_pPixelShader->SetShader();
         // Set the constant buffer
         g_pD3D->GetContext()->VSSetConstantBuffers( 0, 1, &g_pPerFrameCB );
         g_pD3D->GetContext()->VSSetConstantBuffers( 1, 1, &g_pPerDrawCB );
-        g_pD3D->GetContext()->PSSetShaderResources( 0, 1, &g_pTexture );
         g_pD3D->GetContext()->PSSetSamplers( 0, 1, &g_pSampler );
-        g_pMesh->Draw();
+        g_pGroundPlane->Render();
 
         g_pD3D->Render();
         //-----------------------------------------------------------------------------
@@ -148,12 +149,10 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
     
     /////////////////////////////////////
     // Perform clean up
+    SAFE_DELETE( g_pGroundPlane );
     SAFE_RELEASE( g_pPerFrameCB );
-    SAFE_RELEASE( g_pTexture );
+    SAFE_RELEASE( g_pPerDrawCB );
     SAFE_RELEASE( g_pSampler );
-    SAFE_DELETE( g_pMesh );
-    SAFE_DELETE( g_pVertexShader );
-    SAFE_DELETE( g_pPixelShader );
     SAFE_DELETE( g_pD3D );
 
     return 0;
@@ -316,10 +315,10 @@ int InitializeGame( void )
 
     Vertex pVertices[] =
     {
-        { { 0.0f,  0.0f, 20.0f }, { 0.0f,  0.0f }, }, 
-        { { 20.0f, 0.0f, 20.0f }, { 20.0f, 0.0f }, }, 
-        { { 20.0f, 0.0f, 0.0f },  { 20.0f, 20.0f }, }, 
-        { { 0.0f,  0.0f, 0.0f },  { 0.0f,  20.0f }, }, 
+        { { 0.0f,          0.0f, gs_fWorldSize }, { 0.0f,          0.0f }, }, 
+        { { gs_fWorldSize, 0.0f, gs_fWorldSize }, { gs_fWorldSize, 0.0f }, }, 
+        { { gs_fWorldSize, 0.0f, 0.0f },          { gs_fWorldSize, gs_fWorldSize }, }, 
+        { { 0.0f,          0.0f, 0.0f },          { 0.0f,          gs_fWorldSize }, }, 
     };
     int nNumVertices = sizeof( pVertices ) / sizeof( Vertex );
 
@@ -338,7 +337,7 @@ int InitializeGame( void )
     bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
     D3D11_SUBRESOURCE_DATA cbInitData = { 0 };
-    XMMATRIX camera = g_Camera.GetWorldViewProj();
+    XMMATRIX camera = g_Camera.GetViewProj();
     camera = XMMatrixTranspose( camera );
     cbInitData.pSysMem = &camera;
     hr = g_pD3D->GetDevice()->CreateBuffer( &bufferDesc, &cbInitData, &g_pPerFrameCB );
@@ -387,6 +386,10 @@ int InitializeGame( void )
         MessageBox( 0, "Could not create sampler", "Error", 0 );
         return hr;
     }
+
+    // Create the ground plane object
+    g_pGroundPlane = new RiotObject;
+    g_pGroundPlane->_Create( g_pMesh, g_pVertexShader, g_pPixelShader, g_pTexture );
 
     return hr;
 }
