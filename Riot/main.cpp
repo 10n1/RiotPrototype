@@ -35,6 +35,7 @@ bool                g_bRunning = true;
 
 // Ground plane
 RiotObject*         g_pGroundPlane = NULL;
+RiotObject*         g_pBuilding = NULL;
 
 ID3D11SamplerState*         g_pSampler = NULL;
 
@@ -134,6 +135,7 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
         g_pD3D->SetViewProjMatrix( mViewProj );
         g_pD3D->GetContext()->PSSetSamplers( 0, 1, &g_pSampler );
         g_pGroundPlane->Render();
+        g_pBuilding->Render();
 
         g_pD3D->Render();
         //-----------------------------------------------------------------------------
@@ -152,6 +154,7 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
     /////////////////////////////////////
     // Perform clean up
     SAFE_DELETE( g_pGroundPlane );
+    SAFE_DELETE( g_pBuilding );
     SAFE_RELEASE( g_pSampler );
     SAFE_DELETE( g_pD3D );
 
@@ -310,6 +313,9 @@ int InitializeGame( void )
     // Create the plane
     CreatePlane( gs_fWorldSize, gs_fWorldSize, gs_fWorldSize, gs_fWorldSize, &g_pGroundPlane );
 
+    // Create a building
+    CreateBox( 5.0f, 5.0f, 5.0f, &g_pBuilding );
+
     return hr;
 }
 
@@ -335,19 +341,19 @@ void CreatePlane( float fWidth, float fHeight, float fU, float fV, RiotObject** 
     pVertices[ 1 ].fPos[1] = 0.0f;
     pVertices[ 1 ].fPos[2] = fHeight;
     pVertices[ 1 ].fTexCoord[0] = 0.0f;
-    pVertices[ 1 ].fTexCoord[1] = fV;
+    pVertices[ 1 ].fTexCoord[1] = fV/2;
 
     pVertices[ 2 ].fPos[0] = fWidth;
     pVertices[ 2 ].fPos[1] = 0.0f;
     pVertices[ 2 ].fPos[2] = 0.0f;
-    pVertices[ 2 ].fTexCoord[0] = fU;
+    pVertices[ 2 ].fTexCoord[0] = fU/2;
     pVertices[ 2 ].fTexCoord[1] = 0.0f;
 
     pVertices[ 3 ].fPos[0] = fWidth;
     pVertices[ 3 ].fPos[1] = 0.0f;
     pVertices[ 3 ].fPos[2] = fHeight;
-    pVertices[ 3 ].fTexCoord[0] = fU;
-    pVertices[ 3 ].fTexCoord[1] = fV;
+    pVertices[ 3 ].fTexCoord[0] = fU/2;
+    pVertices[ 3 ].fTexCoord[1] = fV/2;
 
     // Set up the indices
     unsigned short *pIndices = new unsigned short[6];
@@ -392,4 +398,148 @@ void CreatePlane( float fWidth, float fHeight, float fU, float fV, RiotObject** 
 
 void CreateBox( float fLength, float fWidth, float fHeight, RiotObject** ppObject )
 {
+    
+    unsigned int hr = 0;
+    VertexShader*               pVShader = NULL;
+    PixelShader*                pPShader = NULL;
+    Mesh*                       pMesh =  NULL;
+    ID3D11ShaderResourceView*   pTexture = NULL;
+    RiotObject*                 pObject = NULL;
+
+    Vertex* pVertices = new Vertex[ 8 ];
+
+    float fXMin = -fLength/2;
+    float fXMax = fLength/2;
+    float fZMin = -fWidth/2;
+    float fZMax = fWidth/2;
+
+    // Set up the vertices
+    // Bottom plane
+    pVertices[ 0 ].fPos[0] = fXMin;
+    pVertices[ 0 ].fPos[1] = 0.0f;
+    pVertices[ 0 ].fPos[2] = fZMin;
+    pVertices[ 0 ].fTexCoord[0] = fXMin/2;
+    pVertices[ 0 ].fTexCoord[1] = fZMin/2;
+
+    pVertices[ 1 ].fPos[0] = fXMin;
+    pVertices[ 1 ].fPos[1] = 0.0f;
+    pVertices[ 1 ].fPos[2] = fZMax;
+    pVertices[ 1 ].fTexCoord[0] = fXMin/2;
+    pVertices[ 1 ].fTexCoord[1] = fZMax/2;
+
+    pVertices[ 2 ].fPos[0] = fXMax;
+    pVertices[ 2 ].fPos[1] = 0.0f;
+    pVertices[ 2 ].fPos[2] = fZMin;
+    pVertices[ 2 ].fTexCoord[0] = fXMax/2;
+    pVertices[ 2 ].fTexCoord[1] = fZMin/2;
+
+    pVertices[ 3 ].fPos[0] = fXMax;
+    pVertices[ 3 ].fPos[1] = 0.0f;
+    pVertices[ 3 ].fPos[2] = fZMax;
+    pVertices[ 3 ].fTexCoord[0] = fXMax/2;
+    pVertices[ 3 ].fTexCoord[1] = fZMax/2;
+
+    pVertices[ 4 ].fPos[0] = fXMin;
+    pVertices[ 4 ].fPos[1] = fHeight;
+    pVertices[ 4 ].fPos[2] = fZMin;
+    pVertices[ 4 ].fTexCoord[0] = fXMin/2;
+    pVertices[ 4 ].fTexCoord[1] = fZMin/2;
+    
+    pVertices[ 5 ].fPos[0] = fXMin;
+    pVertices[ 5 ].fPos[1] = fHeight;
+    pVertices[ 5 ].fPos[2] = fZMax;
+    pVertices[ 5 ].fTexCoord[0] = fXMin/2;
+    pVertices[ 5 ].fTexCoord[1] = fZMax/2;
+    
+    pVertices[ 6 ].fPos[0] = fXMax;
+    pVertices[ 6 ].fPos[1] = fHeight;
+    pVertices[ 6 ].fPos[2] = fZMin;
+    pVertices[ 6 ].fTexCoord[0] = fXMax/2;
+    pVertices[ 6 ].fTexCoord[1] = fZMin/2;
+    
+    pVertices[ 7 ].fPos[0] = fXMax;
+    pVertices[ 7 ].fPos[1] = fHeight;
+    pVertices[ 7 ].fPos[2] = fZMax;
+    pVertices[ 7 ].fTexCoord[0] = fXMax/2;
+    pVertices[ 7 ].fTexCoord[1] = fZMax/2;
+
+    // Set up the indices
+    unsigned short *pIndices = new unsigned short[36];
+    pIndices[0] = 0;
+    pIndices[1] = 1;
+    pIndices[2] = 2;
+
+    pIndices[3] = 1;
+    pIndices[4] = 3;
+    pIndices[5] = 2;
+
+    pIndices[6] = 4;
+    pIndices[7] = 5;
+    pIndices[8] = 6;
+              
+    pIndices[9] = 5;
+    pIndices[10] = 7;
+    pIndices[11] = 6;
+
+    pIndices[12] = 0;
+    pIndices[13] = 4;
+    pIndices[14] = 2;
+    
+    pIndices[15] = 4;
+    pIndices[16] = 6;
+    pIndices[17] = 2;
+    
+    pIndices[18] = 0;
+    pIndices[19] = 1;
+    pIndices[20] = 5;
+
+    pIndices[21] = 5;
+    pIndices[22] = 4;
+    pIndices[23] = 0;
+        
+    pIndices[24] = 3;
+    pIndices[25] = 7;
+    pIndices[26] = 1;
+    
+    pIndices[27] = 7;
+    pIndices[28] = 5;
+    pIndices[29] = 1;
+    
+    pIndices[30] = 2;
+    pIndices[31] = 6;
+    pIndices[32] = 3;
+    
+    pIndices[33] = 6;
+    pIndices[34] = 7;
+    pIndices[35] = 3;
+    
+    // Create the mesh
+    hr = g_pD3D->CreateMesh( pVertices, sizeof( Vertex ), 8, pIndices, 36, &pMesh );
+
+    // Load the vertex shader
+    hr = g_pD3D->CreateShader( &pVShader );
+    
+    // Load the pixel shader
+    hr = g_pD3D->CreateShader( &pPShader );
+
+    // Create the texture
+    char szTexture[] = "default_texture.png";
+    hr = D3DX11CreateShaderResourceViewFromFile( g_pD3D->GetDevice(), szTexture, NULL, NULL, &pTexture, NULL );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle for real
+        char szError[256] = { 0 };
+        sprintf( szError, "Could not load texture: %s", szTexture );
+        MessageBox( 0, szError, "Error", 0 );
+    }
+    
+    // Create the ground plane object
+    pObject = new RiotObject;
+    pObject->_Create( pMesh, pVShader, pPShader, pTexture );
+
+    __declspec(align(64)) XMMATRIX mWorld = XMMatrixIdentity();
+    pObject->SetWorldMatrix( mWorld );
+
+    // Return it
+    *ppObject = pObject; 
 }
