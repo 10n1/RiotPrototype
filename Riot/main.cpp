@@ -14,13 +14,13 @@ File:           main.cpp
 // Defines
 //-----------------------------------------------------------------------------
 // Defines
-static const char         gs_szName[] = "3D World";
 static const unsigned int gs_nWidth = 1024;
 static const unsigned int gs_nHeight = 768;
-static const bool         gs_bFullscreen = false;
 static const float        gs_fWorldSize = 1000.0f;
 static const unsigned int gs_nCitySize = 8;
 static const unsigned int gs_nCitySizeSq = gs_nCitySize*gs_nCitySize;
+static const char         gs_szName[] = "3D World";
+static const bool         gs_bFullscreen = false;
 
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p) if(p) { p->Release(); p = NULL; } 
@@ -28,6 +28,8 @@ static const unsigned int gs_nCitySizeSq = gs_nCitySize*gs_nCitySize;
 
 //-----------------------------------------------------------------------------
 // Variables
+
+XMMATRIX            g_mWorld;
 CTimer              g_Timer;
 HWND                g_hWnd = NULL;
 Direct3DDevice*     g_pD3D = NULL;
@@ -320,8 +322,8 @@ int InitializeGame( void )
 
     // Create the plane
     CreatePlane( gs_fWorldSize, gs_fWorldSize, gs_fWorldSize, gs_fWorldSize, &g_pGroundPlane );
-    XMMATRIX mWorld = XMMatrixTranslation( -gs_fWorldSize/2, 0.0f, -gs_fWorldSize/2 );
-    g_pGroundPlane->SetWorldMatrix( mWorld );
+    g_mWorld = XMMatrixTranslation( -gs_fWorldSize/2, 0.0f, -gs_fWorldSize/2 );
+    g_pGroundPlane->SetWorldMatrix( g_mWorld );
 
     // Create the city scape
     CreateCity( gs_nCitySize, gs_nCitySize );
@@ -377,6 +379,9 @@ void CreatePlane( float fWidth, float fHeight, float fU, float fV, RiotObject** 
 
     // Create the mesh
     hr = g_pD3D->CreateMesh( pVertices, sizeof( Vertex ), 4, pIndices, 6, &pMesh );
+    
+    delete [] pIndices;
+    delete [] pVertices;
 
     // Load the vertex shader
     hr = g_pD3D->CreateShader( &pVShader );
@@ -396,7 +401,7 @@ void CreatePlane( float fWidth, float fHeight, float fU, float fV, RiotObject** 
     }
     
     // Create the ground plane object
-    pObject = new RiotObject;
+    pObject = new RiotObject();
     pObject->_Create( pMesh, pVShader, pPShader, pTexture );
 
     // Return it
@@ -523,6 +528,9 @@ void CreateBox( float fLength, float fWidth, float fHeight, RiotObject** ppObjec
     // Create the mesh
     hr = g_pD3D->CreateMesh( pVertices, sizeof( Vertex ), 8, pIndices, 36, &pMesh );
 
+    delete [] pIndices;
+    delete [] pVertices;
+
     // Load the vertex shader
     hr = g_pD3D->CreateShader( &pVShader );
     
@@ -541,11 +549,8 @@ void CreateBox( float fLength, float fWidth, float fHeight, RiotObject** ppObjec
     }
     
     // Create the ground plane object
-    pObject = new RiotObject;
+    pObject = new RiotObject();
     pObject->_Create( pMesh, pVShader, pPShader, pTexture );
-
-    __declspec(align(64)) XMMATRIX mWorld = XMMatrixIdentity();
-    pObject->SetWorldMatrix( mWorld );
 
     // Return it
     *ppObject = pObject; 
@@ -567,8 +572,8 @@ void CreateCity( int nWidth, int nHeight )
 
             float fXPos = x * fBlockSize/2.0f + (x*fSidewalkWidth*2-1) + (x*fLaneWidth*4-2);
             float fZPos = z * fBlockSize/2.0f + (z*fSidewalkWidth*2-1) + (z*fLaneWidth*4-2);
-            XMMATRIX mWorld = XMMatrixTranslation( fXPos, 0.0f, fZPos );
-            g_pBuildings[nBuilding++]->SetWorldMatrix( mWorld );
+            g_mWorld = XMMatrixTranslation( fXPos, 0.0f, fZPos );
+            g_pBuildings[nBuilding++]->SetWorldMatrix( g_mWorld );
         }
     }
 
@@ -580,8 +585,8 @@ void CreateCity( int nWidth, int nHeight )
 
             float fXPos = x * fBlockSize/2.0f + (x*fSidewalkWidth*2-1) + (x*fLaneWidth*4-2);
             float fZPos = z * fBlockSize/2.0f + (z*fSidewalkWidth*2-1) + (z*fLaneWidth*4-2);
-            XMMATRIX mWorld = XMMatrixTranslation( fXPos, 0.0f, fZPos );
-            g_pBuildings[nBuilding++]->SetWorldMatrix( mWorld );
+            g_mWorld = XMMatrixTranslation( fXPos, 0.0f, fZPos );
+            g_pBuildings[nBuilding++]->SetWorldMatrix( g_mWorld );
         }
     }
 
@@ -593,8 +598,8 @@ void CreateCity( int nWidth, int nHeight )
 
             float fXPos = x * fBlockSize/2.0f + (x*fSidewalkWidth*2-1) + (x*fLaneWidth*4-2);
             float fZPos = z * fBlockSize/2.0f + (z*fSidewalkWidth*2-1) + (z*fLaneWidth*4-2);
-            XMMATRIX mWorld = XMMatrixTranslation( fXPos, 0.0f, fZPos );
-            g_pBuildings[nBuilding++]->SetWorldMatrix( mWorld );
+            g_mWorld = XMMatrixTranslation( fXPos, 0.0f, fZPos );
+            g_pBuildings[nBuilding++]->SetWorldMatrix( g_mWorld );
         }
     }
 
@@ -606,8 +611,8 @@ void CreateCity( int nWidth, int nHeight )
 
             float fXPos = x * fBlockSize/2.0f + (x*fSidewalkWidth*2-1) + (x*fLaneWidth*4-2);
             float fZPos = z * fBlockSize/2.0f + (z*fSidewalkWidth*2-1) + (z*fLaneWidth*4-2);
-            XMMATRIX mWorld = XMMatrixTranslation( fXPos, 0.0f, fZPos );
-            g_pBuildings[nBuilding++]->SetWorldMatrix( mWorld );
+            g_mWorld = XMMatrixTranslation( fXPos, 0.0f, fZPos );
+            g_pBuildings[nBuilding++]->SetWorldMatrix( g_mWorld );
         }
     }
 }

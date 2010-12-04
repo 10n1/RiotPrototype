@@ -41,3 +41,9 @@ void RiotObject::Render( void )
     g_pD3D->GetContext()->PSSetShaderResources( 0, 1, &m_pDiffuseTexture );
     m_pMesh->Draw();
 }
+
+void RiotObject::SetWorldMatrix( const XMMATRIX& mWorld ) 
+{ 
+    m_mWorld = mWorld; 
+}
+

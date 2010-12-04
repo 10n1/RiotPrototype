@@ -1,7 +1,7 @@
 #pragma once
 #include "Direct3DDevice.h"
 
-class __declspec( align(16) ) RiotObject
+ __declspec( align(16) ) class RiotObject
 {
 public:
     RiotObject(void);
@@ -27,7 +27,7 @@ public:
     //-----------------------------------------------------------------------------
     //  Mutators
     //-----------------------------------------------------------------------------
-    void SetWorldMatrix( XMMATRIX& mWorld ) { m_mWorld = mWorld; }
+    void SetWorldMatrix( const XMMATRIX& mWorld );// { m_mWorld = mWorld; }
 private:
     XMMATRIX                    m_mWorld;
     Mesh*                       m_pMesh;
