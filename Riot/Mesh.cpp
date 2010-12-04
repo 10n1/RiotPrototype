@@ -1,7 +1,7 @@
 #include "Mesh.h"
 #include "Direct3DDevice.h"
 
-static const int snIndexSize = sizeof( unsigned short );
+static const int s_nIndexSize = sizeof( unsigned short );
 
 Mesh::Mesh(void)
     : m_pVertices( NULL )
@@ -59,8 +59,7 @@ int Mesh::Create( ID3D11Device* pDevice,
     }
 
     // Create the index buffer
-#if 1 // TODO: Currently disabled so we can render an unindexed triangle
-    bufferDesc.ByteWidth = nNumIndices * snIndexSize;
+    bufferDesc.ByteWidth = nNumIndices * s_nIndexSize;
     bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
     initData.pSysMem = pIndices;
@@ -72,7 +71,6 @@ int Mesh::Create( ID3D11Device* pDevice,
         MessageBox( 0, "Index buffer could not be created", "Error", 0 );
         return hr;
     }
-#endif
 
     // TODO: Should we maintain the verts and indices in
     //  m_pVerts/m_pIndices, or just let the GPU maintain them
