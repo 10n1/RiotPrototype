@@ -35,8 +35,10 @@ bool                g_bRunning = true;
 VertexShader*       g_pVertexShader = NULL;
 PixelShader*        g_pPixelShader = NULL;
 Mesh*               g_pMesh = NULL;
+XMMATRIX            g_mWorld = XMMatrixTranslation( -10.0f, 0.0f, -10.0f );
 
 ID3D11Buffer*               g_pPerFrameCB = NULL;
+ID3D11Buffer*               g_pPerDrawCB = NULL;
 ID3D11ShaderResourceView*   g_pTexture = NULL;
 ID3D11SamplerState*         g_pSampler = NULL;
 
@@ -125,6 +127,7 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
         g_pPixelShader->SetShader();
         // Set the constant buffer
         g_pD3D->GetContext()->VSSetConstantBuffers( 0, 1, &g_pPerFrameCB );
+        g_pD3D->GetContext()->VSSetConstantBuffers( 1, 1, &g_pPerDrawCB );
         g_pD3D->GetContext()->PSSetShaderResources( 0, 1, &g_pTexture );
         g_pD3D->GetContext()->PSSetSamplers( 0, 1, &g_pSampler );
         g_pMesh->Draw();
@@ -313,10 +316,10 @@ int InitializeGame( void )
 
     Vertex pVertices[] =
     {
-        { { -10.0f, 0.0f,  10.0f }, { 0.0f, 0.0f }, }, 
-        { {  10.0f, 0.0f,  10.0f }, { 20.0f, 0.0f }, }, 
-        { {  10.0f, 0.0f, -10.0f }, { 20.0f, 20.0f }, }, 
-        { { -10.0f, 0.0f, -10.0f }, { 0.0f, 20.0f }, }, 
+        { { 0.0f,  0.0f, 20.0f }, { 0.0f,  0.0f }, }, 
+        { { 20.0f, 0.0f, 20.0f }, { 20.0f, 0.0f }, }, 
+        { { 20.0f, 0.0f, 0.0f },  { 20.0f, 20.0f }, }, 
+        { { 0.0f,  0.0f, 0.0f },  { 0.0f,  20.0f }, }, 
     };
     int nNumVertices = sizeof( pVertices ) / sizeof( Vertex );
 
@@ -329,17 +332,27 @@ int InitializeGame( void )
 
     hr = g_pD3D->CreateMesh( pVertices, sizeof( Vertex ), nNumVertices, pIndices, nNumIndices, &g_pMesh );
 
-    // Create the constant buffer
+    // Create the constant buffers
     D3D11_BUFFER_DESC bufferDesc = { 0 };
     bufferDesc.ByteWidth = sizeof( XMMATRIX );
     bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
     D3D11_SUBRESOURCE_DATA cbInitData = { 0 };
-    // TODO: Remove the hacked identity matrix
     XMMATRIX camera = g_Camera.GetWorldViewProj();
     camera = XMMatrixTranspose( camera );
     cbInitData.pSysMem = &camera;
     hr = g_pD3D->GetDevice()->CreateBuffer( &bufferDesc, &cbInitData, &g_pPerFrameCB );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle for real
+        MessageBox( 0, "Constant buffer could not be created", "Error", 0 );
+        return hr;
+    }
+
+    XMMATRIX world = g_mWorld;
+    world = XMMatrixTranspose( world );
+    cbInitData.pSysMem = &world;
+    hr = g_pD3D->GetDevice()->CreateBuffer( &bufferDesc, &cbInitData, &g_pPerDrawCB );
     if( FAILED( hr ) )
     {
         // TODO: Handle for real

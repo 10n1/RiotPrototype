@@ -3,8 +3,13 @@ SamplerState	DiffuseTextureSampler : register( s0 );
 
 cbuffer PerFrame
 {
-    matrix mWorldViewProj;
-}
+    matrix mViewProj;
+};
+
+cbuffer PerDraw
+{
+    matrix mWorld;
+};
 
 struct VSOut
 {
@@ -18,7 +23,8 @@ struct VSOut
 VSOut DefaultVertexShader( float4 Pos : POSITION, float2 TexCoord : TEXCOORD )
 {
     VSOut output;
-    output.Pos = mul( Pos, mWorldViewProj );
+    output.Pos = mul( Pos, mWorld );
+    output.Pos = mul( output.Pos, mViewProj );
     output.TexCoord = TexCoord;
     return output;
 }
