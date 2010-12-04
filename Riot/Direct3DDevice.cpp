@@ -7,11 +7,15 @@ Direct3DDevice::Direct3DDevice(void)
     , m_pRenderTargetView(NULL)
     , m_pDepthStencilResource(NULL)
     , m_pDepthStencilView(NULL)
+    , m_pViewProjCB(NULL)
+    , m_pWorldCB(NULL)
 {
 }
 
 Direct3DDevice::~Direct3DDevice(void)
 {
+    SAFE_RELEASE( m_pViewProjCB );
+    SAFE_RELEASE( m_pWorldCB );
     SAFE_RELEASE( m_pRenderTargetView );
     SAFE_RELEASE( m_pDepthStencilResource );
     SAFE_RELEASE( m_pDepthStencilView );
@@ -111,6 +115,31 @@ int Direct3DDevice::Initialize( HWND hWnd )
             break;
         }
     };
+
+
+    ///////////////////////////////////////////////
+    // Create global constant buffers
+    D3D11_BUFFER_DESC bufferDesc = { 0 };
+    bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+    bufferDesc.ByteWidth = sizeof( XMMATRIX );
+    bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+    hr = m_pDevice->CreateBuffer( &bufferDesc, NULL, &m_pViewProjCB );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle for real
+        MessageBox( 0, "Constant buffer could not be created", "Error", 0 );
+        return hr;
+    }
+
+    hr = m_pDevice->CreateBuffer( &bufferDesc, NULL, &m_pWorldCB );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle for real
+        MessageBox( 0, "Constant buffer could not be created", "Error", 0 );
+        return hr;
+    }
 
     return 0;
 }
@@ -315,6 +344,30 @@ int Direct3DDevice::CreateMesh( void* pVertices,
     *pMesh = pNewMesh;
 
     return hr;
+}
+
+void Direct3DDevice::SetViewProjMatrix( XMMATRIX& mViewProj )
+{
+    // Update it
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    m_pContext->Map( m_pViewProjCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource );
+    memcpy( mappedResource.pData, &mViewProj, sizeof( XMMATRIX ) );
+    m_pContext->Unmap( m_pViewProjCB, 0 );
+
+    // Set it
+    m_pContext->VSSetConstantBuffers( 0, 1, &m_pViewProjCB );
+}
+
+void Direct3DDevice::SetWorldMatrix( XMMATRIX& mWorld )
+{
+    // Update it
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    m_pContext->Map( m_pWorldCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource );
+    memcpy( mappedResource.pData, &mWorld, sizeof( XMMATRIX ) );
+    m_pContext->Unmap( m_pWorldCB, 0 );
+
+    // Set it
+    m_pContext->VSSetConstantBuffers( 1, 1, &m_pWorldCB );
 }
 
 //-----------------------------------------------------------------------------

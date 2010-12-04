@@ -64,7 +64,16 @@ public:
                     unsigned int nNumIndices,
                     Mesh** pMesh );
 
+    //-----------------------------------------------------------------------------
+    //  Set*Matrix
+    //  Sets the appropriate constant buffer on the GPU
+    //-----------------------------------------------------------------------------
+    void SetViewProjMatrix( XMMATRIX& mViewProj );
+    void SetWorldMatrix( XMMATRIX& mWorld );
 
+    //-----------------------------------------------------------------------------
+    //  Mutators
+    //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     //  Accessors
@@ -86,5 +95,8 @@ private:
     ID3D11RenderTargetView* m_pRenderTargetView;
     ID3D11Texture2D*        m_pDepthStencilResource;
     ID3D11DepthStencilView* m_pDepthStencilView;
+
+    ID3D11Buffer*           m_pViewProjCB;
+    ID3D11Buffer*           m_pWorldCB;
 };
 

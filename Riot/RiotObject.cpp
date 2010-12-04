@@ -36,6 +36,8 @@ void RiotObject::Render( void )
 {
     m_pVertexShader->SetShader();
     m_pPixelShader->SetShader();
+    XMMATRIX mWorld = XMMatrixTranspose( m_mWorld );
+    g_pD3D->SetWorldMatrix( mWorld );
     g_pD3D->GetContext()->PSSetShaderResources( 0, 1, &m_pDiffuseTexture );
     m_pMesh->Draw();
 }

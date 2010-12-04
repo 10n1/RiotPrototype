@@ -37,12 +37,9 @@ bool                g_bRunning = true;
 VertexShader*       g_pVertexShader = NULL;
 PixelShader*        g_pPixelShader = NULL;
 Mesh*               g_pMesh = NULL;
-XMMATRIX            g_mWorld = XMMatrixTranslation( -gs_fWorldSize/2, 0.0f, -gs_fWorldSize/2 );
 
 RiotObject*         g_pGroundPlane = NULL;
 
-ID3D11Buffer*               g_pPerFrameCB = NULL;
-ID3D11Buffer*               g_pPerDrawCB = NULL;
 ID3D11ShaderResourceView*   g_pTexture = NULL;
 ID3D11SamplerState*         g_pSampler = NULL;
 
@@ -128,8 +125,8 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
         //-----------------------------------------------------------------------------
         // Perform Game update
         // Set the constant buffer
-        g_pD3D->GetContext()->VSSetConstantBuffers( 0, 1, &g_pPerFrameCB );
-        g_pD3D->GetContext()->VSSetConstantBuffers( 1, 1, &g_pPerDrawCB );
+        XMMATRIX mViewProj = XMMatrixTranspose( g_Camera.GetViewProj() );
+        g_pD3D->SetViewProjMatrix( mViewProj );
         g_pD3D->GetContext()->PSSetSamplers( 0, 1, &g_pSampler );
         g_pGroundPlane->Render();
 
@@ -150,8 +147,6 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
     /////////////////////////////////////
     // Perform clean up
     SAFE_DELETE( g_pGroundPlane );
-    SAFE_RELEASE( g_pPerFrameCB );
-    SAFE_RELEASE( g_pPerDrawCB );
     SAFE_RELEASE( g_pSampler );
     SAFE_DELETE( g_pD3D );
 
@@ -331,34 +326,6 @@ int InitializeGame( void )
 
     hr = g_pD3D->CreateMesh( pVertices, sizeof( Vertex ), nNumVertices, pIndices, nNumIndices, &g_pMesh );
 
-    // Create the constant buffers
-    D3D11_BUFFER_DESC bufferDesc = { 0 };
-    bufferDesc.ByteWidth = sizeof( XMMATRIX );
-    bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-
-    D3D11_SUBRESOURCE_DATA cbInitData = { 0 };
-    XMMATRIX camera = g_Camera.GetViewProj();
-    camera = XMMatrixTranspose( camera );
-    cbInitData.pSysMem = &camera;
-    hr = g_pD3D->GetDevice()->CreateBuffer( &bufferDesc, &cbInitData, &g_pPerFrameCB );
-    if( FAILED( hr ) )
-    {
-        // TODO: Handle for real
-        MessageBox( 0, "Constant buffer could not be created", "Error", 0 );
-        return hr;
-    }
-
-    XMMATRIX world = g_mWorld;
-    world = XMMatrixTranspose( world );
-    cbInitData.pSysMem = &world;
-    hr = g_pD3D->GetDevice()->CreateBuffer( &bufferDesc, &cbInitData, &g_pPerDrawCB );
-    if( FAILED( hr ) )
-    {
-        // TODO: Handle for real
-        MessageBox( 0, "Constant buffer could not be created", "Error", 0 );
-        return hr;
-    }
-
     // Create the texture
     char szTexture[] = "default_texture.png";
     hr = D3DX11CreateShaderResourceViewFromFile( g_pD3D->GetDevice(), szTexture, NULL, NULL, &g_pTexture, NULL );
@@ -390,6 +357,8 @@ int InitializeGame( void )
     // Create the ground plane object
     g_pGroundPlane = new RiotObject;
     g_pGroundPlane->_Create( g_pMesh, g_pVertexShader, g_pPixelShader, g_pTexture );
+    XMMATRIX mWorld = XMMatrixTranslation( -gs_fWorldSize/2, 0.0f, -gs_fWorldSize/2 );
+    g_pGroundPlane->SetWorldMatrix( mWorld );
 
     return hr;
 }

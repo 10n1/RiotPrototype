@@ -1,7 +1,7 @@
 #pragma once
 #include "Direct3DDevice.h"
 
-class RiotObject
+class __declspec( align(16) ) RiotObject
 {
 public:
     RiotObject(void);
