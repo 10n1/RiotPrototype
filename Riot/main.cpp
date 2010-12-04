@@ -125,6 +125,7 @@ int CALLBACK WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int
         //-----------------------------------------------------------------------------
         // Perform Game update
         // Set the constant buffer
+        g_Camera.Update( fElapsedTime );
         XMMATRIX mViewProj = XMMatrixTranspose( g_Camera.GetViewProj() );
         g_pD3D->SetViewProjMatrix( mViewProj );
         g_pD3D->GetContext()->PSSetSamplers( 0, 1, &g_pSampler );
@@ -239,6 +240,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
             // Camera Keys
             case MOVE_FORWARD:
                 {
+                    g_Camera.KeyInput( MOVE_FORWARD );
                     break;
                 }
             case MOVE_BACKWARD:
