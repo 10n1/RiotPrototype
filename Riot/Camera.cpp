@@ -1,12 +1,14 @@
 #include "Camera.h"
 
-static const float gs_fSpeed = 0.5f; // 0.5 m/s
+static const float gs_fSpeed = 100.0f;
 
 Camera::Camera( void )
     : m_mView( XMMatrixIdentity() )
     , m_mProj( XMMatrixIdentity() )
     , m_vEye( XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ) )
     , m_vLookAt( XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ) )
+    , m_fDirectionZ( 0.0f )
+    , m_fDirectionX( 0.0f )
 {
 }
 
@@ -29,12 +31,40 @@ void Camera::Init( XMVECTOR vEye,
 
 void Camera::Update( float fElapsedTime )
 {
-    XMVECTOR vMovement = XMVectorSet( fElapsedTime * gs_fSpeed, 0.0f, 0.0f, 0.0f );
-    m_vEye += vMovement;
-    m_vLookAt += vMovement;
+    XMVECTOR vPosDelta = XMVectorSet( fElapsedTime * gs_fSpeed * m_fDirectionX, 
+                                      0.0f, 
+                                      fElapsedTime * gs_fSpeed * m_fDirectionZ, 
+                                      0.0f );
+    m_vEye += vPosDelta;
+    m_vLookAt += vPosDelta;
     m_mView = XMMatrixLookAtLH( m_vEye, m_vLookAt, XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ) );
+    m_fDirectionX = 0.0f;
+    m_fDirectionZ = 0.0f;
 }
 
 void Camera::KeyInput( CameraKeys Key )
 {
+    switch( Key )
+    {
+    case MOVE_FORWARD:
+        {
+            m_fDirectionZ = 1.0f;
+            break;
+        }
+    case MOVE_BACKWARD:
+        {
+            m_fDirectionZ = -1.0f;
+            break;
+        }
+    case MOVE_LEFT:
+        {
+            m_fDirectionX = -1.0f;
+            break;
+        }
+    case MOVE_RIGHT:
+        {
+            m_fDirectionX = 1.0f;
+            break;
+        }
+    }
 }

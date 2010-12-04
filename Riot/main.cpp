@@ -245,14 +245,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
                 }
             case MOVE_BACKWARD:
                 {
+                    g_Camera.KeyInput( MOVE_BACKWARD );
                     break;
                 }
             case MOVE_RIGHT:
                 {
+                    g_Camera.KeyInput( MOVE_RIGHT );
                     break;
                 }
             case MOVE_LEFT:
                 {
+                    g_Camera.KeyInput( MOVE_LEFT );
                     break;
                 }
             // Quit
