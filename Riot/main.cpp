@@ -479,12 +479,12 @@ void CreateBox( float fLength, float fWidth, float fHeight, RiotObject** ppObjec
     // Set up the indices
     unsigned short *pIndices = new unsigned short[36];
     pIndices[0] = 0;
-    pIndices[1] = 1;
-    pIndices[2] = 2;
+    pIndices[1] = 2;
+    pIndices[2] = 1;
 
     pIndices[3] = 1;
-    pIndices[4] = 3;
-    pIndices[5] = 2;
+    pIndices[4] = 2;
+    pIndices[5] = 3;
 
     pIndices[6] = 4;
     pIndices[7] = 5;
