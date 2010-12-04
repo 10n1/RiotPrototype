@@ -166,7 +166,7 @@ int Direct3DDevice::Resize( unsigned int nWidth, unsigned int nHeight )
     // Create depth stencil view
     D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
     descDSV.Format = descDepth.Format;
-    descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    descDSV.ViewDimension = nAACount > 1 ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
     descDSV.Texture2D.MipSlice = 0;
     descDSV.Flags = 0;
     hr = m_pDevice->CreateDepthStencilView( m_pDepthStencilResource, &descDSV, &m_pDepthStencilView );
