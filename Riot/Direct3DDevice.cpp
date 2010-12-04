@@ -270,21 +270,25 @@ int Direct3DDevice::CreateShader( const char* szFilename, const char* szEntryPoi
 
 int Direct3DDevice::CreateShader( const char* szFilename, const char* szEntryPoint, const char* szShaderModel, GeometryShader** pShader )
 {
+    
     HRESULT hr = S_OK;
-    //ID3DBlob*   pShaderBlob = NULL;
-    //
-    //hr = CompileShader( szFilename, szEntryPoint, szShaderModel, &pShaderBlob );
-    //
-    //// Create the shader
-    //
-    //hr = m_pDevice->CreateGeometryShader( pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), NULL, (ID3D11GeometryShader**)pShader );
-    //
-    //if( FAILED( hr ) )
-    //{
-    //    MessageBox( 0, "Shader creation failed!", "Error", 0 );
-    //    return hr;
-    //}
-    //
+    ID3DBlob*   pShaderBlob = NULL;
+
+    hr = CompileShader( szFilename, szEntryPoint, szShaderModel, &pShaderBlob );
+
+    // Create the shader
+    GeometryShader* pNewShader = new GeometryShader;
+    hr = pNewShader->Create( m_pDevice, m_pContext, pShaderBlob );
+
+    if( FAILED( hr ) )
+    {
+        MessageBox( 0, "Shader creation failed!", "Error", 0 );
+        SAFE_RELEASE( pShaderBlob );
+        return hr;
+    }
+
+    *pShader = pNewShader;
+    SAFE_RELEASE( pShaderBlob );
     return hr;
 }
 
