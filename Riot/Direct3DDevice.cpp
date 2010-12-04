@@ -77,7 +77,7 @@ int Direct3DDevice::Initialize( HWND hWnd )
     D3D_FEATURE_LEVEL FeatureLevel;
     unsigned int nFlags = 0;
 #ifdef _DEBUG
-    //nFlags |= D3D11_CREATE_DEVICE_DEBUG;
+    nFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
     hr = D3D11CreateDeviceAndSwapChain(    
