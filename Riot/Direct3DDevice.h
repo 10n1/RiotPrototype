@@ -49,9 +49,9 @@ public:
     //  CreateShader
     //  Creates a shader from a file
     //-----------------------------------------------------------------------------
-    int CreateShader( const char* szFilename, const char* szEntryPoint, const char* szShaderModel, VertexShader** pShader );
-    int CreateShader( const char* szFilename, const char* szEntryPoint, const char* szShaderModel, PixelShader** pShader );
-    int CreateShader( const char* szFilename, const char* szEntryPoint, const char* szShaderModel, GeometryShader** pShader );
+    int CreateShader( VertexShader** pShader, const char* szFilename = 0, const char* szEntryPoint = 0, const char* szShaderModel = 0 );
+    int CreateShader( PixelShader** pShader, const char* szFilename = 0, const char* szEntryPoint = 0, const char* szShaderModel = 0 );
+    int CreateShader( GeometryShader** pShader, const char* szFilename = 0, const char* szEntryPoint = 0, const char* szShaderModel = 0);
 
     //-----------------------------------------------------------------------------
     //  CreateMesh

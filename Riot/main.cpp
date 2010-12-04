@@ -286,7 +286,7 @@ int InitializeGame( void )
 
     unsigned int hr = 0;
     // Load the vertex shader
-    hr = g_pD3D->CreateShader( "DefaultShader.hlsl", "DefaultVertexShader", "vs_4_0", &g_pVertexShader );
+    hr = g_pD3D->CreateShader( &g_pVertexShader );
     if( hr != 0 )
     {
         // TODO: Handle error more gracefully
@@ -294,7 +294,7 @@ int InitializeGame( void )
     }
     
     // Load the pixel shader
-    hr = g_pD3D->CreateShader( "DefaultShader.hlsl", "DefaultPixelShader", "ps_4_0", &g_pPixelShader );
+    hr = g_pD3D->CreateShader( &g_pPixelShader );
     if( hr != 0 )
     {
         // TODO: Handle error more gracefully

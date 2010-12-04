@@ -1,5 +1,16 @@
 #include "Direct3DDevice.h"
 
+//-----------------------------------------------------------------------------
+//  Default shaders
+//-----------------------------------------------------------------------------
+static const char s_szDefaultVertexShaderFile[] = "DefaultShader.hlsl";
+static const char s_szDefaultVertexShader[] = "DefaultVertexShader";
+static const char s_szDefaultVertexShaderModel[] = "vs_4_0";
+
+static const char s_szDefaultPixelShaderFile[] = "DefaultShader.hlsl";
+static const char s_szDefaultPixelShader[] = "DefaultPixelShader";
+static const char s_szDefaultPixelShaderModel[] = "ps_4_0";
+
 Direct3DDevice::Direct3DDevice(void)
     : m_pDevice(NULL)
     , m_pContext(NULL)
@@ -249,12 +260,19 @@ void Direct3DDevice::Render( void )
 //  CreateShader
 //  Creates a shader from a file
 //-----------------------------------------------------------------------------
-int Direct3DDevice::CreateShader( const char* szFilename, const char* szEntryPoint, const char* szShaderModel, VertexShader** pShader )
+int Direct3DDevice::CreateShader( VertexShader** pShader, const char* szFilename, const char* szEntryPoint, const char* szShaderModel )
 {
     HRESULT hr = S_OK;
     ID3DBlob*   pShaderBlob = NULL;
 
-    hr = CompileShader( szFilename, szEntryPoint, szShaderModel, &pShaderBlob );
+    if( szFilename && szEntryPoint && szShaderModel )
+    {
+        hr = CompileShader( szFilename, szEntryPoint, szShaderModel, &pShaderBlob );
+    }
+    else
+    {
+        hr = CompileShader( s_szDefaultVertexShaderFile, s_szDefaultVertexShader, s_szDefaultVertexShaderModel, &pShaderBlob );
+    }
 
     // Create the shader
     VertexShader* pNewShader = new VertexShader;
@@ -272,13 +290,19 @@ int Direct3DDevice::CreateShader( const char* szFilename, const char* szEntryPoi
     return hr;
 }
 
-int Direct3DDevice::CreateShader( const char* szFilename, const char* szEntryPoint, const char* szShaderModel, PixelShader** pShader )
-{
-    
+int Direct3DDevice::CreateShader( PixelShader** pShader, const char* szFilename, const char* szEntryPoint, const char* szShaderModel )
+{    
     HRESULT hr = S_OK;
     ID3DBlob*   pShaderBlob = NULL;
 
-    hr = CompileShader( szFilename, szEntryPoint, szShaderModel, &pShaderBlob );
+    if( szFilename && szEntryPoint && szShaderModel )
+    {
+        hr = CompileShader( szFilename, szEntryPoint, szShaderModel, &pShaderBlob );
+    }
+    else
+    {
+        hr = CompileShader( s_szDefaultPixelShaderFile, s_szDefaultPixelShader, s_szDefaultPixelShaderModel, &pShaderBlob );
+    }
 
     // Create the shader
     PixelShader* pNewShader = new PixelShader;
@@ -297,9 +321,8 @@ int Direct3DDevice::CreateShader( const char* szFilename, const char* szEntryPoi
 }
 
 
-int Direct3DDevice::CreateShader( const char* szFilename, const char* szEntryPoint, const char* szShaderModel, GeometryShader** pShader )
-{
-    
+int Direct3DDevice::CreateShader( GeometryShader** pShader, const char* szFilename, const char* szEntryPoint, const char* szShaderModel )
+{    
     HRESULT hr = S_OK;
     ID3DBlob*   pShaderBlob = NULL;
 

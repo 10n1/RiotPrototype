@@ -1,6 +1,7 @@
 #include "VertexShader.h"
 #include "Direct3DDevice.h"
 
+
 VertexShader::VertexShader(void) 
     : m_pVertexShader(NULL)
     , m_pInputLayout(NULL)
