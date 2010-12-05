@@ -1,8 +1,10 @@
+#include "RiotTypes.h"
 #include <iostream>
 
 int main()
 {
-    printf( "Hello world!\n" );
+    uint nTemp = 42;
+    printf( "Hello world! %d\n", nTemp );
 
     return 0;
 }
