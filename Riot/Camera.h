@@ -25,6 +25,8 @@ public:
 
     void Update( float fElapsedTime );
 
+    void KeyInput( CameraKeys Key );
+
     //-----------------------------------------------------------------------------
     //  Accessors
     //-----------------------------------------------------------------------------
@@ -40,5 +42,6 @@ private:
     XMMATRIX m_mProj;
     XMVECTOR m_vEye;
     XMVECTOR m_vLookAt;
-
+    float    m_fDirectionZ;
+    float    m_fDirectionX;
 };
