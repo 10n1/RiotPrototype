@@ -8,34 +8,34 @@ Purpose:        Defining basic types
 //-----------------------------------------------------------------------------
 //    Types
 //-----------------------------------------------------------------------------
-#if defined( WIN32 ) || defined( WIN64 )
-typedef unsigned __int8 byte;
-typedef unsigned __int8 uint8;
-typedef signed __int8 sint8;
-typedef signed __int8 int8;
+#if defined( WIN32 ) || defined( WIN64 ) // TODO: Add a RIOT_WINDOWS define?
+typedef unsigned __int8  byte;
+typedef unsigned __int8  uint8;
+typedef signed   __int8  sint8;
+typedef signed   __int8  int8;
 typedef unsigned __int16 uint16;
-typedef signed __int16 sint16;
-typedef signed __int16 int16;
+typedef signed   __int16 sint16;
+typedef signed   __int16 int16;
 typedef unsigned __int32 uint32;
-typedef signed __int32 sint32;
-typedef signed __int32 int32;
+typedef signed   __int32 sint32;
+typedef signed   __int32 int32;
 typedef unsigned __int64 uint64;
-typedef signed __int64 sint64;
-typedef signed __int64 int64;
+typedef signed   __int64 sint64;
+typedef signed   __int64 int64;
 #else // not defined( WIN32 ) || defined( WIN64 )
-typedef unsigned char byte;
-typedef unsigned char uint8;
-typedef signed char sint8;
-typedef signed char int8;
-typedef unsigned short uint16;
-typedef signed short sint16;
-typedef signed short int16;
-typedef unsigned int uint32;
-typedef signed int sint32;
-typedef signed int int32;
+typedef unsigned char      byte;
+typedef unsigned char      uint8;
+typedef signed   char      sint8;
+typedef signed   char      int8;
+typedef unsigned short     uint16;
+typedef signed   short     sint16;
+typedef signed   short     int16;
+typedef unsigned int       uint32;
+typedef signed   int       sint32;
+typedef signed   int       int32;
 typedef unsigned long long uint64;
-typedef signed long long sint64;
-typedef signed long long int64;
+typedef signed   long long sint64;
+typedef signed   long long int64;
 #endif // defined( WIN32 ) || defined( WIN64 )
 
 typedef uint32 uint;
