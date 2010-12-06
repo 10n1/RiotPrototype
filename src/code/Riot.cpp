@@ -3,6 +3,7 @@ File:       Riot.cpp
 Purpose:    Definition of the main engine
 \*********************************************************/
 #include "Riot.h"
+#include "RiotTimer.h"
 
 Riot::Riot( void )
     : m_hWnd( NULL )
@@ -39,12 +40,15 @@ void Riot::Run( void )
 
     if( nResult != 0 )
     {
-        // TODO: Handle
-        MessageBox( 0, "Could not create window", "Error", 0 );
+        // TODO: Handle/retry
         return;
     }
     //-----------------------------------------------------------------------------
 
+    Timer timer; // TODO: Should the timer be a class member?
+    timer.Reset();
+    float fFPSTime = 0.0f; // TODO: What's the best way to calculate FPS?
+    float fFPS = 0.0f;
     //-----------------------------------------------------------------------------
     for( ;; )
     {
@@ -81,6 +85,16 @@ void Riot::Run( void )
             break;
 
         ++m_nNumFrames;
+        m_fElapsedTime = (float)timer.GetTime();
+        m_fRunningTime += m_fElapsedTime;
+        fFPSTime += m_fElapsedTime;
+        // Calculate FPS every 16 frames
+        if( ( m_nNumFrames & 0xF ) == 0xF )
+        {
+            fFPS = 16.0f / fFPSTime;
+            fFPSTime = 0.0f;
+            printf( "FPS: %f\n", fFPS );
+        }
     }
     //-----------------------------------------------------------------------------
 
@@ -120,6 +134,13 @@ uint Riot::_CreateWindow( uint nWidth, uint nHeight )
         0, 0,                // Parent window, Menu handle
         hInst,               // Instance, void misc
         0 );
+
+    if( m_hWnd == NULL )
+    {
+        // TODO: Handle correctly
+        MessageBox( 0, "CreateWindow failed", "Error", 0 );
+        return 1;
+    }
 
     ShowWindow( m_hWnd, SW_SHOWNORMAL ); // TODO: Don't hardcode the SW_SHOWNORMAL
 

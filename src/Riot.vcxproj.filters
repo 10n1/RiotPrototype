@@ -11,5 +11,6 @@
     <ClInclude Include="include\vector.h" />
     <ClInclude Include="include\IRefCounted.h" />
     <ClInclude Include="include\Riot.h" />
+    <ClInclude Include="include\RiotTimer.h" />
   </ItemGroup>
 </Project>
