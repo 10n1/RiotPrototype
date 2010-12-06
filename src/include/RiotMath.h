@@ -1,6 +1,6 @@
 /*********************************************************\
-File:       vector.h
-Purpose:    STL vector replacement
+File:       RiotMath.h
+Purpose:    Vector and matrices implementations
 \*********************************************************/
 #ifndef _RIOTMATH_H_
 #define _RIOTMATH_H_
