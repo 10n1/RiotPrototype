@@ -36,19 +36,19 @@ template< class T >
 class RiotMatrix3x3
 {
 public:
-    RiotVector3<float> r1;
-    RiotVector3<float> r2;
-    RiotVector3<float> r3;
+    RiotVector3<T> r1;
+    RiotVector3<T> r2;
+    RiotVector3<T> r3;
 };
 
 template< class T >
 class RiotMatrix4x4
 {
 public:
-    RiotVector4<float> r1;
-    RiotVector4<float> r2;
-    RiotVector4<float> r3;
-    RiotVector4<float> r4;
+    RiotVector4<T> r1;
+    RiotVector4<T> r2;
+    RiotVector4<T> r3;
+    RiotVector4<T> r4;
 };
 
 #endif _RIOTMATH_H_
