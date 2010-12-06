@@ -1,5 +1,10 @@
+/*********************************************************\
+File:      main.cpp
+Purpose:   Main entry point for the program
+\*********************************************************/
 #include "RiotTypes.h"
 #include "RiotMemory.h"
+#include "IRefCounted.h"
 #include <iostream>
 
 int main()

@@ -1,7 +1,7 @@
 /*********************************************************\
-File:           RiotMemory.h
-Purpose:        Memory allocation/tracking
-TODO:           Figure out how to do this without size_t
+File:       RiotMemory.h
+Purpose:    Memory allocation/tracking
+TODO:       Figure out how to do this without size_t
 \*********************************************************/
 #ifndef _RIOTMEMORY_H_
 #define _RIOTMEMORY_H_

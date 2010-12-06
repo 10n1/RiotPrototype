@@ -1,6 +1,6 @@
 /*********************************************************\
-File:           RiotTypes.h
-Purpose:        Defining basic types
+File:      RiotTypes.h
+Purpose:   Defining basic types
 \*********************************************************/
 #ifndef _RIOTTYPES_H_
 #define _RIOTTYPES_H_

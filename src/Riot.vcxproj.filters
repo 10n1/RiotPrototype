@@ -8,5 +8,6 @@
     <ClInclude Include="include\RiotMemory.h" />
     <ClInclude Include="include\RiotTypes.h" />
     <ClInclude Include="include\vector.h" />
+    <ClInclude Include="include\IRefCounted.h" />
   </ItemGroup>
 </Project>

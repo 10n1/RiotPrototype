@@ -1,10 +1,9 @@
 /*********************************************************\
-File:           RiotMemory.cpp
-Purpose:        Memory allocation/tracking
+File:       RiotMemory.cpp
+Purpose:    Memory allocation/tracking
 \*********************************************************/
 #include "RiotMemory.h"
 #include "vector.h"
-
 
 //-----------------------------------------------------------------------------
 //    Memory allocation tracking, currently using aligned memory
