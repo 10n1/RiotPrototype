@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\main.cpp" />
+    <ClCompile Include="code\Riot.cpp" />
     <ClCompile Include="code\RiotMemory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\IRefCounted.h" />
+    <ClInclude Include="include\Riot.h" />
     <ClInclude Include="include\RiotMemory.h" />
     <ClInclude Include="include\RiotTypes.h" />
     <ClInclude Include="include\vector.h" />

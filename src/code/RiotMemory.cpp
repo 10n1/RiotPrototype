@@ -70,7 +70,8 @@ void DumpMemoryLeaks(void)
 
         _aligned_free( (void*)g_pAllocations[i].nAddress );
     }
-    sprintf_s( szBuffer, 1024, "Total unfreed: %d bytes\n", nTotalUnfreed ); 
+    sprintf_s( szBuffer, 1024, "Total unfreed: %d bytes\n", nTotalUnfreed );
+
     OutputDebugString(szBuffer);
     OutputDebugString( "-----------------------------------------------------------------------------------------------------\n\n" );
 }

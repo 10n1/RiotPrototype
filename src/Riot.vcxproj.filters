@@ -3,11 +3,13 @@
   <ItemGroup>
     <ClCompile Include="code\main.cpp" />
     <ClCompile Include="code\RiotMemory.cpp" />
+    <ClCompile Include="code\Riot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\RiotMemory.h" />
     <ClInclude Include="include\RiotTypes.h" />
     <ClInclude Include="include\vector.h" />
     <ClInclude Include="include\IRefCounted.h" />
+    <ClInclude Include="include\Riot.h" />
   </ItemGroup>
 </Project>
