@@ -12,5 +12,6 @@
     <ClInclude Include="include\IRefCounted.h" />
     <ClInclude Include="include\Riot.h" />
     <ClInclude Include="include\RiotTimer.h" />
+    <ClInclude Include="include\RiotMath.h" />
   </ItemGroup>
 </Project>
