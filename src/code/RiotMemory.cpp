@@ -71,5 +71,4 @@ void DumpMemoryLeaks(void)
     OutputDebugString( "-----------------------------------------------------------------------------------------------------\n\n" );
 }
 
-
 #endif // #if defined( _DEBUG )

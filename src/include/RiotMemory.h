@@ -48,6 +48,8 @@ inline void _cdecl operator delete[](void* pVoid)
 
 #else // #if notdefined( _DEBUG )
 
+#define DumpMemoryLeaks(x)
+
 inline void* __cdecl operator new(size_t nSize)
 {
     return _aligned_malloc( nSize, 16 );
