@@ -45,6 +45,12 @@ typedef double float64;
 
 typedef void* handle;
 typedef void* pvoid;
+
+#if defined( _M_X64)
+typedef uint32 nativeuint;
+#else // #if not defined( _M_X64)
+typedef uint64 nativeuint;
+#endif // #if defined( _M_X64)
 //-----------------------------------------------------------------------------
 
 
