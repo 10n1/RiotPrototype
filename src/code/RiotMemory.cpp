@@ -56,11 +56,16 @@ void DumpMemoryLeaks(void)
     OutputDebugString( "\n----------------------------------------Dumping Memory Leaks-----------------------------------------\n" );
     for(uint i = 0; i < g_pAllocations.size(); ++i)
     {
-        sprintf_s(  szBuffer, 1024, "%s, Line - %d:\t\tAddress - %d,\t\t%d unfreed\n", 
+#if defined( _M_X64 )
+        sprintf_s(  szBuffer, 1024, "%s, Line - %d:\t\tAddress - 0x%.16X,\t\t%d unfreed\n",
+#else
+        sprintf_s(  szBuffer, 1024, "%s, Line - %d:\t\tAddress - 0x%.8X,\t\t%d unfreed\n",
+#endif //#if defined( _M_X64 ) 
                     g_pAllocations[i].szFile,
                     g_pAllocations[i].nLine,
                     g_pAllocations[i].nAddress,
                     g_pAllocations[i].nSize );
+
         nTotalUnfreed += g_pAllocations[i].nSize;
         OutputDebugString( szBuffer );
 
