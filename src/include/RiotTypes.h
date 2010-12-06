@@ -4,6 +4,7 @@ Purpose:   Defining basic types
 \*********************************************************/
 #ifndef _RIOTTYPES_H_
 #define _RIOTTYPES_H_
+#include "RiotMath.h"
 
 //-----------------------------------------------------------------------------
 //    Types
@@ -81,5 +82,14 @@ typedef uint64 nativeuint;
 #define SAFE_DELETE_ARRAY(p) if(p) { delete [] p; p = NULL; }
 #endif
 //-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+//    Math defines
+//-----------------------------------------------------------------------------
+typedef RiotVector2<float32> float2;
+typedef RiotVector3<float32> float3;
+typedef RiotVector4<float32> float4;
+typedef RiotMatrix3x3<float32> float3x3;
+typedef RiotMatrix4x4<float32> float4x4;
 
 #endif // #ifndef _RIOTTYPES_H_

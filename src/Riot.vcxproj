@@ -26,6 +26,7 @@
   <ItemGroup>
     <ClInclude Include="include\IRefCounted.h" />
     <ClInclude Include="include\Riot.h" />
+    <ClInclude Include="include\RiotMath.h" />
     <ClInclude Include="include\RiotMemory.h" />
     <ClInclude Include="include\RiotTimer.h" />
     <ClInclude Include="include\RiotTypes.h" />
