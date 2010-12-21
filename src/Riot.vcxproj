@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="code\main.cpp" />
     <ClCompile Include="code\Riot.cpp" />
+    <ClCompile Include="code\RiotMath.cpp" />
     <ClCompile Include="code\RiotMemory.cpp" />
   </ItemGroup>
   <ItemGroup>
