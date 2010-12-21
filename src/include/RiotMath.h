@@ -6,6 +6,7 @@ Purpose:    Vector and matrices implementations
 #define _RIOTMATH_H_
 
 #include <math.h>
+#include "RiotTypes.h"
 
 static const float gs_fPi = 3.14159265358979f;
 static const float gs_fPiRecip = (1.0f/gs_fPi);
@@ -15,7 +16,7 @@ static const float gs_fEpsilon = (0.0001f);
 _inline float DegToRad( float fDeg ) { return fDeg * gs_fDegToRad; }
 _inline float RadToDeg( float fRad ) { return fRad * gs_fRadToDeg; }
 
-class Vector2
+class RiotVector2
 {
 public:
     /***************************************\
@@ -27,12 +28,12 @@ public:
         float f[2];
     };
 
-    // Vector2 constructors
-    Vector2() { }
-    Vector2(float X, float Y);
-    Vector2(const Vector2& V);
-    Vector2(const float* F);
-    Vector2& operator=(const Vector2& V);
+    // RiotVector2 constructors
+    RiotVector2() { }
+    RiotVector2(float X, float Y);
+    RiotVector2(const RiotVector2& V);
+    RiotVector2(const float* F);
+    RiotVector2& operator=(const RiotVector2& V);
 
     /***************************************\
     | class methods
@@ -40,45 +41,45 @@ public:
     // Scalar math operations
 
     // Add
-    Vector2 operator+(const Vector2& V) const;
-    Vector2 operator+(float F) const;
-    Vector2& operator+=(const Vector2& V);
-    Vector2& operator+=(float F);
+    RiotVector2 operator+(const RiotVector2& V) const;
+    RiotVector2 operator+(float F) const;
+    RiotVector2& operator+=(const RiotVector2& V);
+    RiotVector2& operator+=(float F);
 
     // Subtract
-    Vector2 operator-(const Vector2& V) const;
-    Vector2 operator-(float F) const;
-    Vector2& operator-=(const Vector2& V);
-    Vector2& operator-=(float F);
+    RiotVector2 operator-(const RiotVector2& V) const;
+    RiotVector2 operator-(float F) const;
+    RiotVector2& operator-=(const RiotVector2& V);
+    RiotVector2& operator-=(float F);
 
     // Multiply and divide
-    Vector2 operator*(float F) const;
-    Vector2& operator*=(float F);
-    Vector2 operator/(float F) const;
-    Vector2& operator/=(float F);
+    RiotVector2 operator*(float F) const;
+    RiotVector2& operator*=(float F);
+    RiotVector2 operator/(float F) const;
+    RiotVector2& operator/=(float F);
 
     // Comparison
-    bool operator==(const Vector2& V) const;
-    bool operator!=(const Vector2& V) const;
+    bool operator==(const RiotVector2& V) const;
+    bool operator!=(const RiotVector2& V) const;
 
     // Vector operations
 
     // Vector-Vector operations
-    float DotProduct(const Vector2& V) const;
+    float DotProduct(const RiotVector2& V) const;
 
     // Misc operations
     float Magnitude(void) const;
     float MagnitudeSquared(void) const;
-    float Distance(const Vector2& V) const;
-    float DistanceSquared(const Vector2& V) const;
+    float Distance(const RiotVector2& V) const;
+    float DistanceSquared(const RiotVector2& V) const;
     void Normalize(void);
     void Zero(void);
 };
 
-float DotProduct(const Vector2& V1, const Vector2& V2);
-float Distance(const Vector2& V1, const Vector2& V2);
-float DistanceSquared(const Vector2& V1, const Vector2& V2);
-Vector2 Normalize(const Vector2& V);
+float DotProduct(const RiotVector2& V1, const RiotVector2& V2);
+float Distance(const RiotVector2& V1, const RiotVector2& V2);
+float DistanceSquared(const RiotVector2& V1, const RiotVector2& V2);
+RiotVector2 Normalize(const RiotVector2& V);
 
 template< class T >
 class RiotVector3

@@ -4,7 +4,6 @@ Purpose:   Defining basic types
 \*********************************************************/
 #ifndef _RIOTTYPES_H_
 #define _RIOTTYPES_H_
-#include "RiotMath.h"
 
 //-----------------------------------------------------------------------------
 //    Types
