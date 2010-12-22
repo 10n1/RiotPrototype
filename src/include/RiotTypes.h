@@ -86,8 +86,8 @@ typedef uint64 nativeuint;
 //    Math defines
 //-----------------------------------------------------------------------------
 //typedef RiotVector2<float32> float2;
-//typedef RiotVector3<float32> float3;
-//typedef RiotVector4<float32> float4;
+//typedef RiotRiotVector3<float32> float3;
+//typedef RiotRiotVector4<float32> float4;
 //typedef RiotMatrix3x3<float32> float3x3;
 //typedef RiotMatrix4x4<float32> float4x4;
 
