@@ -43,6 +43,10 @@ void Riot::Run( void )
         // TODO: Handle/retry
         return;
     }
+
+    // Create the input system
+    m_pInput = new RiotInput;
+
     //-----------------------------------------------------------------------------
 
     Timer timer; // TODO: Should the timer be a class member?
@@ -56,7 +60,9 @@ void Riot::Run( void )
         // pMessageSystem->ProcessMessages();
         // pSceneGraph->StartFrame();
         // pRender->StartFrame();
-
+        m_pInput->PollInput();
+        if( m_pInput->IsKeyDown( VK_ESCAPE ) )
+            m_bRunning = false;
 
         //-------------------------- Frame -------------------------
         // pSceneGraph->Update();
@@ -101,6 +107,7 @@ void Riot::Run( void )
     //-----------------------------------------------------------------------------
     // Cleanup
     //-----------------------------------------------------------------------------
+    SAFE_RELEASE( m_pInput );
 }
 
 //-----------------------------------------------------------------------------
@@ -143,7 +150,7 @@ uint Riot::_CreateWindow( uint nWidth, uint nHeight )
     }
 
     ShowWindow( m_hWnd, SW_SHOWNORMAL ); // TODO: Don't hardcode the SW_SHOWNORMAL
-
+    
     return 0;
 }
 
@@ -181,6 +188,7 @@ LRESULT CALLBACK Riot::_WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lPar
     case WM_KEYDOWN: 
     case WM_SYSKEYDOWN:
         {
+            // TODO: Use this or the GetKeyboardState method?
             switch( wParam )
             {
             // Quit

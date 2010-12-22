@@ -5,6 +5,7 @@
     <ClCompile Include="code\RiotMemory.cpp" />
     <ClCompile Include="code\Riot.cpp" />
     <ClCompile Include="code\RiotMath.cpp" />
+    <ClCompile Include="code\RiotInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\RiotMemory.h" />
@@ -14,5 +15,6 @@
     <ClInclude Include="include\Riot.h" />
     <ClInclude Include="include\RiotTimer.h" />
     <ClInclude Include="include\RiotMath.h" />
+    <ClInclude Include="include\RiotInput.h" />
   </ItemGroup>
 </Project>

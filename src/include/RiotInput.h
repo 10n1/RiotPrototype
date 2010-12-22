@@ -1,57 +1,50 @@
 /*********************************************************\
-File:       Riot.h
-Purpose:    Main header for the Riot engine
+File:       RiotInput.h
+Purpose:    User IO system
 \*********************************************************/
-#ifndef _RIOT_H_
-#define _RIOT_H_
+#ifndef _RIOTINPUT_H_
+#define _RIOTINPUT_H_
 #include "RiotTypes.h"
 #include "RiotMemory.h"
 #include "IRefCounted.h"
-#include "vector.h"
-#include "RiotInput.h"
 
 #if defined( WIN32 ) || defined( WIN64 )
 #include <Windows.h>
 #endif // #if defined( WIN32 ) || defined( WIN64 )
 
-class Riot
+class RiotInput : public IRefCounted
 {
 //---------------------------------------------------------------------------------
 //  Methods
 public:
-    Riot( void );
-    ~Riot( void );
+    RiotInput( void );
+    ~RiotInput( void );
     
     //-----------------------------------------------------------------------------
-    //  Run
-    //  Starts the engine/game. All variables are set programatically
+    //  PollInput
+    //  Gets the current state of the IO devices
     //-----------------------------------------------------------------------------
-    void Run( void );
-private:
-    //-----------------------------------------------------------------------------
-    //  _CreateWindow
-    //  Creates the main window
-    //  TODO: Support multiple windows/views. Eg, the editor
-    //-----------------------------------------------------------------------------
-    uint _CreateWindow( uint nWidth, uint nHeight );
+    void PollInput( void );
 
     //-----------------------------------------------------------------------------
-    //  _WndProc
-    //  Windows message handler
+    //  IsKeyDown
+    //  Returns if the key is down, regardless of previous state
     //-----------------------------------------------------------------------------
-    static LRESULT CALLBACK _WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam);
+    bool IsKeyDown( uint8 nKey );
+    bool IsKeyUp( uint8 nKey );
+
+    //-----------------------------------------------------------------------------
+    //  WasKeyPressed
+    //  Returns if the key was just pressed and isn't held down
+    //-----------------------------------------------------------------------------
+    bool WasKeyPressed( uint8 nKey );
+private:
 
 //---------------------------------------------------------------------------------
 //  Members
 private:
-    uint        m_nNumFrames;
-    float       m_fElapsedTime;
-    float       m_fRunningTime;
-    HWND        m_hWnd;
-    RiotInput*  m_pInput;
-
-    bool        m_bRunning;
+    uint8   m_pKeys[256];
 };
 
-#endif // #ifndef _RIOT_H_
 
+#endif //#ifndef _RIOTINPUT_H_
