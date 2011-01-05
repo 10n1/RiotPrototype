@@ -7,21 +7,21 @@ TODO:      Should some of (most) be split into a .inl
 #include "..\include\RiotMath.h"
 
 /**********************************************************\
-| class RiotVector2
+| class RVector2
 \**********************************************************/
-RiotVector2::RiotVector2(float X, float Y) : x(X), y(Y) 
+RVector2::RVector2(float X, float Y) : x(X), y(Y) 
 { 
 }
 
-RiotVector2::RiotVector2(const RiotVector2& V) : x(V.x), y(V.y)
+RVector2::RVector2(const RVector2& V) : x(V.x), y(V.y)
 { 
 }
 
-RiotVector2::RiotVector2(const float* F) : x(F[0]), y(F[1])
+RVector2::RVector2(const float* F) : x(F[0]), y(F[1])
 { 
 }
 
-RiotVector2& RiotVector2::operator=(const RiotVector2& V)
+RVector2& RVector2::operator=(const RVector2& V)
 {
     x = V.x, y = V.y;
     return *this;
@@ -33,78 +33,78 @@ RiotVector2& RiotVector2::operator=(const RiotVector2& V)
 // Scalar math operations
 
 // Add
-RiotVector2 RiotVector2::operator+(const RiotVector2& V) const
+RVector2 RVector2::operator+(const RVector2& V) const
 { 
-    return RiotVector2( x + V.x, y + V.y);
+    return RVector2( x + V.x, y + V.y);
 }
 
-RiotVector2 RiotVector2::operator+(float F) const 
+RVector2 RVector2::operator+(float F) const 
 { 
-    return RiotVector2( x + F, y + F); 
+    return RVector2( x + F, y + F); 
 }
 
-RiotVector2& RiotVector2::operator+=(const RiotVector2& V) 
+RVector2& RVector2::operator+=(const RVector2& V) 
 { 
     x += V.x, y += V.y; return *this; 
 }
 
-RiotVector2& RiotVector2::operator+=(float F) 
+RVector2& RVector2::operator+=(float F) 
 { 
     x += F, y += F; return *this; 
 }
 
 
 // Subtract
-RiotVector2 RiotVector2::operator-(const RiotVector2& V) const 
+RVector2 RVector2::operator-(const RVector2& V) const 
 { 
-    return RiotVector2( x - V.x, y - V.y); 
+    return RVector2( x - V.x, y - V.y); 
 }
 
-RiotVector2 RiotVector2::operator-(float F) const 
+RVector2 RVector2::operator-(float F) const 
 { 
-    return RiotVector2( x - F, y - F); 
+    return RVector2( x - F, y - F); 
 }
 
-RiotVector2& RiotVector2::operator-=(const RiotVector2& V) 
+RVector2& RVector2::operator-=(const RVector2& V) 
 { 
     x -= V.x, y -= V.y; return *this; 
 }
 
-RiotVector2& RiotVector2::operator-=(float F) 
+RVector2& RVector2::operator-=(float F) 
 { 
     x -= F, y -= F; return *this; 
 }
 
 
 // Multiply and divide
-RiotVector2 RiotVector2::operator*(float F) const 
+RVector2 RVector2::operator*(float F) const 
 { 
-    return RiotVector2( x * F, y * F); 
+    return RVector2( x * F, y * F); 
 }
 
-RiotVector2& RiotVector2::operator*=(float F) 
+RVector2& RVector2::operator*=(float F) 
 { 
     x *= F, y *= F; return *this; 
 }
 
-RiotVector2 RiotVector2::operator/(float F) const 
+RVector2 RVector2::operator/(float F) const 
 { 
-    return RiotVector2( x / F, y / F); 
+    return RVector2( x / F, y / F); 
 }
 
-RiotVector2& RiotVector2::operator/=(float F) 
+RVector2& RVector2::operator/=(float F) 
 { 
     x /= F, y /= F; return *this; 
 }
 
 
 // Comparison
-bool RiotVector2::operator==(const RiotVector2& V) const 
+bool RVector2::operator==(const RVector2& V) const 
 { 
     return (x == V.x && y == V.y); 
 }
 
-bool RiotVector2::operator!=(const RiotVector2& V) const 
+bool RVector2::operator!=(const RVector2& V) const 
 { 
     return !(x == V.x && y == V.y); 
 }
@@ -113,82 +113,82 @@ bool RiotVector2::operator!=(const RiotVector2& V) const
 // Vector operations
 
 // Vector-Vector operations
-float RiotVector2::DotProduct(const RiotVector2& V) const
+float RVector2::DotProduct(const RVector2& V) const
 {
     return x * V.x + y * V.y;
 }
 
 // Misc operations
-float RiotVector2::Magnitude(void) const
+float RVector2::Magnitude(void) const
 {
     return sqrtf(MagnitudeSquared());
 }
 
-float RiotVector2::MagnitudeSquared(void) const
+float RVector2::MagnitudeSquared(void) const
 {
     return x*x + y*y;
 }
 
-float RiotVector2::Distance(const RiotVector2& V) const
+float RVector2::Distance(const RVector2& V) const
 {
     return sqrtf(DistanceSquared(V));
 }
 
-float RiotVector2::DistanceSquared(const RiotVector2& V) const
+float RVector2::DistanceSquared(const RVector2& V) const
 {
-    return RiotVector2(x - V.x, y - V.y).MagnitudeSquared();
+    return RVector2(x - V.x, y - V.y).MagnitudeSquared();
 }
 
-void RiotVector2::Normalize(void)
+void RVector2::Normalize(void)
 {
     *this /= Magnitude();
 }
 
-void RiotVector2::Zero(void)
+void RVector2::Zero(void)
 {
     x = 0.0f, y = 0.0f;
 }
 
 // Non-member functions
-float DotProduct(const RiotVector2& V1, const RiotVector2& V2)
+float DotProduct(const RVector2& V1, const RVector2& V2)
 {
     return V1.DotProduct(V2);
 }
 
-float Distance(const RiotVector2& V1, const RiotVector2& V2)
+float Distance(const RVector2& V1, const RVector2& V2)
 {
     return V1.Distance(V2);
 }
 
-float DistanceSquared(const RiotVector2& V1, const RiotVector2& V2)
+float DistanceSquared(const RVector2& V1, const RVector2& V2)
 {
     return V1.DistanceSquared(V2);
 }
 
-RiotVector2 Normalize(const RiotVector2& V)
+RVector2 Normalize(const RVector2& V)
 {
-    return RiotVector2(V) / V.Magnitude();
+    return RVector2(V) / V.Magnitude();
 }
 
 
 /**********************************************************\
 |**********************************************************|
-| class RiotVector3
+| class RVector3
 |**********************************************************|
 \**********************************************************/
-RiotVector3::RiotVector3(float X, float Y, float Z) : x(X), y(Y), z(Z)
+RVector3::RVector3(float X, float Y, float Z) : x(X), y(Y), z(Z)
 { 
 }
 
-RiotVector3::RiotVector3(const RiotVector3& V) : x(V.x), y(V.y), z(V.z)
+RVector3::RVector3(const RVector3& V) : x(V.x), y(V.y), z(V.z)
 { 
 }
 
-RiotVector3::RiotVector3(const float* F) : x(F[0]), y(F[1]), z(F[2])
+RVector3::RVector3(const float* F) : x(F[0]), y(F[1]), z(F[2])
 { 
 }
 
-RiotVector3& RiotVector3::operator=(const RiotVector3& V)
+RVector3& RVector3::operator=(const RVector3& V)
 {
     x = V.x, y = V.y, z= V.z;
     return *this;
@@ -200,66 +200,66 @@ RiotVector3& RiotVector3::operator=(const RiotVector3& V)
 // Scalar math operations
 
 // Add
-RiotVector3 RiotVector3::operator+(const RiotVector3& V) const
+RVector3 RVector3::operator+(const RVector3& V) const
 { 
-    return RiotVector3( x + V.x, y + V.y, z + V.z); 
+    return RVector3( x + V.x, y + V.y, z + V.z); 
 }
 
-RiotVector3 RiotVector3::operator+(float F) const 
+RVector3 RVector3::operator+(float F) const 
 { 
-    return RiotVector3( x + F, y + F, z + F); 
+    return RVector3( x + F, y + F, z + F); 
 }
 
-RiotVector3& RiotVector3::operator+=(const RiotVector3& V) 
+RVector3& RVector3::operator+=(const RVector3& V) 
 { 
     x += V.x, y += V.y, z += V.z; return *this; 
 }
 
-RiotVector3& RiotVector3::operator+=(float F) 
+RVector3& RVector3::operator+=(float F) 
 { 
     x += F, y += F, z += F; return *this; 
 }
 
 
 // Subtract
-RiotVector3 RiotVector3::operator-(const RiotVector3& V) const
+RVector3 RVector3::operator-(const RVector3& V) const
 { 
-    return RiotVector3( x - V.x, y - V.y, z - V.z); 
+    return RVector3( x - V.x, y - V.y, z - V.z); 
 }
 
-RiotVector3 RiotVector3::operator-(float F) const 
+RVector3 RVector3::operator-(float F) const 
 { 
-    return RiotVector3( x - F, y - F, z - F); 
+    return RVector3( x - F, y - F, z - F); 
 }
 
-RiotVector3& RiotVector3::operator-=(const RiotVector3& V) 
+RVector3& RVector3::operator-=(const RVector3& V) 
 { 
     x -= V.x, y -= V.y, z -= V.z; return *this; 
 }
 
-RiotVector3& RiotVector3::operator-=(float F) 
+RVector3& RVector3::operator-=(float F) 
 { 
     x -= F, y -= F, z -= F; return *this; 
 }
 
 // Multiply and divide
-RiotVector3 RiotVector3::operator*(float F) const 
+RVector3 RVector3::operator*(float F) const 
 { 
-    return RiotVector3( x * F, y * F, z * F); 
+    return RVector3( x * F, y * F, z * F); 
 }
 
-RiotVector3& RiotVector3::operator*=(float F) 
+RVector3& RVector3::operator*=(float F) 
 { 
     x *= F, y *= F, z *= F; return *this; 
 }
 
-RiotVector3 RiotVector3::operator/(float F) const 
+RVector3 RVector3::operator/(float F) const 
 {
     float recip = 1 / F;
-    return RiotVector3( x * recip, y * recip, z * recip);
+    return RVector3( x * recip, y * recip, z * recip);
 }
 
-RiotVector3& RiotVector3::operator/=(float F) 
+RVector3& RVector3::operator/=(float F) 
 { 
     float recip = 1 / F;
     x *= recip, y *= recip, z *= recip; return *this; 
@@ -267,12 +267,12 @@ RiotVector3& RiotVector3::operator/=(float F)
 
 
 // Comparison
-bool RiotVector3::operator==(const RiotVector3& V) const 
+bool RVector3::operator==(const RVector3& V) const 
 { 
     return (x == V.x && y == V.y && z == V.z); 
 }
 
-bool RiotVector3::operator!=(const RiotVector3& V) const 
+bool RVector3::operator!=(const RVector3& V) const 
 { 
     return !(*this == V); 
 }
@@ -281,101 +281,101 @@ bool RiotVector3::operator!=(const RiotVector3& V) const
 // Vector operations
 
 // Vector-Vector operations
-float RiotVector3::DotProduct(const RiotVector3& V) const
+float RVector3::DotProduct(const RVector3& V) const
 {
     return x * V.x + y * V.y + z * V.z;
 }
 
-RiotVector3 RiotVector3::CrossProduct(const RiotVector3& V) const
+RVector3 RVector3::CrossProduct(const RVector3& V) const
 {
     float X = y * V.z - z * V.y;
     float Y = z * V.x - x * V.z;
     float Z = x * V.y - y * V.x;
 
-    return RiotVector3(X, Y, Z);
+    return RVector3(X, Y, Z);
 }
 
 // Misc operations
-float RiotVector3::Magnitude(void) const
+float RVector3::Magnitude(void) const
 {
     return sqrtf(MagnitudeSquared());
 }
 
-float RiotVector3::MagnitudeSquared(void) const
+float RVector3::MagnitudeSquared(void) const
 {
     return x*x + y*y + z*z;
 }
 
-float RiotVector3::Distance(const RiotVector3& V) const
+float RVector3::Distance(const RVector3& V) const
 {
     return sqrtf(DistanceSquared(V));
 }
 
-float RiotVector3::DistanceSquared(const RiotVector3& V) const
+float RVector3::DistanceSquared(const RVector3& V) const
 {
-    return RiotVector3(x - V.x, y - V.y, z - V.z).MagnitudeSquared();
+    return RVector3(x - V.x, y - V.y, z - V.z).MagnitudeSquared();
 }
 
-void RiotVector3::Normalize(void)
+void RVector3::Normalize(void)
 {
     float recip = 1 / Magnitude();
     *this *= recip;
 }
 
-void RiotVector3::Zero(void)
+void RVector3::Zero(void)
 {
     x = 0.0f, y = 0.0f, z = 0.0f;
 }
 
 // Non-member functions
-float DotProduct(const RiotVector3& V1, const RiotVector3& V2)
+float DotProduct(const RVector3& V1, const RVector3& V2)
 {
     return V1.DotProduct(V2);
 }
 
-RiotVector3 CrossProduct(const RiotVector3& V1, const RiotVector3& V2)
+RVector3 CrossProduct(const RVector3& V1, const RVector3& V2)
 {
     return V1.CrossProduct(V2);
 }
 
-float Distance(const RiotVector3& V1, const RiotVector3& V2)
+float Distance(const RVector3& V1, const RVector3& V2)
 {
     return V1.Distance(V2);
 }
 
-float DistanceSquared(const RiotVector3& V1, const RiotVector3& V2)
+float DistanceSquared(const RVector3& V1, const RVector3& V2)
 {
     return V1.DistanceSquared(V2);
 }
 
-RiotVector3 Normalize(const RiotVector3& V)
+RVector3 Normalize(const RVector3& V)
 {
     float recip = 1 / V.Magnitude();
-    return RiotVector3(V) * recip;
+    return RVector3(V) * recip;
 }
 
 /**********************************************************\
 |**********************************************************|
-| class RiotVector4
+| class RVector4
 |**********************************************************|
 \**********************************************************/
-RiotVector4::RiotVector4(float X, float Y, float Z, float W) : x(X), y(Y), z(Z), w(W)
+RVector4::RVector4(float X, float Y, float Z, float W) : x(X), y(Y), z(Z), w(W)
 { 
 }
 
-RiotVector4::RiotVector4(const RiotVector4& V) : x(V.x), y(V.y), z(V.z), w (V.w)
+RVector4::RVector4(const RVector4& V) : x(V.x), y(V.y), z(V.z), w (V.w)
 { 
 }
 
-RiotVector4::RiotVector4(float X, float Y, float Z)  : x(X), y(Y), z(Z), w(0.0f)
+RVector4::RVector4(float X, float Y, float Z)  : x(X), y(Y), z(Z), w(0.0f)
 {
 }
 
-RiotVector4::RiotVector4(const float* F) : x(F[0]), y(F[1]), z(F[2]), w(F[3])
+RVector4::RVector4(const float* F) : x(F[0]), y(F[1]), z(F[2]), w(F[3])
 { 
 }
 
-RiotVector4& RiotVector4::operator=(const RiotVector4& V)
+RVector4& RVector4::operator=(const RVector4& V)
 {
     x = V.x, y = V.y, z= V.z, w = V.w;
     return *this;
@@ -387,23 +387,23 @@ RiotVector4& RiotVector4::operator=(const RiotVector4& V)
 // Scalar math operations
 
 // Add
-RiotVector4 RiotVector4::operator+(const RiotVector4& V) const
+RVector4 RVector4::operator+(const RVector4& V) const
 { 
-    return RiotVector4( x + V.x, y + V.y, z + V.z, w + V.w);
+    return RVector4( x + V.x, y + V.y, z + V.z, w + V.w);
 }
 
-RiotVector4 RiotVector4::operator+(float F) const 
+RVector4 RVector4::operator+(float F) const 
 { 
-    return RiotVector4( x + F, y + F, z + F, w + F); 
+    return RVector4( x + F, y + F, z + F, w + F); 
 }
 
-RiotVector4& RiotVector4::operator+=(const RiotVector4& V) 
+RVector4& RVector4::operator+=(const RVector4& V) 
 { 
     x += V.x, y += V.y, z += V.z, w += V.w; 
     return *this;
 }
 
-RiotVector4& RiotVector4::operator+=(float F) 
+RVector4& RVector4::operator+=(float F) 
 {
     x += F, y += F, z += F, w += F; 
     return *this; 
@@ -411,23 +411,23 @@ RiotVector4& RiotVector4::operator+=(float F)
 
 
 // Subtract
-RiotVector4 RiotVector4::operator-(const RiotVector4& V) const
+RVector4 RVector4::operator-(const RVector4& V) const
 { 
-    return RiotVector4( x - V.x, y - V.y, z - V.z, w - V.w); 
+    return RVector4( x - V.x, y - V.y, z - V.z, w - V.w); 
 }
 
-RiotVector4 RiotVector4::operator-(float F) const 
+RVector4 RVector4::operator-(float F) const 
 { 
-    return RiotVector4( x - F, y - F, z - F, w - F); 
+    return RVector4( x - F, y - F, z - F, w - F); 
 }
 
-RiotVector4& RiotVector4::operator-=(const RiotVector4& V) 
+RVector4& RVector4::operator-=(const RVector4& V) 
 { 
     x -= V.x, y -= V.y, z -= V.z, w -= V.w;
     return *this;
 }
 
-RiotVector4& RiotVector4::operator-=(float F) 
+RVector4& RVector4::operator-=(float F) 
 { 
     x -= F, y -= F, z -= F, w -= F; 
     return *this; 
@@ -435,24 +435,24 @@ RiotVector4& RiotVector4::operator-=(float F)
 
 
 // Multiply and divide
-RiotVector4 RiotVector4::operator*(float F) const 
+RVector4 RVector4::operator*(float F) const 
 { 
-    return RiotVector4( x * F, y * F, z * F, w * F); 
+    return RVector4( x * F, y * F, z * F, w * F); 
 }
 
-RiotVector4& RiotVector4::operator*=(float F) 
+RVector4& RVector4::operator*=(float F) 
 { 
     x *= F, y *= F, z *= F, w *= F; 
     return *this; 
 }
 
-RiotVector4 RiotVector4::operator/(float F) const 
+RVector4 RVector4::operator/(float F) const 
 {
     float recip = 1 / F;
-    return RiotVector4( x * recip, y * recip, z * recip, w * recip);
+    return RVector4( x * recip, y * recip, z * recip, w * recip);
 }
 
-RiotVector4& RiotVector4::operator/=(float F) 
+RVector4& RVector4::operator/=(float F) 
 {
     float recip = 1 / F;
     x *= recip, y *= recip, z *= recip, w *= recip; 
@@ -461,12 +461,12 @@ RiotVector4& RiotVector4::operator/=(float F)
 
 
 // Comparison
-bool RiotVector4::operator==(const RiotVector4& V) const 
+bool RVector4::operator==(const RVector4& V) const 
 { 
     return (x == V.x && y == V.y && z == V.z && w == V.w); 
 }
 
-bool RiotVector4::operator!=(const RiotVector4& V) const 
+bool RVector4::operator!=(const RVector4& V) const 
 { 
     return !(*this == V); 
 }
@@ -475,81 +475,81 @@ bool RiotVector4::operator!=(const RiotVector4& V) const
 // Vector operations
 
 // Vector-Vector operations
-float RiotVector4::DotProduct(const RiotVector4& V) const
+float RVector4::DotProduct(const RVector4& V) const
 {
     return x * V.x + y * V.y + z * V.z + w * V.w;
 }
 
-RiotVector4 RiotVector4::CrossProduct(const RiotVector4& V) const
+RVector4 RVector4::CrossProduct(const RVector4& V) const
 {
     float X = y * V.z - z * V.y;
     float Y = z * V.x - x * V.z;
     float Z = x * V.y - y * V.x;
 
-    return RiotVector4(X, Y, Z, 0.0f);
+    return RVector4(X, Y, Z, 0.0f);
 }
 
 
 // Misc operations
-float RiotVector4::Magnitude(void) const
+float RVector4::Magnitude(void) const
 {
     return sqrtf(MagnitudeSquared());
 }
 
-float RiotVector4::MagnitudeSquared(void) const
+float RVector4::MagnitudeSquared(void) const
 {
     return x*x + y*y + z*z + w*w;
 }
 
-float RiotVector4::Distance(const RiotVector4& V) const
+float RVector4::Distance(const RVector4& V) const
 {
     return sqrtf(DistanceSquared(V));
 }
 
-float RiotVector4::DistanceSquared(const RiotVector4& V) const
+float RVector4::DistanceSquared(const RVector4& V) const
 {
-    return RiotVector4(x - V.x, y - V.y, z - V.z, w - V.w).MagnitudeSquared();
+    return RVector4(x - V.x, y - V.y, z - V.z, w - V.w).MagnitudeSquared();
 }
 
-void RiotVector4::Normalize(void)
+void RVector4::Normalize(void)
 {
     float recip = 1 / Magnitude();
     *this *= recip;
 }
 
-void RiotVector4::Zero(void)
+void RVector4::Zero(void)
 {
     x = 0.0f, y = 0.0f, z = 0.0f, w = 0.0f;
 }
 
 // Non-member functions
-float DotProduct(const RiotVector4& V1, const RiotVector4& V2)
+float DotProduct(const RVector4& V1, const RVector4& V2)
 {
     return V1.DotProduct(V2);
 }
 
-RiotVector4 CrossProduct(const RiotVector4& V1, const RiotVector4& V2)
+RVector4 CrossProduct(const RVector4& V1, const RVector4& V2)
 {
     return V1.CrossProduct(V2);
 }
 
-float Distance(const RiotVector4& V1, const RiotVector4& V2)
+float Distance(const RVector4& V1, const RVector4& V2)
 {
     return V1.Distance(V2);
 }
 
-float DistanceSquared(const RiotVector4& V1, const RiotVector4& V2)
+float DistanceSquared(const RVector4& V1, const RVector4& V2)
 {
     return V1.DistanceSquared(V2);
 }
 
-RiotVector4 Normalize(const RiotVector4& V)
+RVector4 Normalize(const RVector4& V)
 {
     float recip = 1 / V.Magnitude();
-    return RiotVector4(V) * recip;
+    return RVector4(V) * recip;
 }
 
-RiotVector4 RiotVector4Zero() 
+RVector4 RVector4Zero() 
 { 
-    return RiotVector4(0.0f, 0.0f, 0.0f, 0.0f); 
+    return RVector4(0.0f, 0.0f, 0.0f, 0.0f); 
 }
