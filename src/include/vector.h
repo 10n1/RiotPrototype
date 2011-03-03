@@ -4,7 +4,7 @@ Purpose:    STL vector replacement
 \*********************************************************/
 #ifndef _VECTOR_H_
 #define _VECTOR_H_
-#include "RiotTypes.h"
+#include "Types.h"
 #include <stdlib.h>
 
 #ifdef _DEBUG

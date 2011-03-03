@@ -1,8 +1,8 @@
 /*********************************************************\
-File:       RiotInput.cpp
+File:       Input.cpp
 Purpose:    Definition of the input system
 \*********************************************************/
-#include "RiotInput.h"
+#include "Input.h"
 
 RiotInput::RiotInput( )
 {

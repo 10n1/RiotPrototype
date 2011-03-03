@@ -4,11 +4,11 @@ Purpose:    Main header for the Riot engine
 \*********************************************************/
 #ifndef _RIOT_H_
 #define _RIOT_H_
-#include "RiotTypes.h"
-#include "RiotMemory.h"
+#include "Types.h"
+#include "Memory.h"
 #include "IRefCounted.h"
 #include "vector.h"
-#include "RiotInput.h"
+#include "Input.h"
 
 #if defined( WIN32 ) || defined( WIN64 )
 #include <Windows.h>

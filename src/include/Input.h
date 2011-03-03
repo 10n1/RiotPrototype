@@ -1,11 +1,11 @@
 /*********************************************************\
-File:       RiotInput.h
+File:       Input.h
 Purpose:    User IO system
 \*********************************************************/
-#ifndef _RIOTINPUT_H_
-#define _RIOTINPUT_H_
-#include "RiotTypes.h"
-#include "RiotMemory.h"
+#ifndef _INPUT_H_
+#define _INPUT_H_
+#include "Types.h"
+#include "Memory.h"
 #include "IRefCounted.h"
 
 #if defined( WIN32 ) || defined( WIN64 )
@@ -47,4 +47,4 @@ private:
 };
 
 
-#endif //#ifndef _RIOTINPUT_H_
+#endif //#ifndef _INPUT_H_

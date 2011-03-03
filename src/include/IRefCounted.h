@@ -4,7 +4,7 @@ Purpose:    Ref counting interface
 \*********************************************************/
 #ifndef _IREFCOUNTED_H_
 #define _IREFCOUNTED_H_
-#include "RiotTypes.h"
+#include "Types.h"
 
 class IRefCounted
 {

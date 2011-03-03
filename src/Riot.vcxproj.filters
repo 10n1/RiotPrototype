@@ -2,19 +2,19 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="code\main.cpp" />
-    <ClCompile Include="code\RiotMemory.cpp" />
     <ClCompile Include="code\Riot.cpp" />
-    <ClCompile Include="code\RiotMath.cpp" />
-    <ClCompile Include="code\RiotInput.cpp" />
+    <ClCompile Include="code\Input.cpp" />
+    <ClCompile Include="code\Math.cpp" />
+    <ClCompile Include="code\Memory.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\RiotMemory.h" />
-    <ClInclude Include="include\RiotTypes.h" />
     <ClInclude Include="include\vector.h" />
     <ClInclude Include="include\IRefCounted.h" />
     <ClInclude Include="include\Riot.h" />
-    <ClInclude Include="include\RiotTimer.h" />
+    <ClInclude Include="include\Input.h" />
+    <ClInclude Include="include\Memory.h" />
+    <ClInclude Include="include\Types.h" />
+    <ClInclude Include="include\Timer.h" />
     <ClInclude Include="include\RiotMath.h" />
-    <ClInclude Include="include\RiotInput.h" />
   </ItemGroup>
 </Project>

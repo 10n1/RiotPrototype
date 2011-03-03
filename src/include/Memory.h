@@ -1,11 +1,11 @@
 /*********************************************************\
-File:       RiotMemory.h
+File:       Memory.h
 Purpose:    Memory allocation/tracking
 TODO:       Figure out how to do this without size_t
 \*********************************************************/
-#ifndef _RIOTMEMORY_H_
-#define _RIOTMEMORY_H_
-#include "RiotTypes.h"
+#ifndef _MEMORY_H_
+#define _MEMORY_H_
+#include "Types.h"
 #include <memory> // TODO: Is including <memory> too heavyweight?
 
 //-----------------------------------------------------------------------------
@@ -81,4 +81,4 @@ inline void __cdecl operator delete[](void* pVoid)
 #undef CACHEALIGNMENT
 //-----------------------------------------------------------------------------
 
-#endif // #ifndef _RIOTMEMORY_H_
+#endif // #ifndef _MEMORY_H_

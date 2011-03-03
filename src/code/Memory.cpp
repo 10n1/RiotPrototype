@@ -1,8 +1,8 @@
 /*********************************************************\
-File:       RiotMemory.cpp
+File:       Memory.cpp
 Purpose:    Memory allocation/tracking
 \*********************************************************/
-#include "RiotMemory.h"
+#include "Memory.h"
 #include "vector.h"
 
 //-----------------------------------------------------------------------------

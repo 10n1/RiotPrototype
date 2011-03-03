@@ -3,7 +3,7 @@ File:       Riot.cpp
 Purpose:    Definition of the main engine
 \*********************************************************/
 #include "Riot.h"
-#include "RiotTimer.h"
+#include "Timer.h"
 
 Riot::Riot( void )
     : m_hWnd( NULL )
@@ -189,6 +189,7 @@ LRESULT CALLBACK Riot::_WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lPar
     case WM_SYSKEYDOWN:
         {
             // TODO: Use this or the GetKeyboardState method?
+            //       This should be faster, no extra overhead from GetKeyboardState
             switch( wParam )
             {
             // Quit

@@ -1,12 +1,12 @@
 /*********************************************************\
-File:       RiotMath.h
+File:       Math.h
 Purpose:    Vector and matrix implementations
 \*********************************************************/
 #ifndef _RIOTMATH_H_
 #define _RIOTMATH_H_
 
 #include <math.h>
-#include "RiotTypes.h"
+#include "Types.h"
 
 static const float gs_fPi = 3.14159265358979f;
 static const float gs_fPiRecip = (1.0f/gs_fPi);
@@ -239,4 +239,4 @@ RVector4 RVector4Zero(  );
 //    RVector4<T> r4;
 //};
 
-#endif _RIOTMATH_H_
+#endif // #ifndef _RIOTMATH_H_

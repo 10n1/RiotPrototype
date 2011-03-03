@@ -1,9 +1,9 @@
 /*********************************************************\
-File:      RiotTypes.h
+File:      Types.h
 Purpose:   Defining basic types
 \*********************************************************/
-#ifndef _RIOTTYPES_H_
-#define _RIOTTYPES_H_
+#ifndef _TYPES_H_
+#define _TYPES_H_
 
 //-----------------------------------------------------------------------------
 //    Types
@@ -82,4 +82,4 @@ typedef uint64 nativeuint;
 #endif
 //-----------------------------------------------------------------------------
 
-#endif // #ifndef _RIOTTYPES_H_
+#endif // #ifndef _TYPES_H_
