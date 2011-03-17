@@ -7,12 +7,13 @@ Purpose:    Main header for the Riot engine
 #include "Types.h"
 #include "Memory.h"
 #include "IRefCounted.h"
-#include "vector.h"
 #include "Input.h"
 
-#if defined( WIN32 ) || defined( WIN64 )
+#if defined( OS_WINDOWS )
 #include <Windows.h>
 #endif // #if defined( WIN32 ) || defined( WIN64 )
+
+class CWindow;
 
 class Riot
 {
@@ -49,6 +50,7 @@ private:
     float       m_fRunningTime;
     HWND        m_hWnd;
     RiotInput*  m_pInput;
+    CWindow*    m_pMainWindow;
 
     bool        m_bRunning;
 };

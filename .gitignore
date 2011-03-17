@@ -1,7 +1,7 @@
-src/*.opensdf
-src/*.sdf
-src/*.user
-src/bin
-src/ipch
-src/obj
-src/*.suo
+*.opensdf
+*.sdf
+*.user
+bin
+ipch
+obj
+*.suo

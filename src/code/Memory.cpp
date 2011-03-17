@@ -3,77 +3,143 @@ File:       Memory.cpp
 Purpose:    Memory allocation/tracking
 \*********************************************************/
 #include "Memory.h"
-#include "vector.h"
+#include "Types.h"
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h> // For printf
+
+#ifdef DEBUG
+
+void AddAllocation(void* pData, uint nSize, const char* szFile, uint nLine);
+void RemoveAllocation(void* pData);
+
+void* __cdecl operator new( size_t nSize, const char* szFile, unsigned int nLine )
+{
+    void* p = malloc( nSize );
+    // TODO: Handle out of memory error ( p == 0 )
+    AddAllocation( p, (uint)nSize, szFile, nLine );
+    return p;
+};
+void* __cdecl operator new[]( size_t nSize, const char* szFile, unsigned int nLine )
+{
+    void* p = malloc( nSize );
+    // TODO: Handle out of memory error ( p == 0 )
+    AddAllocation( p, (uint)nSize, szFile, nLine );
+    return p;
+};
+void __cdecl operator delete(void* pVoid) throw()
+{
+    RemoveAllocation(pVoid);
+    free(pVoid);
+};
+void __cdecl operator delete[](void* pVoid) throw()
+{
+    RemoveAllocation( pVoid );
+    free( pVoid );
+};
 
 //-----------------------------------------------------------------------------
-//    Memory allocation tracking, currently using aligned memory
+//    Memory allocation tracking
 //-----------------------------------------------------------------------------
-#if defined( _DEBUG )
 struct MemoryAllocation
 {
     char        szFile[128];
-    nativeuint  nAddress;
     uint        nSize;
     uint        nLine;
+    nativeuint  nAddress;
 };
 
 // Define vector to hold allocations
-#include "vector.h"
-static vector<MemoryAllocation> g_pAllocations;
-
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h> // For OutputDebugString
+static MemoryAllocation g_pAllocations[512];
+static uint g_nCurrentAllocations = 0;
+static uint g_nCurrentMemoryUsage = 0;
+static uint g_nMaxMemoryAllocatedAtOnce = 0;
+static uint g_nTotalMemoryAllocated = 0;
 
 
 void AddAllocation(void* pData, uint nSize, const char* szFile, uint nLine)
 {
     MemoryAllocation allocation;
-    allocation.nAddress = (nativeuint)pData;
+    allocation.nAddress = (nativeuint)(pData);
     allocation.nSize = nSize;
-    memcpy_s(allocation.szFile, 128, szFile, strlen(szFile)+1);
+    strcpy(allocation.szFile, szFile);
     allocation.nLine = nLine;
-    g_pAllocations.push_back(allocation);
+
+    g_pAllocations[g_nCurrentAllocations++] = allocation;
+    
+    g_nCurrentMemoryUsage += nSize;
+    g_nTotalMemoryAllocated += nSize;
+    g_nMaxMemoryAllocatedAtOnce = ( g_nCurrentMemoryUsage > g_nMaxMemoryAllocatedAtOnce ) ? g_nCurrentMemoryUsage : g_nMaxMemoryAllocatedAtOnce;
 }
 
 void RemoveAllocation(void* pData)
 {
-    nativeuint nAddress = (nativeuint)pData;
-    for(uint i = 0; i < g_pAllocations.size(); ++i)
+    nativeuint nAddress = (nativeuint)(pData);
+    for(uint i = 0; i < g_nCurrentAllocations; ++i)
     {
         if(g_pAllocations[i].nAddress == nAddress)
         {
-            g_pAllocations.quick_erase(i);
+            g_nCurrentMemoryUsage -= g_pAllocations[i].nSize;
+            g_pAllocations[i] = g_pAllocations[--g_nCurrentAllocations];
             break;
         }
     }
 }
 
-void DumpMemoryLeaks(void)
+void __cdecl DumpMemoryLeaks(void)
 {
     char szBuffer[1024] = { 0 };
-    uint nTotalUnfreed = 0;
-    OutputDebugString( "\n----------------------------------------Dumping Memory Leaks-----------------------------------------\n" );
-    for(uint i = 0; i < g_pAllocations.size(); ++i)
+    uint nTotalUnfreed = 0;    
+    printf( "\n----------------------------------------Dumping Memory Leaks-----------------------------------------\n" );
+    for(uint i = 0; i < g_nCurrentAllocations; ++i)
     {
-#if defined( _M_X64 )
-        sprintf_s(  szBuffer, 1024, "%s, Line - %d:\t\tAddress - 0x%.16X,\t\t%d unfreed\n",
+#if defined( COSMOS_64BIT )
+        sprintf( szBuffer, "%s, Line - %d:\t\tAddress - 0x%.16llu,\t\t%d unfreed\n",
 #else
-        sprintf_s(  szBuffer, 1024, "%s, Line - %d:\t\tAddress - 0x%.8X,\t\t%d unfreed\n",
-#endif //#if defined( _M_X64 ) 
+        sprintf( szBuffer, "%s, Line - %d:\t\tAddress - 0x%.8X,\t\t% ba d unfreed\n",
+#endif //#if defined( COSMOS_64BIT )
                     g_pAllocations[i].szFile,
                     g_pAllocations[i].nLine,
                     g_pAllocations[i].nAddress,
                     g_pAllocations[i].nSize );
 
         nTotalUnfreed += g_pAllocations[i].nSize;
-        OutputDebugString( szBuffer );
 
-        _aligned_free( (void*)g_pAllocations[i].nAddress );
+        free( (void*)g_pAllocations[i].nAddress );
+
+        printf( szBuffer );
     }
-    sprintf_s( szBuffer, 1024, "Total unfreed: %d bytes\n", nTotalUnfreed );
+    sprintf( szBuffer, "Total unfreed: %d bytes\n\n", nTotalUnfreed );
+    printf( szBuffer );
 
-    OutputDebugString(szBuffer);
-    OutputDebugString( "-----------------------------------------------------------------------------------------------------\n\n" );
+    sprintf( szBuffer, "Total Memory Allocated:\t\t%d\n", g_nTotalMemoryAllocated );
+    printf( szBuffer );
+    sprintf( szBuffer, "Max Memory Allocated at Once:\t%d\n", g_nMaxMemoryAllocatedAtOnce );
+    printf( szBuffer );
+    printf( "\n-----------------------------------------------------------------------------------------------------\n" );
 }
 
-#endif // #if defined( _DEBUG )
+#else // #if notdefined( _DEBUG )
+
+void* __cdecl operator new(size_t nSize)
+{
+    return malloc( nSize );
+};
+
+void* __cdecl operator new[](size_t nSize)
+{
+    return malloc( nSize );
+};
+
+void __cdecl operator delete(void* pVoid) throw()
+{
+    free( pVoid );
+};
+
+void __cdecl operator delete[](void* pVoid) throw()
+{
+    free( pVoid );
+};
+
+#endif // #ifdef debug
+

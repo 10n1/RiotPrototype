@@ -4,6 +4,8 @@ Purpose:    Definition of the main engine
 \*********************************************************/
 #include "Riot.h"
 #include "Timer.h"
+#include <stdio.h> // For printf
+#include "Window.h"
 
 Riot::Riot( void )
     : m_hWnd( NULL )
