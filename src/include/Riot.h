@@ -9,9 +9,6 @@ Purpose:    Main header for the Riot engine
 #include "IRefCounted.h"
 #include "Input.h"
 
-#if defined( OS_WINDOWS )
-#include <Windows.h>
-#endif // #if defined( WIN32 ) || defined( WIN64 )
 
 class CWindow;
 
@@ -48,7 +45,6 @@ private:
     uint        m_nNumFrames;
     float       m_fElapsedTime;
     float       m_fRunningTime;
-    HWND        m_hWnd;
     RiotInput*  m_pInput;
     CWindow*    m_pMainWindow;
 

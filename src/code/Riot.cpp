@@ -8,16 +8,15 @@ Purpose:    Definition of the main engine
 #include "Window.h"
 
 #if defined( OS_WINDOWS )
-#include <PlatformDependent\Win32Window.h>
+#include "PlatformDependent\Win32Window.h"
 #elif defined( OS_OSX )
-#include <PlatformDependent\OSXWindow.h>
+#include "PlatformDependent\OSXWindow.h"
 #elif defined( OS_LINUX )
-#include <PlatformDependent\LinuxWindow.h>
+#include "PlatformDependent\LinuxWindow.h"
 #endif
 
 Riot::Riot( void )
-    : m_hWnd( NULL )
-    , m_pMainWindow( NULL )
+    : m_pMainWindow( NULL )
     , m_bRunning( true )
     , m_nNumFrames( 0 )
     , m_fElapsedTime( 0.0f )
@@ -69,7 +68,7 @@ void Riot::Run( void )
     float fFPSTime = 0.0f; // TODO: What's the best way to calculate FPS?
     float fFPS = 0.0f;
     //-----------------------------------------------------------------------------
-    for( ;; )
+    while( m_bRunning )
     {
         //---------------------- Start of frame --------------------
         // pMessageSystem->ProcessMessages();
@@ -93,16 +92,13 @@ void Riot::Run( void )
         // Perform system messaging
         m_pMainWindow->ProcessMessages();
 
-        // Make sure its still running
-        if( m_bRunning != true )
-            break;
-
+        // Perform timing
         ++m_nNumFrames;
         m_fElapsedTime = (float)timer.GetTime();
         m_fRunningTime += m_fElapsedTime;
         fFPSTime += m_fElapsedTime;
         // Calculate FPS every 16 frames
-        if( ( m_nNumFrames & 0xF ) == 0xF )
+        if( ( m_nNumFrames & 0xF ) == 0x0 )
         {
             fFPS = 16.0f / fFPSTime;
             fFPSTime = 0.0f;
