@@ -30,6 +30,12 @@ public:
     //  Processes system messages
     //-----------------------------------------------------------------------------
     virtual void ProcessMessages( void ) = 0;
+
+    //-----------------------------------------------------------------------------
+    //  GetSystemWindow
+    //  Returns the system window
+    //-----------------------------------------------------------------------------
+    handle GetSystemWindow( void );
 private:
     /***************************************\
     | class members                         |

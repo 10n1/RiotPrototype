@@ -9,6 +9,7 @@ Purpose:    Definition of the main engine
 
 Riot::Riot( void )
     : m_hWnd( NULL )
+    , m_pMainWindow( NULL )
     , m_bRunning( true )
     , m_nNumFrames( 0 )
     , m_fElapsedTime( 0.0f )
