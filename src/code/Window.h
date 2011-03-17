@@ -6,8 +6,9 @@ Purpose:    Abstration for creating a platform-independent
 #ifndef _WINDOW_H_
 #define _WINDOW_H_
 #include "Types.h"
+#include "IRefCounted.h"
 
-class CWindow
+class CWindow : public IRefCounted
 {
 public:
     // CWindow constructor
@@ -36,7 +37,7 @@ public:
     //  Returns the system window
     //-----------------------------------------------------------------------------
     handle GetSystemWindow( void );
-private:
+protected:
     /***************************************\
     | class members                         |
     \***************************************/

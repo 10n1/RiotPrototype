@@ -7,6 +7,14 @@ Purpose:    Definition of the main engine
 #include <stdio.h> // For printf
 #include "Window.h"
 
+#if defined( OS_WINDOWS )
+#include <PlatformDependent\Win32Window.h>
+#elif defined( OS_OSX )
+#include <PlatformDependent\OSXWindow.h>
+#elif defined( OS_LINUX )
+#include <PlatformDependent\LinuxWindow.h>
+#endif
+
 Riot::Riot( void )
     : m_hWnd( NULL )
     , m_pMainWindow( NULL )
@@ -34,21 +42,25 @@ void Riot::Run( void )
     uint nResult = 0;
     //-----------------------------------------------------------------------------
     // Initialization
-    // Parse command line
+    // TODO: Parse command line
 
     // Create window
     uint nWindowWidth = 1024,
          nWindowHeight = 768; // TODO: Read in from file
-    nResult = _CreateWindow( nWindowWidth, nWindowHeight );
 
-    if( nResult != 0 )
-    {
-        // TODO: Handle/retry
-        return;
-    }
+    // Create the new window object...
+#if defined( OS_WINDOWS )
+    m_pMainWindow = new CWin32Window();
+#elif defined( OS_OSX )
+    m_pMainWindow = new COSXWindow();
+#elif defined( OS_LINUX )
+    m_pMainWindow = new CLinuxWindow();
+#endif
+    // ...then create the actual window
+    m_pMainWindow->CreateMainWindow( nWindowWidth, nWindowHeight );
 
     // Create the input system
-    m_pInput = new RiotInput;
+    m_pInput = new RiotInput();
 
     //-----------------------------------------------------------------------------
 
@@ -78,16 +90,8 @@ void Riot::Run( void )
 
 
         //----------------------------------------------------------
-        // Perform Windows messaging
-        MSG msg = { 0 };
-        if( PeekMessage( &msg, 0, 0, 0, PM_REMOVE ) )
-        {
-            if( msg.message == WM_QUIT )
-                m_bRunning = false;
-
-            TranslateMessage( &msg );
-            DispatchMessage( &msg );
-        }
+        // Perform system messaging
+        m_pMainWindow->ProcessMessages();
 
         // Make sure its still running
         if( m_bRunning != true )
@@ -110,108 +114,6 @@ void Riot::Run( void )
     //-----------------------------------------------------------------------------
     // Cleanup
     //-----------------------------------------------------------------------------
+    SAFE_RELEASE( m_pMainWindow );
     SAFE_RELEASE( m_pInput );
-}
-
-//-----------------------------------------------------------------------------
-//  _CreateWindow
-//  Creates the main window
-//  TODO: Support multiple windows/views. Eg, the editor
-//-----------------------------------------------------------------------------
-uint Riot::_CreateWindow( uint nWidth, uint nHeight )
-{
-    char szName[] = "Riot"; // TODO: Don't hardcode
-    /////////////////////////////////////
-    // Create and register the class
-    HINSTANCE hInst = GetModuleHandle( NULL );
-    WNDCLASS wndClass;
-    memset(&wndClass, 0, sizeof(wndClass));
-    wndClass.lpfnWndProc    = Riot::_WndProc;
-    wndClass.hInstance      = hInst;
-    wndClass.hCursor        = LoadCursor(0, IDC_ARROW);
-    wndClass.lpszClassName  = szName;
-    wndClass.style          = CS_HREDRAW | CS_VREDRAW;
-
-    RegisterClass(&wndClass);
-
-    /////////////////////////////////////
-    // Create and show the window
-    m_hWnd = CreateWindow(
-        szName, szName,      // Class and window name
-        WS_OVERLAPPEDWINDOW, // Window style
-        0, 0,                // X, Y position
-        nWidth, nHeight,     // Width and height (border width 16 and 38)
-        0, 0,                // Parent window, Menu handle
-        hInst,               // Instance, void misc
-        0 );
-
-    if( m_hWnd == NULL )
-    {
-        // TODO: Handle correctly
-        MessageBox( 0, "CreateWindow failed", "Error", 0 );
-        return 1;
-    }
-
-    ShowWindow( m_hWnd, SW_SHOWNORMAL ); // TODO: Don't hardcode the SW_SHOWNORMAL
-    
-    return 0;
-}
-
-//-----------------------------------------------------------------------------
-//  _WndProc
-//  Windows message handler
-//-----------------------------------------------------------------------------
-LRESULT CALLBACK Riot::_WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch(nMsg)
-    {
-    case WM_CREATE:
-        {
-            return 0;
-        }
-    case WM_CLOSE:
-        {
-            PostQuitMessage(0);
-            return 0;
-        }
-    case WM_DESTROY:
-        {
-            PostQuitMessage(0);
-            return 0;
-        }
-    case WM_SIZE:
-        {
-            RECT rcClient;
-            GetClientRect( hWnd, &rcClient );
-            unsigned int nWidth = rcClient.right - rcClient.left;
-            unsigned int nHeight = rcClient.bottom - rcClient.top;
-            
-            return 0;
-        }
-    case WM_KEYDOWN: 
-    case WM_SYSKEYDOWN:
-        {
-            // TODO: Use this or the GetKeyboardState method?
-            //       This should be faster, no extra overhead from GetKeyboardState
-            switch( wParam )
-            {
-            // Quit
-            case VK_ESCAPE:
-                {
-                    PostQuitMessage(0);
-                }
-            }
-            return 0;
-        }
-
-    case WM_KEYUP:
-    case WM_SYSKEYUP:
-        {
-            break;
-        }
-    default:
-        return DefWindowProc(hWnd, nMsg, wParam, lParam);
-    }
-
-    return DefWindowProc(hWnd, nMsg, wParam, lParam);
 }

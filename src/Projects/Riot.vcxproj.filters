@@ -7,6 +7,7 @@
     <ClCompile Include="..\code\Memory.cpp" />
     <ClCompile Include="..\code\Riot.cpp" />
     <ClCompile Include="..\code\Window.cpp" />
+    <ClCompile Include="..\PlatformDependent\Win32Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Input.h" />
@@ -17,5 +18,6 @@
     <ClInclude Include="..\include\Timer.h" />
     <ClInclude Include="..\include\Types.h" />
     <ClInclude Include="..\code\Window.h" />
+    <ClInclude Include="..\PlatformDependent\Win32Window.h" />
   </ItemGroup>
 </Project>
