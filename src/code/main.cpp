@@ -6,9 +6,13 @@ Purpose:   Main entry point for the program
 
 int main()
 {
-    Riot pEngine;
-
-    pEngine.Run();
-
+    //////////////////////////////////////////
+    // Make sure Shutdown is the last thing called
+    atexit( Riot::Shutdown );
+    
+    //////////////////////////////////////////
+    // Run the game
+    Riot::Run();
+    
     return 0;
 }

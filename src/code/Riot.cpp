@@ -15,22 +15,13 @@ Purpose:    Definition of the main engine
 #include "PlatformDependent\LinuxWindow.h"
 #endif
 
-Riot::Riot( void )
-    : m_pMainWindow( NULL )
-    , m_bRunning( true )
-    , m_nNumFrames( 0 )
-    , m_fElapsedTime( 0.0f )
-    , m_fRunningTime( 0.0f )
-{
-}
+uint        Riot::m_nFrameCount     = 0;
+float       Riot::m_fElapsedTime    = 0.0f;
+float       Riot::m_fRunningTime    = 0.0f;
+RiotInput*  Riot::m_pInput          = NULL;
+CWindow*    Riot::m_pMainWindow     = NULL;
 
-Riot::~Riot( void )
-{
-
-    ////////////////////////////////////////////
-    // NO CODE BELOW THIS LINE
-    DumpMemoryLeaks();
-}
+bool        Riot::m_bRunning        = true;
     
 //-----------------------------------------------------------------------------
 //  Run
@@ -93,12 +84,12 @@ void Riot::Run( void )
         m_pMainWindow->ProcessMessages();
 
         // Perform timing
-        ++m_nNumFrames;
+        ++m_nFrameCount;
         m_fElapsedTime = (float)timer.GetTime();
         m_fRunningTime += m_fElapsedTime;
         fFPSTime += m_fElapsedTime;
         // Calculate FPS every 16 frames
-        if( ( m_nNumFrames & 0xF ) == 0x0 )
+        if( ( m_nFrameCount & 0xF ) == 0x0 )
         {
             fFPS = 16.0f / fFPSTime;
             fFPSTime = 0.0f;
@@ -110,6 +101,18 @@ void Riot::Run( void )
     //-----------------------------------------------------------------------------
     // Cleanup
     //-----------------------------------------------------------------------------
+}
+
+//-----------------------------------------------------------------------------
+//  Shutdown
+//  Shuts down and cleans up the engine
+//-----------------------------------------------------------------------------
+void Riot::Shutdown( void )
+{    
     SAFE_RELEASE( m_pMainWindow );
     SAFE_RELEASE( m_pInput );
+
+    //////////////////////////////////////////
+    // This is the last thing called
+    DumpMemoryLeaks( );
 }

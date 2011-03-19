@@ -16,39 +16,30 @@ class Riot
 {
 //---------------------------------------------------------------------------------
 //  Methods
-public:
-    Riot( void );
-    ~Riot( void );
-    
+public:    
     //-----------------------------------------------------------------------------
     //  Run
     //  Starts the engine/game. All variables are set programatically
     //-----------------------------------------------------------------------------
-    void Run( void );
-private:
-    //-----------------------------------------------------------------------------
-    //  _CreateWindow
-    //  Creates the main window
-    //  TODO: Support multiple windows/views. Eg, the editor
-    //-----------------------------------------------------------------------------
-    uint _CreateWindow( uint nWidth, uint nHeight );
+    static void Run( void );
 
     //-----------------------------------------------------------------------------
-    //  _WndProc
-    //  Windows message handler
+    //  Shutdown
+    //  Shuts down and cleans up the engine
     //-----------------------------------------------------------------------------
-    static LRESULT CALLBACK _WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam);
+    static void Shutdown( void );
+private:
 
 //---------------------------------------------------------------------------------
 //  Members
 private:
-    uint        m_nNumFrames;
-    float       m_fElapsedTime;
-    float       m_fRunningTime;
-    RiotInput*  m_pInput;
-    CWindow*    m_pMainWindow;
+    static uint        m_nFrameCount;
+    static float       m_fElapsedTime;
+    static float       m_fRunningTime;
+    static RiotInput*  m_pInput;
+    static CWindow*    m_pMainWindow;
 
-    bool        m_bRunning;
+    static bool        m_bRunning;
 };
 
 #endif // #ifndef _RIOT_H_
