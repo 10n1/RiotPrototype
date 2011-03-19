@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\code\architecture.cpp" />
     <ClCompile Include="..\code\Input.cpp" />
     <ClCompile Include="..\code\main.cpp" />
     <ClCompile Include="..\code\Math.cpp" />

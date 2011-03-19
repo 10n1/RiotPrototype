@@ -8,6 +8,7 @@
     <ClCompile Include="..\code\Riot.cpp" />
     <ClCompile Include="..\code\Window.cpp" />
     <ClCompile Include="..\PlatformDependent\Win32Window.cpp" />
+    <ClCompile Include="..\code\architecture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Input.h" />
