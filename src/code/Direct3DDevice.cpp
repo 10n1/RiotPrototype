@@ -2,7 +2,7 @@
 File:           Direct3DDevice.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 4:51:58 PM
+Modified:       3/19/2011 4:58:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Direct3DDevice.h"
@@ -212,7 +212,7 @@ void CDirect3DDevice::CreateBuffers( uint nWidth, uint nHeight )
 
     //////////////////////////////////////////////
     // Set the new targets
-    m_pContext->OMSetRenderTargets( 2, &m_pRenderTargetView, m_pDepthStencilView );
+    m_pContext->OMSetRenderTargets( 1, &m_pRenderTargetView, m_pDepthStencilView );
 
     //////////////////////////////////////////////
     // Set up the view port
