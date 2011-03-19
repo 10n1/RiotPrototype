@@ -5,3 +5,4 @@ bin
 ipch
 obj
 *.suo
+*.DS_Store
