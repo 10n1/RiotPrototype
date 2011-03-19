@@ -9,6 +9,8 @@
     <ClCompile Include="..\code\Window.cpp" />
     <ClCompile Include="..\PlatformDependent\Win32Window.cpp" />
     <ClCompile Include="..\code\architecture.cpp" />
+    <ClCompile Include="..\code\GraphicsDevice.cpp" />
+    <ClCompile Include="..\code\Direct3DDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Input.h" />
@@ -20,5 +22,7 @@
     <ClInclude Include="..\include\Types.h" />
     <ClInclude Include="..\code\Window.h" />
     <ClInclude Include="..\PlatformDependent\Win32Window.h" />
+    <ClInclude Include="..\code\GraphicsDevice.h" />
+    <ClInclude Include="..\code\Direct3DDevice.h" />
   </ItemGroup>
 </Project>

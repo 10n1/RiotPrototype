@@ -4,6 +4,7 @@ Purpose:    Creating windows on Windows
 \*********************************************************/
 #include "Win32Window.h"
 #include <Windows.h>
+#include "Memory.h"
 
 //////////////////////////////////////////
 // Define this here rather than the header

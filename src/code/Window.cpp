@@ -20,3 +20,13 @@ handle CWindow::GetSystemWindow( void )
 {
     return m_pSystemWindow;
 }
+
+uint CWindow::GetWidth( void )
+{
+    return m_nWidth;
+}
+
+uint CWindow::GetHeight( void )
+{
+    return m_nHeight;
+}

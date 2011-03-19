@@ -33,10 +33,11 @@ public:
     virtual void ProcessMessages( void ) = 0;
 
     //-----------------------------------------------------------------------------
-    //  GetSystemWindow
-    //  Returns the system window
+    //  Accessors/Mutators
     //-----------------------------------------------------------------------------
     handle GetSystemWindow( void );
+    uint   GetWidth( void );
+    uint   GetHeight( void );
 protected:
     /***************************************\
     | class members                         |

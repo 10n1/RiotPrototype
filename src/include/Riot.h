@@ -11,6 +11,7 @@ Purpose:    Main header for the Riot engine
 
 
 class CWindow;
+class CGraphicsDevice;
 
 class Riot
 {
@@ -29,17 +30,23 @@ public:
     //-----------------------------------------------------------------------------
     static void Shutdown( void );
 private:
+    //-----------------------------------------------------------------------------
+    //  Initialize
+    //  Initializes the engine. This is called from Run
+    //-----------------------------------------------------------------------------
+    static void Initialize( void );
 
 //---------------------------------------------------------------------------------
 //  Members
 private:
-    static uint        m_nFrameCount;
-    static float       m_fElapsedTime;
-    static float       m_fRunningTime;
-    static RiotInput*  m_pInput;
-    static CWindow*    m_pMainWindow;
+    static uint             m_nFrameCount;
+    static float            m_fElapsedTime;
+    static float            m_fRunningTime;
+    static RiotInput*       m_pInput;
+    static CWindow*         m_pMainWindow;
+    static CGraphicsDevice* m_pGraphicsDevice;
 
-    static bool        m_bRunning;
+    static bool             m_bRunning;
 };
 
 #endif // #ifndef _RIOT_H_

@@ -93,11 +93,11 @@ void __cdecl DumpMemoryLeaks(void)
     printf( "\n----------------------------------------Dumping Memory Leaks-----------------------------------------\n" );
     for(uint i = 0; i < g_nCurrentAllocations; ++i)
     {
-#if defined( COSMOS_64BIT )
+#if defined( _64BIT )
         sprintf( szBuffer, "%s, Line - %d:\t\tAddress - 0x%.16llu,\t\t%d unfreed\n",
 #else
         sprintf( szBuffer, "%s, Line - %d:\t\tAddress - 0x%.8X,\t\t% ba d unfreed\n",
-#endif //#if defined( COSMOS_64BIT )
+#endif //#if defined( _64BIT )
                     g_pAllocations[i].szFile,
                     g_pAllocations[i].nLine,
                     g_pAllocations[i].nAddress,

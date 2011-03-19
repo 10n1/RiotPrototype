@@ -6,22 +6,28 @@ Purpose:    Definition of the main engine
 #include "Timer.h"
 #include <stdio.h> // For printf
 #include "Window.h"
+#include "GraphicsDevice.h"
 
 #if defined( OS_WINDOWS )
 #include "PlatformDependent\Win32Window.h"
+#include "Direct3DDevice.h"
+//#include "OpenGLDevice.h"
 #elif defined( OS_OSX )
 #include "PlatformDependent\OSXWindow.h"
+#include "OpenGLDevice.h"
 #elif defined( OS_LINUX )
 #include "PlatformDependent\LinuxWindow.h"
+#include "OpenGLDevice.h"
 #endif
 
-uint        Riot::m_nFrameCount     = 0;
-float       Riot::m_fElapsedTime    = 0.0f;
-float       Riot::m_fRunningTime    = 0.0f;
-RiotInput*  Riot::m_pInput          = NULL;
-CWindow*    Riot::m_pMainWindow     = NULL;
+uint                Riot::m_nFrameCount     = 0;
+float               Riot::m_fElapsedTime    = 0.0f;
+float               Riot::m_fRunningTime    = 0.0f;
+RiotInput*          Riot::m_pInput          = NULL;
+CWindow*            Riot::m_pMainWindow     = NULL;
+CGraphicsDevice*    Riot::m_pGraphicsDevice = NULL;
 
-bool        Riot::m_bRunning        = true;
+bool                Riot::m_bRunning        = true;
     
 //-----------------------------------------------------------------------------
 //  Run
@@ -29,29 +35,10 @@ bool        Riot::m_bRunning        = true;
 //-----------------------------------------------------------------------------
 void Riot::Run( void )
 {
-    uint nResult = 0;
     //-----------------------------------------------------------------------------
     // Initialization
     // TODO: Parse command line
-
-    // Create window
-    uint nWindowWidth = 1024,
-         nWindowHeight = 768; // TODO: Read in from file
-
-    // Create the new window object...
-#if defined( OS_WINDOWS )
-    m_pMainWindow = new CWin32Window();
-#elif defined( OS_OSX )
-    m_pMainWindow = new COSXWindow();
-#elif defined( OS_LINUX )
-    m_pMainWindow = new CLinuxWindow();
-#endif
-    // ...then create the actual window
-    m_pMainWindow->CreateMainWindow( nWindowWidth, nWindowHeight );
-
-    // Create the input system
-    m_pInput = new RiotInput();
-
+    Initialize();
     //-----------------------------------------------------------------------------
 
     Timer timer; // TODO: Should the timer be a class member?
@@ -73,13 +60,12 @@ void Riot::Run( void )
         // pSceneGraph->Update();
 
 
+        m_pGraphicsDevice->PrepareRender();
+        // pSceneGraph->GetRenderObjects();
+        m_pGraphicsDevice->Render();
+        m_pGraphicsDevice->Present();
+
         //----------------------- End of frame ---------------------
-        // pSceneGraph->EndFrame()
-        // pRender->EndFrame();
-
-
-
-        //----------------------------------------------------------
         // Perform system messaging
         m_pMainWindow->ProcessMessages();
 
@@ -104,11 +90,42 @@ void Riot::Run( void )
 }
 
 //-----------------------------------------------------------------------------
+//  Initialize
+//  Initializes the engine. This is called from Run
+//-----------------------------------------------------------------------------
+void Riot::Initialize( void )
+{
+    // Create window
+    uint nWindowWidth = 1024,
+         nWindowHeight = 768; // TODO: Read in from file
+
+    // Create the new window object...
+#if defined( OS_WINDOWS )
+    m_pMainWindow = new CWin32Window();
+    m_pGraphicsDevice = new CDirect3DDevice();
+#elif defined( OS_OSX )
+    m_pMainWindow = new COSXWindow();
+    m_pGraphicsDevice = new COpenGLDevice();
+#elif defined( OS_LINUX )
+    m_pMainWindow = new CLinuxWindow();
+    m_pGraphicsDevice = new COpenGLDevice();
+#endif
+    // ...then create the actual window
+    m_pMainWindow->CreateMainWindow( nWindowWidth, nWindowHeight );
+    // ...and finally the graphics device
+    m_pGraphicsDevice->CreateDevice( m_pMainWindow );
+
+    // Create the input system
+    m_pInput = new RiotInput();
+}
+
+//-----------------------------------------------------------------------------
 //  Shutdown
 //  Shuts down and cleans up the engine
 //-----------------------------------------------------------------------------
 void Riot::Shutdown( void )
 {    
+    SAFE_RELEASE( m_pGraphicsDevice );
     SAFE_RELEASE( m_pMainWindow );
     SAFE_RELEASE( m_pInput );
 

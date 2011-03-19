@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\code\architecture.cpp" />
+    <ClCompile Include="..\code\Direct3DDevice.cpp" />
+    <ClCompile Include="..\code\GraphicsDevice.cpp" />
     <ClCompile Include="..\code\Input.cpp" />
     <ClCompile Include="..\code\main.cpp" />
     <ClCompile Include="..\code\Math.cpp" />
@@ -29,6 +31,8 @@
     <ClCompile Include="..\PlatformDependent\Win32Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\code\Direct3DDevice.h" />
+    <ClInclude Include="..\code\GraphicsDevice.h" />
     <ClInclude Include="..\code\Window.h" />
     <ClInclude Include="..\include\Input.h" />
     <ClInclude Include="..\include\IRefCounted.h" />
