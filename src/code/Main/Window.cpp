@@ -4,6 +4,7 @@ Purpose:    Abstration for creating a platform-independent
             window
 \*********************************************************/
 #include "Window.h"
+#include "memory.h"
 
 CWindow::CWindow()
     : m_pSystemWindow( NULL )

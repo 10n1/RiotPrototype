@@ -9,7 +9,7 @@ Purpose:    Main header for the Riot engine
 #include "IRefCounted.h"
 #include "Input.h"
 
-
+class CSceneGraph;
 class CWindow;
 class CGraphics;
 
@@ -39,14 +39,15 @@ private:
 //---------------------------------------------------------------------------------
 //  Members
 private:
-    static uint             m_nFrameCount;
-    static float            m_fElapsedTime;
-    static float            m_fRunningTime;
-    static RiotInput*       m_pInput;
-    static CWindow*         m_pMainWindow;
-    static CGraphics* m_pGraphicsDevice;
+    static uint         m_nFrameCount;
+    static float        m_fElapsedTime;
+    static float        m_fRunningTime;
+    static RiotInput*   m_pInput;
+    static CWindow*     m_pMainWindow;
+    static CGraphics*   m_pGraphicsDevice;
+    static CSceneGraph* m_pSceneGraph;
 
-    static bool             m_bRunning;
+    static bool         m_bRunning;
 };
 
 #endif // #ifndef _RIOT_H_

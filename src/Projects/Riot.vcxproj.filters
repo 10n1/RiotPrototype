@@ -16,15 +16,18 @@
     <Filter Include="Platform">
       <UniqueIdentifier>{036d69f0-a4bf-4432-a7db-84f191f9f36a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Gfx\D3D">
+      <UniqueIdentifier>{e211dfd9-ee35-4af4-a707-9db8e8d57ef2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gfx\OGL">
+      <UniqueIdentifier>{5c691bcf-0bcc-4ae6-9167-4aed9e0be240}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\code\Main\architecture.cpp">
       <Filter>main</Filter>
     </ClCompile>
     <ClCompile Include="..\code\Main\Input.cpp">
-      <Filter>main</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Main\main.cpp">
       <Filter>main</Filter>
     </ClCompile>
     <ClCompile Include="..\code\Main\Math.cpp">
@@ -42,11 +45,27 @@
     <ClCompile Include="..\PlatformDependent\Win32Window.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\code\Gfx\D3DGraphics.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
     <ClCompile Include="..\code\Gfx\Graphics.cpp">
       <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Scene\Object.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Scene\SceneGraph.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Gfx\D3DGraphics.cpp">
+      <Filter>Gfx\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Gfx\View.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Main\main.cpp" />
+    <ClCompile Include="..\code\Gfx\Mesh.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Gfx\D3DMesh.cpp">
+      <Filter>Gfx\D3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,11 +96,26 @@
     <ClInclude Include="..\PlatformDependent\Win32Window.h">
       <Filter>Platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\code\Gfx\D3DGraphics.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
     <ClInclude Include="..\code\Gfx\Graphics.h">
       <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Scene\Object.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Scene\SceneGraph.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Gfx\D3DGraphics.h">
+      <Filter>Gfx\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Gfx\View.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Gfx\Mesh.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Gfx\D3DMesh.h">
+      <Filter>Gfx\D3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

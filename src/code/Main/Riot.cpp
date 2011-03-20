@@ -7,6 +7,8 @@ Purpose:    Definition of the main engine
 #include <stdio.h> // For printf
 #include "Window.h"
 #include "Gfx\Graphics.h"
+#include "Scene\SceneGraph.h"
+#include "Scene\Object.h"
 
 #if defined( OS_WINDOWS )
 #include "PlatformDependent\Win32Window.h"
@@ -20,14 +22,15 @@ Purpose:    Definition of the main engine
 #include "Gfx\GLGraphics.h"
 #endif
 
-uint                Riot::m_nFrameCount     = 0;
-float               Riot::m_fElapsedTime    = 0.0f;
-float               Riot::m_fRunningTime    = 0.0f;
-RiotInput*          Riot::m_pInput          = NULL;
-CWindow*            Riot::m_pMainWindow     = NULL;
-CGraphics*    Riot::m_pGraphicsDevice = NULL;
+uint            Riot::m_nFrameCount     = 0;
+float           Riot::m_fElapsedTime    = 0.0f;
+float           Riot::m_fRunningTime    = 0.0f;
+RiotInput*      Riot::m_pInput          = NULL;
+CWindow*        Riot::m_pMainWindow     = NULL;
+CGraphics*      Riot::m_pGraphicsDevice = NULL;
+CSceneGraph*    Riot::m_pSceneGraph     = NULL;
 
-bool                Riot::m_bRunning        = true;
+bool            Riot::m_bRunning        = true;
     
 //-----------------------------------------------------------------------------
 //  Run
@@ -57,12 +60,13 @@ void Riot::Run( void )
             m_bRunning = false;
 
         //-------------------------- Frame -------------------------
-        // pSceneGraph->Update();
+        m_pSceneGraph->UpdateObjects( m_fElapsedTime );
 
 
         m_pGraphicsDevice->PrepareRender();
-        // pSceneGraph->GetRenderObjects();
-        m_pGraphicsDevice->Render();
+        uint nNumRenderObjects = 0;
+        CObject** ppObjects = m_pSceneGraph->GetRenderObjects( &nNumRenderObjects );
+        m_pGraphicsDevice->Render( ppObjects, nNumRenderObjects );
         m_pGraphicsDevice->Present();
 
         //----------------------- End of frame ---------------------
@@ -95,6 +99,7 @@ void Riot::Run( void )
 //-----------------------------------------------------------------------------
 void Riot::Initialize( void )
 {
+    //////////////////////////////////////////
     // Create window
     uint nWindowWidth = 1024,
          nWindowHeight = 768; // TODO: Read in from file
@@ -115,8 +120,13 @@ void Riot::Initialize( void )
     // ...and finally the graphics device
     m_pGraphicsDevice->CreateDevice( m_pMainWindow );
 
+    //////////////////////////////////////////
     // Create the input system
     m_pInput = new RiotInput();
+
+    //////////////////////////////////////////
+    //  Get the scene graph
+    m_pSceneGraph = CSceneGraph::GetInstance();
 }
 
 //-----------------------------------------------------------------------------

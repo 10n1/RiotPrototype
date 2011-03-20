@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Base interface for Direct3D
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 5:15:23 PM
+Modified:       3/19/2011 5:45:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -58,7 +58,7 @@ public:
     //  Render
     //  Renders everything
     //-----------------------------------------------------------------------------
-    void Render( void );
+    void Render( CObject** ppObjects, uint nNumObjects );
     
     //-----------------------------------------------------------------------------
     //  Present

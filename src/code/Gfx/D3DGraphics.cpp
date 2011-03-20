@@ -2,13 +2,15 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 5:14:39 PM
+Modified:       3/19/2011 7:57:52 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
+#include "Memory.h"
 #include "Window.h"
 #include <d3d11.h>
-#include "Memory.h"
+#include "Scene/Object.h"
+#include "Mesh.h"
 
 // CD3DGraphics constructor
 CD3DGraphics::CD3DGraphics()
@@ -243,10 +245,15 @@ void CD3DGraphics::PrepareRender( void )
 //  Render
 //  Renders everything
 //-----------------------------------------------------------------------------
-void CD3DGraphics::Render( void )
+void CD3DGraphics::Render( CObject** ppObjects, uint nNumObjects )
 {
     //////////////////////////////////////////////
     // Perform rendering
+    for( uint i = 0; i < nNumObjects; ++i )
+    {
+        // ppObjects[i]->GetMaterial()->SetMaterial();
+        ppObjects[i]->GetMesh()->DrawMesh();
+    }
 }
 
 //-----------------------------------------------------------------------------

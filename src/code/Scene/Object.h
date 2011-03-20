@@ -1,0 +1,50 @@
+/*********************************************************\
+File:           Object.h
+Purpose:        Base interface for every object in the scene
+Author:         Kyle Weicht
+Created:        3/19/2011
+Modified:       3/19/2011 7:56:45 PM
+Modified by:    Kyle Weicht
+\*********************************************************/
+#ifndef _OBJECT_H_
+#define _OBJECT_H_
+#include "IRefCounted.h"
+#include "Types.h"
+
+class CMesh;
+class CMaterial;
+
+class CObject : public IRefCounted
+{
+public:
+    // CObject constructor
+    CObject();
+
+    // CObject destructor
+    virtual ~CObject();
+    /***************************************\
+    | class methods                         |
+    \***************************************/
+
+    //-----------------------------------------------------------------------------
+    //  Update
+    //  Updates the object
+    //  TODO: Pre- and Post- updates?
+    //-----------------------------------------------------------------------------
+    virtual void Update( float fDeltaTime );
+
+    //-----------------------------------------------------------------------------
+    //  Accessors/mutators
+    //-----------------------------------------------------------------------------
+    CMesh* GetMesh( void );
+    CMaterial* GetMaterial( void );
+private:
+    /***************************************\
+    | class members                         |
+    \***************************************/
+    CMesh*      m_pMesh;
+    CMaterial*  m_pMaterial;
+};
+
+
+#endif // #ifndef _OBJECT_H_

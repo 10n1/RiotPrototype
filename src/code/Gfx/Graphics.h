@@ -4,7 +4,7 @@ Purpose:        Base interface for the graphics hardware/API
                 abstraction
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 5:15:23 PM
+Modified:       3/19/2011 9:52:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -13,6 +13,7 @@ Modified by:    Kyle Weicht
 #include "Types.h"
 
 class CWindow;
+class CObject;
 
 class CGraphics : public IRefCounted
 {
@@ -61,13 +62,24 @@ public:
     //  Render
     //  Renders everything
     //-----------------------------------------------------------------------------
-    virtual void Render( void ) = 0;
+    virtual void Render( CObject** ppObjects, uint nNumObjects  ) = 0;
+    // TODO: Passing in the objects doesn't feel right...
     
     //-----------------------------------------------------------------------------
     //  Present
     //  Presents the frame
     //-----------------------------------------------------------------------------
     virtual void Present( void ) = 0;
+
+public:
+    /***************************************\
+    | object creation                       |
+    \***************************************/
+    
+    //-----------------------------------------------------------------------------
+    //  CreateMesh
+    //  Creates a mesh from the file
+    //-----------------------------------------------------------------------------
 
 protected:
     /***************************************\
