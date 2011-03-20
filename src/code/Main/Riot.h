@@ -44,7 +44,7 @@ private:
     static float        m_fRunningTime;
     static RiotInput*   m_pInput;
     static CWindow*     m_pMainWindow;
-    static CGraphics*   m_pGraphicsDevice;
+    static CGraphics*   m_pGraphics;
     static CSceneGraph* m_pSceneGraph;
 
     static bool         m_bRunning;

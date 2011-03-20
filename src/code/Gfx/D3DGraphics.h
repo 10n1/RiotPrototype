@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Base interface for Direct3D
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 5:45:53 PM
+Modified:       3/19/2011 9:59:18 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -65,7 +65,17 @@ public:
     //  Presents the frame
     //-----------------------------------------------------------------------------
     void Present( void );
-
+    
+public:
+    /***************************************\
+    | object creation                       |
+    \***************************************/
+    
+    //-----------------------------------------------------------------------------
+    //  CreateMesh
+    //  Creates a mesh from the file
+    //-----------------------------------------------------------------------------
+    CMesh* CreateMesh( const char* szFilename );
 private:
     /***************************************\
     | class members                         |

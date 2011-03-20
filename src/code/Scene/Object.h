@@ -3,7 +3,7 @@ File:           Object.h
 Purpose:        Base interface for every object in the scene
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 7:56:45 PM
+Modified:       3/20/2011 1:26:19 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECT_H_
@@ -36,8 +36,10 @@ public:
     //-----------------------------------------------------------------------------
     //  Accessors/mutators
     //-----------------------------------------------------------------------------
-    CMesh* GetMesh( void );
-    CMaterial* GetMaterial( void );
+    CMesh*      GetMesh( void );
+    CMaterial*  GetMaterial( void );
+    void SetMesh( CMesh* pMesh );
+    void SetMaterial( CMaterial* pMaterial );
 private:
     /***************************************\
     | class members                         |

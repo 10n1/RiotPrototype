@@ -22,6 +22,12 @@
     <Filter Include="Gfx\OGL">
       <UniqueIdentifier>{5c691bcf-0bcc-4ae6-9167-4aed9e0be240}</UniqueIdentifier>
     </Filter>
+    <Filter Include="assets">
+      <UniqueIdentifier>{fad24d1a-0d86-4382-a5a5-411a90ee6690}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\shaders">
+      <UniqueIdentifier>{5eb8ce90-d410-44b3-abd3-25a2126c6237}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\code\Main\architecture.cpp">
@@ -48,12 +54,6 @@
     <ClCompile Include="..\code\Gfx\Graphics.cpp">
       <Filter>Gfx</Filter>
     </ClCompile>
-    <ClCompile Include="..\code\Scene\Object.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Scene\SceneGraph.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
     <ClCompile Include="..\code\Gfx\D3DGraphics.cpp">
       <Filter>Gfx\D3D</Filter>
     </ClCompile>
@@ -66,6 +66,18 @@
     </ClCompile>
     <ClCompile Include="..\code\Gfx\D3DMesh.cpp">
       <Filter>Gfx\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Gfx\VertexShader.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Gfx\D3DVertexShader.cpp">
+      <Filter>Gfx\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Scene\Object.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Scene\SceneGraph.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -99,12 +111,6 @@
     <ClInclude Include="..\code\Gfx\Graphics.h">
       <Filter>Gfx</Filter>
     </ClInclude>
-    <ClInclude Include="..\code\Scene\Object.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Scene\SceneGraph.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
     <ClInclude Include="..\code\Gfx\D3DGraphics.h">
       <Filter>Gfx\D3D</Filter>
     </ClInclude>
@@ -117,5 +123,22 @@
     <ClInclude Include="..\code\Gfx\D3DMesh.h">
       <Filter>Gfx\D3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\code\Gfx\VertexShader.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Gfx\D3DVertexShader.h">
+      <Filter>Gfx\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Scene\SceneGraph.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Scene\Object.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\assets\shaders\StandardVertexShader.hlsl">
+      <Filter>assets\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

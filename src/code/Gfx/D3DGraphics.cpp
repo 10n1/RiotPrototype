@@ -2,15 +2,20 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 7:57:52 PM
+Modified:       3/20/2011 1:33:38 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
-#include "Memory.h"
 #include "Window.h"
 #include <d3d11.h>
+#include <D3DX11.h>
+#include <D3Dcompiler.h>
 #include "Scene/Object.h"
-#include "Mesh.h"
+#include "D3DMesh.h"
+#include "D3DVertexShader.h"
+#include <fstream>
+#include <xnamath.h>
+#include "Memory.h"
 
 // CD3DGraphics constructor
 CD3DGraphics::CD3DGraphics()
@@ -265,4 +270,176 @@ void CD3DGraphics::Present( void )
     HRESULT hr = S_OK;    
     // TODO: Support occluded present test
     hr = m_pSwapChain->Present( 0, 0 );
+}
+
+//-----------------------------------------------------------------------------
+//  CreateMesh
+//  Creates a mesh from the file
+//-----------------------------------------------------------------------------
+CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
+{
+    //static unsigned int nCount = 0;
+    //sprintf( szNewfile, "%d.mesh", nCount );
+    //FILE* pFile = fopen( szNewfile, "wb" );
+    //fwrite( &m_nVertexStride, sizeof( m_nVertexStride ), 1, pFile );
+    //fwrite( &m_nVertexCount, sizeof( m_nVertexCount ), 1, pFile );
+    //unsigned int IndexFormat = (m_nIndexFormat == DXGI_FORMAT_R16_UINT) ? 16 : 32;
+    //fwrite( &IndexFormat, sizeof( IndexFormat ), 1, pFile );
+    //fwrite( &m_nIndexCount, sizeof( m_nIndexCount ), 1, pFile );
+    //fwrite( pVertices, m_nVertexStride, m_nVertexCount, pFile );
+    //fwrite( pIndices, nIndexFormat/4, m_nIndexCount, pFile );
+    //fclose( pFile );
+
+    D3D11_BUFFER_DESC       bufferDesc  = { 0 };
+    D3D11_SUBRESOURCE_DATA  initData    = { 0 };
+    HRESULT                 hr          = S_OK;
+
+    struct SimpleVertex
+    {
+        XMFLOAT3 Pos;
+        XMFLOAT4 Color;
+    };
+    // Create vertex buffer
+    SimpleVertex vertices[] =
+    {
+        { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) },
+        { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) },
+        { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT4( 0.0f, 1.0f, 1.0f, 1.0f ) },
+        { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) },
+        { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT4( 1.0f, 0.0f, 1.0f, 1.0f ) },
+        { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT4( 1.0f, 1.0f, 0.0f, 1.0f ) },
+        { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+        { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT4( 0.0f, 0.0f, 0.0f, 1.0f ) },
+    };
+    // Define the input layout
+    D3D11_INPUT_ELEMENT_DESC layout[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	UINT numElements = ARRAYSIZE( layout );
+
+    WORD indices[] =
+    {
+        3,1,0,
+        2,1,3,
+
+        0,5,4,
+        1,5,0,
+
+        3,4,7,
+        0,4,3,
+
+        1,6,5,
+        2,6,1,
+
+        2,7,6,
+        3,7,2,
+
+        6,4,5,
+        7,4,6,
+    };
+
+    //////////////////////////////////////////
+    //  Create the new mesh
+    CD3DMesh*   pMesh = new CD3DMesh();
+    pMesh->m_pDeviceContext = m_pContext;
+
+    //////////////////////////////////////////
+    // Load the shader
+    CD3DVertexShader*   pVShader = new CD3DVertexShader();
+    pVShader->m_pDeviceContext = m_pContext;
+    
+    ID3DBlob*   pShaderBlob = NULL;
+    ID3DBlob*   pErrorBlob = NULL;
+    uint nCompileFlags = 0;
+#ifdef DEBUG
+    nCompileFlags = D3DCOMPILE_DEBUG;
+#endif
+    hr = D3DX11CompileFromFile(  "Assets/Shaders/StandardVertexShader.hlsl", // Filename
+                                 NULL,           // Array of macro definitions
+                                 NULL,           // #include interface
+                                 "VS",           // Function name
+                                 "vs_5_0",       // Shader profile
+                                 nCompileFlags,  // Compile flags
+                                 0,              // Not used for shaders, only effects
+                                 NULL,           // Thread pump
+                                 &pShaderBlob,   // Compiled code
+                                 &pErrorBlob,    // Errors
+                                 NULL );         // HRESULT
+
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle error gracefully
+        DebugBreak();
+        MessageBox( 0, (char*)pErrorBlob->GetBufferPointer(), "Error", 0 );
+        SAFE_RELEASE( pErrorBlob );
+    }
+    SAFE_RELEASE( pErrorBlob );
+
+    // Now create the shader
+    hr = m_pDevice->CreateVertexShader( pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), NULL, &pVShader->m_pShader );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle error gracefully
+        DebugBreak();
+        MessageBox( 0, "Couldn't create shader", "Error", 0 );
+        SAFE_RELEASE( pShaderBlob );
+    }
+
+    // Pass the shader to the mesh
+    pMesh->m_pVertexShader = pVShader;
+
+    //////////////////////////////////////////
+    // Create input layout
+    hr = m_pDevice->CreateInputLayout( layout, 
+                                       numElements, 
+                                       pShaderBlob->GetBufferPointer(), 
+                                       pShaderBlob->GetBufferSize(), 
+                                       &pMesh->m_pVertexLayout );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle error gracefully
+        DebugBreak();
+        MessageBox( 0, "Couldn't create input layout", "Error", 0 );
+        SAFE_RELEASE( pShaderBlob );
+    } 
+    SAFE_RELEASE( pShaderBlob );
+
+    //////////////////////////////////////////
+    // Create vertex buffer
+    bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth        = sizeof( SimpleVertex );
+    bufferDesc.BindFlags        = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags   = 0;
+    initData.pSysMem            = vertices;
+
+    hr = m_pDevice->CreateBuffer( &bufferDesc, &initData, &pMesh->m_pVertexBuffer );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle error gracefully
+        DebugBreak();
+        MessageBox( 0, "Couldn't create Vertex buffer", "Error", 0 );
+    } 
+
+    //////////////////////////////////////////
+    // Create index buffer
+    bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth        = sizeof( indices );
+    bufferDesc.BindFlags        = D3D11_BIND_INDEX_BUFFER;
+    bufferDesc.CPUAccessFlags   = 0;
+    initData.pSysMem            = indices;
+    hr = m_pDevice->CreateBuffer( &bufferDesc, &initData, &pMesh->m_pIndexBuffer );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle error gracefully
+        DebugBreak();
+        MessageBox( 0, "Couldn't create index buffer", "Error", 0 );
+    } 
+
+    pMesh->m_nIndexSize     = 16;
+    pMesh->m_nIndexCount    = 36;
+    pMesh->m_nVertexSize    = sizeof( SimpleVertex );
+
+    return pMesh;
 }

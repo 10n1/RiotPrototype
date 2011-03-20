@@ -27,7 +27,7 @@ float           Riot::m_fElapsedTime    = 0.0f;
 float           Riot::m_fRunningTime    = 0.0f;
 RiotInput*      Riot::m_pInput          = NULL;
 CWindow*        Riot::m_pMainWindow     = NULL;
-CGraphics*      Riot::m_pGraphicsDevice = NULL;
+CGraphics*      Riot::m_pGraphics       = NULL;
 CSceneGraph*    Riot::m_pSceneGraph     = NULL;
 
 bool            Riot::m_bRunning        = true;
@@ -42,6 +42,11 @@ void Riot::Run( void )
     // Initialization
     // TODO: Parse command line
     Initialize();
+
+    CObject* pObject = new CObject();
+    CMesh*   pMesh = m_pGraphics->CreateMesh( "lol not loading a mesh!" );
+    pObject->SetMesh( pMesh );
+    m_pSceneGraph->AddObject( pObject );
     //-----------------------------------------------------------------------------
 
     Timer timer; // TODO: Should the timer be a class member?
@@ -63,11 +68,11 @@ void Riot::Run( void )
         m_pSceneGraph->UpdateObjects( m_fElapsedTime );
 
 
-        m_pGraphicsDevice->PrepareRender();
+        m_pGraphics->PrepareRender();
         uint nNumRenderObjects = 0;
         CObject** ppObjects = m_pSceneGraph->GetRenderObjects( &nNumRenderObjects );
-        m_pGraphicsDevice->Render( ppObjects, nNumRenderObjects );
-        m_pGraphicsDevice->Present();
+        m_pGraphics->Render( ppObjects, nNumRenderObjects );
+        m_pGraphics->Present();
 
         //----------------------- End of frame ---------------------
         // Perform system messaging
@@ -107,18 +112,18 @@ void Riot::Initialize( void )
     // Create the new window object...
 #if defined( OS_WINDOWS )
     m_pMainWindow = new CWin32Window();
-    m_pGraphicsDevice = new CD3DGraphics();
+    m_pGraphics = new CD3DGraphics();
 #elif defined( OS_OSX )
     m_pMainWindow = new COSXWindow();
-    m_pGraphicsDevice = new CGLGraphics();
+    m_pGraphics = new CGLGraphics();
 #elif defined( OS_LINUX )
     m_pMainWindow = new CLinuxWindow();
-    m_pGraphicsDevice = new CGLGraphics();
+    m_pGraphics = new CGLGraphics();
 #endif
     // ...then create the actual window
     m_pMainWindow->CreateMainWindow( nWindowWidth, nWindowHeight );
     // ...and finally the graphics device
-    m_pGraphicsDevice->CreateDevice( m_pMainWindow );
+    m_pGraphics->CreateDevice( m_pMainWindow );
 
     //////////////////////////////////////////
     // Create the input system
@@ -135,7 +140,7 @@ void Riot::Initialize( void )
 //-----------------------------------------------------------------------------
 void Riot::Shutdown( void )
 {    
-    SAFE_RELEASE( m_pGraphicsDevice );
+    SAFE_RELEASE( m_pGraphics );
     SAFE_RELEASE( m_pMainWindow );
     SAFE_RELEASE( m_pInput );
 

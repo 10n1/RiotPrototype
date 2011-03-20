@@ -4,7 +4,7 @@ Purpose:        Base interface for the graphics hardware/API
                 abstraction
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 9:52:02 PM
+Modified:       3/19/2011 10:34:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -14,6 +14,7 @@ Modified by:    Kyle Weicht
 
 class CWindow;
 class CObject;
+class CMesh;
 
 class CGraphics : public IRefCounted
 {
@@ -75,11 +76,15 @@ public:
     /***************************************\
     | object creation                       |
     \***************************************/
+
+    // TODO: A list of all the vertex formats somewhere, matched to the appropriate
+    //       vertex shader?
     
     //-----------------------------------------------------------------------------
     //  CreateMesh
     //  Creates a mesh from the file
     //-----------------------------------------------------------------------------
+    virtual CMesh* CreateMesh( const char* szFilename ) = 0;
 
 protected:
     /***************************************\

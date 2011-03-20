@@ -2,11 +2,13 @@
 File:           D3DMesh.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 7:54:39 PM
+Modified:       3/20/2011 1:33:38 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DMesh.h"
+#include "D3DVertexShader.h"
 #include <D3D11.h>
+#include "memory.h"
 
 // CD3DMesh constructor
 CD3DMesh::CD3DMesh()
@@ -14,6 +16,7 @@ CD3DMesh::CD3DMesh()
     , m_pVertexBuffer( NULL )
     , m_pIndexBuffer( NULL )
     , m_pDeviceContext( NULL )
+    , m_pVertexShader( NULL )
 {
 }
 
@@ -21,6 +24,7 @@ CD3DMesh::CD3DMesh()
 // CD3DMesh destructor
 CD3DMesh::~CD3DMesh()
 {
+    SAFE_RELEASE( m_pVertexShader );
     SAFE_RELEASE( m_pVertexLayout );
     SAFE_RELEASE( m_pVertexBuffer );
     SAFE_RELEASE( m_pIndexBuffer );
@@ -32,6 +36,11 @@ CD3DMesh::~CD3DMesh()
 //-----------------------------------------------------------------------------
 void CD3DMesh::DrawMesh( void )
 {
+    // Set the shader
+    m_pVertexShader->SetShader();
+    // TODO: Where do we set constant buffers?
+
+    // Draw the mesh
     DXGI_FORMAT nIndexFormat = ( m_nIndexSize == 16 ) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT; // TODO: Clean this up
     uint nOffset = 0;
     m_pDeviceContext->IASetInputLayout( m_pVertexLayout );

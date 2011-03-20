@@ -2,7 +2,7 @@
 File:           Object.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 7:56:45 PM
+Modified:       3/20/2011 1:26:19 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Object.h"
@@ -41,3 +41,14 @@ CMaterial* CObject::GetMaterial( void )
 {
     return m_pMaterial;
 }
+
+void CObject::SetMesh( CMesh* pMesh )
+{
+    m_pMesh = pMesh;
+}
+
+void CObject::SetMaterial( CMaterial* pMaterial )
+{
+    m_pMaterial = pMaterial;
+}
+
