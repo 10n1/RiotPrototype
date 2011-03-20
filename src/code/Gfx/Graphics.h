@@ -1,84 +1,80 @@
 /*********************************************************\
-File:           Direct3DDevice.h
-Purpose:        Base interface for Direct3D
+File:           Graphics.h
+Purpose:        Base interface for the graphics hardware/API
+                abstraction
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 4:45:07 PM
+Modified:       3/19/2011 5:15:23 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#ifndef _DIRECT3DDEVICE_H_
-#define _DIRECT3DDEVICE_H_
-#include "GraphicsDevice.h"
+#ifndef _GRAPHICS_H_
+#define _GRAPHICS_H_
+#include "IRefCounted.h"
+#include "Types.h"
 
-struct ID3D11Device;
-struct ID3D11DeviceContext;
-struct IDXGISwapChain;
-struct ID3D11RenderTargetView;
-struct ID3D11Texture2D;
-struct ID3D11DepthStencilView;
+class CWindow;
 
-class CDirect3DDevice : public CGraphicsDevice
+class CGraphics : public IRefCounted
 {
 public:
-    // CDirect3DDevice constructor
-    CDirect3DDevice();
+    // CGraphics constructor
+    CGraphics();
 
-    // CDirect3DDevice destructor
-    ~CDirect3DDevice();
+    // CGraphics destructor
+    virtual ~CGraphics();
     /***************************************\
     | class methods                         |
     \***************************************/
-    
+
     //-----------------------------------------------------------------------------
     //  CreateDevice
     //  Creates the device, reading info from the window
     //-----------------------------------------------------------------------------
-    uint CreateDevice( CWindow* pWindow );
+    virtual uint CreateDevice( CWindow* pWindow ) = 0;
     
     //-----------------------------------------------------------------------------
     //  ReleaseBuffers
     //  Releases all buffers to prepare for a resize
     //-----------------------------------------------------------------------------
-    void ReleaseBuffers( void );
+    virtual void ReleaseBuffers( void ) = 0;
 
     //-----------------------------------------------------------------------------
     //  CreateBuffers
     //  Creates all buffers required for rendering
     //-----------------------------------------------------------------------------
-    void CreateBuffers( uint nWidth, uint nHeight );
+    virtual void CreateBuffers( uint nWidth, uint nHeight ) = 0;
+
+    //-----------------------------------------------------------------------------
+    //  Resize
+    //  Resizes the device
+    //-----------------------------------------------------------------------------
+    virtual void Resize( uint nWidth, uint nHeight );
     
     
     //-----------------------------------------------------------------------------
     //  PrepareRender
     //  Clears the screen to prepare for rendering
     //-----------------------------------------------------------------------------
-    void PrepareRender( void );
+    virtual void PrepareRender( void ) = 0;
     
     //-----------------------------------------------------------------------------
     //  Render
     //  Renders everything
     //-----------------------------------------------------------------------------
-    void Render( void );
+    virtual void Render( void ) = 0;
     
     //-----------------------------------------------------------------------------
     //  Present
     //  Presents the frame
     //-----------------------------------------------------------------------------
-    void Present( void );
+    virtual void Present( void ) = 0;
 
-private:
+protected:
     /***************************************\
     | class members                         |
     \***************************************/
-        
-    // Direct3D stuff
-    ID3D11Device*           m_pDevice;
-    ID3D11DeviceContext*    m_pContext;
-    IDXGISwapChain*         m_pSwapChain;
-    ID3D11RenderTargetView* m_pRenderTargetView;
-    ID3D11Texture2D*        m_pDepthStencilResource;
-    ID3D11DepthStencilView* m_pDepthStencilView;
+    CWindow*    m_pWindow;
 };
 
 
-#endif // #ifndef _DIRECT3DDEVICE_H_
+#endif // #ifndef _GRAPHICS_H_

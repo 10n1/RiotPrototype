@@ -6,18 +6,18 @@ Purpose:    Definition of the main engine
 #include "Timer.h"
 #include <stdio.h> // For printf
 #include "Window.h"
-#include "GraphicsDevice.h"
+#include "Gfx\Graphics.h"
 
 #if defined( OS_WINDOWS )
 #include "PlatformDependent\Win32Window.h"
-#include "Direct3DDevice.h"
+#include "Gfx\D3DGraphics.h"
 //#include "OpenGLDevice.h"
 #elif defined( OS_OSX )
 #include "PlatformDependent\OSXWindow.h"
-#include "OpenGLDevice.h"
+#include "Gfx\GLGraphics.h"
 #elif defined( OS_LINUX )
 #include "PlatformDependent\LinuxWindow.h"
-#include "OpenGLDevice.h"
+#include "Gfx\GLGraphics.h"
 #endif
 
 uint                Riot::m_nFrameCount     = 0;
@@ -25,7 +25,7 @@ float               Riot::m_fElapsedTime    = 0.0f;
 float               Riot::m_fRunningTime    = 0.0f;
 RiotInput*          Riot::m_pInput          = NULL;
 CWindow*            Riot::m_pMainWindow     = NULL;
-CGraphicsDevice*    Riot::m_pGraphicsDevice = NULL;
+CGraphics*    Riot::m_pGraphicsDevice = NULL;
 
 bool                Riot::m_bRunning        = true;
     
@@ -102,13 +102,13 @@ void Riot::Initialize( void )
     // Create the new window object...
 #if defined( OS_WINDOWS )
     m_pMainWindow = new CWin32Window();
-    m_pGraphicsDevice = new CDirect3DDevice();
+    m_pGraphicsDevice = new CD3DGraphics();
 #elif defined( OS_OSX )
     m_pMainWindow = new COSXWindow();
-    m_pGraphicsDevice = new COpenGLDevice();
+    m_pGraphicsDevice = new CGLGraphics();
 #elif defined( OS_LINUX )
     m_pMainWindow = new CLinuxWindow();
-    m_pGraphicsDevice = new COpenGLDevice();
+    m_pGraphicsDevice = new CGLGraphics();
 #endif
     // ...then create the actual window
     m_pMainWindow->CreateMainWindow( nWindowWidth, nWindowHeight );

@@ -2,21 +2,21 @@
 File:           GraphicsDevice.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 4:46:19 PM
+Modified:       3/19/2011 5:14:39 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#include "GraphicsDevice.h"
+#include "Graphics.h"
 #include "Window.h"
 #include "Memory.h"
 
-// CGraphicsDevice constructor
-CGraphicsDevice::CGraphicsDevice()
+// CGraphics constructor
+CGraphics::CGraphics()
     : m_pWindow( NULL )
 {
 }
 
-// CGraphicsDevice destructor
-CGraphicsDevice::~CGraphicsDevice()
+// CGraphics destructor
+CGraphics::~CGraphics()
 {
 }
 
@@ -25,7 +25,7 @@ CGraphicsDevice::~CGraphicsDevice()
 //  Resize
 //  Resizes the device
 //-----------------------------------------------------------------------------
-void CGraphicsDevice::Resize( uint nWidth, uint nHeight )
+void CGraphics::Resize( uint nWidth, uint nHeight )
 {    
     // Minimized protection
     // TODO: Better way to do this?

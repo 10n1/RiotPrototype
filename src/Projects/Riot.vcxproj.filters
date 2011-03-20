@@ -1,28 +1,87 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\code\Input.cpp" />
-    <ClCompile Include="..\code\main.cpp" />
-    <ClCompile Include="..\code\Math.cpp" />
-    <ClCompile Include="..\code\Memory.cpp" />
-    <ClCompile Include="..\code\Riot.cpp" />
-    <ClCompile Include="..\code\Window.cpp" />
-    <ClCompile Include="..\PlatformDependent\Win32Window.cpp" />
-    <ClCompile Include="..\code\architecture.cpp" />
-    <ClCompile Include="..\code\GraphicsDevice.cpp" />
-    <ClCompile Include="..\code\Direct3DDevice.cpp" />
+    <Filter Include="Gfx">
+      <UniqueIdentifier>{be532f08-75f6-44c3-987b-f0beb912c2d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="main">
+      <UniqueIdentifier>{9caae71b-cc91-4f88-808e-6ea11ee08864}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{48dde4f0-e220-4664-a0bb-2cc7a3efc9cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{13ae0836-f575-4f83-a1f5-d1bcfac09f80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{036d69f0-a4bf-4432-a7db-84f191f9f36a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\Input.h" />
-    <ClInclude Include="..\include\IRefCounted.h" />
-    <ClInclude Include="..\include\Memory.h" />
-    <ClInclude Include="..\include\Riot.h" />
-    <ClInclude Include="..\include\RiotMath.h" />
-    <ClInclude Include="..\include\Timer.h" />
-    <ClInclude Include="..\include\Types.h" />
-    <ClInclude Include="..\code\Window.h" />
-    <ClInclude Include="..\PlatformDependent\Win32Window.h" />
-    <ClInclude Include="..\code\GraphicsDevice.h" />
-    <ClInclude Include="..\code\Direct3DDevice.h" />
+    <ClCompile Include="..\code\Main\architecture.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Main\Input.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Main\main.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Main\Math.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Main\Memory.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Main\Riot.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Main\Window.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PlatformDependent\Win32Window.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Gfx\D3DGraphics.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Gfx\Graphics.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\code\Main\Input.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Main\IRefCounted.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Main\Memory.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Main\Riot.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Main\RiotMath.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Main\Timer.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Main\Types.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Main\Window.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PlatformDependent\Win32Window.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Gfx\D3DGraphics.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Gfx\Graphics.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

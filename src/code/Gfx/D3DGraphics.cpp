@@ -1,17 +1,17 @@
 /*********************************************************\
-File:           Direct3DDevice.cpp
+File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 4:58:53 PM
+Modified:       3/19/2011 5:14:39 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#include "Direct3DDevice.h"
+#include "D3DGraphics.h"
 #include "Window.h"
 #include <d3d11.h>
 #include "Memory.h"
 
-// CDirect3DDevice constructor
-CDirect3DDevice::CDirect3DDevice()
+// CD3DGraphics constructor
+CD3DGraphics::CD3DGraphics()
     : m_pDevice( NULL )
     , m_pContext( NULL )
     , m_pSwapChain( NULL )
@@ -21,8 +21,8 @@ CDirect3DDevice::CDirect3DDevice()
 {
 }
 
-// CDirect3DDevice destructor
-CDirect3DDevice::~CDirect3DDevice()
+// CD3DGraphics destructor
+CD3DGraphics::~CD3DGraphics()
 {
     SAFE_RELEASE( m_pRenderTargetView );
     SAFE_RELEASE( m_pDepthStencilResource );
@@ -39,7 +39,7 @@ CDirect3DDevice::~CDirect3DDevice()
 //  CreateDevice
 //  Creates the device, reading info from the window
 //-----------------------------------------------------------------------------
-uint CDirect3DDevice::CreateDevice( CWindow* pWindow )
+uint CD3DGraphics::CreateDevice( CWindow* pWindow )
 {
     HRESULT hr = S_OK;
     HWND hWnd = static_cast<HWND>( pWindow->GetSystemWindow() );
@@ -141,7 +141,7 @@ uint CDirect3DDevice::CreateDevice( CWindow* pWindow )
 //  ReleaseBuffers
 //  Releases all buffers to prepare for a resize
 //-----------------------------------------------------------------------------
-void CDirect3DDevice::ReleaseBuffers( void )
+void CD3DGraphics::ReleaseBuffers( void )
 {
     if( m_pContext != NULL )
         m_pContext->OMSetRenderTargets( 0, 0, 0 );
@@ -154,7 +154,7 @@ void CDirect3DDevice::ReleaseBuffers( void )
 //  CreateBuffers
 //  Creates all buffers required for rendering
 //-----------------------------------------------------------------------------
-void CDirect3DDevice::CreateBuffers( uint nWidth, uint nHeight )
+void CD3DGraphics::CreateBuffers( uint nWidth, uint nHeight )
 {
     HRESULT hr = S_OK;
     // TODO: Don't use these hardcoded values
@@ -232,7 +232,7 @@ void CDirect3DDevice::CreateBuffers( uint nWidth, uint nHeight )
 //  PrepareRender
 //  Clears the screen to prepare for rendering
 //-----------------------------------------------------------------------------
-void CDirect3DDevice::PrepareRender( void )
+void CD3DGraphics::PrepareRender( void )
 {
     float fClearColor[4] = { 0.25f, 0.25f, 0.75f, 1.0f };
     m_pContext->ClearRenderTargetView( m_pRenderTargetView, fClearColor );
@@ -243,7 +243,7 @@ void CDirect3DDevice::PrepareRender( void )
 //  Render
 //  Renders everything
 //-----------------------------------------------------------------------------
-void CDirect3DDevice::Render( void )
+void CD3DGraphics::Render( void )
 {
     //////////////////////////////////////////////
     // Perform rendering
@@ -253,7 +253,7 @@ void CDirect3DDevice::Render( void )
 //  Present
 //  Presents the frame
 //-----------------------------------------------------------------------------
-void CDirect3DDevice::Present( void )
+void CD3DGraphics::Present( void )
 {
     HRESULT hr = S_OK;    
     // TODO: Support occluded present test

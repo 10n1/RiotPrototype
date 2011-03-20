@@ -19,28 +19,28 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\code\architecture.cpp" />
-    <ClCompile Include="..\code\Direct3DDevice.cpp" />
-    <ClCompile Include="..\code\GraphicsDevice.cpp" />
-    <ClCompile Include="..\code\Input.cpp" />
-    <ClCompile Include="..\code\main.cpp" />
-    <ClCompile Include="..\code\Math.cpp" />
-    <ClCompile Include="..\code\Memory.cpp" />
-    <ClCompile Include="..\code\Riot.cpp" />
-    <ClCompile Include="..\code\Window.cpp" />
+    <ClCompile Include="..\code\Gfx\D3DGraphics.cpp" />
+    <ClCompile Include="..\code\Gfx\Graphics.cpp" />
+    <ClCompile Include="..\code\Main\architecture.cpp" />
+    <ClCompile Include="..\code\Main\Input.cpp" />
+    <ClCompile Include="..\code\Main\main.cpp" />
+    <ClCompile Include="..\code\Main\Math.cpp" />
+    <ClCompile Include="..\code\Main\Memory.cpp" />
+    <ClCompile Include="..\code\Main\Riot.cpp" />
+    <ClCompile Include="..\code\Main\Window.cpp" />
     <ClCompile Include="..\PlatformDependent\Win32Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\code\Direct3DDevice.h" />
-    <ClInclude Include="..\code\GraphicsDevice.h" />
-    <ClInclude Include="..\code\Window.h" />
-    <ClInclude Include="..\include\Input.h" />
-    <ClInclude Include="..\include\IRefCounted.h" />
-    <ClInclude Include="..\include\Memory.h" />
-    <ClInclude Include="..\include\Riot.h" />
-    <ClInclude Include="..\include\RiotMath.h" />
-    <ClInclude Include="..\include\Timer.h" />
-    <ClInclude Include="..\include\Types.h" />
+    <ClInclude Include="..\code\Gfx\D3DGraphics.h" />
+    <ClInclude Include="..\code\Gfx\Graphics.h" />
+    <ClInclude Include="..\code\Main\Input.h" />
+    <ClInclude Include="..\code\Main\IRefCounted.h" />
+    <ClInclude Include="..\code\Main\Memory.h" />
+    <ClInclude Include="..\code\Main\Riot.h" />
+    <ClInclude Include="..\code\Main\RiotMath.h" />
+    <ClInclude Include="..\code\Main\Timer.h" />
+    <ClInclude Include="..\code\Main\Types.h" />
+    <ClInclude Include="..\code\Main\Window.h" />
     <ClInclude Include="..\PlatformDependent\Win32Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -122,7 +122,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\;..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Code;..\Code\Main;..\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,7 +141,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\;..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Code;..\Code\Main;..\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -162,7 +162,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\;..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Code;..\Code\Main;..\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -185,7 +185,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\;..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Code;..\Code\Main;..\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
