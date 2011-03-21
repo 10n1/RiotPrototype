@@ -7,11 +7,15 @@
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
 //--------------------------------------------------------------------------------------
-cbuffer ConstantBuffer : register( b0 )
+cbuffer ViewProj : register( b0 )
 {
-	matrix World;
 	matrix View;
 	matrix Projection;
+}
+
+cbuffer World : register( b1 )
+{
+	matrix World;
 }
 
 //--------------------------------------------------------------------------------------

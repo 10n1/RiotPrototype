@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/20/2011 1:33:38 AM
+Modified:       3/20/2011 6:08:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -25,12 +25,14 @@ CD3DGraphics::CD3DGraphics()
     , m_pRenderTargetView( NULL )
     , m_pDepthStencilResource( NULL )
     , m_pDepthStencilView( NULL )
+    , m_pViewProjCB( NULL )
 {
 }
 
 // CD3DGraphics destructor
 CD3DGraphics::~CD3DGraphics()
 {
+    SAFE_RELEASE( m_pViewProjCB );
     SAFE_RELEASE( m_pRenderTargetView );
     SAFE_RELEASE( m_pDepthStencilResource );
     SAFE_RELEASE( m_pDepthStencilView );

@@ -3,12 +3,14 @@ File:           D3DGraphics.h
 Purpose:        Base interface for Direct3D
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 9:59:18 PM
+Modified:       3/20/2011 6:08:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
 #define _D3DGRAPHICS_H_
 #include "Graphics.h"
+#include <Windows.h>
+#include <xnamath.h>
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -16,6 +18,7 @@ struct IDXGISwapChain;
 struct ID3D11RenderTargetView;
 struct ID3D11Texture2D;
 struct ID3D11DepthStencilView;
+struct ID3D11Buffer;
 
 class CD3DGraphics : public CGraphics
 {
@@ -65,6 +68,13 @@ public:
     //  Presents the frame
     //-----------------------------------------------------------------------------
     void Present( void );
+
+    
+    //-----------------------------------------------------------------------------
+    //  SetViewProj
+    //  Sets the view projection constant buffer
+    //-----------------------------------------------------------------------------
+    void SetViewProj( const XMMATRIX* pView, const XMMATRIX* pProj );
     
 public:
     /***************************************\
@@ -88,6 +98,8 @@ private:
     ID3D11RenderTargetView* m_pRenderTargetView;
     ID3D11Texture2D*        m_pDepthStencilResource;
     ID3D11DepthStencilView* m_pDepthStencilView;
+
+    ID3D11Buffer*           m_pViewProjCB;
 };
 
 
