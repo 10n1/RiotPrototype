@@ -412,7 +412,7 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
                                  NULL,           // Array of macro definitions
                                  NULL,           // #include interface
                                  "VS",           // Function name
-                                 "vs_5_0",       // Shader profile
+                                 "vs_4_0",       // Shader profile
                                  nCompileFlags,  // Compile flags
                                  0,              // Not used for shaders, only effects
                                  NULL,           // Thread pump
