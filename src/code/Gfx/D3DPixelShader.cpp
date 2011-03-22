@@ -1,23 +1,23 @@
 /*********************************************************\
-File:           D3DVertexShader.cpp
+File:           D3DPixelShader.cpp
 Author:         Kyle Weicht
 Created:        3/20/2011
 Modified:       3/21/2011 9:47:52 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#include "D3DVertexShader.h"
+#include "D3DPixelShader.h"
 #include "memory.h"
 #include <D3D11.h>
 
-// CD3DVertexShader constructor
-CD3DVertexShader::CD3DVertexShader()
+// CD3DPixelShader constructor
+CD3DPixelShader::CD3DPixelShader()
     : m_pShader( NULL )
     , m_pDeviceContext( NULL )
 {
 }
 
-// CD3DVertexShader destructor
-CD3DVertexShader::~CD3DVertexShader()
+// CD3DPixelShader destructor
+CD3DPixelShader::~CD3DPixelShader()
 {
     SAFE_RELEASE( m_pShader );
 }
@@ -26,7 +26,7 @@ CD3DVertexShader::~CD3DVertexShader()
 //  ApplyShader
 //  Applys the shader to the pipeline
 //-----------------------------------------------------------------------------
-void CD3DVertexShader::ApplyShader( void )
+void CD3DPixelShader::ApplyShader( void )
 {
-    m_pDeviceContext->VSSetShader( m_pShader, NULL, 0 );
+    m_pDeviceContext->PSSetShader( m_pShader, NULL, 0 );
 }

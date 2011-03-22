@@ -2,22 +2,28 @@
 File:           Object.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/20/2011 1:26:19 AM
+Modified:       3/21/2011 10:44:05 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Object.h"
 #include "memory.h"
+#include "Gfx\Mesh.h"
+#include "Gfx\Material.h"
 
 // CObject constructor
 CObject::CObject()
     : m_pMesh( NULL )
     , m_pMaterial( NULL )
 {
+    m_vPosition = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+    m_vOrientation = XMVectorSet( 0.0f, 0.0f, 0.0f, 1.0f );
 }
 
 // CObject destructor
 CObject::~CObject()
 {
+    SAFE_RELEASE( m_pMesh );
+    SAFE_RELEASE( m_pMaterial );
 }
 
 //-----------------------------------------------------------------------------
@@ -27,6 +33,8 @@ CObject::~CObject()
 //-----------------------------------------------------------------------------
 void CObject::Update( float fDeltaTime )
 {
+    // TODO: TEMP
+    m_vPosition = m_vPosition + XMVectorSet( fDeltaTime * 0.1f, fDeltaTime * 0.1f, 0.0f, 0.0f );
 }
 
 //-----------------------------------------------------------------------------
@@ -52,3 +60,23 @@ void CObject::SetMaterial( CMaterial* pMaterial )
     m_pMaterial = pMaterial;
 }
 
+
+const XMVECTOR& CObject::GetPosition( void )
+{
+    return m_vPosition;
+}
+
+const XMVECTOR& CObject::GetOrientation( void )
+{
+    return m_vOrientation;
+}
+
+void CObject::SetPosition( const XMVECTOR& vPosition )
+{
+    m_vPosition = vPosition;
+}
+
+void CObject::SetOrientation( const XMVECTOR& vOrientation )
+{
+    m_vOrientation = vOrientation;
+}

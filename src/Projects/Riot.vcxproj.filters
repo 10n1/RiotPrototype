@@ -79,6 +79,15 @@
     <ClCompile Include="..\code\Scene\SceneGraph.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\code\gfx\Material.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Gfx\PixelShader.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\Gfx\D3DPixelShader.cpp">
+      <Filter>Gfx\D3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\code\Main\Input.h">
@@ -134,6 +143,15 @@
     </ClInclude>
     <ClInclude Include="..\code\Scene\Object.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Gfx\Material.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Gfx\PixelShader.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Gfx\D3DPixelShader.h">
+      <Filter>Gfx\D3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

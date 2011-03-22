@@ -9,6 +9,8 @@ Purpose:    Definition of the main engine
 #include "Gfx\Graphics.h"
 #include "Scene\SceneGraph.h"
 #include "Scene\Object.h"
+#include "Gfx\View.h"
+#include "Gfx\Material.h"
 
 #if defined( OS_WINDOWS )
 #include "PlatformDependent\Win32Window.h"
@@ -21,6 +23,7 @@ Purpose:    Definition of the main engine
 #include "PlatformDependent\LinuxWindow.h"
 #include "Gfx\GLGraphics.h"
 #endif
+#include "Memory.h"
 
 uint            Riot::m_nFrameCount     = 0;
 float           Riot::m_fElapsedTime    = 0.0f;
@@ -29,6 +32,7 @@ RiotInput*      Riot::m_pInput          = NULL;
 CWindow*        Riot::m_pMainWindow     = NULL;
 CGraphics*      Riot::m_pGraphics       = NULL;
 CSceneGraph*    Riot::m_pSceneGraph     = NULL;
+CView*          Riot::m_pMainView       = NULL;
 
 bool            Riot::m_bRunning        = true;
     
@@ -46,6 +50,10 @@ void Riot::Run( void )
     CObject* pObject = new CObject();
     CMesh*   pMesh = m_pGraphics->CreateMesh( "lol not loading a mesh!" );
     pObject->SetMesh( pMesh );
+    CMaterial* pMaterial = new CMaterial();
+    CPixelShader* pShader = m_pGraphics->CreatePixelShader( "Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_5_0" );
+    pMaterial->SetPixelShader( pShader );
+    pObject->SetMaterial( pMaterial );
     m_pSceneGraph->AddObject( pObject );
     //-----------------------------------------------------------------------------
 
@@ -65,8 +73,20 @@ void Riot::Run( void )
             m_bRunning = false;
 
         //-------------------------- Frame -------------------------
+
+        //////////////////////////////////////////
+        // Update
         m_pSceneGraph->UpdateObjects( m_fElapsedTime );
 
+
+        //////////////////////////////////////////
+        // Render
+
+        // Update and set the view matrix
+        m_pMainView->UpdateViewMatrix();
+        XMMATRIX mView = m_pMainView->GetViewMatrix();
+        XMMATRIX mProj = m_pMainView->GetProjMatrix();
+        m_pGraphics->SetViewProj( &mView, &mProj );
 
         m_pGraphics->PrepareRender();
         uint nNumRenderObjects = 0;
@@ -123,7 +143,7 @@ void Riot::Initialize( void )
     // ...then create the actual window
     m_pMainWindow->CreateMainWindow( nWindowWidth, nWindowHeight );
     // ...and finally the graphics device
-    m_pGraphics->CreateDevice( m_pMainWindow );
+    m_pGraphics->Initialize( m_pMainWindow );
 
     //////////////////////////////////////////
     // Create the input system
@@ -132,6 +152,10 @@ void Riot::Initialize( void )
     //////////////////////////////////////////
     //  Get the scene graph
     m_pSceneGraph = CSceneGraph::GetInstance();
+
+    //////////////////////////////////////////
+    // Create the main view
+    m_pMainView = new CView();
 }
 
 //-----------------------------------------------------------------------------
@@ -140,6 +164,7 @@ void Riot::Initialize( void )
 //-----------------------------------------------------------------------------
 void Riot::Shutdown( void )
 {    
+    SAFE_RELEASE( m_pMainView );
     SAFE_RELEASE( m_pGraphics );
     SAFE_RELEASE( m_pMainWindow );
     SAFE_RELEASE( m_pInput );

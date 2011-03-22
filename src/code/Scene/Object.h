@@ -3,13 +3,16 @@ File:           Object.h
 Purpose:        Base interface for every object in the scene
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/20/2011 1:26:19 AM
+Modified:       3/21/2011 8:45:11 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECT_H_
 #define _OBJECT_H_
 #include "IRefCounted.h"
 #include "Types.h"
+
+#include <Windows.h> // TODO: Remove XNA math
+#include <xnamath.h>
 
 class CMesh;
 class CMaterial;
@@ -40,10 +43,18 @@ public:
     CMaterial*  GetMaterial( void );
     void SetMesh( CMesh* pMesh );
     void SetMaterial( CMaterial* pMaterial );
-private:
+
+    const XMVECTOR& GetPosition( void );
+    const XMVECTOR& GetOrientation( void );
+    void SetPosition( const XMVECTOR& vPosition );
+    void SetOrientation( const XMVECTOR& vOrientation );
+protected:
     /***************************************\
     | class members                         |
     \***************************************/
+    XMVECTOR    m_vPosition;
+    XMVECTOR    m_vOrientation;
+
     CMesh*      m_pMesh;
     CMaterial*  m_pMaterial;
 };

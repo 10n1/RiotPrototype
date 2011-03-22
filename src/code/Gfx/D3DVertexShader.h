@@ -3,7 +3,7 @@ File:           D3DVertexShader.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        3/20/2011
-Modified:       3/20/2011 12:36:10 AM
+Modified:       3/21/2011 9:47:29 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DVERTEXSHADER_H_
@@ -28,10 +28,10 @@ public:
     \***************************************/
     
     //-----------------------------------------------------------------------------
-    //  SetShader
+    //  ApplyShader
     //  Applys the shader to the pipeline
     //-----------------------------------------------------------------------------
-    void SetShader( void );
+    void ApplyShader( void );
 private:
     /***************************************\
     | class members                         |

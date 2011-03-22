@@ -3,7 +3,7 @@ File:           Mesh.h
 Purpose:        Interface for holding geometry
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 9:52:02 PM
+Modified:       3/21/2011 9:45:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MESH_H_
@@ -38,7 +38,6 @@ public:
     //  Passes the mesh to the GPU and renders it
     //-----------------------------------------------------------------------------
     virtual void DrawMesh( void ) = 0;
-
 
 protected:
     /***************************************\

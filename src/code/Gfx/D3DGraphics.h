@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Base interface for Direct3D
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/20/2011 6:08:25 PM
+Modified:       3/21/2011 9:52:08 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -31,6 +31,12 @@ public:
     /***************************************\
     | class methods                         |
     \***************************************/
+    
+    //-----------------------------------------------------------------------------
+    //  Initialize
+    //  Creates the device, then creates any other needed buffers, etc.
+    //-----------------------------------------------------------------------------
+    uint Initialize( CWindow* pWindow );
     
     //-----------------------------------------------------------------------------
     //  CreateDevice
@@ -68,13 +74,18 @@ public:
     //  Presents the frame
     //-----------------------------------------------------------------------------
     void Present( void );
-
-    
+        
     //-----------------------------------------------------------------------------
     //  SetViewProj
     //  Sets the view projection constant buffer
     //-----------------------------------------------------------------------------
-    void SetViewProj( const XMMATRIX* pView, const XMMATRIX* pProj );
+    void SetViewProj( const void* pView, const void* pProj );
+        
+    //-----------------------------------------------------------------------------
+    //  SetWorldMatrix
+    //  Sets the world transform matrix
+    //-----------------------------------------------------------------------------
+    void SetWorldMatrix( void* pWorld );
     
 public:
     /***************************************\
@@ -86,6 +97,12 @@ public:
     //  Creates a mesh from the file
     //-----------------------------------------------------------------------------
     CMesh* CreateMesh( const char* szFilename );
+    
+    //-----------------------------------------------------------------------------
+    //  CreatePixelShader
+    //  Loads and creates a pixel shader
+    //-----------------------------------------------------------------------------
+    CPixelShader* CreatePixelShader( const char* szFilename, const char* szEntryPoint, const char* szProfile );
 private:
     /***************************************\
     | class members                         |
@@ -100,6 +117,7 @@ private:
     ID3D11DepthStencilView* m_pDepthStencilView;
 
     ID3D11Buffer*           m_pViewProjCB;
+    ID3D11Buffer*           m_pWorldCB;
 };
 
 

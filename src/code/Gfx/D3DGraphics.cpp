@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/20/2011 6:08:25 PM
+Modified:       3/21/2011 10:37:05 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -13,6 +13,8 @@ Modified by:    Kyle Weicht
 #include "Scene/Object.h"
 #include "D3DMesh.h"
 #include "D3DVertexShader.h"
+#include "D3DPixelShader.h"
+#include "Material.h"
 #include <fstream>
 #include <xnamath.h>
 #include "Memory.h"
@@ -26,12 +28,14 @@ CD3DGraphics::CD3DGraphics()
     , m_pDepthStencilResource( NULL )
     , m_pDepthStencilView( NULL )
     , m_pViewProjCB( NULL )
+    , m_pWorldCB( NULL )
 {
 }
 
 // CD3DGraphics destructor
 CD3DGraphics::~CD3DGraphics()
 {
+    SAFE_RELEASE( m_pWorldCB );
     SAFE_RELEASE( m_pViewProjCB );
     SAFE_RELEASE( m_pRenderTargetView );
     SAFE_RELEASE( m_pDepthStencilResource );
@@ -43,7 +47,48 @@ CD3DGraphics::~CD3DGraphics()
 /***************************************\
 | class methods                         |
 \***************************************/
+
+//-----------------------------------------------------------------------------
+//  Initialize
+//  Creates the device, then creates any other needed buffers, etc.
+//-----------------------------------------------------------------------------
+uint CD3DGraphics::Initialize( CWindow* pWindow )
+{
+    uint nResult = 0;
+
+    //////////////////////////////////////////
+    // First create the device
+    nResult = CreateDevice( pWindow );
+
+    //////////////////////////////////////////    
+    D3D11_BUFFER_DESC       bufferDesc  = { 0 };
+    D3D11_SUBRESOURCE_DATA  initData    = { 0 };
+    HRESULT                 hr          = S_OK;
+        
+    //////////////////////////////////////////
+    // Create the ViewProj Constant buffer
+    bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth        = sizeof( XMMATRIX ) * 2;
+    bufferDesc.BindFlags        = D3D11_BIND_CONSTANT_BUFFER;
+    bufferDesc.CPUAccessFlags   = 0;
+
+    hr = m_pDevice->CreateBuffer( &bufferDesc, NULL, &m_pViewProjCB );
+    // TODO: Handle error
+
     
+    //////////////////////////////////////////
+    // Create the World matrix Constant buffer
+    bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth        = sizeof( XMMATRIX );
+    bufferDesc.BindFlags        = D3D11_BIND_CONSTANT_BUFFER;
+    bufferDesc.CPUAccessFlags   = 0;
+
+    hr = m_pDevice->CreateBuffer( &bufferDesc, NULL, &m_pWorldCB );
+    // TODO: Handle error
+
+    return nResult;
+}
+
 //-----------------------------------------------------------------------------
 //  CreateDevice
 //  Creates the device, reading info from the window
@@ -258,7 +303,12 @@ void CD3DGraphics::Render( CObject** ppObjects, uint nNumObjects )
     // Perform rendering
     for( uint i = 0; i < nNumObjects; ++i )
     {
-        // ppObjects[i]->GetMaterial()->SetMaterial();
+        ppObjects[i]->GetMaterial()->ApplyMaterial();
+
+        XMMATRIX mWorld = XMMatrixRotationQuaternion( ppObjects[i]->GetOrientation() );
+        mWorld = mWorld * XMMatrixTranslationFromVector( ppObjects[i]->GetPosition() );
+        SetWorldMatrix( &mWorld );
+
         ppObjects[i]->GetMesh()->DrawMesh();
     }
 }
@@ -411,7 +461,7 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
     //////////////////////////////////////////
     // Create vertex buffer
     bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth        = sizeof( SimpleVertex );
+    bufferDesc.ByteWidth        = sizeof( SimpleVertex ) * 8;
     bufferDesc.BindFlags        = D3D11_BIND_VERTEX_BUFFER;
     bufferDesc.CPUAccessFlags   = 0;
     initData.pSysMem            = vertices;
@@ -427,7 +477,7 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
     //////////////////////////////////////////
     // Create index buffer
     bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth        = sizeof( indices );
+    bufferDesc.ByteWidth        = sizeof( WORD ) * 36;
     bufferDesc.BindFlags        = D3D11_BIND_INDEX_BUFFER;
     bufferDesc.CPUAccessFlags   = 0;
     initData.pSysMem            = indices;
@@ -444,4 +494,89 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
     pMesh->m_nVertexSize    = sizeof( SimpleVertex );
 
     return pMesh;
+}
+
+
+//-----------------------------------------------------------------------------
+//  CreatePixelShader
+//  Loads and creates a pixel shader
+//-----------------------------------------------------------------------------
+CPixelShader* CD3DGraphics::CreatePixelShader( const char* szFilename, const char* szEntryPoint, const char* szProfile )
+{    
+    ID3DBlob*   pShaderBlob = NULL;
+    ID3DBlob*   pErrorBlob = NULL;
+    uint nCompileFlags = 0;
+    HRESULT hr = S_OK;
+
+    //////////////////////////////////////////
+    // Load the shader
+    CD3DPixelShader*   pShader = new CD3DPixelShader();
+    pShader->m_pDeviceContext = m_pContext;
+    
+#ifdef DEBUG
+    nCompileFlags = D3DCOMPILE_DEBUG;
+#endif
+    hr = D3DX11CompileFromFile(  szFilename,    // Filename
+                                 NULL,          // Array of macro definitions
+                                 NULL,          // #include interface
+                                 szEntryPoint,  // Function name
+                                 szProfile,     // Shader profile
+                                 nCompileFlags, // Compile flags
+                                 0,             // Not used for shaders, only effects
+                                 NULL,          // Thread pump
+                                 &pShaderBlob,  // Compiled code
+                                 &pErrorBlob,   // Errors
+                                 NULL );        // HRESULT
+
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle error gracefully
+        DebugBreak();
+        MessageBox( 0, (char*)pErrorBlob->GetBufferPointer(), "Error", 0 );
+        SAFE_RELEASE( pErrorBlob );
+    }
+    SAFE_RELEASE( pErrorBlob );
+
+    // Now create the shader
+    hr = m_pDevice->CreatePixelShader( pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), NULL, &pShader->m_pShader );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle error gracefully
+        DebugBreak();
+        MessageBox( 0, "Couldn't create shader", "Error", 0 );
+        SAFE_RELEASE( pShaderBlob );
+    }
+
+    return pShader;
+}
+
+//-----------------------------------------------------------------------------
+//  SetViewProj
+//  Sets the view projection constant buffer
+//-----------------------------------------------------------------------------
+void CD3DGraphics::SetViewProj( const void* pView, const void* pProj )
+{
+    XMMATRIX mMatrices[2] = 
+    { 
+        XMMatrixTranspose( *((XMMATRIX*)pView) ), 
+        XMMatrixTranspose( *((XMMATRIX*)pProj) )
+    };
+
+    m_pContext->UpdateSubresource( m_pViewProjCB, 0, NULL, mMatrices, 0, 0 );
+    m_pContext->VSSetConstantBuffers( 0, 1, &m_pViewProjCB );
+}
+
+//-----------------------------------------------------------------------------
+//  SetWorldMatrix
+//  Sets the world transform matrix
+//-----------------------------------------------------------------------------
+void CD3DGraphics::SetWorldMatrix( void* pWorld )
+{
+    XMMATRIX mMatrices[1] = 
+    { 
+        XMMatrixTranspose( *((XMMATRIX*)pWorld) ),
+    };
+
+    m_pContext->UpdateSubresource( m_pWorldCB, 0, NULL, mMatrices, 0, 0 );
+    m_pContext->VSSetConstantBuffers( 1, 1, &m_pWorldCB );
 }

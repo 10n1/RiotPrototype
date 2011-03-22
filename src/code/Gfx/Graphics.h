@@ -4,7 +4,7 @@ Purpose:        Base interface for the graphics hardware/API
                 abstraction
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 10:34:22 PM
+Modified:       3/21/2011 9:52:09 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -15,6 +15,7 @@ Modified by:    Kyle Weicht
 class CWindow;
 class CObject;
 class CMesh;
+class CPixelShader;
 
 class CGraphics : public IRefCounted
 {
@@ -27,6 +28,12 @@ public:
     /***************************************\
     | class methods                         |
     \***************************************/
+
+    //-----------------------------------------------------------------------------
+    //  Initialize
+    //  Creates the device, then creates any other needed buffers, etc.
+    //-----------------------------------------------------------------------------
+    virtual uint Initialize( CWindow* pWindow ) = 0;
 
     //-----------------------------------------------------------------------------
     //  CreateDevice
@@ -71,6 +78,18 @@ public:
     //  Presents the frame
     //-----------------------------------------------------------------------------
     virtual void Present( void ) = 0;
+    
+    //-----------------------------------------------------------------------------
+    //  SetViewProj
+    //  Sets the view projection constant buffer
+    //-----------------------------------------------------------------------------
+    virtual void SetViewProj( const void* pView, const void* pProj ) = 0;
+    
+    //-----------------------------------------------------------------------------
+    //  SetWorldMatrix
+    //  Sets the world transform matrix
+    //-----------------------------------------------------------------------------
+    virtual void SetWorldMatrix( void* pWorld ) = 0;
 
 public:
     /***************************************\
@@ -85,6 +104,12 @@ public:
     //  Creates a mesh from the file
     //-----------------------------------------------------------------------------
     virtual CMesh* CreateMesh( const char* szFilename ) = 0;
+    
+    //-----------------------------------------------------------------------------
+    //  CreatePixelShader
+    //  Loads and creates a pixel shader
+    //-----------------------------------------------------------------------------
+    virtual CPixelShader* CreatePixelShader( const char* szFilename, const char* szEntryPoint, const char* szProfile ) = 0;
 
 protected:
     /***************************************\

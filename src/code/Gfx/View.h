@@ -4,15 +4,17 @@ Purpose:        Interface for anything in the engine that
                 can "view", aka, a camera
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 7:28:42 PM
+Modified:       3/21/2011 9:36:35 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VIEW_H_
 #define _VIEW_H_
+#include "Scene\Object.h"
+#include "Types.h"
 #include <Windows.h>
 #include <xnamath.h>
 
-class CView
+class CView : public CObject
 {
 public:
     // CView constructor
@@ -45,7 +47,7 @@ public:
 
     //-----------------------------------------------------------------------------
     //  UpdateViewMatrix
-    //  Updates the views matrix
+    //  Updates the view matrix
     //-----------------------------------------------------------------------------
     void UpdateViewMatrix( void );
 
@@ -55,14 +57,20 @@ public:
     //-----------------------------------------------------------------------------
     void SetPerspective( float fFoV, float fAspectRatio, float fNear, float fFar );
 
+    //-----------------------------------------------------------------------------
+    //  GetView/ProjMatrix
+    //  Returns the view/proj matrix
+    //-----------------------------------------------------------------------------
+    const XMMATRIX& GetViewMatrix( void );
+    const XMMATRIX& GetProjMatrix( void );
+
 private:
     /***************************************\
     | class members                         |
     \***************************************/
-    XMVECTOR    m_Position;
-    XMVECTOR    m_Up;
-    XMVECTOR    m_Look;
-    XMVECTOR    m_Right;
+    XMVECTOR    m_vUp;
+    XMVECTOR    m_vLook;
+    XMVECTOR    m_vRight;
 
     XMMATRIX    m_mViewMatrix;
     XMMATRIX    m_mProjMatrix;

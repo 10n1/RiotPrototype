@@ -1,24 +1,24 @@
 /*********************************************************\
-File:           VertexShader.h
-Purpose:        Vertex shaders
+File:           PixelShader.h
+Purpose:        Pixel shaders
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/21/2011 9:47:29 PM
+Modified:       3/21/2011 9:47:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#ifndef _VERTEXSHADER_H_
-#define _VERTEXSHADER_H_
+#ifndef _PIXELSHADER_H_
+#define _PIXELSHADER_H_
 #include "IRefCounted.h"
 #include "types.h"
 
-class CVertexShader : public IRefCounted
+class CPixelShader : public IRefCounted
 {
 public:
-    // CVertexShader constructor
-    CVertexShader();
+    // CPixelShader constructor
+    CPixelShader();
 
-    // CVertexShader destructor
-    ~CVertexShader();
+    // CPixelShader destructor
+    ~CPixelShader();
     /***************************************\
     | class methods                         |
     \***************************************/
@@ -37,4 +37,4 @@ private:
 };
 
 
-#endif // #ifndef _VERTEXSHADER_H_
+#endif // #ifndef _PIXELSHADER_H_

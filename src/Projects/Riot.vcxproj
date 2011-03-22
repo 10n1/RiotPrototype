@@ -21,9 +21,12 @@
   <ItemGroup>
     <ClCompile Include="..\code\Gfx\D3DGraphics.cpp" />
     <ClCompile Include="..\code\Gfx\D3DMesh.cpp" />
+    <ClCompile Include="..\code\Gfx\D3DPixelShader.cpp" />
     <ClCompile Include="..\code\Gfx\D3DVertexShader.cpp" />
     <ClCompile Include="..\code\Gfx\Graphics.cpp" />
+    <ClCompile Include="..\code\gfx\Material.cpp" />
     <ClCompile Include="..\code\Gfx\Mesh.cpp" />
+    <ClCompile Include="..\code\Gfx\PixelShader.cpp" />
     <ClCompile Include="..\code\Gfx\VertexShader.cpp" />
     <ClCompile Include="..\code\Gfx\View.cpp" />
     <ClCompile Include="..\code\Main\architecture.cpp" />
@@ -40,9 +43,12 @@
   <ItemGroup>
     <ClInclude Include="..\code\Gfx\D3DGraphics.h" />
     <ClInclude Include="..\code\Gfx\D3DMesh.h" />
+    <ClInclude Include="..\code\Gfx\D3DPixelShader.h" />
     <ClInclude Include="..\code\Gfx\D3DVertexShader.h" />
     <ClInclude Include="..\code\Gfx\Graphics.h" />
+    <ClInclude Include="..\code\Gfx\Material.h" />
     <ClInclude Include="..\code\Gfx\Mesh.h" />
+    <ClInclude Include="..\code\Gfx\PixelShader.h" />
     <ClInclude Include="..\code\Gfx\VertexShader.h" />
     <ClInclude Include="..\code\Gfx\View.h" />
     <ClInclude Include="..\code\Main\Input.h" />
