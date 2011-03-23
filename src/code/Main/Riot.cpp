@@ -48,9 +48,9 @@ void Riot::Run( void )
     Initialize();
 
     CObject* pObject = new CObject();
-    CMesh*   pMesh = m_pGraphics->CreateMesh( "lol not loading a mesh!" );
+    CMesh*   pMesh = m_pGraphics->CreateMesh( L"lol not loading a mesh!" );
     pObject->SetMesh( pMesh );
-    CMaterial* pMaterial = m_pGraphics->CreateMaterial( "Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
+    CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
     pObject->SetMaterial( pMaterial );
     m_pSceneGraph->AddObject( pObject );
     //-----------------------------------------------------------------------------
@@ -170,4 +170,13 @@ void Riot::Shutdown( void )
     //////////////////////////////////////////
     // This is the last thing called
     DumpMemoryLeaks( );
+}
+
+//-----------------------------------------------------------------------------
+//  GetGraphics
+//  Returns the current graphics interface
+//-----------------------------------------------------------------------------
+CGraphics* Riot::GetGraphics( void )
+{
+    return m_pGraphics;
 }

@@ -2,13 +2,14 @@
 File:           D3DMesh.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 7:59:35 PM
+Modified:       3/22/2011 10:42:12 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DMesh.h"
 #include <D3D11.h>
 #include "memory.h"
 #include <xnamath.h>
+#include <xmmintrin.h>
 
 // CD3DMesh constructor
 CD3DMesh::CD3DMesh()

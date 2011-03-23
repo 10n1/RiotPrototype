@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 7:56:55 PM
+Modified:       3/22/2011 11:01:06 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -151,7 +151,7 @@ uint CD3DGraphics::CreateDevice( CWindow* pWindow )
     if( FAILED( hr ) )
     {
         // TODO: Handle gracefully
-        MessageBox( 0, "Could not create DX device/swap chain", "Error", 0 );
+        MessageBox( 0, L"Could not create DX device/swap chain", L"Error", 0 );
         return 1;
     }
 
@@ -209,6 +209,12 @@ void CD3DGraphics::ReleaseBuffers( void )
 //-----------------------------------------------------------------------------
 void CD3DGraphics::CreateBuffers( uint nWidth, uint nHeight )
 {
+    if( m_pSwapChain == NULL )
+    {
+        // TODO: Handle error correctly
+        return;
+    }
+
     HRESULT hr = S_OK;
     // TODO: Don't use these hardcoded values
     int     nAACount = 1,
@@ -245,7 +251,7 @@ void CD3DGraphics::CreateBuffers( uint nWidth, uint nHeight )
     if(FAILED(hr))
     {
         // TODO: Handle gracefully
-        MessageBox( 0, "DepthStencil texture could not be created", "Error", 0 );
+        MessageBox( 0, L"DepthStencil texture could not be created", L"Error", 0 );
         return;
     }
 
@@ -259,7 +265,7 @@ void CD3DGraphics::CreateBuffers( uint nWidth, uint nHeight )
     if(FAILED(hr))
     {
         // TODO: Handle gracefully
-        MessageBox( 0, "DepthStencilView could not be created", "Error", 0 );
+        MessageBox( 0, L"DepthStencilView could not be created", L"Error", 0 );
         return;
     }
 
@@ -322,7 +328,7 @@ void CD3DGraphics::Present( void )
 //  CreateMesh
 //  Creates a mesh from the file
 //-----------------------------------------------------------------------------
-CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
+CMesh* CD3DGraphics::CreateMesh( const wchar_t* szFilename )
 {
     //static unsigned int nCount = 0;
     //sprintf( szNewfile, "%d.mesh", nCount );
@@ -401,7 +407,7 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
 #ifdef DEBUG
     nCompileFlags = D3DCOMPILE_DEBUG;
 #endif
-    hr = D3DX11CompileFromFile(  "Assets/Shaders/StandardVertexShader.hlsl", // Filename
+    hr = D3DX11CompileFromFile(  L"Assets/Shaders/StandardVertexShader.hlsl", // Filename
                                  NULL,           // Array of macro definitions
                                  NULL,           // #include interface
                                  "VS",           // Function name
@@ -417,7 +423,7 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
     {
         // TODO: Handle error gracefully
         DebugBreak();
-        MessageBox( 0, (char*)pErrorBlob->GetBufferPointer(), "Error", 0 );
+        MessageBox( 0, (wchar_t*)pErrorBlob->GetBufferPointer(), L"Error", 0 );
         SAFE_RELEASE( pErrorBlob );
     }
     SAFE_RELEASE( pErrorBlob );
@@ -428,7 +434,7 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
     {
         // TODO: Handle error gracefully
         DebugBreak();
-        MessageBox( 0, "Couldn't create shader", "Error", 0 );
+        MessageBox( 0, L"Couldn't create shader", L"Error", 0 );
         SAFE_RELEASE( pShaderBlob );
     }
 
@@ -443,7 +449,7 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
     {
         // TODO: Handle error gracefully
         DebugBreak();
-        MessageBox( 0, "Couldn't create input layout", "Error", 0 );
+        MessageBox( 0, L"Couldn't create input layout", L"Error", 0 );
         SAFE_RELEASE( pShaderBlob );
     } 
     SAFE_RELEASE( pShaderBlob );
@@ -461,7 +467,7 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
     {
         // TODO: Handle error gracefully
         DebugBreak();
-        MessageBox( 0, "Couldn't create Vertex buffer", "Error", 0 );
+        MessageBox( 0, L"Couldn't create Vertex buffer", L"Error", 0 );
     } 
 
     //////////////////////////////////////////
@@ -476,7 +482,7 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
     {
         // TODO: Handle error gracefully
         DebugBreak();
-        MessageBox( 0, "Couldn't create index buffer", "Error", 0 );
+        MessageBox( 0, L"Couldn't create index buffer", L"Error", 0 );
     } 
 
     pMesh->m_nIndexSize     = 16;
@@ -491,7 +497,7 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
 //  CreateMaterial
 //  Creates a material from a shader file
 //-----------------------------------------------------------------------------
-CMaterial* CD3DGraphics::CreateMaterial( const char* szFilename, const char* szEntryPoint, const char* szProfile )
+CMaterial* CD3DGraphics::CreateMaterial( const wchar_t* szFilename, const char* szEntryPoint, const char* szProfile )
 {    
     ID3DBlob*   pShaderBlob = NULL;
     ID3DBlob*   pErrorBlob = NULL;
@@ -525,7 +531,7 @@ CMaterial* CD3DGraphics::CreateMaterial( const char* szFilename, const char* szE
     {
         // TODO: Handle error gracefully
         DebugBreak();
-        MessageBox( 0, (char*)pErrorBlob->GetBufferPointer(), "Error", 0 );
+        MessageBox( 0, (wchar_t*)pErrorBlob->GetBufferPointer(), L"Error", 0 );
         SAFE_RELEASE( pErrorBlob );
     }
     SAFE_RELEASE( pErrorBlob );
@@ -536,7 +542,7 @@ CMaterial* CD3DGraphics::CreateMaterial( const char* szFilename, const char* szE
     {
         // TODO: Handle error gracefully
         DebugBreak();
-        MessageBox( 0, "Couldn't create shader", "Error", 0 );
+        MessageBox( 0, L"Couldn't create shader", L"Error", 0 );
         SAFE_RELEASE( pShaderBlob );
     }
 

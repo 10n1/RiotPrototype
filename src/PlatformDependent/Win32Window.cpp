@@ -5,6 +5,8 @@ Purpose:    Creating windows on Windows
 #include "Win32Window.h"
 #include <Windows.h>
 #include "Memory.h"
+#include "Riot.h"
+#include "Gfx\Graphics.h"
 
 //////////////////////////////////////////
 // Define this here rather than the header
@@ -23,7 +25,7 @@ uint CWin32Window::CreateMainWindow( uint nWidth, uint nHeight )
 {
     uint nResult = 0;
 
-    char szName[] = "Riot"; // TODO: Don't hardcode
+    wchar_t szName[] = L"Riot"; // TODO: Don't hardcode
     /////////////////////////////////////
     // Create and register the class
     HINSTANCE hInst = GetModuleHandle( NULL );
@@ -51,7 +53,7 @@ uint CWin32Window::CreateMainWindow( uint nWidth, uint nHeight )
     if( m_pSystemWindow == NULL )
     {
         // TODO: Handle correctly
-        MessageBox( 0, "CreateWindow failed", "Error", 0 );
+        MessageBox( 0, L"CreateWindow failed", L"Error", 0 );
         return 1;
     }
 
@@ -108,7 +110,7 @@ LRESULT CALLBACK _WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
             GetClientRect( hWnd, &rcClient );
             unsigned int nWidth = rcClient.right - rcClient.left;
             unsigned int nHeight = rcClient.bottom - rcClient.top;
-            
+            Riot::GetGraphics()->Resize( nWidth, nHeight );
             return 0;
         }
     case WM_KEYDOWN: 

@@ -4,7 +4,7 @@ Purpose:        Base interface for the graphics hardware/API
                 abstraction
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 7:56:55 PM
+Modified:       3/22/2011 10:45:57 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -97,13 +97,13 @@ public:
     //  CreateMesh
     //  Creates a mesh from the file
     //-----------------------------------------------------------------------------
-    virtual CMesh* CreateMesh( const char* szFilename ) = 0;
+    virtual CMesh* CreateMesh( const wchar_t* szFilename ) = 0;
     
     //-----------------------------------------------------------------------------
     //  CreateMaterial
     //  Creates a material from a shader file
     //-----------------------------------------------------------------------------
-    virtual CMaterial* CreateMaterial( const char* szFilename, const char* szEntryPoint, const char* szProfile ) = 0;
+    virtual CMaterial* CreateMaterial( const wchar_t* szFilename, const char* szEntryPoint, const char* szProfile ) = 0;
 
 protected:
     /***************************************\

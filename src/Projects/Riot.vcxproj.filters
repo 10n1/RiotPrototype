@@ -135,6 +135,7 @@
     <ClInclude Include="..\code\Gfx\D3DMaterial.h">
       <Filter>Gfx\D3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Misc.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\shaders\StandardVertexShader.hlsl">
