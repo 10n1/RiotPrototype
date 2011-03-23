@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Base interface for Direct3D
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 6:49:17 PM
+Modified:       3/22/2011 7:56:55 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -80,12 +80,6 @@ public:
     //  Sets the view projection constant buffer
     //-----------------------------------------------------------------------------
     void SetViewProj( const void* pView, const void* pProj );
-        
-    //-----------------------------------------------------------------------------
-    //  SetWorldMatrix
-    //  Sets the world transform matrix
-    //-----------------------------------------------------------------------------
-    void SetWorldMatrix( void* pWorld );
     
 public:
     /***************************************\

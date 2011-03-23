@@ -4,7 +4,7 @@ Purpose:        Base interface for the graphics hardware/API
                 abstraction
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 6:49:17 PM
+Modified:       3/22/2011 7:56:55 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -85,12 +85,6 @@ public:
     //-----------------------------------------------------------------------------
     virtual void SetViewProj( const void* pView, const void* pProj ) = 0;
     
-    //-----------------------------------------------------------------------------
-    //  SetWorldMatrix
-    //  Sets the world transform matrix
-    //-----------------------------------------------------------------------------
-    virtual void SetWorldMatrix( void* pWorld ) = 0;
-
 public:
     /***************************************\
     | object creation                       |

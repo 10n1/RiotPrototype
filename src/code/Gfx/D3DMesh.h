@@ -3,7 +3,7 @@ File:           D3DMesh.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 6:40:48 PM
+Modified:       3/22/2011 7:55:08 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DMESH_H_
@@ -11,7 +11,6 @@ Modified by:    Kyle Weicht
 #include "Mesh.h"
 
 struct ID3D11InputLayout;
-struct ID3D11Buffer;
 struct ID3D11Buffer;
 struct ID3D11DeviceContext;
 struct ID3D11VertexShader;
@@ -43,6 +42,7 @@ private:
     ID3D11InputLayout*      m_pVertexLayout;
     ID3D11Buffer*           m_pVertexBuffer;
     ID3D11Buffer*           m_pIndexBuffer;
+    ID3D11Buffer*           m_pWorldMatrixCB;
 
     ID3D11DeviceContext*    m_pDeviceContext;
 };

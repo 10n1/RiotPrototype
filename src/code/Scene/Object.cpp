@@ -2,7 +2,7 @@
 File:           Object.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/21/2011 10:44:05 PM
+Modified:       3/22/2011 7:57:31 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Object.h"
@@ -35,6 +35,12 @@ void CObject::Update( float fDeltaTime )
 {
     // TODO: TEMP
     m_vPosition = m_vPosition + XMVectorSet( fDeltaTime * 0.1f, fDeltaTime * 0.1f, 0.0f, 0.0f );
+
+    if( m_pMesh )
+    {
+        m_pMesh->m_vPosition = m_vPosition;
+        m_pMesh->m_vOrientation = m_vOrientation;
+    }
 }
 
 //-----------------------------------------------------------------------------

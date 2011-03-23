@@ -2,12 +2,13 @@
 File:           D3DMesh.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 6:41:01 PM
+Modified:       3/22/2011 7:59:35 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DMesh.h"
 #include <D3D11.h>
 #include "memory.h"
+#include <xnamath.h>
 
 // CD3DMesh constructor
 CD3DMesh::CD3DMesh()
@@ -16,6 +17,7 @@ CD3DMesh::CD3DMesh()
     , m_pIndexBuffer( NULL )
     , m_pDeviceContext( NULL )
     , m_pVertexShader( NULL )
+    , m_pWorldMatrixCB( NULL )
 {
 }
 
@@ -23,6 +25,7 @@ CD3DMesh::CD3DMesh()
 // CD3DMesh destructor
 CD3DMesh::~CD3DMesh()
 {
+    SAFE_RELEASE( m_pWorldMatrixCB );
     SAFE_RELEASE( m_pVertexShader );
     SAFE_RELEASE( m_pVertexLayout );
     SAFE_RELEASE( m_pVertexBuffer );
@@ -37,7 +40,13 @@ void CD3DMesh::DrawMesh( void )
 {
     // Set the shader
     m_pDeviceContext->VSSetShader( m_pVertexShader, NULL, 0 );
-    // TODO: Where do we set constant buffers?
+
+    // Set constant buffer
+    XMMATRIX mWorld = XMMatrixRotationQuaternion( m_vOrientation );
+    mWorld = mWorld * XMMatrixTranslationFromVector( m_vPosition );
+    mWorld = XMMatrixTranspose( mWorld );
+    m_pDeviceContext->UpdateSubresource( m_pWorldMatrixCB, 0, NULL, &mWorld, 0, 0 );
+    m_pDeviceContext->VSSetConstantBuffers( 1, 1, &m_pWorldMatrixCB );
 
     // Draw the mesh
     DXGI_FORMAT nIndexFormat = ( m_nIndexSize == 16 ) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT; // TODO: Clean this up

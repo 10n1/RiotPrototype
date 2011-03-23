@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 6:49:18 PM
+Modified:       3/22/2011 7:56:55 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -303,11 +303,6 @@ void CD3DGraphics::Render( CObject** ppObjects, uint nNumObjects )
     for( uint i = 0; i < nNumObjects; ++i )
     {
         ppObjects[i]->GetMaterial()->ApplyMaterial();
-
-        XMMATRIX mWorld = XMMatrixRotationQuaternion( ppObjects[i]->GetOrientation() );
-        mWorld = mWorld * XMMatrixTranslationFromVector( ppObjects[i]->GetPosition() );
-        SetWorldMatrix( &mWorld );
-
         ppObjects[i]->GetMesh()->DrawMesh();
     }
 }
@@ -395,6 +390,8 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
     //  Create the new mesh
     CD3DMesh*   pMesh = new CD3DMesh();
     pMesh->m_pDeviceContext = m_pContext;
+    pMesh->m_pWorldMatrixCB = m_pWorldCB;
+    m_pWorldCB->AddRef();
 
     //////////////////////////////////////////
     // Load the shader    
@@ -560,19 +557,4 @@ void CD3DGraphics::SetViewProj( const void* pView, const void* pProj )
 
     m_pContext->UpdateSubresource( m_pViewProjCB, 0, NULL, mMatrices, 0, 0 );
     m_pContext->VSSetConstantBuffers( 0, 1, &m_pViewProjCB );
-}
-
-//-----------------------------------------------------------------------------
-//  SetWorldMatrix
-//  Sets the world transform matrix
-//-----------------------------------------------------------------------------
-void CD3DGraphics::SetWorldMatrix( void* pWorld )
-{
-    XMMATRIX mMatrices[1] = 
-    { 
-        XMMatrixTranspose( *((XMMATRIX*)pWorld) ),
-    };
-
-    m_pContext->UpdateSubresource( m_pWorldCB, 0, NULL, mMatrices, 0, 0 );
-    m_pContext->VSSetConstantBuffers( 1, 1, &m_pWorldCB );
 }

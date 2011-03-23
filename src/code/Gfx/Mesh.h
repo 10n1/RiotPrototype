@@ -3,13 +3,15 @@ File:           Mesh.h
 Purpose:        Interface for holding geometry
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/21/2011 9:45:04 PM
+Modified:       3/22/2011 7:55:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MESH_H_
 #define _MESH_H_
 #include "IRefCounted.h"
 #include "Types.h"
+#include <Windows.h>
+#include <xnamath.h>
 
 
 /********************* File Format ***********************\
@@ -21,8 +23,11 @@ float   fVerts[]
 uint    nIndices[]
 \*********************************************************/
 
+class CObject;
+
 class CMesh : public IRefCounted
 {
+    friend class CObject;
 public:
     // CMesh constructor
     CMesh();
@@ -43,9 +48,11 @@ protected:
     /***************************************\
     | class members                         |
     \***************************************/
-    uint    m_nVertexSize;
-    uint    m_nIndexCount;
-    uint    m_nIndexSize;
+    XMVECTOR    m_vPosition;
+    XMVECTOR    m_vOrientation;
+    uint        m_nVertexSize;
+    uint        m_nIndexCount;
+    uint        m_nIndexSize;
 };
 
 
