@@ -4,7 +4,7 @@ Purpose:        Base interface for the graphics hardware/API
                 abstraction
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/21/2011 9:52:09 PM
+Modified:       3/22/2011 6:49:17 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -15,7 +15,7 @@ Modified by:    Kyle Weicht
 class CWindow;
 class CObject;
 class CMesh;
-class CPixelShader;
+class CMaterial;
 
 class CGraphics : public IRefCounted
 {
@@ -106,10 +106,10 @@ public:
     virtual CMesh* CreateMesh( const char* szFilename ) = 0;
     
     //-----------------------------------------------------------------------------
-    //  CreatePixelShader
-    //  Loads and creates a pixel shader
+    //  CreateMaterial
+    //  Creates a material from a shader file
     //-----------------------------------------------------------------------------
-    virtual CPixelShader* CreatePixelShader( const char* szFilename, const char* szEntryPoint, const char* szProfile ) = 0;
+    virtual CMaterial* CreateMaterial( const char* szFilename, const char* szEntryPoint, const char* szProfile ) = 0;
 
 protected:
     /***************************************\

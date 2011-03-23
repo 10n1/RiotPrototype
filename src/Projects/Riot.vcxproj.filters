@@ -67,12 +67,6 @@
     <ClCompile Include="..\code\Gfx\D3DMesh.cpp">
       <Filter>Gfx\D3D</Filter>
     </ClCompile>
-    <ClCompile Include="..\code\Gfx\VertexShader.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Gfx\D3DVertexShader.cpp">
-      <Filter>Gfx\D3D</Filter>
-    </ClCompile>
     <ClCompile Include="..\code\Scene\Object.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -82,10 +76,7 @@
     <ClCompile Include="..\code\gfx\Material.cpp">
       <Filter>Gfx</Filter>
     </ClCompile>
-    <ClCompile Include="..\code\Gfx\PixelShader.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Gfx\D3DPixelShader.cpp">
+    <ClCompile Include="..\code\gfx\D3DMaterial.cpp">
       <Filter>Gfx\D3D</Filter>
     </ClCompile>
   </ItemGroup>
@@ -132,12 +123,6 @@
     <ClInclude Include="..\code\Gfx\D3DMesh.h">
       <Filter>Gfx\D3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\code\Gfx\VertexShader.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Gfx\D3DVertexShader.h">
-      <Filter>Gfx\D3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\code\Scene\SceneGraph.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -147,10 +132,7 @@
     <ClInclude Include="..\code\Gfx\Material.h">
       <Filter>Gfx</Filter>
     </ClInclude>
-    <ClInclude Include="..\code\Gfx\PixelShader.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Gfx\D3DPixelShader.h">
+    <ClInclude Include="..\code\Gfx\D3DMaterial.h">
       <Filter>Gfx\D3D</Filter>
     </ClInclude>
   </ItemGroup>

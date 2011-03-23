@@ -50,9 +50,7 @@ void Riot::Run( void )
     CObject* pObject = new CObject();
     CMesh*   pMesh = m_pGraphics->CreateMesh( "lol not loading a mesh!" );
     pObject->SetMesh( pMesh );
-    CMaterial* pMaterial = new CMaterial();
-    CPixelShader* pShader = m_pGraphics->CreatePixelShader( "Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
-    pMaterial->SetPixelShader( pShader );
+    CMaterial* pMaterial = m_pGraphics->CreateMaterial( "Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
     pObject->SetMaterial( pMaterial );
     m_pSceneGraph->AddObject( pObject );
     //-----------------------------------------------------------------------------

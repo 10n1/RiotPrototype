@@ -4,7 +4,7 @@ Purpose:        Property for holding pixel shaders/textures
                 and in general describing how an object looks
 Author:         Kyle Weicht
 Created:        3/21/2011
-Modified:       3/21/2011 9:47:29 PM
+Modified:       3/22/2011 6:49:17 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MATERIAL_H_
@@ -27,23 +27,15 @@ public:
     \***************************************/
 
     //-----------------------------------------------------------------------------
-    //  SetPixelShader
-    //  Sets the materials pixel shader
-    //  TODO: Support multiple pixel shaders
-    //-----------------------------------------------------------------------------
-    void SetPixelShader( CPixelShader* pShader );
-
-    //-----------------------------------------------------------------------------
     //  ApplyMaterial
     //  Applies the material to the pipeline
     //-----------------------------------------------------------------------------
-    void ApplyMaterial( void );
+    virtual void ApplyMaterial( void ) = 0;
 
 private:
     /***************************************\
     | class members                         |
     \***************************************/
-    CPixelShader*   m_pPixelShader;
 };
 
 

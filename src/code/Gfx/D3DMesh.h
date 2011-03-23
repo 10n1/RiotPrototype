@@ -3,7 +3,7 @@ File:           D3DMesh.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/20/2011 12:38:34 AM
+Modified:       3/22/2011 6:40:48 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DMESH_H_
@@ -14,7 +14,7 @@ struct ID3D11InputLayout;
 struct ID3D11Buffer;
 struct ID3D11Buffer;
 struct ID3D11DeviceContext;
-struct CVertexShader;
+struct ID3D11VertexShader;
 class CD3DGraphics;
 
 class CD3DMesh : public CMesh
@@ -39,7 +39,7 @@ private:
     /***************************************\
     | class members                         |
     \***************************************/
-    CVertexShader*          m_pVertexShader;
+    ID3D11VertexShader*     m_pVertexShader;
     ID3D11InputLayout*      m_pVertexLayout;
     ID3D11Buffer*           m_pVertexBuffer;
     ID3D11Buffer*           m_pIndexBuffer;

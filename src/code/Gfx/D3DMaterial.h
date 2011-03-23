@@ -1,45 +1,47 @@
 /*********************************************************\
-File:           D3DPixelShader.h
+File:           D3DMaterial.h
 Purpose:        
 Author:         Kyle Weicht
-Created:        3/20/2011
-Modified:       3/21/2011 9:47:29 PM
+Created:        3/22/2011
+Modified:       3/22/2011 6:50:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#ifndef _D3DPIXELSHADER_H_
-#define _D3DPIXELSHADER_H_
-#include "PixelShader.h"
+#ifndef _D3DMATERIAL_H_
+#define _D3DMATERIAL_H_
+#include "Material.h"
+#include "types.h"
+#include "memory.h"
 
 struct ID3D11PixelShader;
 struct ID3D11DeviceContext;
 class CD3DGraphics;
 
-class CD3DPixelShader : public CPixelShader
+class CD3DMaterial : public CMaterial
 {
     friend class CD3DGraphics;
 public:
-    // CD3DPixelShader constructor
-    CD3DPixelShader();
+    // CD3DMaterial constructor
+    CD3DMaterial();
 
-    // CD3DPixelShader destructor
-    ~CD3DPixelShader();
+    // CD3DMaterial destructor
+    ~CD3DMaterial();
     /***************************************\
     | class methods                         |
     \***************************************/
     
     //-----------------------------------------------------------------------------
-    //  ApplyShader
-    //  Applys the shader to the pipeline
+    //  ApplyMaterial
+    //  Applies the material to the pipeline
     //-----------------------------------------------------------------------------
-    void ApplyShader( void );
+    void ApplyMaterial( void );
 private:
     /***************************************\
     | class members                         |
-    \***************************************/    
-    ID3D11PixelShader*     m_pShader;
+    \***************************************/
+    ID3D11PixelShader*      m_pPixelShader;
 
     ID3D11DeviceContext*    m_pDeviceContext;
 };
 
 
-#endif // #ifndef _D3DPIXELSHADER_H_
+#endif // #ifndef _D3DMATERIAL_H_

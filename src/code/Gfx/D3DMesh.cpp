@@ -2,11 +2,10 @@
 File:           D3DMesh.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/21/2011 9:47:30 PM
+Modified:       3/22/2011 6:41:01 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DMesh.h"
-#include "D3DVertexShader.h"
 #include <D3D11.h>
 #include "memory.h"
 
@@ -37,7 +36,7 @@ CD3DMesh::~CD3DMesh()
 void CD3DMesh::DrawMesh( void )
 {
     // Set the shader
-    m_pVertexShader->ApplyShader();
+    m_pDeviceContext->VSSetShader( m_pVertexShader, NULL, 0 );
     // TODO: Where do we set constant buffers?
 
     // Draw the mesh

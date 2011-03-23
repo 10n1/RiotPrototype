@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/21/2011 10:37:05 PM
+Modified:       3/22/2011 6:49:18 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -12,8 +12,7 @@ Modified by:    Kyle Weicht
 #include <D3Dcompiler.h>
 #include "Scene/Object.h"
 #include "D3DMesh.h"
-#include "D3DVertexShader.h"
-#include "D3DPixelShader.h"
+#include "D3DMaterial.h"
 #include "Material.h"
 #include <fstream>
 #include <xnamath.h>
@@ -398,10 +397,7 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
     pMesh->m_pDeviceContext = m_pContext;
 
     //////////////////////////////////////////
-    // Load the shader
-    CD3DVertexShader*   pVShader = new CD3DVertexShader();
-    pVShader->m_pDeviceContext = m_pContext;
-    
+    // Load the shader    
     ID3DBlob*   pShaderBlob = NULL;
     ID3DBlob*   pErrorBlob = NULL;
     uint nCompileFlags = 0;
@@ -430,7 +426,7 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
     SAFE_RELEASE( pErrorBlob );
 
     // Now create the shader
-    hr = m_pDevice->CreateVertexShader( pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), NULL, &pVShader->m_pShader );
+    hr = m_pDevice->CreateVertexShader( pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), NULL, &pMesh->m_pVertexShader );
     if( FAILED( hr ) )
     {
         // TODO: Handle error gracefully
@@ -438,9 +434,6 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
         MessageBox( 0, "Couldn't create shader", "Error", 0 );
         SAFE_RELEASE( pShaderBlob );
     }
-
-    // Pass the shader to the mesh
-    pMesh->m_pVertexShader = pVShader;
 
     //////////////////////////////////////////
     // Create input layout
@@ -498,20 +491,23 @@ CMesh* CD3DGraphics::CreateMesh( const char* szFilename )
 
 
 //-----------------------------------------------------------------------------
-//  CreatePixelShader
-//  Loads and creates a pixel shader
+//  CreateMaterial
+//  Creates a material from a shader file
 //-----------------------------------------------------------------------------
-CPixelShader* CD3DGraphics::CreatePixelShader( const char* szFilename, const char* szEntryPoint, const char* szProfile )
+CMaterial* CD3DGraphics::CreateMaterial( const char* szFilename, const char* szEntryPoint, const char* szProfile )
 {    
     ID3DBlob*   pShaderBlob = NULL;
     ID3DBlob*   pErrorBlob = NULL;
-    uint nCompileFlags = 0;
-    HRESULT hr = S_OK;
+    uint        nCompileFlags = 0;
+    HRESULT     hr = S_OK;
+
+    //////////////////////////////////////////
+    // Create the material
+    CD3DMaterial*   pMaterial = new CD3DMaterial();
+    pMaterial->m_pDeviceContext = m_pContext;
 
     //////////////////////////////////////////
     // Load the shader
-    CD3DPixelShader*   pShader = new CD3DPixelShader();
-    pShader->m_pDeviceContext = m_pContext;
     
 #ifdef DEBUG
     nCompileFlags = D3DCOMPILE_DEBUG;
@@ -538,7 +534,7 @@ CPixelShader* CD3DGraphics::CreatePixelShader( const char* szFilename, const cha
     SAFE_RELEASE( pErrorBlob );
 
     // Now create the shader
-    hr = m_pDevice->CreatePixelShader( pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), NULL, &pShader->m_pShader );
+    hr = m_pDevice->CreatePixelShader( pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), NULL, &pMaterial->m_pPixelShader );
     if( FAILED( hr ) )
     {
         // TODO: Handle error gracefully
@@ -547,7 +543,7 @@ CPixelShader* CD3DGraphics::CreatePixelShader( const char* szFilename, const cha
         SAFE_RELEASE( pShaderBlob );
     }
 
-    return pShader;
+    return pMaterial;
 }
 
 //-----------------------------------------------------------------------------
