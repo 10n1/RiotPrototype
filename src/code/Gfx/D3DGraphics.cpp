@@ -14,6 +14,7 @@ Modified by:    Kyle Weicht
 #include "D3DMesh.h"
 #include "D3DMaterial.h"
 #include "Material.h"
+#include "Gfx\View.h"
 #include <fstream>
 #include <xnamath.h>
 #include "Memory.h"
@@ -547,6 +548,17 @@ CMaterial* CD3DGraphics::CreateMaterial( const wchar_t* szFilename, const char* 
     }
 
     return pMaterial;
+}
+
+//-----------------------------------------------------------------------------
+//  SetView
+//  Set the current view ... used to set the view projection constant buffer
+//-----------------------------------------------------------------------------
+void CD3DGraphics::SetView( CView* pView )
+{
+    XMMATRIX mView = pView->GetViewMatrix();
+    XMMATRIX mProj = pView->GetProjMatrix();
+    SetViewProj( &mView, &mProj );
 }
 
 //-----------------------------------------------------------------------------

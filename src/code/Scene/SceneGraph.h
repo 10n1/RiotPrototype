@@ -11,6 +11,7 @@ Modified by:    Kyle Weicht
 #include "Types.h"
 
 class CObject;
+class CView;
 
 class CSceneGraph
 {
@@ -53,6 +54,18 @@ public:
     //-----------------------------------------------------------------------------
     CObject** GetRenderObjects( uint* nCount );
 
+    //-----------------------------------------------------------------------------
+    //  AddView
+    //  Adds a view to the scene
+    //-----------------------------------------------------------------------------
+    void AddView( CView* pView );
+
+    //-----------------------------------------------------------------------------
+    //  GetMainView
+    //  Returns the current active view
+    //-----------------------------------------------------------------------------
+    CView* GetMainView( void );
+
 private:
     /***************************************\
     | class members                         |
@@ -62,6 +75,10 @@ private:
 
     uint        m_nNumTotalObjects;
     uint        m_nNumRenderObjects;
+
+    CView*      m_pMainView;
+    CView**     m_ppAllViews;
+    uint        m_nNumViews;
 };
 
 

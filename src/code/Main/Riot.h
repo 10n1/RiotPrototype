@@ -53,7 +53,6 @@ private:
     static CWindow*     m_pMainWindow;
     static CGraphics*   m_pGraphics;
     static CSceneGraph* m_pSceneGraph;
-    static CView*       m_pMainView;
 
     static bool         m_bRunning;
 };

@@ -116,6 +116,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\..\obj\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(dxsdk_dir)Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(dxsdk_dir)Lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -128,6 +130,8 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\..\obj\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(dxsdk_dir)Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(dxsdk_dir)Lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

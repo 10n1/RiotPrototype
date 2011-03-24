@@ -32,7 +32,6 @@ RiotInput*      Riot::m_pInput          = NULL;
 CWindow*        Riot::m_pMainWindow     = NULL;
 CGraphics*      Riot::m_pGraphics       = NULL;
 CSceneGraph*    Riot::m_pSceneGraph     = NULL;
-CView*          Riot::m_pMainView       = NULL;
 
 bool            Riot::m_bRunning        = true;
     
@@ -81,10 +80,7 @@ void Riot::Run( void )
         // Render
 
         // Update and set the view matrix
-        m_pMainView->UpdateViewMatrix();
-        XMMATRIX mView = m_pMainView->GetViewMatrix();
-        XMMATRIX mProj = m_pMainView->GetProjMatrix();
-        m_pGraphics->SetViewProj( &mView, &mProj );
+        m_pGraphics->SetView( m_pSceneGraph->GetMainView() );
 
         m_pGraphics->PrepareRender();
         uint nNumRenderObjects = 0;
@@ -150,10 +146,6 @@ void Riot::Initialize( void )
     //////////////////////////////////////////
     //  Get the scene graph
     m_pSceneGraph = CSceneGraph::GetInstance();
-
-    //////////////////////////////////////////
-    // Create the main view
-    m_pMainView = new CView();
 }
 
 //-----------------------------------------------------------------------------
@@ -162,7 +154,6 @@ void Riot::Initialize( void )
 //-----------------------------------------------------------------------------
 void Riot::Shutdown( void )
 {    
-    SAFE_RELEASE( m_pMainView );
     SAFE_RELEASE( m_pGraphics );
     SAFE_RELEASE( m_pMainWindow );
     SAFE_RELEASE( m_pInput );
