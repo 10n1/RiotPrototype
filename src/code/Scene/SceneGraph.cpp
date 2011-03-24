@@ -2,7 +2,7 @@
 File:           SceneGraph.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/23/2011 7:04:12 PM
+Modified:       3/23/2011 9:22:31 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "SceneGraph.h"
@@ -12,8 +12,6 @@ Modified by:    Kyle Weicht
 #include "Gfx\Graphics.h"
 #include <memory> // for memcpy
 #define new DEBUG_NEW
-
-#define MAX_OBJECTS (16*1024)
 
 // CSceneGraph constructor
 CSceneGraph::CSceneGraph()

@@ -2,13 +2,14 @@
 File:           Object.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/23/2011 7:04:12 PM
+Modified:       3/23/2011 10:40:45 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Object.h"
 #include "memory.h"
 #include "Gfx\Mesh.h"
 #include "Gfx\Material.h"
+#include "ComponentManager.h"
 #define new DEBUG_NEW
 
 // CObject constructor
@@ -18,6 +19,11 @@ CObject::CObject()
 {
     m_vPosition = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
     m_vOrientation = XMVectorSet( 0.0f, 0.0f, 0.0f, 1.0f );
+
+    for( uint i = 0; i < eNUMCOMPONENTS; ++i )
+    {
+        m_pComponentIndices[i] = -1; // -1 means the object doesn't have that component
+    }
 }
 
 // CObject destructor
@@ -25,6 +31,18 @@ CObject::~CObject()
 {
     SAFE_RELEASE( m_pMesh );
     SAFE_RELEASE( m_pMaterial );
+}
+
+
+//-----------------------------------------------------------------------------
+//  AddComponent
+//  Adds a component of the specified type
+//-----------------------------------------------------------------------------
+void CObject::AddComponent( eComponentType nType )
+{
+    uint nIndex = CComponentManager::GetInstance()->AddComponent( nType, this );
+
+    m_pComponentIndices[ nType ] = nIndex;
 }
 
 //-----------------------------------------------------------------------------

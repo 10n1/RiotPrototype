@@ -79,6 +79,12 @@
     <ClCompile Include="..\code\gfx\D3DMaterial.cpp">
       <Filter>Gfx\D3D</Filter>
     </ClCompile>
+    <ClCompile Include="..\code\scene\Component.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\scene\ComponentManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\code\Main\Input.h">
@@ -137,10 +143,17 @@
     </ClInclude>
     <ClInclude Include="..\Misc.h" />
     <ClInclude Include="..\code\main\Common.h" />
+    <ClInclude Include="..\code\Scene\Component.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\scene\ComponentManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\shaders\StandardVertexShader.hlsl">
       <Filter>assets\shaders</Filter>
     </None>
+    <None Include="..\code\ComponentSystem.txt" />
   </ItemGroup>
 </Project>

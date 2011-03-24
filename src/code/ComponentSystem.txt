@@ -1,0 +1,99 @@
+Terminology:
+    ComponentType:  Each specific type of component (Position, Render, Explosion, etc.)
+    Component:      An index within a ComponentType representing one piece of data
+
+Every ComponentType has this structure:
+
+|---------------------------------------------------|
+|   ComponentType                                   |
+|-----------------------|---------------------------|
+| Object* pObjects[MAX] | Data  theData[MAX]        |
+|-----------------------|---------------------------|
+|         ptr0          | DataForObjPointedToByPtr0 |
+|         ptr1          | DataForObjPointedToByPtr1 |
+|         ptr2          | DataForObjPointedToByPtr2 |
+|         ptr3          | DataForObjPointedToByPtr3 |
+|         ptr4          | DataForObjPointedToByPtr4 |
+|         ptr5          | DataForObjPointedToByPtr5 |
+|         ptr6          | DataForObjPointedToByPtr6 |
+|         ptry          | DataForObjPointedToByPtr7 |
+|-----------------------|---------------------------|
+
+Both the Objects and Data are stored in arrays of whatever
+max size is specified. Currently it's MAX_OBJECTS, which
+allows every object to have every component potentially.
+This number can be optimized later
+
+Each index can be considered a component. Data[0] is one
+specific component, for the object pointed to by pObjects[0].
+
+The Data will consist of whatever data that specific component
+requires. For the PositionComponent, this is just a simple
+Vector. Rendering will be a Mesh*, a Material* and a Transform.
+
+Only one of each ComponentType actually exists. So there is only 
+one PositionComponent, because the ComponentType contains
+the individual components. When an object needs a Position, it
+just asks for one from the single PositionComponent, the 
+component grabs one of its free indices, and returns that index.
+Then ObjectA knows that it's Position is stored in 
+PositionComponent[ nIndex ]. It should never directly access it,
+but this will make it easier for us to debug.
+
+
+
+Processing the components:
+
+Every frame, each ComponentType is processed. For some ComponentTypes
+ (Position), this means nothing, its just an empty function.
+For more complex function components, something will happen. Ex:
+
+void PositionComponent::ProcessComponent( void )
+{
+    // This component does nothing
+}
+
+
+void RenderComponent::ProcessComponent( void )
+{
+    for( int i = 0; i < nNumComponents; ++i )
+    {
+        Graphics->DrawObjectWithData( theData[i] );
+    }
+}
+
+The complexity for each function is contained entirely within ProcessComponent,
+so there is absolutly no overhead for data-only components.
+
+To handle all these different ComponentTypes, a ComponentManager
+is utilized. All this component manager does is acts as a proxy
+between objects and the individual components.
+
+Every frame, the component manager will loop through every ComponentType
+and tell it to process.
+
+void ProcessAllComponents( void )
+{
+    // First update the components....
+    for each type ComponentType
+    {
+        type->ProcessComponent();
+    }
+
+    // ...then resolve any issues
+    for each message
+    {
+        HandleMessage( message );
+    }
+}
+
+
+
+Handling dependencies:
+
+I haven't figured this out yet, but I'm thinking something like this.
+Each ComponentType has some sort of Data dependency. So it registers
+for a message about that kind of Data. Then any time something changes
+that data (ex, Position), it fires off a message containing the changed
+data and the object. Every ComponentType that needs that data will
+capture that message and update its local copy of the data.

@@ -12,6 +12,7 @@ Purpose:    Definition of the main engine
 #include "Scene\Object.h"
 #include "Gfx\View.h"
 #include "Gfx\Material.h"
+#include "Scene\ComponentManager.h"
 
 #if defined( OS_WINDOWS )
 #include "PlatformDependent\Win32Window.h"
@@ -27,16 +28,16 @@ Purpose:    Definition of the main engine
 #include "Memory.h"
 #define new DEBUG_NEW
 
-uint            Riot::m_nFrameCount     = 0;
-float           Riot::m_fElapsedTime    = 0.0f;
-float           Riot::m_fRunningTime    = 0.0f;
-RiotInput*      Riot::m_pInput          = NULL;
-CWindow*        Riot::m_pMainWindow     = NULL;
-CGraphics*      Riot::m_pGraphics       = NULL;
-CSceneGraph*    Riot::m_pSceneGraph     = NULL;
-CView*          Riot::m_pMainView       = NULL;
+uint                Riot::m_nFrameCount     = 0;
+float               Riot::m_fElapsedTime    = 0.0f;
+float               Riot::m_fRunningTime    = 0.0f;
+RiotInput*          Riot::m_pInput          = NULL;
+CWindow*            Riot::m_pMainWindow     = NULL;
+CGraphics*          Riot::m_pGraphics       = NULL;
+CSceneGraph*        Riot::m_pSceneGraph     = NULL;
+CComponentManager*  Riot::m_pComponentManager = NULL;
 
-bool            Riot::m_bRunning        = true;
+bool                Riot::m_bRunning        = true;
     
 //-----------------------------------------------------------------------------
 //  Run
@@ -55,6 +56,8 @@ void Riot::Run( void )
     CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
     pObject->SetMaterial( pMaterial );
     m_pSceneGraph->AddObject( pObject );
+
+    pObject->AddComponent( eComponentPosition );
     //-----------------------------------------------------------------------------
 
     Timer timer; // TODO: Should the timer be a class member?
@@ -148,8 +151,12 @@ void Riot::Initialize( void )
 
     //////////////////////////////////////////
     // Create the main view
-    m_pMainView = new CView();
-    m_pSceneGraph->AddView( m_pMainView );
+    CView* pView = new CView();
+    m_pSceneGraph->AddView( pView );
+
+    //////////////////////////////////////////
+    // Create the component manager
+    m_pComponentManager = CComponentManager::GetInstance();
 }
 
 //-----------------------------------------------------------------------------
