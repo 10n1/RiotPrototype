@@ -136,6 +136,7 @@
       <Filter>Gfx\D3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Misc.h" />
+    <ClInclude Include="..\code\main\Common.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\shaders\StandardVertexShader.hlsl">

@@ -4,6 +4,7 @@ Purpose:    Creating windows on Windows
 \*********************************************************/
 #ifndef _WIN32WINDOW_H_
 #define _WIN32WINDOW_H_
+#include "Common.h"
 #include "Window.h"
 
 class CWin32Window : public CWindow

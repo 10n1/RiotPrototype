@@ -2,13 +2,14 @@
 File:           Object.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 7:57:31 PM
+Modified:       3/23/2011 7:04:12 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Object.h"
 #include "memory.h"
 #include "Gfx\Mesh.h"
 #include "Gfx\Material.h"
+#define new DEBUG_NEW
 
 // CObject constructor
 CObject::CObject()

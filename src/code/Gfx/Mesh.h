@@ -3,11 +3,12 @@ File:           Mesh.h
 Purpose:        Interface for holding geometry
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 7:55:28 PM
+Modified:       3/23/2011 7:07:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MESH_H_
 #define _MESH_H_
+#include "Common.h"
 #include "IRefCounted.h"
 #include "Types.h"
 #include <Windows.h>

@@ -3,11 +3,12 @@ File:           D3DGraphics.h
 Purpose:        Base interface for Direct3D
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 10:45:57 PM
+Modified:       3/23/2011 7:07:43 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
 #define _D3DGRAPHICS_H_
+#include "Common.h"
 #include "Graphics.h"
 #include <Windows.h>
 #include <xnamath.h>

@@ -2,6 +2,7 @@
 File:       Riot.cpp
 Purpose:    Definition of the main engine
 \*********************************************************/
+#include "Common.h"
 #include "Riot.h"
 #include "Timer.h"
 #include <stdio.h> // For printf
@@ -24,6 +25,7 @@ Purpose:    Definition of the main engine
 #include "Gfx\GLGraphics.h"
 #endif
 #include "Memory.h"
+#define new DEBUG_NEW
 
 uint            Riot::m_nFrameCount     = 0;
 float           Riot::m_fElapsedTime    = 0.0f;
@@ -79,13 +81,6 @@ void Riot::Run( void )
 
         //////////////////////////////////////////
         // Render
-
-        // Update and set the view matrix
-        m_pMainView->UpdateViewMatrix();
-        XMMATRIX mView = m_pMainView->GetViewMatrix();
-        XMMATRIX mProj = m_pMainView->GetProjMatrix();
-        m_pGraphics->SetViewProj( &mView, &mProj );
-
         m_pGraphics->PrepareRender();
         uint nNumRenderObjects = 0;
         CObject** ppObjects = m_pSceneGraph->GetRenderObjects( &nNumRenderObjects );
@@ -154,6 +149,7 @@ void Riot::Initialize( void )
     //////////////////////////////////////////
     // Create the main view
     m_pMainView = new CView();
+    m_pSceneGraph->AddView( m_pMainView );
 }
 
 //-----------------------------------------------------------------------------
@@ -161,11 +157,10 @@ void Riot::Initialize( void )
 //  Shuts down and cleans up the engine
 //-----------------------------------------------------------------------------
 void Riot::Shutdown( void )
-{    
-    SAFE_RELEASE( m_pMainView );
+{
+    SAFE_RELEASE( m_pInput );
     SAFE_RELEASE( m_pGraphics );
     SAFE_RELEASE( m_pMainWindow );
-    SAFE_RELEASE( m_pInput );
 
     //////////////////////////////////////////
     // This is the last thing called

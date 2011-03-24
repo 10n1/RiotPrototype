@@ -3,11 +3,12 @@ File:           Object.h
 Purpose:        Base interface for every object in the scene
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/21/2011 8:45:11 PM
+Modified:       3/23/2011 7:07:43 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECT_H_
 #define _OBJECT_H_
+#include "Common.h"
 #include "IRefCounted.h"
 #include "Types.h"
 

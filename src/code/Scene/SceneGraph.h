@@ -3,14 +3,16 @@ File:           SceneGraph.h
 Purpose:        Controls the entire scene
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 5:40:01 PM
+Modified:       3/23/2011 7:07:43 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SCENEGRAPH_H_
 #define _SCENEGRAPH_H_
+#include "Common.h"
 #include "Types.h"
 
 class CObject;
+class CView;
 
 class CSceneGraph
 {
@@ -39,7 +41,12 @@ public:
     void AddObject( CObject* pObject );
     // TODO: How do we remove an object?
     // TODO: Where are the objects created?
-
+    
+    //-----------------------------------------------------------------------------
+    //  AddView
+    //  Adds a view to the scene
+    //-----------------------------------------------------------------------------
+    void AddView( CView* pView );
     
     //-----------------------------------------------------------------------------
     //  UpdateObjects
@@ -59,9 +66,12 @@ private:
     \***************************************/
     CObject**   m_ppAllSceneObjects;
     CObject**   m_ppRenderObjects;
+    CView*      m_ppViews[8];
+    CView*      m_pActiveView;
 
     uint        m_nNumTotalObjects;
     uint        m_nNumRenderObjects;
+    uint        m_nNumViews;
 };
 
 

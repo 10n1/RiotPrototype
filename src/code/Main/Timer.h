@@ -4,6 +4,7 @@ Purpose:    High performance, high precision timer
 \*********************************************************/
 #ifndef _TIMER_H_
 #define _TIMER_H_
+#include "Common.h"
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN

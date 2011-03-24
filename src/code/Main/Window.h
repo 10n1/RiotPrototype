@@ -5,6 +5,7 @@ Purpose:    Abstration for creating a platform-independent
 \*********************************************************/
 #ifndef _WINDOW_H_
 #define _WINDOW_H_
+#include "Common.h"
 #include "Types.h"
 #include "IRefCounted.h"
 

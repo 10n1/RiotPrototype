@@ -4,6 +4,7 @@ Purpose:    Main header for the Riot engine
 \*********************************************************/
 #ifndef _RIOT_H_
 #define _RIOT_H_
+#include "Common.h"
 #include "Types.h"
 #include "Memory.h"
 #include "IRefCounted.h"

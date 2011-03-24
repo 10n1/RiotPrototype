@@ -45,6 +45,7 @@
     <ClInclude Include="..\code\Gfx\Material.h" />
     <ClInclude Include="..\code\Gfx\Mesh.h" />
     <ClInclude Include="..\code\Gfx\View.h" />
+    <ClInclude Include="..\code\main\Common.h" />
     <ClInclude Include="..\code\Main\Input.h" />
     <ClInclude Include="..\code\Main\IRefCounted.h" />
     <ClInclude Include="..\code\Main\Memory.h" />

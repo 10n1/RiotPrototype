@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 11:01:06 PM
+Modified:       3/23/2011 7:07:43 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -16,7 +16,7 @@ Modified by:    Kyle Weicht
 #include "Material.h"
 #include <fstream>
 #include <xnamath.h>
-#include "Memory.h"
+#include "View.h"
 
 // CD3DGraphics constructor
 CD3DGraphics::CD3DGraphics()
@@ -306,10 +306,22 @@ void CD3DGraphics::Render( CObject** ppObjects, uint nNumObjects )
 {
     //////////////////////////////////////////////
     // Perform rendering
+
+    // Update and set the view matrix
+    XMMATRIX mView = m_pCurrView->GetViewMatrix();
+    XMMATRIX mProj = m_pCurrView->GetProjMatrix();
+    SetViewProj( &mView, &mProj );
+
+    // Render objects
     for( uint i = 0; i < nNumObjects; ++i )
     {
-        ppObjects[i]->GetMaterial()->ApplyMaterial();
-        ppObjects[i]->GetMesh()->DrawMesh();
+        CMaterial* pMaterial = ppObjects[i]->GetMaterial();
+        CMesh*     pMesh = ppObjects[i]->GetMesh();
+        if( pMesh && pMaterial )
+        {
+            pMaterial->ApplyMaterial();
+            pMesh->DrawMesh();
+        }
     }
 }
 

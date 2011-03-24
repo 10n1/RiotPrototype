@@ -3,6 +3,7 @@ File:       Input.cpp
 Purpose:    Definition of the input system
 \*********************************************************/
 #include "Input.h"
+#include "Common.h"
 
 RiotInput::RiotInput( )
 {

@@ -4,11 +4,12 @@ Purpose:        Interface for anything in the engine that
                 can "view", aka, a camera
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/21/2011 9:36:35 PM
+Modified:       3/23/2011 7:07:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VIEW_H_
 #define _VIEW_H_
+#include "Common.h"
 #include "Scene\Object.h"
 #include "Types.h"
 #include <Windows.h>
@@ -44,12 +45,13 @@ public:
     //-----------------------------------------------------------------------------
     void RotateX( float fRad );
     void RotateY( float fRad );
-
+    
     //-----------------------------------------------------------------------------
-    //  UpdateViewMatrix
-    //  Updates the view matrix
+    //  Update
+    //  Updates the object
+    //  TODO: Pre- and Post- updates?
     //-----------------------------------------------------------------------------
-    void UpdateViewMatrix( void );
+    void Update( float fDeltaTime );
 
     //-----------------------------------------------------------------------------
     //  SetPerspective

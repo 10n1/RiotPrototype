@@ -4,6 +4,7 @@ Purpose:    User IO system
 \*********************************************************/
 #ifndef _INPUT_H_
 #define _INPUT_H_
+#include "Common.h"
 #include "Types.h"
 #include "Memory.h"
 #include "IRefCounted.h"

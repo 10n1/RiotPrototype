@@ -2,11 +2,11 @@
 File:       Memory.cpp
 Purpose:    Memory allocation/tracking
 \*********************************************************/
-#include "Memory.h"
 #include "Types.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h> // For printf
+#include "Memory.h"
 
 #ifdef DEBUG
 
@@ -27,12 +27,12 @@ void* __cdecl operator new[]( size_t nSize, const char* szFile, unsigned int nLi
     AddAllocation( p, (uint)nSize, szFile, nLine );
     return p;
 };
-void __cdecl operator delete(void* pVoid) throw()
+void __cdecl operator delete(void* pVoid)
 {
     RemoveAllocation(pVoid);
     free(pVoid);
 };
-void __cdecl operator delete[](void* pVoid) throw()
+void __cdecl operator delete[](void* pVoid)
 {
     RemoveAllocation( pVoid );
     free( pVoid );

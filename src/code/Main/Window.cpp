@@ -3,6 +3,7 @@ File:       Window.h
 Purpose:    Abstration for creating a platform-independent
             window
 \*********************************************************/
+#include "Common.h"
 #include "Window.h"
 #include "memory.h"
 
