@@ -2,22 +2,22 @@ Terminology:
     ComponentType:  Each specific type of component (Position, Render, Explosion, etc.)
     Component:      An index within a ComponentType representing one piece of data
 
-Every ComponentType has this structure:
+Every ComponentType has this structure:                             Each Object contains indices to its Components
 
-|---------------------------------------------------|
-|   ComponentType                                   |
-|-----------------------|---------------------------|
-| Object* pObjects[MAX] | Data  theData[MAX]        |
-|-----------------------|---------------------------|
-|         ptr0          | DataForObjPointedToByPtr0 |
-|         ptr1          | DataForObjPointedToByPtr1 |
-|         ptr2          | DataForObjPointedToByPtr2 |
-|         ptr3          | DataForObjPointedToByPtr3 |
-|         ptr4          | DataForObjPointedToByPtr4 |
-|         ptr5          | DataForObjPointedToByPtr5 |
-|         ptr6          | DataForObjPointedToByPtr6 |
-|         ptry          | DataForObjPointedToByPtr7 |
-|-----------------------|---------------------------|
+|---------------------------------------------------|               |------------------------------------|
+|   ComponentType                                   |               |   Object                           |
+|-----------------------|---------------------------|               |------------------------------------|
+| Object* pObjects[MAX] | Data  theData[MAX]        |               | int nIndices[MAX_COMPONENT_TYPES]  |
+|-----------------------|---------------------------|               |------------------------------------|
+|         ptr0          | DataForObjPointedToByPtr0 |               | indexOfComponentType0              |
+|         ptr1          | DataForObjPointedToByPtr1 |               | indexOfComponentType1              |
+|         ptr2          | DataForObjPointedToByPtr2 |               | indexOfComponentType2              |
+|         ptr3          | DataForObjPointedToByPtr3 |               | indexOfComponentType3              |
+|         ptr4          | DataForObjPointedToByPtr4 |               | indexOfComponentType4              |
+|         ptr5          | DataForObjPointedToByPtr5 |               | indexOfComponentType5              |
+|         ptr6          | DataForObjPointedToByPtr6 |               | indexOfComponentType6              |
+|         ptry          | DataForObjPointedToByPtr7 |               | indexOfComponentType7              |
+|-----------------------|---------------------------|               |------------------------------------|
 
 Both the Objects and Data are stored in arrays of whatever
 max size is specified. Currently it's MAX_OBJECTS, which
@@ -39,6 +39,12 @@ component grabs one of its free indices, and returns that index.
 Then ObjectA knows that it's Position is stored in 
 PositionComponent[ nIndex ]. It should never directly access it,
 but this will make it easier for us to debug.
+
+Each object can potentially hold every single ComponentType. It
+holds an index to its specific index within a ComponentType. If
+it doesn't have that particular type of component, the index is
+-1. So you can easily tell what types of components an object has
+by just finding every index that isn't -1.
 
 
 

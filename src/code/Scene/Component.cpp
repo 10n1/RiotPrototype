@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/23/2011 10:51:57 PM
+Modified:       3/23/2011 11:15:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -29,10 +29,10 @@ CComponent::~CComponent()
 }
 
 //-----------------------------------------------------------------------------
-//  ProcessComponents
-//  Loops through each component, processing it
+//  ProcessComponent
+//  Processes the component as necessary
 //-----------------------------------------------------------------------------
-void CComponent::ProcessComponents( void )
+void CComponent::ProcessComponent( void )
 {
 }
 

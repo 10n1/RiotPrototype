@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/23/2011 10:31:58 PM
+Modified:       3/23/2011 11:42:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -31,22 +31,8 @@ enum eComponentType
 
 class CObject;
 
-class CComponentMessage
+struct CComponentMessage
 {
-public:
-    // CComponentMessage constructor
-    CComponentMessage();
-
-    // CComponentMessage destructor
-    virtual ~CComponentMessage();
-    /***************************************\
-    | class methods                         |
-    \***************************************/
-
-private:
-    /***************************************\
-    | class members                         |
-    \***************************************/
     eComponentMessageType   m_nMessageType;
     CObject*                m_pTargetObject;
     union
@@ -76,10 +62,10 @@ public:
     virtual uint AddComponent( CObject* pObject );
 
     //-----------------------------------------------------------------------------
-    //  ProcessComponents
-    //  Loops through each component, processing it
+    //  ProcessComponent
+    //  Processes the component as necessary
     //-----------------------------------------------------------------------------
-    virtual void ProcessComponents( void );
+    virtual void ProcessComponent( void );
 protected:
     /***************************************\
     | class members                         |

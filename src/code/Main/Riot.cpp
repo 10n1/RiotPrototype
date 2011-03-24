@@ -97,6 +97,10 @@ void Riot::Run( void )
         // Perform timing
         ++m_nFrameCount;
         m_fElapsedTime = (float)timer.GetTime();
+        if( m_fElapsedTime > 0.5f )
+        {   // Protection from huge lapses when debugging
+            m_fElapsedTime = 1.0f/60.0f;
+        }
         m_fRunningTime += m_fElapsedTime;
         fFPSTime += m_fElapsedTime;
         // Calculate FPS every 16 frames
