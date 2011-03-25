@@ -36,8 +36,7 @@ void CObject::Update( float fDeltaTime )
     // TODO: TEMP
     m_vPosition = m_vPosition + XMVectorSet( fDeltaTime * 0.1f, fDeltaTime * 0.1f, 0.0f, 0.0f );
 
-    // there's something weird going on with this...the box gets stretched over time
-    //m_vOrientation = m_vOrientation + XMVectorSet( fDeltaTime * 0.1f, 0.0f, 0.0f, 0.0f );
+    m_vOrientation = XMQuaternionMultiply( m_vOrientation, XMQuaternionRotationAxis( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), 0.1f * fDeltaTime ) );
 
     if( m_pMesh )
     {
