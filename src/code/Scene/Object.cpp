@@ -36,6 +36,9 @@ void CObject::Update( float fDeltaTime )
     // TODO: TEMP
     m_vPosition = m_vPosition + XMVectorSet( fDeltaTime * 0.1f, fDeltaTime * 0.1f, 0.0f, 0.0f );
 
+    // there's something weird going on with this...the box gets stretched over time
+    //m_vOrientation = m_vOrientation + XMVectorSet( fDeltaTime * 0.1f, 0.0f, 0.0f, 0.0f );
+
     if( m_pMesh )
     {
         m_pMesh->m_vPosition = m_vPosition;

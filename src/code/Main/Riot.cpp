@@ -46,12 +46,14 @@ void Riot::Run( void )
     // TODO: Parse command line
     Initialize();
 
-    CObject* pObject = new CObject();
+    // box
+    CObject* pBox = new CObject();
     CMesh*   pMesh = m_pGraphics->CreateMesh( L"lol not loading a mesh!" );
-    pObject->SetMesh( pMesh );
+    pBox->SetMesh( pMesh );
     CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
-    pObject->SetMaterial( pMaterial );
-    m_pSceneGraph->AddObject( pObject );
+    pBox->SetMaterial( pMaterial );
+    m_pSceneGraph->AddObject( pBox );
+
     //-----------------------------------------------------------------------------
 
     Timer timer; // TODO: Should the timer be a class member?
@@ -68,6 +70,17 @@ void Riot::Run( void )
         m_pInput->PollInput();
         if( m_pInput->IsKeyDown( VK_ESCAPE ) )
             m_bRunning = false;
+
+        // Add a box everytime UP arrow is pressed
+        if( m_pInput->WasKeyPressed( VK_UP ) )
+        {
+            CObject* pObject = new CObject();
+            CMesh*   pMesh = m_pGraphics->CreateMesh( L"lol not loading a mesh!" );
+            pObject->SetMesh( pMesh );
+            CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
+            pObject->SetMaterial( pMaterial );
+            m_pSceneGraph->AddObject( pObject );
+        }
 
         //-------------------------- Frame -------------------------
 

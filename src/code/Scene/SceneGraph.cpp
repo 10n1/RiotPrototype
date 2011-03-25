@@ -78,7 +78,7 @@ void CSceneGraph::UpdateObjects( float fDeltaTime )
 {
     for( uint i = 0; i < m_nNumTotalObjects; ++i )
     {
-        m_ppAllSceneObjects[i]->Update( fDeltaTime );
+        m_ppAllSceneObjects[i]->Update( ((i%2) == 0) ? fDeltaTime : -fDeltaTime );
     }
 
     m_pMainView->UpdateViewMatrix();
