@@ -14,8 +14,6 @@ Modified by:    Kyle Weicht
 #include "ComponentManager.h"
 #include <memory> // for memcpy
 #define new DEBUG_NEW
-//static const uint MAX_OBJECTS = 16 * 1024;
-static const uint MAX_VIEWS = 8;
 
 // CSceneGraph constructor
 CSceneGraph::CSceneGraph()
@@ -108,13 +106,4 @@ CObject** CSceneGraph::GetRenderObjects( uint* nCount )
     *nCount = m_nNumRenderObjects = m_nNumTotalObjects;
 
     return m_ppRenderObjects;
-}
-
-//-----------------------------------------------------------------------------
-//  GetMainView
-//  Returns the current active view
-//-----------------------------------------------------------------------------
-CView* CSceneGraph::GetActiveView( void )
-{
-    return m_pActiveView;
 }

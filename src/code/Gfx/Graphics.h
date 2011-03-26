@@ -83,12 +83,6 @@ public:
     virtual void Present( void ) = 0;
     
     //-----------------------------------------------------------------------------
-    //  SetView
-    //  Set the current view ... used to set the view projection constant buffer
-    //-----------------------------------------------------------------------------
-    virtual void SetView( CView* pView ) = 0;
-
-    //-----------------------------------------------------------------------------
     //  SetViewProj
     //  Sets the view projection constant buffer
     //-----------------------------------------------------------------------------

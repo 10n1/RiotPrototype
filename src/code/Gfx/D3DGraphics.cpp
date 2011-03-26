@@ -563,17 +563,6 @@ CMaterial* CD3DGraphics::CreateMaterial( const wchar_t* szFilename, const char* 
 }
 
 //-----------------------------------------------------------------------------
-//  SetView
-//  Set the current view ... used to set the view projection constant buffer
-//-----------------------------------------------------------------------------
-void CD3DGraphics::SetView( CView* pView )
-{
-    XMMATRIX mView = pView->GetViewMatrix();
-    XMMATRIX mProj = pView->GetProjMatrix();
-    SetViewProj( &mView, &mProj );
-}
-
-//-----------------------------------------------------------------------------
 //  SetViewProj
 //  Sets the view projection constant buffer
 //-----------------------------------------------------------------------------

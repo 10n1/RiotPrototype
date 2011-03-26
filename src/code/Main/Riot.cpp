@@ -96,8 +96,6 @@ void Riot::Run( void )
 
         //////////////////////////////////////////
         // Render
-        // Update and set the view matrix
-        m_pGraphics->SetView( m_pSceneGraph->GetActiveView() );
         m_pGraphics->PrepareRender();
         uint nNumRenderObjects = 0;
         CObject** ppObjects = m_pSceneGraph->GetRenderObjects( &nNumRenderObjects );
