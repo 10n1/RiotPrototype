@@ -4,6 +4,7 @@ Purpose:   Math function declarations
 TODO:      Should some of (most) be split into a .inl
              file for inlining?
 \*********************************************************/
+#include "Common.h"
 #include "RiotMath.h"
 
 /**********************************************************\

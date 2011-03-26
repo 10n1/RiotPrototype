@@ -4,11 +4,12 @@ Purpose:        Property for holding pixel shaders/textures
                 and in general describing how an object looks
 Author:         Kyle Weicht
 Created:        3/21/2011
-Modified:       3/22/2011 6:49:17 PM
+Modified:       3/23/2011 7:07:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MATERIAL_H_
 #define _MATERIAL_H_
+#include "Common.h"
 #include "IRefCounted.h"
 #include "Types.h"
 

@@ -2,7 +2,7 @@
 File:           View.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/21/2011 10:36:08 PM
+Modified:       3/23/2011 6:43:54 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "View.h"
@@ -57,11 +57,13 @@ void CView::RotateY( float fRad )
     m_vLook = XMVector4Transform( m_vLook, rot );
 }
 
+
 //-----------------------------------------------------------------------------
-//  UpdateViewMatrix
-//  Updates the views matrix
+//  Update
+//  Updates the object
+//  TODO: Pre- and Post- updates?
 //-----------------------------------------------------------------------------
-void CView::UpdateViewMatrix( void )
+void CView::Update( float fDeltaTime )
 {
     XMVECTOR vX, vY, vZ;
 
@@ -85,7 +87,6 @@ void CView::UpdateViewMatrix( void )
 
     m_mViewMatrix = XMMatrixTranspose( m_mViewMatrix );
 }
-
 
 //-----------------------------------------------------------------------------
 //  SetPerspective

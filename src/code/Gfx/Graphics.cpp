@@ -2,7 +2,7 @@
 File:           GraphicsDevice.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 5:14:39 PM
+Modified:       3/23/2011 6:54:31 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Graphics.h"
@@ -12,6 +12,7 @@ Modified by:    Kyle Weicht
 // CGraphics constructor
 CGraphics::CGraphics()
     : m_pWindow( NULL )
+    , m_pCurrView( NULL )
 {
 }
 
@@ -34,4 +35,13 @@ void CGraphics::Resize( uint nWidth, uint nHeight )
         ReleaseBuffers();
         CreateBuffers( nWidth, nHeight );
     }
+}
+
+//-----------------------------------------------------------------------------
+//  SetViewProj
+//  Sets the view projection constant buffer
+//-----------------------------------------------------------------------------
+void CGraphics::SetCurrentView( const CView* pView )
+{
+    m_pCurrView = (CView*)pView;
 }

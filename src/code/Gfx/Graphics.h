@@ -4,11 +4,13 @@ Purpose:        Base interface for the graphics hardware/API
                 abstraction
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 10:45:57 PM
+Modified:       3/23/2011 7:07:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
 #define _GRAPHICS_H_
+#include "Common.h"
+#include "Common.h"
 #include "IRefCounted.h"
 #include "Types.h"
 
@@ -92,6 +94,11 @@ public:
     //-----------------------------------------------------------------------------
     virtual void SetViewProj( const void* pView, const void* pProj ) = 0;
     
+    //-----------------------------------------------------------------------------
+    //  SetViewProj
+    //  Sets the view projection constant buffer
+    //-----------------------------------------------------------------------------
+    virtual void SetCurrentView( const CView* pView );
 public:
     /***************************************\
     | object creation                       |
@@ -117,6 +124,7 @@ protected:
     | class members                         |
     \***************************************/
     CWindow*    m_pWindow;
+    CView*      m_pCurrView;
 };
 
 

@@ -2,6 +2,7 @@
 File:       Riot.cpp
 Purpose:    Definition of the main engine
 \*********************************************************/
+#include "Common.h"
 #include "Riot.h"
 #include "Timer.h"
 #include <stdio.h> // For printf
@@ -11,6 +12,7 @@ Purpose:    Definition of the main engine
 #include "Scene\Object.h"
 #include "Gfx\View.h"
 #include "Gfx\Material.h"
+#include "Scene\ComponentManager.h"
 
 #if defined( OS_WINDOWS )
 #include "PlatformDependent\Win32Window.h"
@@ -24,16 +26,18 @@ Purpose:    Definition of the main engine
 #include "Gfx\GLGraphics.h"
 #endif
 #include "Memory.h"
+#define new DEBUG_NEW
 
-uint            Riot::m_nFrameCount     = 0;
-float           Riot::m_fElapsedTime    = 0.0f;
-float           Riot::m_fRunningTime    = 0.0f;
-RiotInput*      Riot::m_pInput          = NULL;
-CWindow*        Riot::m_pMainWindow     = NULL;
-CGraphics*      Riot::m_pGraphics       = NULL;
-CSceneGraph*    Riot::m_pSceneGraph     = NULL;
+uint                Riot::m_nFrameCount     = 0;
+float               Riot::m_fElapsedTime    = 0.0f;
+float               Riot::m_fRunningTime    = 0.0f;
+RiotInput*          Riot::m_pInput          = NULL;
+CWindow*            Riot::m_pMainWindow     = NULL;
+CGraphics*          Riot::m_pGraphics       = NULL;
+CSceneGraph*        Riot::m_pSceneGraph     = NULL;
+CComponentManager*  Riot::m_pComponentManager = NULL;
 
-bool            Riot::m_bRunning        = true;
+bool                Riot::m_bRunning        = true;
     
 //-----------------------------------------------------------------------------
 //  Run
@@ -53,7 +57,7 @@ void Riot::Run( void )
     CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
     pBox->SetMaterial( pMaterial );
     m_pSceneGraph->AddObject( pBox );
-
+    pBox->AddComponent( eComponentPosition );
     //-----------------------------------------------------------------------------
 
     Timer timer; // TODO: Should the timer be a class member?
@@ -80,6 +84,7 @@ void Riot::Run( void )
             CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
             pObject->SetMaterial( pMaterial );
             m_pSceneGraph->AddObject( pObject );
+            pObject->AddComponent( eComponentPosition );
         }
 
         //-------------------------- Frame -------------------------
@@ -91,10 +96,8 @@ void Riot::Run( void )
 
         //////////////////////////////////////////
         // Render
-
         // Update and set the view matrix
-        m_pGraphics->SetView( m_pSceneGraph->GetMainView() );
-
+        m_pGraphics->SetView( m_pSceneGraph->GetActiveView() );
         m_pGraphics->PrepareRender();
         uint nNumRenderObjects = 0;
         CObject** ppObjects = m_pSceneGraph->GetRenderObjects( &nNumRenderObjects );
@@ -108,6 +111,10 @@ void Riot::Run( void )
         // Perform timing
         ++m_nFrameCount;
         m_fElapsedTime = (float)timer.GetTime();
+        if( m_fElapsedTime > 0.5f )
+        {   // Protection from huge lapses when debugging
+            m_fElapsedTime = 1.0f/60.0f;
+        }
         m_fRunningTime += m_fElapsedTime;
         fFPSTime += m_fElapsedTime;
         // Calculate FPS every 16 frames
@@ -159,6 +166,15 @@ void Riot::Initialize( void )
     //////////////////////////////////////////
     //  Get the scene graph
     m_pSceneGraph = CSceneGraph::GetInstance();
+
+    //////////////////////////////////////////
+    // Create the main view
+    CView* pView = new CView();
+    m_pSceneGraph->AddView( pView );
+
+    //////////////////////////////////////////
+    // Create the component manager
+    m_pComponentManager = CComponentManager::GetInstance();
 }
 
 //-----------------------------------------------------------------------------
@@ -167,9 +183,9 @@ void Riot::Initialize( void )
 //-----------------------------------------------------------------------------
 void Riot::Shutdown( void )
 {    
+    SAFE_RELEASE( m_pInput );
     SAFE_RELEASE( m_pGraphics );
     SAFE_RELEASE( m_pMainWindow );
-    SAFE_RELEASE( m_pInput );
 
     //////////////////////////////////////////
     // This is the last thing called

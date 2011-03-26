@@ -3,11 +3,12 @@ File:           D3DMesh.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/22/2011 7:55:08 PM
+Modified:       3/23/2011 7:07:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DMESH_H_
 #define _D3DMESH_H_
+#include "Common.h"
 #include "Mesh.h"
 
 struct ID3D11InputLayout;

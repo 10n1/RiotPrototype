@@ -3,12 +3,14 @@ File:           SceneGraph.h
 Purpose:        Controls the entire scene
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 5:40:01 PM
+Modified:       3/23/2011 9:22:31 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SCENEGRAPH_H_
 #define _SCENEGRAPH_H_
+#include "Common.h"
 #include "Types.h"
+#include "Component.h"
 
 class CObject;
 class CView;
@@ -40,7 +42,12 @@ public:
     void AddObject( CObject* pObject );
     // TODO: How do we remove an object?
     // TODO: Where are the objects created?
-
+    
+    //-----------------------------------------------------------------------------
+    //  AddView
+    //  Adds a view to the scene
+    //-----------------------------------------------------------------------------
+    void AddView( CView* pView );
     
     //-----------------------------------------------------------------------------
     //  UpdateObjects
@@ -55,16 +62,10 @@ public:
     CObject** GetRenderObjects( uint* nCount );
 
     //-----------------------------------------------------------------------------
-    //  AddView
-    //  Adds a view to the scene
-    //-----------------------------------------------------------------------------
-    void AddView( CView* pView );
-
-    //-----------------------------------------------------------------------------
     //  GetMainView
     //  Returns the current active view
     //-----------------------------------------------------------------------------
-    CView* GetMainView( void );
+    CView* GetActiveView( void );
 
 private:
     /***************************************\
@@ -72,13 +73,12 @@ private:
     \***************************************/
     CObject**   m_ppAllSceneObjects;
     CObject**   m_ppRenderObjects;
+    CView*      m_ppViews[8];
+    CView*      m_pActiveView;
+    uint        m_nNumViews;
 
     uint        m_nNumTotalObjects;
     uint        m_nNumRenderObjects;
-
-    CView*      m_pMainView;
-    CView**     m_ppAllViews;
-    uint        m_nNumViews;
 };
 
 

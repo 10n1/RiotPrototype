@@ -4,6 +4,7 @@ Purpose:    Main header for the Riot engine
 \*********************************************************/
 #ifndef _RIOT_H_
 #define _RIOT_H_
+#include "Common.h"
 #include "Types.h"
 #include "Memory.h"
 #include "IRefCounted.h"
@@ -13,6 +14,7 @@ class CSceneGraph;
 class CWindow;
 class CGraphics;
 class CView;
+class CComponentManager;
 
 class Riot
 {
@@ -53,6 +55,7 @@ private:
     static CWindow*     m_pMainWindow;
     static CGraphics*   m_pGraphics;
     static CSceneGraph* m_pSceneGraph;
+    static CComponentManager*   m_pComponentManager;
 
     static bool         m_bRunning;
 };

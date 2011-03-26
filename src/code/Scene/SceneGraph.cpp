@@ -2,33 +2,34 @@
 File:           SceneGraph.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/19/2011 5:54:34 PM
+Modified:       3/23/2011 11:14:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "SceneGraph.h"
 #include "memory.h"
 #include "Object.h"
+#include "Riot.h"
 #include "Gfx\View.h"
+#include "Gfx\Graphics.h"
+#include "ComponentManager.h"
 #include <memory> // for memcpy
-
-static const uint MAX_OBJECTS = 16 * 1024;
+#define new DEBUG_NEW
+//static const uint MAX_OBJECTS = 16 * 1024;
 static const uint MAX_VIEWS = 8;
 
 // CSceneGraph constructor
 CSceneGraph::CSceneGraph()
     : m_ppAllSceneObjects( NULL )
     , m_ppRenderObjects( NULL )
-    , m_ppAllViews( NULL )
     , m_nNumTotalObjects( 0 )
     , m_nNumRenderObjects( 0 )
     , m_nNumViews( 0 )
-    , m_pMainView( NULL )
+    , m_pActiveView( NULL )
 {
     m_ppAllSceneObjects = new CObject*[MAX_OBJECTS];
+    memset( m_ppAllSceneObjects, 0, sizeof( CObject* ) * MAX_OBJECTS );
     m_ppRenderObjects = new CObject*[MAX_OBJECTS];
-    m_ppAllViews = new CView*[MAX_VIEWS];
-    m_ppAllViews[ m_nNumViews++ ] = new CView(); // create default view
-    m_pMainView = m_ppAllViews[0];
+    memset( m_ppRenderObjects, 0, sizeof( CObject* ) * MAX_OBJECTS );
 }
 
 CSceneGraph::~CSceneGraph()
@@ -40,13 +41,6 @@ CSceneGraph::~CSceneGraph()
     }
     SAFE_DELETE_ARRAY( m_ppAllSceneObjects );
     SAFE_DELETE_ARRAY( m_ppRenderObjects );
-
-    // clean up the views
-    for( uint i = 0; i < m_nNumViews; ++i )
-    {
-        SAFE_DELETE( m_ppAllViews[i] );
-    }
-    SAFE_DELETE_ARRAY( m_ppAllViews );
 }
 
 //-----------------------------------------------------------------------------
@@ -71,17 +65,37 @@ void CSceneGraph::AddObject( CObject* pObject )
 
 
 //-----------------------------------------------------------------------------
+//  AddView
+//  Adds a view to the scene
+//-----------------------------------------------------------------------------
+void CSceneGraph::AddView( CView* pView )
+{
+    m_ppViews[ m_nNumViews++ ] = pView;
+    AddObject( (CObject*)pView );
+
+    m_pActiveView = pView; // TODO: Figure out where to do this
+}
+
+
+//-----------------------------------------------------------------------------
 //  UpdateObjects
 //  Updates all the objects
 //-----------------------------------------------------------------------------
 void CSceneGraph::UpdateObjects( float fDeltaTime )
 {
+    // Each object still has an Update for anything super specialized it might need?
+    // Hmm.......
+    Riot::GetGraphics()->SetCurrentView( m_pActiveView );
     for( uint i = 0; i < m_nNumTotalObjects; ++i )
     {
         m_ppAllSceneObjects[i]->Update( ((i%2) == 0) ? fDeltaTime : -fDeltaTime );
     }
 
-    m_pMainView->UpdateViewMatrix();
+    // Update the components
+    CComponentManager::GetInstance()->ProcessComponents();
+
+    // Update the current view
+    m_pActiveView->Update( fDeltaTime );
 }
 
 //-----------------------------------------------------------------------------
@@ -97,19 +111,10 @@ CObject** CSceneGraph::GetRenderObjects( uint* nCount )
 }
 
 //-----------------------------------------------------------------------------
-//  AddView
-//  Adds a view to the scene
-//-----------------------------------------------------------------------------
-void CSceneGraph::AddView( CView* pView )
-{
-    m_ppAllViews[ m_nNumViews++ ] = pView;
-}
-
-//-----------------------------------------------------------------------------
 //  GetMainView
 //  Returns the current active view
 //-----------------------------------------------------------------------------
-CView* CSceneGraph::GetMainView( void )
+CView* CSceneGraph::GetActiveView( void )
 {
-    return m_pMainView;
+    return m_pActiveView;
 }

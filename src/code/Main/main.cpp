@@ -2,6 +2,7 @@
 File:      main.cpp
 Purpose:   Main entry point for the program
 \*********************************************************/
+#include "Common.h"
 #include "Riot.h"
 #include <xnamath.h>
 

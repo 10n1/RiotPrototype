@@ -3,11 +3,12 @@ File:           D3DMaterial.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        3/22/2011
-Modified:       3/22/2011 6:50:27 PM
+Modified:       3/23/2011 7:07:43 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DMATERIAL_H_
 #define _D3DMATERIAL_H_
+#include "Common.h"
 #include "Material.h"
 #include "types.h"
 #include "memory.h"
