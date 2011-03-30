@@ -2,18 +2,45 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/23/2011 11:42:13 PM
+Modified:       3/29/2011 11:56:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
+#include "Object.h"
+
+#ifdef DEBUG
+template< class TheComponent>
+void CComponentManager::LoadComponent( void )
+{
+    m_ppComponents[ TheComponent::ComponentType ] = new TheComponent;
+    for( uint i = 0; i < TheComponent::NumMessagesReceived; ++i )
+    {
+        m_bRegistered[ TheComponent::ComponentType ][ TheComponent::MessagesReceived[i] ] = true;
+    }
+}
+
+#define LOAD_COMPONENT( TheComponent ) LoadComponent<TheComponent>()
+#else
+#define LOAD_COMPONENT( TheComponent )                                  \
+    m_ppComponents[ TheComponent::ComponentType ] = new TheComponent;   \
+    for( uint i = 0; i < TheComponent::NumMessagesReceived; ++i )       \
+    {                                                                   \
+        m_bRegistered[ TheComponent::ComponentType ][ TheComponent::MessagesReceived[i] ] = true; \
+    }
+#endif
+
 
 // CComponentManager constructor
 CComponentManager::CComponentManager()
     : m_nNumMessages( 0 )
 {
+    memset( m_bRegistered, 0, sizeof( m_bRegistered ) );
     memset( m_ppComponents, 0, sizeof( CComponent* ) * eNUMCOMPONENTS );
 
-    m_ppComponents[ eComponentPosition ] = new CPositionComponent;
+
+    // Do this for each component
+    LOAD_COMPONENT( CPositionComponent );
+    LOAD_COMPONENT( CUpdateComponent );
 }
 
 // CComponentManager destructor
@@ -57,7 +84,27 @@ void CComponentManager::ProcessComponents( void )
         m_ppComponents[i]->ProcessComponent();
     }
 
-    // ...then resolve any discrepencies
+    // ...then resolve any discrepencies and handle messages
+    for( uint nMessage = 0; nMessage < m_nNumMessages; ++nMessage )
+    {   // Loop through the messages
+        
+        CComponentMessage& msg = m_pMessages[ nMessage ];
+        for( uint nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent )
+        //for( eComponentType nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent ) <-- this would be ideal
+        {
+            if( m_bRegistered[ msg.m_nMessageType ][ nComponent ] == false )
+            {
+                // This component hasn't registered for this message type
+                continue;
+            }
+
+            sint nIndex = msg.m_pTargetObject->GetComponentIndex( (eComponentType)nComponent );
+
+            m_ppComponents[ nComponent ]->ReceiveMessage( nIndex, msg );
+        }
+    }
+
+    m_nNumMessages = 0;
 }
 
 

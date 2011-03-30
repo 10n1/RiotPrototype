@@ -2,7 +2,7 @@
 File:           Object.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/23/2011 10:40:45 PM
+Modified:       3/29/2011 11:13:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Object.h"
@@ -62,6 +62,15 @@ void CObject::Update( float fDeltaTime )
         m_pMesh->m_vPosition = m_vPosition;
         m_pMesh->m_vOrientation = m_vOrientation;
     }
+}
+
+//-----------------------------------------------------------------------------
+//  GetComponentIndex
+//  Returns which slot in the component this object owns
+//-----------------------------------------------------------------------------
+sint CObject::GetComponentIndex( eComponentType nComponent )
+{
+    return m_pComponentIndices[ nComponent ];
 }
 
 //-----------------------------------------------------------------------------

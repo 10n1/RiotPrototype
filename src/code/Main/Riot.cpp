@@ -38,6 +38,11 @@ CSceneGraph*        Riot::m_pSceneGraph     = NULL;
 CComponentManager*  Riot::m_pComponentManager = NULL;
 
 bool                Riot::m_bRunning        = true;
+
+    static const eComponentMessageType MessagesSent[] = 
+    {
+        eComponentMessagePosition,
+    };
     
 //-----------------------------------------------------------------------------
 //  Run
@@ -58,6 +63,7 @@ void Riot::Run( void )
     pBox->SetMaterial( pMaterial );
     m_pSceneGraph->AddObject( pBox );
     pBox->AddComponent( eComponentPosition );
+    pBox->AddComponent( eComponentUpdate );
     //-----------------------------------------------------------------------------
 
     Timer timer; // TODO: Should the timer be a class member?

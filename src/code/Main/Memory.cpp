@@ -50,7 +50,7 @@ struct MemoryAllocation
 };
 
 // Define vector to hold allocations
-static MemoryAllocation g_pAllocations[512];
+static MemoryAllocation g_pAllocations[1024*1024];
 static uint g_nCurrentAllocations = 0;
 static uint g_nCurrentMemoryUsage = 0;
 static uint g_nMaxMemoryAllocatedAtOnce = 0;
@@ -112,9 +112,9 @@ void __cdecl DumpMemoryLeaks(void)
     sprintf( szBuffer, "Total unfreed: %d bytes\n\n", nTotalUnfreed );
     printf( szBuffer );
 
-    sprintf( szBuffer, "Total Memory Allocated:\t\t%d\n", g_nTotalMemoryAllocated );
+    sprintf( szBuffer, "Total Memory Allocated:\t\t%dK\n", g_nTotalMemoryAllocated >> 10 );
     printf( szBuffer );
-    sprintf( szBuffer, "Max Memory Allocated at Once:\t%d\n", g_nMaxMemoryAllocatedAtOnce );
+    sprintf( szBuffer, "Max Memory Allocated at Once:\t%dK\n", g_nMaxMemoryAllocatedAtOnce >> 10);
     printf( szBuffer );
     printf( "\n-----------------------------------------------------------------------------------------------------\n" );
 }

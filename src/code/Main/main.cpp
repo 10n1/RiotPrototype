@@ -5,6 +5,7 @@ Purpose:   Main entry point for the program
 #include "Common.h"
 #include "Riot.h"
 #include <xnamath.h>
+#include "Scene\Component.h"
 
 XMVECTOR v;
 
@@ -17,6 +18,6 @@ int main()
     //////////////////////////////////////////
     // Run the game
     Riot::Run();
-    
+
     return 0;
 }

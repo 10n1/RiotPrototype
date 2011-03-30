@@ -2,10 +2,11 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/23/2011 11:15:22 PM
+Modified:       3/29/2011 11:59:36 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
+#include "ComponentManager.h"
 #include <memory>
 
 // CComponent constructor
@@ -58,20 +59,43 @@ uint CComponent::AddComponent( CObject* pObject )
     return nIndex;
 }
 
+//-----------------------------------------------------------------------------
+//  ReceiveMessage
+//  Receives and processes a message
+//-----------------------------------------------------------------------------
+void CComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
+{
+}
 
+/*********************************************************************************\
+|*********************************************************************************|
+|*********************************************************************************|
+|*********************************************************************************|
+\*********************************************************************************/
+//-----------------------------------------------------------------------------
+const eComponentMessageType CPositionComponent::MessagesSent[] = 
+{
+    eComponentMessagePosition,
+    eComponentMessageOrientation,
+};
+const eComponentMessageType CPositionComponent::MessagesReceived[] = 
+{
+    eComponentMessagePosition,
+};
+const uint CPositionComponent::NumMessagesSent       = sizeof( MessagesSent ) / sizeof( eComponentMessageType );
+const uint CPositionComponent::NumMessagesReceived   = sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // CPositionComponent constructor
 CPositionComponent::CPositionComponent()
-    : m_vPosition( NULL )
 {    
-    m_vPosition = new XMVECTOR[MAX_OBJECTS];
 }
 
 // CPositionComponent destructor
 CPositionComponent::~CPositionComponent()
 {
-    SAFE_DELETE_ARRAY( m_vPosition );
 }
-
 
 //-----------------------------------------------------------------------------
 //  AddComponent
@@ -87,3 +111,105 @@ uint CPositionComponent::AddComponent( CObject* pObject )
 
     return nIndex;
 }
+
+//-----------------------------------------------------------------------------
+//  ReceiveMessage
+//  Receives and processes a message
+//-----------------------------------------------------------------------------
+void CPositionComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
+{
+
+    switch( msg.m_nMessageType )
+    {
+    //case MessagesReceived[0]: <-- // TODO: is there a way to do that?
+    case eComponentMessagePosition:
+        {
+            XMVECTOR& vNewPosition = *((XMVECTOR*)msg.m_pData);
+
+            m_vPosition[ nSlot ] = vNewPosition;
+
+            delete ((XMVECTOR*)msg.m_pData);
+        }
+        break;
+
+    default:
+        {
+        }
+    }
+}
+
+
+/*********************************************************************************\
+|*********************************************************************************|
+|*********************************************************************************|
+|*********************************************************************************|
+\*********************************************************************************/
+//-----------------------------------------------------------------------------
+const eComponentMessageType CUpdateComponent::MessagesSent[] = 
+{
+    eComponentMessagePosition,
+};
+const eComponentMessageType CUpdateComponent::MessagesReceived[] = 
+{
+    // TODO: Allow zero-sized arrays
+    eComponentMessagePosition
+};
+const uint CUpdateComponent::NumMessagesSent       = sizeof( MessagesSent ) / sizeof( eComponentMessageType );
+const uint CUpdateComponent::NumMessagesReceived   = sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// CUpdateComponent constructor
+CUpdateComponent::CUpdateComponent()
+{    
+}
+
+// CUpdateComponent destructor
+CUpdateComponent::~CUpdateComponent()
+{
+}
+
+//-----------------------------------------------------------------------------
+//  AddComponent
+//  "Adds" a component to an object
+//-----------------------------------------------------------------------------
+uint CUpdateComponent::AddComponent( CObject* pObject )
+{
+    // Get the index of the new component
+    uint nIndex = CComponent::AddComponent( pObject );
+
+    // Now initialize this component
+
+    return nIndex;
+}
+
+//-----------------------------------------------------------------------------
+//  ProcessComponent
+//  Processes the component as necessary
+//-----------------------------------------------------------------------------
+void CUpdateComponent::ProcessComponent( void )
+{
+    for( uint i = 0; i < m_nNumComponents; ++i )
+    {
+
+        static float f = 0.0f;
+        //CComponentMessage msg;
+        //msg.m_pData = new XMVECTOR( XMVectorSet( 0.0f, f, 0.0f, 0.0f ) );
+        //msg.m_nMessageType = eComponentMessagePosition;
+        //msg.m_pTargetObject = m_ppObjects[ i ];
+
+        f += 1.0f;
+
+        CComponentManager::GetInstance()->PostMessage( eComponentMessagePosition, m_ppObjects[ i ], new XMVECTOR( XMVectorSet( 0.0f, f, 0.0f, 0.0f ) ) );
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+//  ReceiveMessage
+//  Receives and processes a message
+//-----------------------------------------------------------------------------
+void CUpdateComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
+{
+}
+

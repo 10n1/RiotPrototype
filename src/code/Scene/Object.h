@@ -3,7 +3,7 @@ File:           Object.h
 Purpose:        Base interface for every object in the scene
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/23/2011 10:40:32 PM
+Modified:       3/29/2011 11:13:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECT_H_
@@ -43,6 +43,12 @@ public:
     //  TODO: Pre- and Post- updates?
     //-----------------------------------------------------------------------------
     virtual void Update( float fDeltaTime );
+    
+    //-----------------------------------------------------------------------------
+    //  GetComponentIndex
+    //  Returns which slot in the component this object owns
+    //-----------------------------------------------------------------------------
+    sint GetComponentIndex( eComponentType nComponent );
 
     //-----------------------------------------------------------------------------
     //  Accessors/mutators
@@ -63,7 +69,7 @@ protected:
     XMVECTOR    m_vPosition;
     XMVECTOR    m_vOrientation;
 
-    sint            m_pComponentIndices[eNUMCOMPONENTS];
+    sint        m_pComponentIndices[eNUMCOMPONENTS];
 
     CMesh*      m_pMesh;
     CMaterial*  m_pMaterial;
