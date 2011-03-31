@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/30/2011 9:50:47 PM
+Modified:       3/31/2011 7:34:20 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -86,22 +86,8 @@ void CComponentManager::ProcessComponents( void )
 
     // ...then resolve any discrepencies and handle messages
     for( uint nMessage = 0; nMessage < m_nNumMessages; ++nMessage )
-    {   // Loop through the messages
-        
-        CComponentMessage& msg = m_pMessages[ nMessage ];
-        for( uint nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent )
-        //for( eComponentType nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent ) <-- this would be ideal
-        {
-            if( m_bRegistered[ msg.m_nMessageType ][ nComponent ] == false )
-            {
-                // This component hasn't registered for this message type
-                continue;
-            }
-
-            sint nIndex = msg.m_pTargetObject->GetComponentIndex( (eComponentType)nComponent );
-
-            m_ppComponents[ nComponent ]->ReceiveMessage( nIndex, msg );
-        }
+    {   // Loop through the messages        
+        SendMessage( m_pMessages[ nMessage ] );
     }
 
     m_nNumMessages = 0;
@@ -112,16 +98,58 @@ void CComponentManager::ProcessComponents( void )
 //  PostMessage
 //  Posts a message to be processed
 //-----------------------------------------------------------------------------
-void CComponentManager::PostMessage( eComponentMessageType nType, CObject* pObject, pvoid pData )
+void CComponentManager::PostMessage( CComponentMessage& msg )
 {
-    PostMessage( nType, pObject, (nativeuint)pData );
+    m_pMessages[ m_nNumMessages++ ] = msg;
 }
 
-void CComponentManager::PostMessage( eComponentMessageType nType, CObject* pObject, nativeuint nData )
+void CComponentManager::PostMessage( eComponentMessageType nType, CObject* pObject, pvoid pData, eComponentType nOrigin )
+{
+    PostMessage( nType, pObject, (nativeuint)pData, nOrigin );
+}
+
+void CComponentManager::PostMessage( eComponentMessageType nType, CObject* pObject, nativeuint nData, eComponentType nOrigin )
 {
     m_pMessages[ m_nNumMessages ].m_nData = nData;
     m_pMessages[ m_nNumMessages ].m_nMessageType = nType;
     m_pMessages[ m_nNumMessages ].m_pTargetObject = pObject;
+    m_pMessages[ m_nNumMessages ].m_nOrigin = nOrigin;
 
     m_nNumMessages++;
+}
+
+
+//-----------------------------------------------------------------------------
+//  SendMessage
+//  Sends the message
+//-----------------------------------------------------------------------------
+void CComponentManager::SendMessage( CComponentMessage& msg )
+{
+    for( uint nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent )
+        //for( eComponentType nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent ) <-- this would be ideal
+    {
+        if(     m_bRegistered[ msg.m_nMessageType ][ nComponent ] == false
+            ||  msg.m_nOrigin == nComponent )
+        {
+            // This component hasn't registered for this message type
+            // OR this is the originating component
+            continue;
+        }
+
+        sint nIndex = msg.m_pTargetObject->GetComponentIndex( (eComponentType)nComponent );
+
+        m_ppComponents[ nComponent ]->ReceiveMessage( nIndex, msg );
+    }
+}
+
+void CComponentManager::SendMessage( eComponentMessageType nType, CObject* pObject, pvoid pData, eComponentType nOrigin )
+{
+    CComponentMessage msg = { nType, pObject, nOrigin, (nativeuint)pData };
+    SendMessage( msg );
+}
+
+void CComponentManager::SendMessage( eComponentMessageType nType, CObject* pObject, nativeuint nData, eComponentType nOrigin )
+{
+    CComponentMessage msg = { nType, pObject, nOrigin, nData };
+    SendMessage( msg );
 }

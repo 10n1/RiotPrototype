@@ -3,7 +3,7 @@ File:           ComponentManager.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/29/2011 11:51:19 PM
+Modified:       3/31/2011 7:53:24 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTMANAGER_H_
@@ -50,8 +50,18 @@ public:
     //  PostMessage
     //  Posts a message to be processed
     //-----------------------------------------------------------------------------
-    void PostMessage( eComponentMessageType nType, CObject* pObject, pvoid pData );
-    void PostMessage( eComponentMessageType nType, CObject* pObject, nativeuint nData );
+    void PostMessage( CComponentMessage& msg );
+    void PostMessage( eComponentMessageType nType, CObject* pObject, pvoid pData, eComponentType nOrigin = eNULLCOMPONENT);
+    void PostMessage( eComponentMessageType nType, CObject* pObject, nativeuint nData, eComponentType nOrigin = eNULLCOMPONENT );
+
+    
+    //-----------------------------------------------------------------------------
+    //  SendMessage
+    //  Sends the message
+    //-----------------------------------------------------------------------------
+    void SendMessage( CComponentMessage& msg );
+    void SendMessage( eComponentMessageType nType, CObject* pObject, pvoid pData, eComponentType nOrigin = eNULLCOMPONENT );
+    void SendMessage( eComponentMessageType nType, CObject* pObject, nativeuint nData, eComponentType nOrigin = eNULLCOMPONENT );
 
 #ifdef DEBUG    
     //-----------------------------------------------------------------------------

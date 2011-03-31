@@ -4,7 +4,7 @@ Purpose:        Interface for anything in the engine that
                 can "view", aka, a camera
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/23/2011 7:07:44 PM
+Modified:       3/31/2011 8:06:14 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VIEW_H_
@@ -70,6 +70,7 @@ private:
     /***************************************\
     | class members                         |
     \***************************************/
+    XMVECTOR    m_vPosition;
     XMVECTOR    m_vUp;
     XMVECTOR    m_vLook;
     XMVECTOR    m_vRight;

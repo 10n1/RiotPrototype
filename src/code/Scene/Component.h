@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/30/2011 9:50:47 PM
+Modified:       3/31/2011 7:53:24 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -15,6 +15,12 @@ Modified by:    Kyle Weicht
 #include <xnamath.h>
 
 #define MAX_OBJECTS (16*1024)
+
+struct Transform
+{
+    XMVECTOR    vPosition;
+    XMVECTOR    vOrientation;
+};
 
 enum eComponentMessageType
 {
@@ -29,19 +35,22 @@ enum eComponentType
     eComponentRender,
     eComponentUpdate,
 
-    eNUMCOMPONENTS
+    eNUMCOMPONENTS,
+    eNULLCOMPONENT = -1
 };
 
 class CObject;
+class CComponent;
 
 struct CComponentMessage
 {
     eComponentMessageType   m_nMessageType;
     CObject*                m_pTargetObject;
+    eComponentType          m_nOrigin;
     union
     {
-        pvoid       m_pData;
         nativeuint  m_nData;
+        pvoid       m_pData;
     };
 };
 
@@ -85,7 +94,7 @@ public:
     static const uint NumMessagesSent;
     static const uint NumMessagesReceived;
 
-    static const eComponentType ComponentType = eNUMCOMPONENTS;
+    static const eComponentType ComponentType = eNULLCOMPONENT;
     //-----------------------------------------------------------------------------
 protected:
     /***************************************\
@@ -172,6 +181,9 @@ public:
 
     //-----------------------------------------------------------------------------
     //  Messages sent and recieved by this component are defined here
+    static const eComponentMessageType MessagesReceived[];
+    static const uint NumMessagesReceived;
+
     static const eComponentType ComponentType = eComponentUpdate;
     //-----------------------------------------------------------------------------
     
@@ -184,6 +196,7 @@ private:
     /***************************************\
     | class members                         |
     \***************************************/
+    Transform   m_Transform[MAX_OBJECTS];
 };
 
 #endif // #ifndef _COMPONENT_H_

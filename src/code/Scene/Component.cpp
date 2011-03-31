@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/30/2011 9:54:34 PM
+Modified:       3/31/2011 8:06:37 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -145,18 +145,15 @@ void CRenderComponent::ProcessComponent( void )
 //-----------------------------------------------------------------------------
 void CRenderComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
 {
-
     switch( msg.m_nMessageType )
     {
     //case MessagesReceived[0]: <-- // TODO: is there a way to do that?
     case eComponentMessageTransform:
         {
-            XMVECTOR* vNewData = ((XMVECTOR*)msg.m_pData);
+            Transform& vTransform = *((Transform*)msg.m_pData);
 
-            m_pMesh[ nSlot ]->m_vPosition = vNewData[0];
-            m_pMesh[ nSlot ]->m_vOrientation = vNewData[1];
-
-            delete [] vNewData;
+            m_pMesh[ nSlot ]->m_vPosition = vTransform.vPosition;
+            m_pMesh[ nSlot ]->m_vOrientation = vTransform.vOrientation;
         }
         break;
 
@@ -174,6 +171,11 @@ void CRenderComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
 |*********************************************************************************|
 \*********************************************************************************/
 //-----------------------------------------------------------------------------
+const eComponentMessageType CUpdateComponent::MessagesReceived[] = 
+{
+    eComponentMessageTransform,
+};
+const uint CUpdateComponent::NumMessagesReceived   = sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -197,6 +199,8 @@ uint CUpdateComponent::AddComponent( CObject* pObject )
     uint nIndex = CComponent::AddComponent( pObject );
 
     // Now initialize this component
+    m_Transform[nIndex].vPosition = XMVectorSet( 0.0f, 0.0, 0.0f, 0.0f );
+    m_Transform[nIndex].vOrientation = XMVectorSet( 0.0f, 0.0f, 0.0f, 1.0f );
 
     return nIndex;
 }
@@ -209,13 +213,10 @@ void CUpdateComponent::ProcessComponent( void )
 {
     for( uint i = 0; i < m_nNumComponents; ++i )
     {
-        static float f = 0.0f;
-        f += Riot::m_fElapsedTime;
-        XMVECTOR* pNewPos = new XMVECTOR[2];
-        pNewPos[0] = XMVectorSet( 0.0f, f, 0.0f, 0.0f );
-        pNewPos[1] = XMVectorSet( 0.0f, 0.0f, 0.0f, 1.0f );
+        m_Transform[ i ].vPosition += XMVectorSet( 0.0f, Riot::m_fElapsedTime * 0.5f, 0.0f, 0.0f );
+        m_Transform[ i ].vOrientation = XMQuaternionMultiply( m_Transform[ i ].vOrientation, XMQuaternionRotationAxis( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), Riot::m_fElapsedTime ) );
 
-        CComponentManager::GetInstance()->PostMessage( eComponentMessageTransform, m_ppObjects[ i ], pNewPos );
+        CComponentManager::GetInstance()->PostMessage( eComponentMessageTransform, m_ppObjects[ i ], &m_Transform[i], ComponentType );
     }
 }
 
@@ -226,5 +227,21 @@ void CUpdateComponent::ProcessComponent( void )
 //-----------------------------------------------------------------------------
 void CUpdateComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
 {
+    switch( msg.m_nMessageType )
+    {
+    //case MessagesReceived[0]: <-- // TODO: is there a way to do that?
+    case eComponentMessageTransform:
+        {
+            Transform& vTransform = *((Transform*)msg.m_pData);
+
+            m_Transform[ nSlot ].vPosition = vTransform.vPosition;
+            m_Transform[ nSlot ].vOrientation = vTransform.vOrientation;
+        }
+        break;
+
+    default:
+        {
+        }
+    }
 }
 

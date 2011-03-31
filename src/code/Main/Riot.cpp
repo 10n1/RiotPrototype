@@ -59,6 +59,9 @@ void Riot::Run( void )
     m_pSceneGraph->AddObject( pBox );
     pBox->AddComponent( eComponentUpdate );
     pBox->AddComponent( eComponentRender );
+    Transform t = { XMVectorSet( 1.0f, -2.0f, 0.0f, 0.0f ), XMQuaternionRotationRollPitchYaw( 28394237.5f, -84952.7f, 4656513.7f ) };
+    CComponentMessage msg = { eComponentMessageTransform, pBox, eNULLCOMPONENT, (nativeuint)&t };
+    CComponentManager::GetInstance()->SendMessage( msg );
     //-----------------------------------------------------------------------------
 
     Timer timer; // TODO: Should the timer be a class member?
