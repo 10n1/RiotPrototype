@@ -3,7 +3,7 @@ File:           Object.h
 Purpose:        Base interface for every object in the scene
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/31/2011 8:05:35 AM
+Modified:       3/31/2011 11:16:48 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECT_H_
@@ -42,6 +42,18 @@ public:
     //  Returns which slot in the component this object owns
     //-----------------------------------------------------------------------------
     sint GetComponentIndex( eComponentType nComponent );
+
+    //-----------------------------------------------------------------------------
+    //  RemoveComponent
+    //  Removes a component of the specified type
+    //-----------------------------------------------------------------------------
+    void RemoveComponent( eComponentType nType );
+    
+    //-----------------------------------------------------------------------------
+    //  Reset
+    //  Removes all components and resets the object
+    //-----------------------------------------------------------------------------
+    void Reset( void );
 
     //-----------------------------------------------------------------------------
     //  Accessors/mutators

@@ -3,7 +3,7 @@ File:           ObjectManager.h
 Purpose:        Handles allocation of objects
 Author:         Kyle Weicht
 Created:        3/31/2011
-Modified:       3/31/2011 10:59:46 AM
+Modified:       3/31/2011 11:34:56 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECTMANAGER_H_
@@ -48,6 +48,23 @@ public:
     //  Adds a component to the specified object
     //-----------------------------------------------------------------------------
     void AddComponent( uint nIndex, eComponentType nType );
+    
+    //-----------------------------------------------------------------------------
+    //  RemoveComponent
+    //  Removes a component from the specified object
+    //-----------------------------------------------------------------------------
+    void RemoveComponent( uint nIndex, eComponentType nType );
+    
+    //-----------------------------------------------------------------------------
+    //  DeleteObject
+    //  "Deletes" the object, freeing that slot
+    //-----------------------------------------------------------------------------
+    void DeleteObject( uint nIndex );
+        
+    //-----------------------------------------------------------------------------
+    //  Accessors/mutators
+    //-----------------------------------------------------------------------------
+    uint GetNumObjects( void );
 
 private:
     /***************************************\

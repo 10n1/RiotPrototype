@@ -2,7 +2,7 @@
 File:           Object.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/31/2011 8:06:14 AM
+Modified:       3/31/2011 11:42:13 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Object.h"
@@ -50,6 +50,32 @@ void CObject::AddComponent( eComponentType nType )
 sint CObject::GetComponentIndex( eComponentType nComponent )
 {
     return m_pComponentIndices[ nComponent ];
+}
+
+//-----------------------------------------------------------------------------
+//  RemoveComponent
+//  Removes a component of the specified type
+//-----------------------------------------------------------------------------
+void CObject::RemoveComponent( eComponentType nType )
+{
+    // Make sure we have a component to detach
+    if( m_pComponentIndices[ nType ] != -1 )
+    {
+        CComponentManager::GetInstance()->RemoveComponent( nType, m_pComponentIndices[ nType ] );
+        m_pComponentIndices[ nType ] = -1;
+    }
+}
+
+//-----------------------------------------------------------------------------
+//  Reset
+//  Removes all components and resets the object
+//-----------------------------------------------------------------------------
+void CObject::Reset( void )
+{
+    for( uint i = 0; i < eNUMCOMPONENTS; ++i )
+    {
+        RemoveComponent( (eComponentType)i );
+    }
 }
 
 //-----------------------------------------------------------------------------

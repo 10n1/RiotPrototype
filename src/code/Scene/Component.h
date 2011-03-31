@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/31/2011 10:44:19 AM
+Modified:       3/31/2011 11:25:21 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -71,7 +71,25 @@ public:
     //  AddComponent
     //  "Adds" a component to an object
     //-----------------------------------------------------------------------------
-    virtual uint AddComponent( CObject* pObject );
+    uint AddComponent( CObject* pObject );
+    
+    //-----------------------------------------------------------------------------
+    //  RemoveComponent
+    //  "Removes" a component to an object
+    //-----------------------------------------------------------------------------
+    void RemoveComponent( uint nIndex );
+    
+    //-----------------------------------------------------------------------------
+    //  Attach
+    //  Attaches a component to an object
+    //-----------------------------------------------------------------------------
+    virtual void Attach( uint nIndex );
+    
+    //-----------------------------------------------------------------------------
+    //  Detach
+    //  Detaches a component from an object
+    //-----------------------------------------------------------------------------
+    virtual void Detach( uint nIndex );
 
     //-----------------------------------------------------------------------------
     //  ProcessComponent
@@ -101,8 +119,6 @@ protected:
     | class members                         |
     \***************************************/
     CObject**   m_ppObjects;
-    uint*       m_pFreeSlots;
-    uint        m_nNumFreeSlots;
     uint        m_nNumComponents;
 };
 
@@ -122,11 +138,16 @@ public:
     \***************************************/
     
     //-----------------------------------------------------------------------------
-    //  AddComponent
-    //  "Adds" a component to an object
+    //  Attach
+    //  Attaches a component to an object
     //-----------------------------------------------------------------------------
-    uint AddComponent( CObject* pObject );
+    void Attach( uint nIndex );
 
+    //-----------------------------------------------------------------------------
+    //  Detach
+    //  Detaches a component from an object
+    //-----------------------------------------------------------------------------
+    void Detach( uint nIndex );
     
     //-----------------------------------------------------------------------------
     //  ProcessComponent
@@ -168,10 +189,16 @@ public:
     \***************************************/
     
     //-----------------------------------------------------------------------------
-    //  AddComponent
-    //  "Adds" a component to an object
+    //  Attach
+    //  Attaches a component to an object
     //-----------------------------------------------------------------------------
-    uint AddComponent( CObject* pObject );
+    void Attach( uint nIndex );
+    
+    //-----------------------------------------------------------------------------
+    //  Detach
+    //  Detaches a component from an object
+    //-----------------------------------------------------------------------------
+    void Detach( uint nIndex );
 
     //-----------------------------------------------------------------------------
     //  ProcessComponent

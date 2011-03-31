@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        3/31/2011
-Modified:       3/31/2011 10:59:07 AM
+Modified:       3/31/2011 11:42:14 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -77,3 +77,31 @@ void CObjectManager::AddComponent( uint nIndex, eComponentType nType )
     m_pObjects[nIndex].AddComponent( nType );
 }
 
+//-----------------------------------------------------------------------------
+//  RemoveComponent
+//  Removes a component from the specified object
+//-----------------------------------------------------------------------------
+void CObjectManager::RemoveComponent( uint nIndex, eComponentType nType )
+{
+    m_pObjects[nIndex].RemoveComponent( nType );
+}
+
+//-----------------------------------------------------------------------------
+//  DeleteObject
+//  "Deletes" the object, freeing that slot
+//-----------------------------------------------------------------------------
+void CObjectManager::DeleteObject( uint nIndex )
+{
+    m_pObjects[nIndex].Reset();
+
+    m_pFreeSlots[ m_nNumFreeSlots++ ] = nIndex;
+    --m_nNumObjects;
+}
+
+//-----------------------------------------------------------------------------
+//  Accessors/mutators
+//-----------------------------------------------------------------------------
+uint CObjectManager::GetNumObjects( void )
+{
+    return m_nNumObjects;
+}

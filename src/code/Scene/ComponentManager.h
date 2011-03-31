@@ -3,7 +3,7 @@ File:           ComponentManager.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/31/2011 7:53:24 AM
+Modified:       3/31/2011 11:25:58 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTMANAGER_H_
@@ -12,7 +12,7 @@ Modified by:    Kyle Weicht
 #include "irefcounted.h"
 #include "Component.h"
 
-#define MAX_COMPONENT_MESSAGES (1024)
+#define MAX_COMPONENT_MESSAGES (1024*1024)
 
 class CComponentManager : public IRefCounted
 {
@@ -38,6 +38,14 @@ public:
     //  Adds a component of the specified type
     //-----------------------------------------------------------------------------
     uint AddComponent( eComponentType nType, CObject* pObject );
+
+    
+    //-----------------------------------------------------------------------------
+    //  RemoveComponent
+    //  Removes a component of the specified type
+    //-----------------------------------------------------------------------------
+    void RemoveComponent( eComponentType nType, uint nIndex );
+    
     
     //-----------------------------------------------------------------------------
     //  ProcessComponents

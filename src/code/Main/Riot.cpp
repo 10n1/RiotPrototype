@@ -86,6 +86,7 @@ void Riot::Run( void )
     //-----------------------------------------------------------------------------
     while( m_bRunning )
     {
+        static uint nObject = -1;
         //---------------------- Start of frame --------------------
         // pMessageSystem->ProcessMessages();
         // pSceneGraph->StartFrame();
@@ -95,11 +96,22 @@ void Riot::Run( void )
             m_bRunning = false;
 
         // Add a box everytime UP arrow is pressed
-        if( m_pInput->IsKeyDown( VK_UP ) )
+        if( m_pInput->WasKeyPressed( VK_UP ) )
         {
             CreateBox();
         }
-
+        if( m_pInput->WasKeyPressed( VK_LEFT ) )
+        {
+            nObject = rand() % CObjectManager::GetInstance()->GetNumObjects();
+            CObjectManager::GetInstance()->RemoveComponent( nObject, eComponentUpdate );
+        }
+        else if( m_pInput->WasKeyPressed( VK_RIGHT ) )
+        {
+            if( nObject != -1 )
+            {
+                CObjectManager::GetInstance()->AddComponent( nObject, eComponentUpdate );
+            }
+        }
         //-------------------------- Frame -------------------------
 
         //////////////////////////////////////////

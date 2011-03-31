@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/31/2011 7:34:20 AM
+Modified:       3/31/2011 11:25:58 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -71,6 +71,17 @@ uint CComponentManager::AddComponent( eComponentType nType, CObject* pObject )
 {
     return m_ppComponents[ nType ]->AddComponent( pObject );
 }
+
+
+//-----------------------------------------------------------------------------
+//  RemoveComponent
+//  Removes a component of the specified type
+//-----------------------------------------------------------------------------
+void CComponentManager::RemoveComponent( eComponentType nType, uint nIndex )
+{
+    m_ppComponents[ nType ]->RemoveComponent( nIndex );
+}
+
 
 //-----------------------------------------------------------------------------
 //  ProcessComponents

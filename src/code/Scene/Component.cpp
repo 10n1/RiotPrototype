@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/31/2011 10:44:30 AM
+Modified:       3/31/2011 11:36:31 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -15,13 +15,9 @@ Modified by:    Kyle Weicht
 
 // CComponent constructor
 CComponent::CComponent()
-    : m_nNumFreeSlots( 0 )
-    , m_pFreeSlots( NULL )
-    , m_ppObjects( NULL )
+    : m_ppObjects( NULL )
     , m_nNumComponents( 0 )
 {
-    m_pFreeSlots = new uint[MAX_OBJECTS];
-    memset( m_pFreeSlots, 0, sizeof(uint) * MAX_OBJECTS );
     m_ppObjects = new CObject*[MAX_OBJECTS];
     memset( m_ppObjects, 0, sizeof(CObject*) * MAX_OBJECTS );
 }
@@ -29,7 +25,6 @@ CComponent::CComponent()
 // CComponent destructor
 CComponent::~CComponent()
 {
-    SAFE_DELETE_ARRAY( m_pFreeSlots );
     SAFE_DELETE_ARRAY( m_ppObjects );
 }
 
@@ -61,19 +56,42 @@ void CComponent::ProcessComponent( void )
 uint CComponent::AddComponent( CObject* pObject )
 {    
     // Calculate the free spot for this component
-    uint nIndex = m_nNumComponents;
-    if( m_nNumFreeSlots != 0 )
-    {
-        nIndex = m_pFreeSlots[ --m_nNumFreeSlots ];
-    }
-    else
-    {
-        nIndex = m_nNumComponents++;
-    }
-
+    uint nIndex = m_nNumComponents++;
     m_ppObjects[ nIndex ] = pObject;
 
+    // ...then attach to it
+    Attach( nIndex );
+
     return nIndex;
+}
+
+//-----------------------------------------------------------------------------
+//  RemoveComponent
+//  "Removes" a component to an object
+//-----------------------------------------------------------------------------
+void CComponent::RemoveComponent( uint nIndex )
+{
+    // First detach...
+    Detach( nIndex );
+
+    // ...then clean up the list
+    m_ppObjects[ nIndex ] = m_ppObjects[ --m_nNumComponents ];
+}
+
+//-----------------------------------------------------------------------------
+//  Attach
+//  Attaches a component to an object
+//-----------------------------------------------------------------------------
+void CComponent::Attach( uint nIndex )
+{
+}
+    
+//-----------------------------------------------------------------------------
+//  Detach
+//  Detaches a component to an object
+//-----------------------------------------------------------------------------
+void CComponent::Detach( uint nIndex )
+{
 }
 
 //-----------------------------------------------------------------------------
@@ -108,22 +126,29 @@ CRenderComponent::~CRenderComponent()
 {
 }
 
-//-----------------------------------------------------------------------------
-//  AddComponent
-//  "Adds" a component to an object
-//-----------------------------------------------------------------------------
-uint CRenderComponent::AddComponent( CObject* pObject )
-{
-    // Get the index of the new component
-    uint nIndex = CComponent::AddComponent( pObject );
 
+//-----------------------------------------------------------------------------
+//  Attach
+//  Attaches a component to an object
+//-----------------------------------------------------------------------------
+void CRenderComponent::Attach( uint nIndex )
+{
     // Now initialize this component
+    CObject* pObject = m_ppObjects[ nIndex ];
     m_pMesh[nIndex] = pObject->GetMesh();
     m_pMaterial[nIndex] = pObject->GetMaterial();
-
-    return nIndex;
 }
 
+//-----------------------------------------------------------------------------
+//  Detach
+//  Detaches a component to an object
+//-----------------------------------------------------------------------------
+void CRenderComponent::Detach( uint nIndex )
+{
+    // Now initialize this component
+    m_pMesh[nIndex] = m_pMesh[ m_nNumComponents - 1  ];
+    m_pMaterial[nIndex] = m_pMaterial[ m_nNumComponents - 1  ];
+}
 
 //-----------------------------------------------------------------------------
 //  ProcessComponent
@@ -190,19 +215,25 @@ CUpdateComponent::~CUpdateComponent()
 }
 
 //-----------------------------------------------------------------------------
-//  AddComponent
-//  "Adds" a component to an object
+//  Attach
+//  Attaches a component to an object
 //-----------------------------------------------------------------------------
-uint CUpdateComponent::AddComponent( CObject* pObject )
+void CUpdateComponent::Attach( uint nIndex )
 {
-    // Get the index of the new component
-    uint nIndex = CComponent::AddComponent( pObject );
-
     // Now initialize this component
     m_Transform[nIndex].vPosition = XMVectorSet( 0.0f, 0.0, 0.0f, 0.0f );
     m_Transform[nIndex].vOrientation = XMVectorSet( 0.0f, 0.0f, 0.0f, 1.0f );
+}
 
-    return nIndex;
+
+//-----------------------------------------------------------------------------
+//  Detach
+//  Detaches a component to an object
+//-----------------------------------------------------------------------------
+void CUpdateComponent::Detach( uint nIndex )
+{
+    // Now initialize this component
+    m_Transform[nIndex] = m_Transform[ m_nNumComponents - 1 ];
 }
 
 //-----------------------------------------------------------------------------
@@ -213,7 +244,7 @@ void CUpdateComponent::ProcessComponent( void )
 {
     for( uint i = 0; i < m_nNumComponents; ++i )
     {
-        m_Transform[ i ].vPosition += XMVectorSet( 0.0f, Riot::m_fElapsedTime * 0.5f, 0.0f, 0.0f );
+        m_Transform[ i ].vPosition += XMVectorSet( 0.0f, Riot::m_fElapsedTime * 0.05f, 0.0f, 0.0f );
         m_Transform[ i ].vOrientation = XMQuaternionMultiply( m_Transform[ i ].vOrientation, XMQuaternionRotationAxis( XMVectorSet( 27.5f * rand(), -82.7f * rand(), 413.7f * rand(), 0.0f ), Riot::m_fElapsedTime ) );
 
         CComponentManager::GetInstance()->PostMessage( eComponentMessageTransform, m_ppObjects[ i ], &m_Transform[i], ComponentType );
