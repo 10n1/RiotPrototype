@@ -14,6 +14,8 @@ Purpose:    Definition of the main engine
 #include "Gfx\Material.h"
 #include "Scene\ComponentManager.h"
 
+#include <stdlib.h>
+
 #if defined( OS_WINDOWS )
 #include "PlatformDependent\Win32Window.h"
 #include "Gfx\D3DGraphics.h"
@@ -25,8 +27,6 @@ Purpose:    Definition of the main engine
 #include "PlatformDependent\LinuxWindow.h"
 #include "Gfx\GLGraphics.h"
 #endif
-#include "Memory.h"
-#define new DEBUG_NEW
 
 uint                Riot::m_nFrameCount     = 0;
 float               Riot::m_fElapsedTime    = 0.0f;
@@ -38,6 +38,29 @@ CSceneGraph*        Riot::m_pSceneGraph     = NULL;
 CComponentManager*  Riot::m_pComponentManager = NULL;
 
 bool                Riot::m_bRunning        = true;
+//-----------------------------------------------------------------------------
+//  CreateBox
+//  Creates a box
+//-----------------------------------------------------------------------------
+void CreateBox( void )
+{
+    // Get our objects
+    CGraphics* pGfx = Riot::GetGraphics();
+    CObject* pBox = new CObject(); // Considering objects are now statically sized, maybe we shouldn't new them?
+    CMesh*   pMesh = pGfx->CreateMesh( 0 );
+    CMaterial* pMaterial = pGfx->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
+
+    // Apply them to the main object
+    pBox->SetMesh( pMesh );
+    pBox->SetMaterial( pMaterial );
+    CSceneGraph::GetInstance()->AddObject( pBox );
+
+    // Add some components
+    pBox->AddComponent( eComponentUpdate );
+    pBox->AddComponent( eComponentRender );
+    Transform t = { XMVectorSet( 1.0f, -2.0f, 0.0f, 0.0f ), XMQuaternionRotationRollPitchYaw( 27.5f * rand(), -82.7f * rand(), 413.7f * rand() ) };
+    CComponentManager::GetInstance()->SendMessage( eComponentMessageTransform, pBox, &t  );
+}
     
 //-----------------------------------------------------------------------------
 //  Run
@@ -50,19 +73,8 @@ void Riot::Run( void )
     // TODO: Parse command line
     Initialize();
 
-    // box
-    CObject* pBox = new CObject();
-    CMesh*   pMesh = m_pGraphics->CreateMesh( 0 );
-    pBox->SetMesh( pMesh );
-    CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
-    pBox->SetMaterial( pMaterial );
-    m_pSceneGraph->AddObject( pBox );
-    pBox->AddComponent( eComponentUpdate );
-    pBox->AddComponent( eComponentRender );
-    Transform t = { XMVectorSet( 1.0f, -2.0f, 0.0f, 0.0f ), XMQuaternionRotationRollPitchYaw( 28394237.5f, -84952.7f, 4656513.7f ) };
-    CComponentMessage msg = { eComponentMessageTransform, pBox, eNULLCOMPONENT, (nativeuint)&t };
-    CComponentManager::GetInstance()->SendMessage( msg );
-    //-----------------------------------------------------------------------------
+    // Add a box
+    CreateBox();
 
     Timer timer; // TODO: Should the timer be a class member?
     timer.Reset();
@@ -80,16 +92,9 @@ void Riot::Run( void )
             m_bRunning = false;
 
         // Add a box everytime UP arrow is pressed
-        if( m_pInput->WasKeyPressed( VK_UP ) )
+        if( m_pInput->IsKeyDown( VK_UP ) )
         {
-            CObject* pObject = new CObject();
-            CMesh*   pMesh = m_pGraphics->CreateMesh( 0 );
-            pObject->SetMesh( pMesh );
-            CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
-            pObject->SetMaterial( pMaterial );
-            m_pSceneGraph->AddObject( pObject );
-            pObject->AddComponent( eComponentRender );
-            pObject->AddComponent( eComponentUpdate );
+            CreateBox();
         }
 
         //-------------------------- Frame -------------------------
