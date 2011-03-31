@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/23/2011 7:07:43 PM
+Modified:       3/30/2011 9:39:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -314,16 +314,16 @@ void CD3DGraphics::Render( CObject** ppObjects, uint nNumObjects )
     SetViewProj( &mView, &mProj );
 
     // Render objects
-    for( uint i = 0; i < nNumObjects; ++i )
-    {
-        CMaterial* pMaterial = ppObjects[i]->GetMaterial();
-        CMesh*     pMesh = ppObjects[i]->GetMesh();
-        if( pMesh && pMaterial )
-        {
-            pMaterial->ApplyMaterial();
-            pMesh->DrawMesh();
-        }
-    }
+    //for( uint i = 0; i < nNumObjects; ++i )
+    //{
+    //    CMaterial* pMaterial = ppObjects[i]->GetMaterial();
+    //    CMesh*     pMesh = ppObjects[i]->GetMesh();
+    //    if( pMesh && pMaterial )
+    //    {
+    //        pMaterial->ApplyMaterial();
+    //        pMesh->DrawMesh();
+    //    }
+    //}
 }
 
 //-----------------------------------------------------------------------------

@@ -2,11 +2,15 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/29/2011 11:59:36 PM
+Modified:       3/30/2011 9:54:34 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
 #include "ComponentManager.h"
+#include "Object.h"
+#include "Gfx\Mesh.h"
+#include "Gfx\Material.h"
+#include "Riot.h"
 #include <memory>
 
 // CComponent constructor
@@ -28,6 +32,19 @@ CComponent::~CComponent()
     SAFE_DELETE_ARRAY( m_pFreeSlots );
     SAFE_DELETE_ARRAY( m_ppObjects );
 }
+
+//-----------------------------------------------------------------------------
+const eComponentMessageType CComponent::MessagesSent[] = 
+{
+    eNUMCOMPONENTMESSAGES, // can't make a zero-length array
+};
+const eComponentMessageType CComponent::MessagesReceived[] = 
+{
+    eNUMCOMPONENTMESSAGES, // can't make a zero-length array
+};
+const uint CComponent::NumMessagesSent       = 0;
+const uint CComponent::NumMessagesReceived   = 0;
+//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 //  ProcessComponent
@@ -73,27 +90,21 @@ void CComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
 |*********************************************************************************|
 \*********************************************************************************/
 //-----------------------------------------------------------------------------
-const eComponentMessageType CPositionComponent::MessagesSent[] = 
+const eComponentMessageType CRenderComponent::MessagesReceived[] = 
 {
-    eComponentMessagePosition,
-    eComponentMessageOrientation,
+    eComponentMessageTransform,
 };
-const eComponentMessageType CPositionComponent::MessagesReceived[] = 
-{
-    eComponentMessagePosition,
-};
-const uint CPositionComponent::NumMessagesSent       = sizeof( MessagesSent ) / sizeof( eComponentMessageType );
-const uint CPositionComponent::NumMessagesReceived   = sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
+const uint CRenderComponent::NumMessagesReceived   = sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// CPositionComponent constructor
-CPositionComponent::CPositionComponent()
+// CRenderComponent constructor
+CRenderComponent::CRenderComponent()
 {    
 }
 
-// CPositionComponent destructor
-CPositionComponent::~CPositionComponent()
+// CRenderComponent destructor
+CRenderComponent::~CRenderComponent()
 {
 }
 
@@ -101,34 +112,51 @@ CPositionComponent::~CPositionComponent()
 //  AddComponent
 //  "Adds" a component to an object
 //-----------------------------------------------------------------------------
-uint CPositionComponent::AddComponent( CObject* pObject )
+uint CRenderComponent::AddComponent( CObject* pObject )
 {
     // Get the index of the new component
     uint nIndex = CComponent::AddComponent( pObject );
 
     // Now initialize this component
-    m_vPosition[nIndex] = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+    m_pMesh[nIndex] = pObject->GetMesh();
+    m_pMaterial[nIndex] = pObject->GetMaterial();
 
     return nIndex;
 }
+
+
+//-----------------------------------------------------------------------------
+//  ProcessComponent
+//  Processes the component as necessary
+//-----------------------------------------------------------------------------
+void CRenderComponent::ProcessComponent( void )
+{
+    for( uint i = 0; i < m_nNumComponents; ++i )
+    {
+        m_pMaterial[ i ]->ApplyMaterial();
+        m_pMesh[ i ]->DrawMesh();
+    }
+}
+
 
 //-----------------------------------------------------------------------------
 //  ReceiveMessage
 //  Receives and processes a message
 //-----------------------------------------------------------------------------
-void CPositionComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
+void CRenderComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
 {
 
     switch( msg.m_nMessageType )
     {
     //case MessagesReceived[0]: <-- // TODO: is there a way to do that?
-    case eComponentMessagePosition:
+    case eComponentMessageTransform:
         {
-            XMVECTOR& vNewPosition = *((XMVECTOR*)msg.m_pData);
+            XMVECTOR* vNewData = ((XMVECTOR*)msg.m_pData);
 
-            m_vPosition[ nSlot ] = vNewPosition;
+            m_pMesh[ nSlot ]->m_vPosition = vNewData[0];
+            m_pMesh[ nSlot ]->m_vOrientation = vNewData[1];
 
-            delete ((XMVECTOR*)msg.m_pData);
+            delete [] vNewData;
         }
         break;
 
@@ -139,23 +167,13 @@ void CPositionComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
 }
 
 
+
 /*********************************************************************************\
 |*********************************************************************************|
 |*********************************************************************************|
 |*********************************************************************************|
 \*********************************************************************************/
 //-----------------------------------------------------------------------------
-const eComponentMessageType CUpdateComponent::MessagesSent[] = 
-{
-    eComponentMessagePosition,
-};
-const eComponentMessageType CUpdateComponent::MessagesReceived[] = 
-{
-    // TODO: Allow zero-sized arrays
-    eComponentMessagePosition
-};
-const uint CUpdateComponent::NumMessagesSent       = sizeof( MessagesSent ) / sizeof( eComponentMessageType );
-const uint CUpdateComponent::NumMessagesReceived   = sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -191,16 +209,13 @@ void CUpdateComponent::ProcessComponent( void )
 {
     for( uint i = 0; i < m_nNumComponents; ++i )
     {
-
         static float f = 0.0f;
-        //CComponentMessage msg;
-        //msg.m_pData = new XMVECTOR( XMVectorSet( 0.0f, f, 0.0f, 0.0f ) );
-        //msg.m_nMessageType = eComponentMessagePosition;
-        //msg.m_pTargetObject = m_ppObjects[ i ];
+        f += Riot::m_fElapsedTime;
+        XMVECTOR* pNewPos = new XMVECTOR[2];
+        pNewPos[0] = XMVectorSet( 0.0f, f, 0.0f, 0.0f );
+        pNewPos[1] = XMVectorSet( 0.0f, 0.0f, 0.0f, 1.0f );
 
-        f += 1.0f;
-
-        CComponentManager::GetInstance()->PostMessage( eComponentMessagePosition, m_ppObjects[ i ], new XMVECTOR( XMVectorSet( 0.0f, f, 0.0f, 0.0f ) ) );
+        CComponentManager::GetInstance()->PostMessage( eComponentMessageTransform, m_ppObjects[ i ], pNewPos );
     }
 }
 

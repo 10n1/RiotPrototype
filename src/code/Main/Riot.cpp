@@ -38,11 +38,6 @@ CSceneGraph*        Riot::m_pSceneGraph     = NULL;
 CComponentManager*  Riot::m_pComponentManager = NULL;
 
 bool                Riot::m_bRunning        = true;
-
-    static const eComponentMessageType MessagesSent[] = 
-    {
-        eComponentMessagePosition,
-    };
     
 //-----------------------------------------------------------------------------
 //  Run
@@ -57,13 +52,13 @@ void Riot::Run( void )
 
     // box
     CObject* pBox = new CObject();
-    CMesh*   pMesh = m_pGraphics->CreateMesh( L"lol not loading a mesh!" );
+    CMesh*   pMesh = m_pGraphics->CreateMesh( 0 );
     pBox->SetMesh( pMesh );
     CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
     pBox->SetMaterial( pMaterial );
     m_pSceneGraph->AddObject( pBox );
-    pBox->AddComponent( eComponentPosition );
     pBox->AddComponent( eComponentUpdate );
+    pBox->AddComponent( eComponentRender );
     //-----------------------------------------------------------------------------
 
     Timer timer; // TODO: Should the timer be a class member?
@@ -85,12 +80,13 @@ void Riot::Run( void )
         if( m_pInput->WasKeyPressed( VK_UP ) )
         {
             CObject* pObject = new CObject();
-            CMesh*   pMesh = m_pGraphics->CreateMesh( L"lol not loading a mesh!" );
+            CMesh*   pMesh = m_pGraphics->CreateMesh( 0 );
             pObject->SetMesh( pMesh );
             CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
             pObject->SetMaterial( pMaterial );
             m_pSceneGraph->AddObject( pObject );
-            pObject->AddComponent( eComponentPosition );
+            pObject->AddComponent( eComponentRender );
+            pObject->AddComponent( eComponentUpdate );
         }
 
         //-------------------------- Frame -------------------------
@@ -106,6 +102,7 @@ void Riot::Run( void )
         uint nNumRenderObjects = 0;
         CObject** ppObjects = m_pSceneGraph->GetRenderObjects( &nNumRenderObjects );
         m_pGraphics->Render( ppObjects, nNumRenderObjects );
+        m_pSceneGraph->UpdateObjects( m_fElapsedTime );
         m_pGraphics->Present();
 
         //----------------------- End of frame ---------------------

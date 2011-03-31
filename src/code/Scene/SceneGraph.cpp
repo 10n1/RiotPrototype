@@ -2,7 +2,7 @@
 File:           SceneGraph.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/23/2011 11:14:58 PM
+Modified:       3/30/2011 9:53:46 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "SceneGraph.h"
@@ -84,10 +84,6 @@ void CSceneGraph::UpdateObjects( float fDeltaTime )
     // Each object still has an Update for anything super specialized it might need?
     // Hmm.......
     Riot::GetGraphics()->SetCurrentView( m_pActiveView );
-    for( uint i = 0; i < m_nNumTotalObjects; ++i )
-    {
-        m_ppAllSceneObjects[i]->Update( ((i%2) == 0) ? fDeltaTime : -fDeltaTime );
-    }
 
     // Update the components
     CComponentManager::GetInstance()->ProcessComponents();

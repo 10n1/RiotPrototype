@@ -49,7 +49,6 @@ private:
 //  Members
 private:
     static uint         m_nFrameCount;
-    static float        m_fElapsedTime;
     static float        m_fRunningTime;
     static RiotInput*   m_pInput;
     static CWindow*     m_pMainWindow;
@@ -58,6 +57,9 @@ private:
     static CComponentManager*   m_pComponentManager;
 
     static bool         m_bRunning;
+
+public:
+    static float        m_fElapsedTime;
 };
 
 #endif // #ifndef _RIOT_H_

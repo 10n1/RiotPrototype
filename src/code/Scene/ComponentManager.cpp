@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/29/2011 11:56:50 PM
+Modified:       3/30/2011 9:50:47 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -15,7 +15,7 @@ void CComponentManager::LoadComponent( void )
     m_ppComponents[ TheComponent::ComponentType ] = new TheComponent;
     for( uint i = 0; i < TheComponent::NumMessagesReceived; ++i )
     {
-        m_bRegistered[ TheComponent::ComponentType ][ TheComponent::MessagesReceived[i] ] = true;
+        m_bRegistered[ TheComponent::MessagesReceived[i] ][ TheComponent::ComponentType ] = true;
     }
 }
 
@@ -25,7 +25,7 @@ void CComponentManager::LoadComponent( void )
     m_ppComponents[ TheComponent::ComponentType ] = new TheComponent;   \
     for( uint i = 0; i < TheComponent::NumMessagesReceived; ++i )       \
     {                                                                   \
-        m_bRegistered[ TheComponent::ComponentType ][ TheComponent::MessagesReceived[i] ] = true; \
+        m_bRegistered[ TheComponent::MessagesReceived[i] ][ TheComponent::ComponentType ] = true; \
     }
 #endif
 
@@ -39,8 +39,8 @@ CComponentManager::CComponentManager()
 
 
     // Do this for each component
-    LOAD_COMPONENT( CPositionComponent );
     LOAD_COMPONENT( CUpdateComponent );
+    LOAD_COMPONENT( CRenderComponent );
 }
 
 // CComponentManager destructor

@@ -112,10 +112,21 @@ void __cdecl DumpMemoryLeaks(void)
     sprintf( szBuffer, "Total unfreed: %d bytes\n\n", nTotalUnfreed );
     printf( szBuffer );
 
-    sprintf( szBuffer, "Total Memory Allocated:\t\t%dK\n", g_nTotalMemoryAllocated >> 10 );
-    printf( szBuffer );
-    sprintf( szBuffer, "Max Memory Allocated at Once:\t%dK\n", g_nMaxMemoryAllocatedAtOnce >> 10);
-    printf( szBuffer );
+    // Divide it into Kilobytes
+    if( g_nTotalMemoryAllocated > ( 1024 * 8 ) )
+    {
+        sprintf( szBuffer, "Total Memory Allocated:\t\t%dK\n", g_nTotalMemoryAllocated >> 10 );
+        printf( szBuffer );
+        sprintf( szBuffer, "Max Memory Allocated at Once:\t%dK\n", g_nMaxMemoryAllocatedAtOnce >> 10);
+        printf( szBuffer );
+    }
+    else
+    {
+        sprintf( szBuffer, "Total Memory Allocated:\t\t%d\n", g_nTotalMemoryAllocated );
+        printf( szBuffer );
+        sprintf( szBuffer, "Max Memory Allocated at Once:\t%d\n", g_nMaxMemoryAllocatedAtOnce );
+        printf( szBuffer );
+    }
     printf( "\n-----------------------------------------------------------------------------------------------------\n" );
 }
 

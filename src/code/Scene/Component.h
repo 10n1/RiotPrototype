@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/29/2011 11:59:36 PM
+Modified:       3/30/2011 9:50:47 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -18,17 +18,15 @@ Modified by:    Kyle Weicht
 
 enum eComponentMessageType
 {
-    eComponentMessagePosition,
-    eComponentMessageOrientation,
+    eComponentMessageTransform,
     eComponentMessageUpdate,
-
-
+    
     eNUMCOMPONENTMESSAGES
 };
 
 enum eComponentType
 {
-    eComponentPosition,
+    eComponentRender,
     eComponentUpdate,
 
     eNUMCOMPONENTS
@@ -99,14 +97,17 @@ protected:
     uint        m_nNumComponents;
 };
 
-class CPositionComponent : public CComponent
+class CMesh;
+class CMaterial;
+
+class CRenderComponent : public CComponent
 {
 public:
-    // CPositionComponent constructor
-    CPositionComponent();
+    // CRenderComponent constructor
+    CRenderComponent();
 
-    // CPositionComponent destructor
-    ~CPositionComponent();
+    // CRenderComponent destructor
+    ~CRenderComponent();
     /***************************************\
     | class methods                         |
     \***************************************/
@@ -117,16 +118,19 @@ public:
     //-----------------------------------------------------------------------------
     uint AddComponent( CObject* pObject );
 
-
+    
+    //-----------------------------------------------------------------------------
+    //  ProcessComponent
+    //  Processes the component as necessary
+    //-----------------------------------------------------------------------------
+    void ProcessComponent( void );
 
     //-----------------------------------------------------------------------------
     //  Messages sent and recieved by this component are defined here
-    static const eComponentMessageType MessagesSent[];
     static const eComponentMessageType MessagesReceived[];
-    static const uint NumMessagesSent;
     static const uint NumMessagesReceived;
 
-    static const eComponentType ComponentType = eComponentPosition;
+    static const eComponentType ComponentType = eComponentRender;
     //-----------------------------------------------------------------------------
     
     //-----------------------------------------------------------------------------
@@ -138,9 +142,9 @@ private:
     /***************************************\
     | class members                         |
     \***************************************/
-    XMVECTOR    m_vPosition[MAX_OBJECTS];
+    CMesh*      m_pMesh[MAX_OBJECTS];
+    CMaterial*  m_pMaterial[MAX_OBJECTS];
 };
-
 
 class CUpdateComponent : public CComponent
 {
@@ -168,11 +172,6 @@ public:
 
     //-----------------------------------------------------------------------------
     //  Messages sent and recieved by this component are defined here
-    static const eComponentMessageType MessagesSent[];
-    static const eComponentMessageType MessagesReceived[];
-    static const uint NumMessagesSent;
-    static const uint NumMessagesReceived;
-
     static const eComponentType ComponentType = eComponentUpdate;
     //-----------------------------------------------------------------------------
     

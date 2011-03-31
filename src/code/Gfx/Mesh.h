@@ -3,7 +3,7 @@ File:           Mesh.h
 Purpose:        Interface for holding geometry
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/23/2011 7:07:42 PM
+Modified:       3/30/2011 9:35:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MESH_H_
@@ -24,11 +24,13 @@ float   fVerts[]
 uint    nIndices[]
 \*********************************************************/
 
+class CRenderComponent;
 class CObject;
 
 class CMesh : public IRefCounted
 {
     friend class CObject;
+    friend class CRenderComponent;
 public:
     // CMesh constructor
     CMesh();

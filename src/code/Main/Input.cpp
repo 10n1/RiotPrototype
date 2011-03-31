@@ -73,7 +73,7 @@ bool RiotInput::IsKeyUp( uint8 nKey )
 //-----------------------------------------------------------------------------
 bool RiotInput::WasKeyPressed( uint8 nKey )
 {
-    if( m_pKeys[nKey] == 0x81 )
+    if( m_pKeys[nKey] == 0x80 )
         return true;
     
     return false;
