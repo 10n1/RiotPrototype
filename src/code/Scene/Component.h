@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/31/2011 7:53:24 AM
+Modified:       3/31/2011 10:44:19 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_

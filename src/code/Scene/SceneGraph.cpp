@@ -2,7 +2,7 @@
 File:           SceneGraph.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/30/2011 9:53:46 PM
+Modified:       3/31/2011 11:03:27 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "SceneGraph.h"
@@ -32,11 +32,7 @@ CSceneGraph::CSceneGraph()
 
 CSceneGraph::~CSceneGraph()
 {
-    // clean up objects
-    for( uint i = 0; i < m_nNumTotalObjects; ++i )
-    {
-        SAFE_DELETE( m_ppAllSceneObjects[i] );
-    }
+    // clean up arrays
     SAFE_DELETE_ARRAY( m_ppAllSceneObjects );
     SAFE_DELETE_ARRAY( m_ppRenderObjects );
 }

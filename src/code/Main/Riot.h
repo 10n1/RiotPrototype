@@ -15,6 +15,7 @@ class CWindow;
 class CGraphics;
 class CView;
 class CComponentManager;
+class CObjectManager;
 
 class Riot
 {
@@ -55,6 +56,7 @@ private:
     static CGraphics*   m_pGraphics;
     static CSceneGraph* m_pSceneGraph;
     static CComponentManager*   m_pComponentManager;
+    static CObjectManager*      m_pObjectManager;
 
     static bool         m_bRunning;
 

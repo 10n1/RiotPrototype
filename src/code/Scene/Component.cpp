@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/31/2011 8:06:37 AM
+Modified:       3/31/2011 10:44:30 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -214,7 +214,7 @@ void CUpdateComponent::ProcessComponent( void )
     for( uint i = 0; i < m_nNumComponents; ++i )
     {
         m_Transform[ i ].vPosition += XMVectorSet( 0.0f, Riot::m_fElapsedTime * 0.5f, 0.0f, 0.0f );
-        m_Transform[ i ].vOrientation = XMQuaternionMultiply( m_Transform[ i ].vOrientation, XMQuaternionRotationAxis( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), Riot::m_fElapsedTime ) );
+        m_Transform[ i ].vOrientation = XMQuaternionMultiply( m_Transform[ i ].vOrientation, XMQuaternionRotationAxis( XMVectorSet( 27.5f * rand(), -82.7f * rand(), 413.7f * rand(), 0.0f ), Riot::m_fElapsedTime ) );
 
         CComponentManager::GetInstance()->PostMessage( eComponentMessageTransform, m_ppObjects[ i ], &m_Transform[i], ComponentType );
     }
@@ -223,6 +223,7 @@ void CUpdateComponent::ProcessComponent( void )
 
 //-----------------------------------------------------------------------------
 //  ReceiveMessage
+
 //  Receives and processes a message
 //-----------------------------------------------------------------------------
 void CUpdateComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )

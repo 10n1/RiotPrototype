@@ -13,6 +13,7 @@ Purpose:    Definition of the main engine
 #include "Gfx\View.h"
 #include "Gfx\Material.h"
 #include "Scene\ComponentManager.h"
+#include "Scene\ObjectManager.h"
 
 #include <stdlib.h>
 
@@ -36,6 +37,7 @@ CWindow*            Riot::m_pMainWindow     = NULL;
 CGraphics*          Riot::m_pGraphics       = NULL;
 CSceneGraph*        Riot::m_pSceneGraph     = NULL;
 CComponentManager*  Riot::m_pComponentManager = NULL;
+CObjectManager*     Riot::m_pObjectManager  = NULL;
 
 bool                Riot::m_bRunning        = true;
 //-----------------------------------------------------------------------------
@@ -46,7 +48,8 @@ void CreateBox( void )
 {
     // Get our objects
     CGraphics* pGfx = Riot::GetGraphics();
-    CObject* pBox = new CObject(); // Considering objects are now statically sized, maybe we shouldn't new them?
+    uint nObject = CObjectManager::GetInstance()->CreateObject();
+    CObject* pBox = CObjectManager::GetInstance()->GetObject( nObject ); //new CObject(); // Considering objects are now statically sized, maybe we shouldn't new them?
     CMesh*   pMesh = pGfx->CreateMesh( 0 );
     CMaterial* pMaterial = pGfx->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
 
@@ -182,8 +185,9 @@ void Riot::Initialize( void )
     m_pSceneGraph->AddView( pView );
 
     //////////////////////////////////////////
-    // Create the component manager
+    // Load the managers
     m_pComponentManager = CComponentManager::GetInstance();
+    m_pObjectManager = CObjectManager::GetInstance();
 }
 
 //-----------------------------------------------------------------------------

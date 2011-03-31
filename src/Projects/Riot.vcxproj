@@ -36,6 +36,7 @@
     <ClCompile Include="..\code\scene\Component.cpp" />
     <ClCompile Include="..\code\scene\ComponentManager.cpp" />
     <ClCompile Include="..\code\Scene\Object.cpp" />
+    <ClCompile Include="..\code\scene\ObjectManager.cpp" />
     <ClCompile Include="..\code\Scene\SceneGraph.cpp" />
     <ClCompile Include="..\PlatformDependent\Win32Window.cpp" />
   </ItemGroup>
@@ -59,6 +60,7 @@
     <ClInclude Include="..\code\Scene\Component.h" />
     <ClInclude Include="..\code\scene\ComponentManager.h" />
     <ClInclude Include="..\code\Scene\Object.h" />
+    <ClInclude Include="..\code\scene\ObjectManager.h" />
     <ClInclude Include="..\code\Scene\SceneGraph.h" />
     <ClInclude Include="..\Misc.h" />
     <ClInclude Include="..\PlatformDependent\Win32Window.h" />
