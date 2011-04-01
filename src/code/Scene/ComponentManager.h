@@ -3,18 +3,17 @@ File:           ComponentManager.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/31/2011 11:25:58 AM
+Modified:       3/31/2011 1:03:39 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTMANAGER_H_
 #define _COMPONENTMANAGER_H_
 #include "common.h"
-#include "irefcounted.h"
 #include "Component.h"
 
 #define MAX_COMPONENT_MESSAGES (1024*1024)
 
-class CComponentManager : public IRefCounted
+class CComponentManager
 {
     // CComponentManager constructor
     CComponentManager();

@@ -27,6 +27,7 @@
     <ClCompile Include="..\code\Gfx\Mesh.cpp" />
     <ClCompile Include="..\code\Gfx\View.cpp" />
     <ClCompile Include="..\code\Main\architecture.cpp" />
+    <ClCompile Include="..\code\Main\AssetManager.cpp" />
     <ClCompile Include="..\code\Main\Input.cpp" />
     <ClCompile Include="..\code\Main\main.cpp" />
     <ClCompile Include="..\code\Main\Math.cpp" />
@@ -48,6 +49,7 @@
     <ClInclude Include="..\code\Gfx\Material.h" />
     <ClInclude Include="..\code\Gfx\Mesh.h" />
     <ClInclude Include="..\code\Gfx\View.h" />
+    <ClInclude Include="..\code\Main\AssetManager.h" />
     <ClInclude Include="..\code\main\Common.h" />
     <ClInclude Include="..\code\Main\Input.h" />
     <ClInclude Include="..\code\Main\IRefCounted.h" />

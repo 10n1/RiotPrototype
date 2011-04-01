@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        3/31/2011
-Modified:       3/31/2011 11:42:14 AM
+Modified:       3/31/2011 2:07:56 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -74,7 +74,11 @@ CObject* CObjectManager::GetObject( uint nIndex )
 //-----------------------------------------------------------------------------
 void CObjectManager::AddComponent( uint nIndex, eComponentType nType )
 {
-    m_pObjects[nIndex].AddComponent( nType );
+    if( m_pObjects[nIndex].m_pComponentIndices[ nType ] == -1 )
+    {    
+        m_pObjects[nIndex].m_pComponentIndices[ nType ] = CComponentManager::GetInstance()->AddComponent( nType, &m_pObjects[nIndex] );
+    }
+    // TODO: Handle case if it already exists
 }
 
 //-----------------------------------------------------------------------------
@@ -83,7 +87,15 @@ void CObjectManager::AddComponent( uint nIndex, eComponentType nType )
 //-----------------------------------------------------------------------------
 void CObjectManager::RemoveComponent( uint nIndex, eComponentType nType )
 {
-    m_pObjects[nIndex].RemoveComponent( nType );
+    // Make sure we have a component to detach
+    sint nComponentIndex = m_pObjects[nIndex].m_pComponentIndices[ nType ];
+    if( nComponentIndex != -1 )
+    {
+        CComponentManager::GetInstance()->RemoveComponent( nType, nComponentIndex );
+        m_pObjects[nIndex].m_pComponentIndices[ nType ] = -1;
+    }
+
+    // TODO: Handle case if it doesnt exist
 }
 
 //-----------------------------------------------------------------------------

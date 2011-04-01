@@ -46,10 +46,12 @@ bool                Riot::m_bRunning        = true;
 //-----------------------------------------------------------------------------
 void CreateBox( void )
 {
-    // Get our objects
     CGraphics* pGfx = Riot::GetGraphics();
-    uint nObject = CObjectManager::GetInstance()->CreateObject();
-    CObject* pBox = CObjectManager::GetInstance()->GetObject( nObject ); //new CObject(); // Considering objects are now statically sized, maybe we shouldn't new them?
+    CObjectManager* pObjMgr = CObjectManager::GetInstance()->GetInstance();
+
+    // Get our objects
+    uint nObject = pObjMgr->CreateObject();
+    CObject* pBox = pObjMgr->GetObject( nObject ); //new CObject(); // Considering objects are now statically sized, maybe we shouldn't new them?
     CMesh*   pMesh = pGfx->CreateMesh( 0 );
     CMaterial* pMaterial = pGfx->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
 
@@ -59,8 +61,8 @@ void CreateBox( void )
     CSceneGraph::GetInstance()->AddObject( pBox );
 
     // Add some components
-    pBox->AddComponent( eComponentUpdate );
-    pBox->AddComponent( eComponentRender );
+    pObjMgr->AddComponent( nObject, eComponentUpdate );
+    pObjMgr->AddComponent( nObject, eComponentRender );
     Transform t = { XMVectorSet( 1.0f, -2.0f, 0.0f, 0.0f ), XMQuaternionRotationRollPitchYaw( 27.5f * rand(), -82.7f * rand(), 413.7f * rand() ) };
     CComponentManager::GetInstance()->SendMessage( eComponentMessageTransform, pBox, &t  );
 }
@@ -113,6 +115,8 @@ void Riot::Run( void )
             }
         }
         //-------------------------- Frame -------------------------
+
+        uint x = sizeof( CComponent );
 
         //////////////////////////////////////////
         // Update

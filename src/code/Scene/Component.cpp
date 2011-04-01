@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/31/2011 11:36:31 AM
+Modified:       3/31/2011 1:56:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -54,7 +54,7 @@ void CComponent::ProcessComponent( void )
 //  "Adds" a component to an object
 //-----------------------------------------------------------------------------
 uint CComponent::AddComponent( CObject* pObject )
-{    
+{
     // Calculate the free spot for this component
     uint nIndex = m_nNumComponents++;
     m_ppObjects[ nIndex ] = pObject;
@@ -206,7 +206,8 @@ const uint CUpdateComponent::NumMessagesReceived   = sizeof( MessagesReceived ) 
 //-----------------------------------------------------------------------------
 // CUpdateComponent constructor
 CUpdateComponent::CUpdateComponent()
-{    
+    //: m_nComponentType( ComponentType )
+{
 }
 
 // CUpdateComponent destructor

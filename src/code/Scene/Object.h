@@ -3,7 +3,7 @@ File:           Object.h
 Purpose:        Base interface for every object in the scene
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/31/2011 11:16:48 AM
+Modified:       3/31/2011 2:03:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECT_H_
@@ -18,9 +18,11 @@ Modified by:    Kyle Weicht
 
 class CMesh;
 class CMaterial;
+class CObjectManager;
 
 class CObject : public IRefCounted
 {
+    friend class CObjectManager;
 public:
     // CObject constructor
     CObject();

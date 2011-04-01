@@ -88,6 +88,9 @@
     <ClCompile Include="..\code\scene\ObjectManager.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\code\Main\AssetManager.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\code\Main\Input.h">
@@ -154,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="..\code\scene\ObjectManager.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Main\AssetManager.h">
+      <Filter>main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
