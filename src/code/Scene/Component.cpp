@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/31/2011 1:56:50 PM
+Modified:       4/1/2011 12:29:18 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -243,6 +243,7 @@ void CUpdateComponent::Detach( uint nIndex )
 //-----------------------------------------------------------------------------
 void CUpdateComponent::ProcessComponent( void )
 {
+    srand( *((uint*)(&Riot::m_fElapsedTime)) );
     for( uint i = 0; i < m_nNumComponents; ++i )
     {
         m_Transform[ i ].vPosition += XMVectorSet( 0.0f, Riot::m_fElapsedTime * 0.05f, 0.0f, 0.0f );

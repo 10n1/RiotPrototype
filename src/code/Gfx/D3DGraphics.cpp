@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/31/2011 1:39:26 PM
+Modified:       4/1/2011 12:31:08 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -68,7 +68,7 @@ uint CD3DGraphics::Initialize( CWindow* pWindow )
     //////////////////////////////////////////
     // Create the ViewProj Constant buffer
     bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth        = sizeof( XMMATRIX ) * 2;
+    bufferDesc.ByteWidth        = sizeof( XMMATRIX );
     bufferDesc.BindFlags        = D3D11_BIND_CONSTANT_BUFFER;
     bufferDesc.CPUAccessFlags   = 0;
 
@@ -568,10 +568,10 @@ CMaterial* CD3DGraphics::CreateMaterial( const wchar_t* szFilename, const char* 
 //-----------------------------------------------------------------------------
 void CD3DGraphics::SetViewProj( const void* pView, const void* pProj )
 {
-    XMMATRIX mMatrices[2] = 
-    { 
-        XMMatrixTranspose( *((XMMATRIX*)pView) ), 
-        XMMatrixTranspose( *((XMMATRIX*)pProj) )
+    XMMATRIX mMatrices[1] = 
+    {
+        XMMatrixTranspose( *((XMMATRIX*)pView) * *((XMMATRIX*)pProj)), 
+
     };
 
     m_pContext->UpdateSubresource( m_pViewProjCB, 0, NULL, mMatrices, 0, 0 );

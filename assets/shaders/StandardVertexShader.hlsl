@@ -9,8 +9,8 @@
 //--------------------------------------------------------------------------------------
 cbuffer ViewProj : register( b0 )
 {
-	matrix View;
-	matrix Projection;
+	matrix ViewProj;
+	//matrix Projection;
 }
 
 cbuffer World : register( b1 )
@@ -39,8 +39,8 @@ PS_INPUT VS( VS_INPUT input )
 {
     PS_INPUT output = (PS_INPUT)0;
     output.Pos = mul( input.Pos, World );
-    output.Pos = mul( output.Pos, View );
-    output.Pos = mul( output.Pos, Projection );
+    output.Pos = mul( output.Pos, ViewProj );
+    //output.Pos = mul( output.Pos, Projection );
     output.Color = input.Color;
     
     return output;
