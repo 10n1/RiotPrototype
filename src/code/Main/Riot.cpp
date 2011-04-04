@@ -40,6 +40,16 @@ CComponentManager*  Riot::m_pComponentManager = NULL;
 CObjectManager*     Riot::m_pObjectManager  = NULL;
 
 bool                Riot::m_bRunning        = true;
+
+float GetRand( void )
+{
+    float f = rand();
+    f *= 2;
+    f /= RAND_MAX*2;
+    f -= 1.0f;
+    return f;
+}
+
 //-----------------------------------------------------------------------------
 //  CreateBox
 //  Creates a box
@@ -65,6 +75,13 @@ void CreateBox( void )
     pObjMgr->AddComponent( nObject, eComponentRender );
     Transform t = { XMVectorSet( 1.0f, -2.0f, 0.0f, 0.0f ), XMQuaternionRotationRollPitchYaw( 27.5f * rand(), -82.7f * rand(), 413.7f * rand() ) };
     CComponentManager::GetInstance()->SendMessage( eComponentMessageTransform, pBox, &t  );
+
+    //////////////////////////////////////////
+    // Create one light
+    Transform t2 = { XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ), XMVectorSet( GetRand(), GetRand(), GetRand(), 0.0f ) };
+    nObject = pObjMgr->CreateObject();
+    pObjMgr->AddComponent( nObject, eComponentLight );
+    CComponentManager::GetInstance()->SendMessage( eComponentMessageTransform, pObjMgr->GetObject(nObject), &t2  );
 }
     
 //-----------------------------------------------------------------------------
@@ -120,14 +137,13 @@ void Riot::Run( void )
 
         //////////////////////////////////////////
         // Update
-        //m_pSceneGraph->UpdateObjects( m_fElapsedTime );
+        m_pSceneGraph->UpdateObjects( m_fElapsedTime );
 
 
         //////////////////////////////////////////
         // Render
         m_pGraphics->PrepareRender();
-        m_pGraphics->Render( NULL, 0 );
-        m_pSceneGraph->UpdateObjects( m_fElapsedTime );
+        m_pGraphics->Render();
         m_pGraphics->Present();
 
         //----------------------- End of frame ---------------------

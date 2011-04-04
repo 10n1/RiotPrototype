@@ -23,4 +23,6 @@ Modified by:    Kyle Weicht
 // Use overridden new/delete
 #define new DEBUG_NEW
 
+#define MAX_LIGHTS 8
+
 #endif // #ifndef _COMMON_H_

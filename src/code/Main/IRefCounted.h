@@ -15,8 +15,8 @@ public:
     { }
     virtual ~IRefCounted() { }
 
-    _inline void AddRef( void ) { ++m_nRefCount; }
-    _inline void Release( void ) 
+    inline void AddRef( void ) { ++m_nRefCount; }
+    inline void Release( void ) 
     { 
         --m_nRefCount; 
         if( m_nRefCount == 0 ) 

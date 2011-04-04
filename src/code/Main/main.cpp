@@ -5,6 +5,7 @@ Purpose:   Main entry point for the program
 #include "Common.h"
 #include "Riot.h"
 #include <xnamath.h>
+#include "RiotMath.h"
 #include "Scene\Component.h"
 
 XMVECTOR v;

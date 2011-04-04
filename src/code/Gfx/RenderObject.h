@@ -1,35 +1,32 @@
 /*********************************************************\
-File:           Material.h
-Purpose:        Property for holding pixel shaders/textures
-                and in general describing how an object looks
+File:           RenderObject.h
+Purpose:        Base interface for any object processed by
+                the Render engine
 Author:         Kyle Weicht
-Created:        3/21/2011
-Modified:       4/3/2011 8:27:06 PM
+Created:        4/3/2011
+Modified:       4/3/2011 8:28:17 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#ifndef _MATERIAL_H_
-#define _MATERIAL_H_
+#ifndef _RENDEROBJECT_H_
+#define _RENDEROBJECT_H_
 #include "Common.h"
-#include "RenderObject.h"
-#include "Types.h"
+#include "IRefCounted.h"
 
-class CPixelShader;
-
-class CMaterial : public CRenderObject
+class CRenderObject : public IRefCounted
 {
 public:
-    // CMaterial constructor
-    CMaterial();
+    // CRenderObject constructor
+    CRenderObject() { }
 
-    // CMaterial destructor
-    virtual ~CMaterial();
+    // CRenderObject destructor
+    virtual ~CRenderObject() { }
     /***************************************\
     | class methods                         |
     \***************************************/
 
     //-----------------------------------------------------------------------------
     //  ProcessObject
-    //  Applies the material to the pipeline
+    //  Processes the object
     //-----------------------------------------------------------------------------
     virtual void ProcessObject( void ) = 0;
 
@@ -37,7 +34,8 @@ private:
     /***************************************\
     | class members                         |
     \***************************************/
+
 };
 
 
-#endif // #ifndef _MATERIAL_H_
+#endif // #ifndef _RENDEROBJECT_H_

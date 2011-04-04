@@ -3,7 +3,7 @@ File:           Object.h
 Purpose:        Base interface for every object in the scene
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/31/2011 2:03:42 PM
+Modified:       4/3/2011 8:47:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECT_H_
@@ -15,6 +15,7 @@ Modified by:    Kyle Weicht
 
 #include <Windows.h> // TODO: Remove XNA math
 #include <xnamath.h>
+#include "RiotMath.h"
 
 class CMesh;
 class CMaterial;

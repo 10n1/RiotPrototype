@@ -105,9 +105,6 @@
     <ClInclude Include="..\code\Main\Riot.h">
       <Filter>main</Filter>
     </ClInclude>
-    <ClInclude Include="..\code\Main\RiotMath.h">
-      <Filter>main</Filter>
-    </ClInclude>
     <ClInclude Include="..\code\Main\Timer.h">
       <Filter>main</Filter>
     </ClInclude>
@@ -159,6 +156,12 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\code\Main\AssetManager.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\gfx\RenderObject.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\Main\RiotMath.h">
       <Filter>main</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/1/2011 12:29:18 AM
+Modified:       4/3/2011 9:15:29 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -11,15 +11,13 @@ Modified by:    Kyle Weicht
 #include "Gfx\Mesh.h"
 #include "Gfx\Material.h"
 #include "Riot.h"
+#include "Gfx\Graphics.h"
 #include <memory>
 
 // CComponent constructor
 CComponent::CComponent()
-    : m_ppObjects( NULL )
-    , m_nNumComponents( 0 )
+    : m_nNumComponents( 0 )
 {
-    m_ppObjects = new CObject*[MAX_OBJECTS];
-    memset( m_ppObjects, 0, sizeof(CObject*) * MAX_OBJECTS );
 }
 
 // CComponent destructor
@@ -119,6 +117,8 @@ const uint CRenderComponent::NumMessagesReceived   = sizeof( MessagesReceived ) 
 // CRenderComponent constructor
 CRenderComponent::CRenderComponent()
 {    
+    m_ppObjects = new CObject*[MaxComponents];
+    memset( m_ppObjects, 0, sizeof(CObject*) * MaxComponents );
 }
 
 // CRenderComponent destructor
@@ -137,6 +137,9 @@ void CRenderComponent::Attach( uint nIndex )
     CObject* pObject = m_ppObjects[ nIndex ];
     m_pMesh[nIndex] = pObject->GetMesh();
     m_pMaterial[nIndex] = pObject->GetMaterial();
+    m_vPosition[nIndex] = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+    m_vOrientation[nIndex] = XMVectorSet( 0.0f, 0.0f, 0.0f, 1.0f );
+    m_mWorldMatrix[nIndex] = XMMatrixIdentity();
 }
 
 //-----------------------------------------------------------------------------
@@ -156,10 +159,16 @@ void CRenderComponent::Detach( uint nIndex )
 //-----------------------------------------------------------------------------
 void CRenderComponent::ProcessComponent( void )
 {
+    CGraphics* pGfx = Riot::GetGraphics();
     for( uint i = 0; i < m_nNumComponents; ++i )
     {
-        m_pMaterial[ i ]->ApplyMaterial();
-        m_pMesh[ i ]->DrawMesh();
+        pGfx->AddCommand( m_pMaterial[i] );
+        pGfx->AddCommand( m_pMesh[i] );
+        XMMATRIX mWorld = XMMatrixRotationQuaternion( m_vOrientation[i] );
+        mWorld = mWorld * XMMatrixTranslationFromVector( m_vPosition[i] );
+        mWorld = XMMatrixTranspose( mWorld );
+        m_mWorldMatrix[i] = mWorld;
+        pGfx->AddMatrix( &m_mWorldMatrix[i] );
     }
 }
 
@@ -177,8 +186,8 @@ void CRenderComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
         {
             Transform& vTransform = *((Transform*)msg.m_pData);
 
-            m_pMesh[ nSlot ]->m_vPosition = vTransform.vPosition;
-            m_pMesh[ nSlot ]->m_vOrientation = vTransform.vOrientation;
+            m_vPosition[nSlot] = vTransform.vPosition;
+            m_vOrientation[nSlot] = vTransform.vOrientation;
         }
         break;
 
@@ -206,8 +215,9 @@ const uint CUpdateComponent::NumMessagesReceived   = sizeof( MessagesReceived ) 
 //-----------------------------------------------------------------------------
 // CUpdateComponent constructor
 CUpdateComponent::CUpdateComponent()
-    //: m_nComponentType( ComponentType )
 {
+    m_ppObjects = new CObject*[MaxComponents];
+    memset( m_ppObjects, 0, sizeof(CObject*) * MaxComponents );
 }
 
 // CUpdateComponent destructor
@@ -270,6 +280,98 @@ void CUpdateComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
 
             m_Transform[ nSlot ].vPosition = vTransform.vPosition;
             m_Transform[ nSlot ].vOrientation = vTransform.vOrientation;
+        }
+        break;
+
+    default:
+        {
+        }
+    }
+}
+
+
+/*********************************************************************************\
+|*********************************************************************************|
+|*********************************************************************************|
+|*********************************************************************************|
+\*********************************************************************************/
+//-----------------------------------------------------------------------------
+const eComponentMessageType CLightComponent::MessagesReceived[] = 
+{
+    eComponentMessageTransform,
+};
+const uint CLightComponent::NumMessagesReceived   = sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// CLightComponent constructor
+CLightComponent::CLightComponent()
+{    
+    m_ppObjects = new CObject*[MaxComponents];
+    memset( m_ppObjects, 0, sizeof(CObject*) * MaxComponents );
+}
+
+// CLightComponent destructor
+CLightComponent::~CLightComponent()
+{
+}
+
+
+//-----------------------------------------------------------------------------
+//  Attach
+//  Attaches a component to an object
+//-----------------------------------------------------------------------------
+void CLightComponent::Attach( uint nIndex )
+{
+    // Now initialize this component
+    CObject* pObject = m_ppObjects[ nIndex ];
+    m_vPosition[nIndex] = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+    m_vOrientation[nIndex] = XMVectorSet( 1.0f, 1.0f, 1.0f, 0.0f );
+    m_bUpdated[nIndex] = true;
+}
+
+//-----------------------------------------------------------------------------
+//  Detach
+//  Detaches a component to an object
+//-----------------------------------------------------------------------------
+void CLightComponent::Detach( uint nIndex )
+{
+    // Now initialize this component
+}
+
+//-----------------------------------------------------------------------------
+//  ProcessComponent
+//  Processes the component as necessary
+//-----------------------------------------------------------------------------
+void CLightComponent::ProcessComponent( void )
+{
+    for( uint i = 0; i < m_nNumComponents; ++i )
+    {
+        if( m_bUpdated[i] == true )
+        {
+            Riot::GetGraphics()->SetLight( m_vOrientation[i], i );
+            m_bUpdated[i] = false;
+        }
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+//  ReceiveMessage
+//  Receives and processes a message
+//-----------------------------------------------------------------------------
+void CLightComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
+{
+    switch( msg.m_nMessageType )
+    {
+    //case MessagesReceived[0]: <-- // TODO: is there a way to do that?
+    case eComponentMessageTransform:
+        {
+            Transform& vTransform = *((Transform*)msg.m_pData);
+
+            m_vPosition[nSlot] = vTransform.vPosition;
+            m_vOrientation[nSlot] = vTransform.vOrientation;
+            m_bUpdated[nSlot] = true;
         }
         break;
 

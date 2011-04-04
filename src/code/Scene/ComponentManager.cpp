@@ -41,6 +41,7 @@ CComponentManager::CComponentManager()
     // Do this for each component
     LOAD_COMPONENT( CUpdateComponent );
     LOAD_COMPONENT( CRenderComponent );
+    LOAD_COMPONENT( CLightComponent );
 }
 
 // CComponentManager destructor
@@ -149,7 +150,10 @@ void CComponentManager::SendMessage( CComponentMessage& msg )
 
         sint nIndex = msg.m_pTargetObject->GetComponentIndex( (eComponentType)nComponent );
 
-        m_ppComponents[ nComponent ]->ReceiveMessage( nIndex, msg );
+        if( nIndex != -1 )
+        {
+            m_ppComponents[ nComponent ]->ReceiveMessage( nIndex, msg );
+        }
     }
 }
 

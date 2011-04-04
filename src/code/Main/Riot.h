@@ -49,12 +49,12 @@ private:
 //---------------------------------------------------------------------------------
 //  Members
 private:
-    static uint         m_nFrameCount;
-    static float        m_fRunningTime;
-    static RiotInput*   m_pInput;
-    static CWindow*     m_pMainWindow;
-    static CGraphics*   m_pGraphics;
-    static CSceneGraph* m_pSceneGraph;
+    static uint                 m_nFrameCount;
+    static float                m_fRunningTime;
+    static RiotInput*           m_pInput;
+    static CWindow*             m_pMainWindow;
+    static CGraphics*           m_pGraphics;
+    static CSceneGraph*         m_pSceneGraph;
     static CComponentManager*   m_pComponentManager;
     static CObjectManager*      m_pObjectManager;
 

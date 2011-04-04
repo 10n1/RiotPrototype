@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/31/2011 1:56:42 PM
+Modified:       4/3/2011 9:15:09 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -13,6 +13,7 @@ Modified by:    Kyle Weicht
 
 #include <Windows.h>
 #include <xnamath.h>
+#include "RiotMath.h"
 
 #define MAX_OBJECTS (16*1024)
 
@@ -34,6 +35,7 @@ enum eComponentType
 {
     eComponentRender,
     eComponentUpdate,
+    eComponentLight,
 
     eNUMCOMPONENTS,
     eNULLCOMPONENT = -1
@@ -62,7 +64,7 @@ public:
     CComponent();
 
     // CComponent destructor
-    virtual ~CComponent();
+    virtual ~CComponent() = 0;
     /***************************************\
     | class methods                         |
     \***************************************/
@@ -113,6 +115,7 @@ public:
     static const uint NumMessagesReceived;
 
     static const eComponentType ComponentType = eNULLCOMPONENT;
+    static const uint MaxComponents = MAX_OBJECTS;
     //-----------------------------------------------------------------------------
 protected:
     /***************************************\
@@ -161,6 +164,7 @@ public:
     static const uint NumMessagesReceived;
 
     static const eComponentType ComponentType = eComponentRender;
+    static const uint MaxComponents = MAX_OBJECTS;
     //-----------------------------------------------------------------------------
     
     //-----------------------------------------------------------------------------
@@ -173,7 +177,10 @@ private:
     | class members                         |
     \***************************************/
     CMesh*      m_pMesh[MAX_OBJECTS];
-    CMaterial*  m_pMaterial[MAX_OBJECTS];
+    CMaterial*  m_pMaterial[MAX_OBJECTS];    
+    XMVECTOR    m_vPosition[MAX_OBJECTS];
+    XMVECTOR    m_vOrientation[MAX_OBJECTS];
+    XMMATRIX    m_mWorldMatrix[MAX_OBJECTS];
 };
 
 class CUpdateComponent : public CComponent
@@ -212,6 +219,7 @@ public:
     static const uint NumMessagesReceived;
 
     static const eComponentType ComponentType = eComponentUpdate;
+    static const uint MaxComponents = MAX_OBJECTS;
     //-----------------------------------------------------------------------------
     
     //-----------------------------------------------------------------------------
@@ -224,6 +232,59 @@ private:
     | class members                         |
     \***************************************/
     Transform   m_Transform[MAX_OBJECTS];
+};
+
+class CLightComponent : public CComponent
+{
+public:
+    // CLightComponent constructor
+    CLightComponent();
+
+    // CLightComponent destructor
+    ~CLightComponent();
+    /***************************************\
+    | class methods                         |
+    \***************************************/
+    
+    //-----------------------------------------------------------------------------
+    //  Attach
+    //  Attaches a component to an object
+    //-----------------------------------------------------------------------------
+    void Attach( uint nIndex );
+
+    //-----------------------------------------------------------------------------
+    //  Detach
+    //  Detaches a component from an object
+    //-----------------------------------------------------------------------------
+    void Detach( uint nIndex );
+    
+    //-----------------------------------------------------------------------------
+    //  ProcessComponent
+    //  Processes the component as necessary
+    //-----------------------------------------------------------------------------
+    void ProcessComponent( void );
+
+    //-----------------------------------------------------------------------------
+    //  Messages sent and recieved by this component are defined here
+    static const eComponentMessageType MessagesReceived[];
+    static const uint NumMessagesReceived;
+
+    static const eComponentType ComponentType = eComponentLight;
+    static const uint MaxComponents = MAX_LIGHTS;
+    //-----------------------------------------------------------------------------
+    
+    //-----------------------------------------------------------------------------
+    //  ReceiveMessage
+    //  Receives and processes a message
+    //-----------------------------------------------------------------------------
+    virtual void ReceiveMessage( uint nSlot, CComponentMessage& msg );
+private:
+    /***************************************\
+    | class members                         |
+    \***************************************/
+    XMVECTOR    m_vPosition[MAX_LIGHTS];
+    XMVECTOR    m_vOrientation[MAX_LIGHTS];
+    bool        m_bUpdated[MAX_LIGHTS];
 };
 
 #endif // #ifndef _COMPONENT_H_

@@ -13,8 +13,8 @@ static const float gs_fPiRecip = (1.0f/gs_fPi);
 static const float gs_fDegToRad = (gs_fPi/180.0f);
 static const float gs_fRadToDeg = (180.0f/gs_fPi);
 static const float gs_fEpsilon = (0.0001f);
-_inline float DegToRad( float fDeg ) { return fDeg * gs_fDegToRad; }
-_inline float RadToDeg( float fRad ) { return fRad * gs_fRadToDeg; }
+inline float DegToRad( float fDeg ) { return fDeg * gs_fDegToRad; }
+inline float RadToDeg( float fRad ) { return fRad * gs_fRadToDeg; }
 
 class RVector2
 {

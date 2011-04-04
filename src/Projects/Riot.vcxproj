@@ -48,6 +48,7 @@
     <ClInclude Include="..\code\Gfx\Graphics.h" />
     <ClInclude Include="..\code\Gfx\Material.h" />
     <ClInclude Include="..\code\Gfx\Mesh.h" />
+    <ClInclude Include="..\code\gfx\RenderObject.h" />
     <ClInclude Include="..\code\Gfx\View.h" />
     <ClInclude Include="..\code\Main\AssetManager.h" />
     <ClInclude Include="..\code\main\Common.h" />

@@ -3,7 +3,7 @@ File:           D3DMesh.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/23/2011 7:07:42 PM
+Modified:       4/3/2011 9:04:23 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DMESH_H_
@@ -31,10 +31,10 @@ public:
     \***************************************/
     
     //-----------------------------------------------------------------------------
-    //  DrawMesh
+    //  ProcessObject
     //  Passes the mesh to the GPU and renders it
     //-----------------------------------------------------------------------------
-    void DrawMesh( void );
+    void ProcessObject( void );
 private:
     /***************************************\
     | class members                         |
@@ -43,7 +43,6 @@ private:
     ID3D11InputLayout*      m_pVertexLayout;
     ID3D11Buffer*           m_pVertexBuffer;
     ID3D11Buffer*           m_pIndexBuffer;
-    ID3D11Buffer*           m_pWorldMatrixCB;
 
     ID3D11DeviceContext*    m_pDeviceContext;
 };

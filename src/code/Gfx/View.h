@@ -4,7 +4,7 @@ Purpose:        Interface for anything in the engine that
                 can "view", aka, a camera
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/31/2011 11:04:24 AM
+Modified:       4/3/2011 8:47:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VIEW_H_
@@ -14,6 +14,7 @@ Modified by:    Kyle Weicht
 #include "Types.h"
 #include <Windows.h>
 #include <xnamath.h>
+#include "RiotMath.h"
 
 class CView : public CObject
 {

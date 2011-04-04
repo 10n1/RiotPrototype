@@ -19,7 +19,8 @@ cbuffer World : register( b1 )
 
 cbuffer Lights : register( b0 )
 {
-    float4 vLightDir;
+    float4 vLightDir[8];
+    int    nActiveLights;
 }
 
 //--------------------------------------------------------------------------------------
@@ -44,7 +45,6 @@ PS_INPUT VS( VS_INPUT input )
     PS_INPUT output = (PS_INPUT)0;
     output.Pos = mul( input.Pos, World );
     output.Pos = mul( output.Pos, ViewProj );
-    //output.Pos = mul( output.Pos, Projection );
     output.Normal = mul( input.Normal, World);
     
     return output;
@@ -57,7 +57,10 @@ PS_INPUT VS( VS_INPUT input )
 float4 PS( PS_INPUT input) : SV_Target
 {
     float4 finalColor = 0.0f;
-    finalColor = saturate( dot( (float3)vLightDir, input.Normal ) );
+    for( int i = 0; i < nActiveLights; ++i )
+    {
+        finalColor += saturate( dot( (float3)vLightDir[i], input.Normal ) );
+    }
 
     return finalColor;
 }

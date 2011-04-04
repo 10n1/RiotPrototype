@@ -3,7 +3,7 @@ File:           D3DMaterial.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        3/22/2011
-Modified:       3/23/2011 7:07:43 PM
+Modified:       4/3/2011 8:27:05 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DMATERIAL_H_
@@ -31,10 +31,10 @@ public:
     \***************************************/
     
     //-----------------------------------------------------------------------------
-    //  ApplyMaterial
+    //  ProcessObject
     //  Applies the material to the pipeline
     //-----------------------------------------------------------------------------
-    void ApplyMaterial( void );
+    void ProcessObject( void );
 private:
     /***************************************\
     | class members                         |

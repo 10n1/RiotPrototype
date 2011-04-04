@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Base interface for Direct3D
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       3/23/2011 7:07:43 PM
+Modified:       4/3/2011 9:12:36 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -12,6 +12,7 @@ Modified by:    Kyle Weicht
 #include "Graphics.h"
 #include <Windows.h>
 #include <xnamath.h>
+#include "RiotMath.h"
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -68,7 +69,7 @@ public:
     //  Render
     //  Renders everything
     //-----------------------------------------------------------------------------
-    void Render( CObject** ppObjects, uint nNumObjects );
+    void Render( void );
     
     //-----------------------------------------------------------------------------
     //  Present
@@ -81,6 +82,12 @@ public:
     //  Sets the view projection constant buffer
     //-----------------------------------------------------------------------------
     void SetViewProj( const void* pView, const void* pProj );
+    
+    //-----------------------------------------------------------------------------
+    //  SetWorldMatrix
+    //  Applies the world matrix to the pipeline
+    //-----------------------------------------------------------------------------
+    void SetWorldMatrix( XMMATRIX* pMatrix );
     
 public:
     /***************************************\
@@ -114,6 +121,7 @@ private:
     ID3D11Buffer*           m_pViewProjCB;
     ID3D11Buffer*           m_pWorldCB;
     ID3D11Buffer*           m_pLightCB;
+
 };
 
 
