@@ -113,6 +113,7 @@ private:
 
     ID3D11Buffer*           m_pViewProjCB;
     ID3D11Buffer*           m_pWorldCB;
+    ID3D11Buffer*           m_pLightCB;
 };
 
 

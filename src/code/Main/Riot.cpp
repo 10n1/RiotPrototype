@@ -120,15 +120,13 @@ void Riot::Run( void )
 
         //////////////////////////////////////////
         // Update
-        m_pSceneGraph->UpdateObjects( m_fElapsedTime );
+        //m_pSceneGraph->UpdateObjects( m_fElapsedTime );
 
 
         //////////////////////////////////////////
         // Render
         m_pGraphics->PrepareRender();
-        uint nNumRenderObjects = 0;
-        CObject** ppObjects = m_pSceneGraph->GetRenderObjects( &nNumRenderObjects );
-        m_pGraphics->Render( ppObjects, nNumRenderObjects );
+        m_pGraphics->Render( NULL, 0 );
         m_pSceneGraph->UpdateObjects( m_fElapsedTime );
         m_pGraphics->Present();
 

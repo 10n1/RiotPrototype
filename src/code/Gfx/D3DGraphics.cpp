@@ -29,12 +29,14 @@ CD3DGraphics::CD3DGraphics()
     , m_pDepthStencilView( NULL )
     , m_pViewProjCB( NULL )
     , m_pWorldCB( NULL )
+    , m_pLightCB( NULL )
 {
 }
 
 // CD3DGraphics destructor
 CD3DGraphics::~CD3DGraphics()
 {
+    SAFE_RELEASE( m_pLightCB );
     SAFE_RELEASE( m_pWorldCB );
     SAFE_RELEASE( m_pViewProjCB );
     SAFE_RELEASE( m_pRenderTargetView );
@@ -85,6 +87,18 @@ uint CD3DGraphics::Initialize( CWindow* pWindow )
 
     hr = m_pDevice->CreateBuffer( &bufferDesc, NULL, &m_pWorldCB );
     // TODO: Handle error
+
+    
+    //////////////////////////////////////////
+    // Create the lighting Constant buffer
+    bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth        = sizeof( XMVECTOR );
+    bufferDesc.BindFlags        = D3D11_BIND_CONSTANT_BUFFER;
+    bufferDesc.CPUAccessFlags   = 0;
+
+    hr = m_pDevice->CreateBuffer( &bufferDesc, NULL, &m_pLightCB );
+    // TODO: Handle error
+
 
     return nResult;
 }
@@ -362,25 +376,46 @@ CMesh* CD3DGraphics::CreateMesh( const wchar_t* szFilename )
     struct SimpleVertex
     {
         XMFLOAT3 Pos;
-        XMFLOAT4 Color;
+        XMFLOAT3 Normal;
     };
     // Create vertex buffer
     SimpleVertex vertices[] =
     {
-        { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT4( 0.0f, 1.0f, 1.0f, 1.0f ) },
-        { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) },
-        { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT4( 1.0f, 0.0f, 1.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT4( 1.0f, 1.0f, 0.0f, 1.0f ) },
-        { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-        { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT4( 0.0f, 0.0f, 0.0f, 1.0f ) },
+        { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT3( 0.0f, 1.0f, 0.0f ) },
+        { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT3( 0.0f, 1.0f, 0.0f ) },
+        { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT3( 0.0f, 1.0f, 0.0f ) },
+        { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT3( 0.0f, 1.0f, 0.0f ) },
+
+        { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT3( 0.0f, -1.0f, 0.0f ) },
+        { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT3( 0.0f, -1.0f, 0.0f ) },
+        { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT3( 0.0f, -1.0f, 0.0f ) },
+        { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT3( 0.0f, -1.0f, 0.0f ) },
+
+        { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT3( -1.0f, 0.0f, 0.0f ) },
+        { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT3( -1.0f, 0.0f, 0.0f ) },
+        { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT3( -1.0f, 0.0f, 0.0f ) },
+        { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT3( -1.0f, 0.0f, 0.0f ) },
+
+        { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT3( 1.0f, 0.0f, 0.0f ) },
+        { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT3( 1.0f, 0.0f, 0.0f ) },
+        { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT3( 1.0f, 0.0f, 0.0f ) },
+        { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT3( 1.0f, 0.0f, 0.0f ) },
+
+        { XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT3( 0.0f, 0.0f, -1.0f ) },
+        { XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT3( 0.0f, 0.0f, -1.0f ) },
+        { XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT3( 0.0f, 0.0f, -1.0f ) },
+        { XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT3( 0.0f, 0.0f, -1.0f ) },
+
+        { XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT3( 0.0f, 0.0f, 1.0f ) },
+        { XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT3( 0.0f, 0.0f, 1.0f ) },
+        { XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT3( 0.0f, 0.0f, 1.0f ) },
+        { XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT3( 0.0f, 0.0f, 1.0f ) },
     };
     // Define the input layout
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	UINT numElements = ARRAYSIZE( layout );
 
@@ -389,20 +424,20 @@ CMesh* CD3DGraphics::CreateMesh( const wchar_t* szFilename )
         3,1,0,
         2,1,3,
 
-        0,5,4,
-        1,5,0,
-
-        3,4,7,
-        0,4,3,
-
-        1,6,5,
-        2,6,1,
-
-        2,7,6,
-        3,7,2,
-
         6,4,5,
         7,4,6,
+
+        11,9,8,
+        10,9,11,
+
+        14,12,13,
+        15,12,14,
+
+        19,17,16,
+        18,17,19,
+
+        22,20,21,
+        23,20,22
     };
 
     //////////////////////////////////////////
@@ -434,6 +469,7 @@ CMesh* CD3DGraphics::CreateMesh( const wchar_t* szFilename )
 
     if( FAILED( hr ) )
     {
+        char* szError = (char*)pErrorBlob->GetBufferPointer();
         // TODO: Handle error gracefully
         DebugBreak();
         MessageBox( 0, (wchar_t*)pErrorBlob->GetBufferPointer(), L"Error", 0 );
@@ -470,7 +506,7 @@ CMesh* CD3DGraphics::CreateMesh( const wchar_t* szFilename )
     //////////////////////////////////////////
     // Create vertex buffer
     bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth        = sizeof( SimpleVertex ) * 8;
+    bufferDesc.ByteWidth        = sizeof( vertices );
     bufferDesc.BindFlags        = D3D11_BIND_VERTEX_BUFFER;
     bufferDesc.CPUAccessFlags   = 0;
     initData.pSysMem            = vertices;
@@ -486,7 +522,7 @@ CMesh* CD3DGraphics::CreateMesh( const wchar_t* szFilename )
     //////////////////////////////////////////
     // Create index buffer
     bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth        = sizeof( WORD ) * 36;
+    bufferDesc.ByteWidth        = sizeof( indices );
     bufferDesc.BindFlags        = D3D11_BIND_INDEX_BUFFER;
     bufferDesc.CPUAccessFlags   = 0;
     initData.pSysMem            = indices;
@@ -576,4 +612,12 @@ void CD3DGraphics::SetViewProj( const void* pView, const void* pProj )
 
     m_pContext->UpdateSubresource( m_pViewProjCB, 0, NULL, mMatrices, 0, 0 );
     m_pContext->VSSetConstantBuffers( 0, 1, &m_pViewProjCB );
+
+    XMVECTOR vLightDir[] = 
+    {
+        XMVectorSet( 0.5f, 0.5f, 0.5f, 1.0f )
+    };
+    
+    m_pContext->UpdateSubresource( m_pLightCB, 0, NULL, vLightDir, 0, 0 );
+    m_pContext->PSSetConstantBuffers( 0, 1, &m_pLightCB );
 }

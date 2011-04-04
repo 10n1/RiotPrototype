@@ -10,7 +10,6 @@
 cbuffer ViewProj : register( b0 )
 {
 	matrix ViewProj;
-	//matrix Projection;
 }
 
 cbuffer World : register( b1 )
@@ -18,17 +17,22 @@ cbuffer World : register( b1 )
 	matrix World;
 }
 
+cbuffer Lights : register( b0 )
+{
+    float4 vLightDir;
+}
+
 //--------------------------------------------------------------------------------------
 struct VS_INPUT
 {
     float4 Pos : POSITION;
-    float4 Color : COLOR;
+    float3 Normal : NORMAL;
 };
 
 struct PS_INPUT
 {
     float4 Pos : SV_POSITION;
-    float4 Color : COLOR;
+    float3 Normal : TEXCOORD0;
 };
 
 
@@ -41,7 +45,7 @@ PS_INPUT VS( VS_INPUT input )
     output.Pos = mul( input.Pos, World );
     output.Pos = mul( output.Pos, ViewProj );
     //output.Pos = mul( output.Pos, Projection );
-    output.Color = input.Color;
+    output.Normal = mul( input.Normal, World);
     
     return output;
 }
@@ -52,5 +56,8 @@ PS_INPUT VS( VS_INPUT input )
 //--------------------------------------------------------------------------------------
 float4 PS( PS_INPUT input) : SV_Target
 {
-    return input.Color;
+    float4 finalColor = 0.0f;
+    finalColor = saturate( dot( (float3)vLightDir, input.Normal ) );
+
+    return finalColor;
 }

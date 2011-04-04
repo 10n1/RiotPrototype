@@ -68,6 +68,7 @@ void CSceneGraph::AddView( CView* pView )
     AddObject( (CObject*)pView );
 
     m_pActiveView = pView; // TODO: Figure out where to do this
+    Riot::GetGraphics()->SetCurrentView( m_pActiveView );
 }
 
 
@@ -79,7 +80,6 @@ void CSceneGraph::UpdateObjects( float fDeltaTime )
 {
     // Each object still has an Update for anything super specialized it might need?
     // Hmm.......
-    Riot::GetGraphics()->SetCurrentView( m_pActiveView );
 
     // Update the components
     CComponentManager::GetInstance()->ProcessComponents();
