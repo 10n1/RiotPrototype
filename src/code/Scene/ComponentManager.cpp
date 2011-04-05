@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/31/2011 2:03:42 PM
+Modified:       4/4/2011 9:35:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -19,15 +19,16 @@ void CComponentManager::LoadComponent( void )
     }
 }
 
-#define LOAD_COMPONENT( TheComponent ) LoadComponent<TheComponent>()
+#define LOAD_COMPONENT( Name ) LoadComponent<C##Name##Component>()
 #else
-#define LOAD_COMPONENT( TheComponent )                                  \
-    m_ppComponents[ TheComponent::ComponentType ] = new TheComponent;   \
-    for( uint i = 0; i < TheComponent::NumMessagesReceived; ++i )       \
+#define LOAD_COMPONENT( Name )                                  \
+    m_ppComponents[ C##Name##Component::ComponentType ] = new C##Name##Component;   \
+    for( uint i = 0; i < C##Name##Component::NumMessagesReceived; ++i )       \
     {                                                                   \
-        m_bRegistered[ TheComponent::MessagesReceived[i] ][ TheComponent::ComponentType ] = true; \
+        m_bRegistered[ C##Name##Component::MessagesReceived[i] ][ C##Name##Component::ComponentType ] = true; \
     }
 #endif
+
 
 
 // CComponentManager constructor
@@ -39,9 +40,9 @@ CComponentManager::CComponentManager()
 
 
     // Do this for each component
-    LOAD_COMPONENT( CUpdateComponent );
-    LOAD_COMPONENT( CRenderComponent );
-    LOAD_COMPONENT( CLightComponent );
+    LOAD_COMPONENT( Update );
+    LOAD_COMPONENT( Render );
+    LOAD_COMPONENT( Light );
 }
 
 // CComponentManager destructor

@@ -2,7 +2,7 @@
 File:           GraphicsDevice.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/3/2011 9:20:10 PM
+Modified:       4/4/2011 8:10:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Graphics.h"
@@ -10,6 +10,7 @@ Modified by:    Kyle Weicht
 #include "Memory.h"
 #include "RenderObject.h"
 #include "Mesh.h"
+#include "Material.h"
 
 // CGraphics constructor
 CGraphics::CGraphics()
@@ -64,11 +65,9 @@ void CGraphics::Render( void )
     uint nMatrix = 0;
     for( uint i = 0; i < m_nNumCommands; ++i )
     {
-        m_ppRenderCommands[i]->ProcessObject();
-        if( i%2 == 1 )
-        {
-            SetWorldMatrix( m_ppMatrices[nMatrix++] );
-        }
+        m_ppRenderCommands[i].m_pMaterial->ProcessObject();
+        SetWorldMatrix( m_ppMatrices[nMatrix++] );
+        m_ppRenderCommands[i].m_pMesh->ProcessObject();
     }
 
     m_nNumCommands = 0;
@@ -79,9 +78,9 @@ void CGraphics::Render( void )
 //  AddCommand
 //  Adds a renderable object to the command buffer
 //-----------------------------------------------------------------------------
-void CGraphics::AddCommand( CRenderObject* pObject )
+void CGraphics::AddCommand( const CRenderCommand& command )
 {
-    m_ppRenderCommands[ m_nNumCommands++ ] = pObject;
+    m_ppRenderCommands[ m_nNumCommands++ ] = command;
 }
 
 

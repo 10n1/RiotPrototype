@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/3/2011 9:15:29 PM
+Modified:       4/4/2011 9:36:59 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -12,12 +12,55 @@ Modified by:    Kyle Weicht
 #include "Gfx\Material.h"
 #include "Riot.h"
 #include "Gfx\Graphics.h"
+#include "Gfx\RenderCommand.h"
 #include <memory>
+#include <assert.h>
+
+/*****************************************************************************\
+\*****************************************************************************/
+//
+#define BEGIN_DEFINE_COMPONENT_MESSAGES( Name )                         \
+const eComponentMessageType C##Name##Component::MessagesReceived[] =    \
+{
+//
+
+//
+#define END_DEFINE_COMPONENT_MESSAGES( Name ) \
+};                                            \
+const uint C##Name##Component::NumMessagesReceived   = sizeof( MessagesReceived ) / sizeof( eComponentMessageType )
+//
+
+//
+#define DEFINE_NO_COMPONENT_MESSAGES( Name )                         \
+const eComponentMessageType C##Name##Component::MessagesReceived[] = \
+{                                                                    \
+    eNULLCOMPONENTMESSAGE,                                           \
+};                                                                   \
+const uint C##Name##Component::NumMessagesReceived   = 0;
+//
+
+//
+#define DEFINE_COMPONENT_CONDESTRUCTOR( Name )      \
+C##Name##Component::C##Name##Component()            \
+{                                                   \
+    m_nMaxComponents = MaxComponents;               \
+    m_ppObjects = new CObject*[MaxComponents];      \
+    memset( m_ppObjects, 0, sizeof(CObject*) * MaxComponents ); \
+}                                                   \
+C##Name##Component::~C##Name##Component() { }
+//
+
+/*****************************************************************************\
+\*****************************************************************************/
 
 // CComponent constructor
 CComponent::CComponent()
     : m_nNumComponents( 0 )
+    , m_nMaxComponents( 0 )
 {
+    //m_nMaxComponents = MaxComponents;
+    //m_ppObjects = new CObject*[MaxComponents];
+    //memset( m_ppObjects, 0, sizeof(CObject*) * MaxComponents );
 }
 
 // CComponent destructor
@@ -53,6 +96,8 @@ void CComponent::ProcessComponent( void )
 //-----------------------------------------------------------------------------
 uint CComponent::AddComponent( CObject* pObject )
 {
+    //assert( m_nNumComponents < m_nMaxComponents );
+    int x = m_nMaxComponents;
     // Calculate the free spot for this component
     uint nIndex = m_nNumComponents++;
     m_ppObjects[ nIndex ] = pObject;
@@ -105,26 +150,14 @@ void CComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
 |*********************************************************************************|
 |*********************************************************************************|
 \*********************************************************************************/
-//-----------------------------------------------------------------------------
-const eComponentMessageType CRenderComponent::MessagesReceived[] = 
-{
-    eComponentMessageTransform,
-};
-const uint CRenderComponent::NumMessagesReceived   = sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
-//-----------------------------------------------------------------------------
+BEGIN_DEFINE_COMPONENT_MESSAGES( Render )
+    eComponentMessageUpdate, 
+    eComponentMessageTransform
+END_DEFINE_COMPONENT_MESSAGES( Render );
 
 //-----------------------------------------------------------------------------
-// CRenderComponent constructor
-CRenderComponent::CRenderComponent()
-{    
-    m_ppObjects = new CObject*[MaxComponents];
-    memset( m_ppObjects, 0, sizeof(CObject*) * MaxComponents );
-}
-
-// CRenderComponent destructor
-CRenderComponent::~CRenderComponent()
-{
-}
+DEFINE_COMPONENT_CONDESTRUCTOR( Render );
+//-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
@@ -162,8 +195,8 @@ void CRenderComponent::ProcessComponent( void )
     CGraphics* pGfx = Riot::GetGraphics();
     for( uint i = 0; i < m_nNumComponents; ++i )
     {
-        pGfx->AddCommand( m_pMaterial[i] );
-        pGfx->AddCommand( m_pMesh[i] );
+        CRenderCommand command = { m_pMaterial[i], m_pMesh[i] };
+        pGfx->AddCommand( command );
         XMMATRIX mWorld = XMMatrixRotationQuaternion( m_vOrientation[i] );
         mWorld = mWorld * XMMatrixTranslationFromVector( m_vPosition[i] );
         mWorld = XMMatrixTranspose( mWorld );
@@ -204,26 +237,16 @@ void CRenderComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
 |*********************************************************************************|
 |*********************************************************************************|
 \*********************************************************************************/
+
 //-----------------------------------------------------------------------------
-const eComponentMessageType CUpdateComponent::MessagesReceived[] = 
-{
+BEGIN_DEFINE_COMPONENT_MESSAGES( Update )
     eComponentMessageTransform,
-};
-const uint CUpdateComponent::NumMessagesReceived   = sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
+END_DEFINE_COMPONENT_MESSAGES( Update );
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// CUpdateComponent constructor
-CUpdateComponent::CUpdateComponent()
-{
-    m_ppObjects = new CObject*[MaxComponents];
-    memset( m_ppObjects, 0, sizeof(CObject*) * MaxComponents );
-}
-
-// CUpdateComponent destructor
-CUpdateComponent::~CUpdateComponent()
-{
-}
+DEFINE_COMPONENT_CONDESTRUCTOR( Update )
+//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 //  Attach
@@ -295,26 +318,16 @@ void CUpdateComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
 |*********************************************************************************|
 |*********************************************************************************|
 \*********************************************************************************/
+
 //-----------------------------------------------------------------------------
-const eComponentMessageType CLightComponent::MessagesReceived[] = 
-{
-    eComponentMessageTransform,
-};
-const uint CLightComponent::NumMessagesReceived   = sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
+BEGIN_DEFINE_COMPONENT_MESSAGES( Light )
+    eComponentMessageTransform
+END_DEFINE_COMPONENT_MESSAGES( Light );
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// CLightComponent constructor
-CLightComponent::CLightComponent()
-{    
-    m_ppObjects = new CObject*[MaxComponents];
-    memset( m_ppObjects, 0, sizeof(CObject*) * MaxComponents );
-}
-
-// CLightComponent destructor
-CLightComponent::~CLightComponent()
-{
-}
+DEFINE_COMPONENT_CONDESTRUCTOR( Light )
+//-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------

@@ -4,7 +4,7 @@ Purpose:        Base interface for the graphics hardware/API
                 abstraction
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/4/2011 8:04:49 PM
+Modified:       4/4/2011 8:09:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -14,6 +14,7 @@ Modified by:    Kyle Weicht
 #include "IRefCounted.h"
 #include "Types.h"
 #include "Scene\Component.h"
+#include "RenderCommand.h"
 
 #include <Windows.h>
 #include <xnamath.h>
@@ -112,7 +113,7 @@ public:
     //  AddCommand
     //  Adds a renderable object to the command buffer
     //-----------------------------------------------------------------------------
-    void AddCommand( CRenderObject* pObject );
+    void AddCommand( const CRenderCommand& command );
 
     //-----------------------------------------------------------------------------
     //  AddMatrix
@@ -150,7 +151,7 @@ protected:
     /***************************************\
     | class members                         |
     \***************************************/
-    CRenderObject*  m_ppRenderCommands[MAX_COMMANDS];
+    CRenderCommand  m_ppRenderCommands[MAX_COMMANDS];
     XMMATRIX*       m_ppMatrices[MAX_OBJECTS];
     XMVECTOR        m_vLights[MAX_LIGHTS];
     int32           m_nActiveLights;

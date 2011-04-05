@@ -164,6 +164,9 @@
     <ClInclude Include="..\code\Main\RiotMath.h">
       <Filter>main</Filter>
     </ClInclude>
+    <ClInclude Include="..\code\gfx\RenderCommand.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\shaders\StandardVertexShader.hlsl">
