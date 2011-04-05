@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Base interface for Direct3D
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/3/2011 9:12:36 PM
+Modified:       4/4/2011 8:04:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -104,12 +104,15 @@ public:
     //  CreateMaterial
     //  Creates a material from a shader file
     //-----------------------------------------------------------------------------
-    CMaterial* CreateMaterial( const wchar_t* szFilename, const char* szEntryPoint, const char* szProfile );
+    CMaterial* CreateMaterial( const wchar_t* szFilename, const char* szEntryPoint );
 private:
     /***************************************\
     | class members                         |
-    \***************************************/
-        
+    \***************************************/        
+    char                    m_szVSProfile[7];
+    char                    m_szPSProfile[7];
+    char                    _padding[2];
+
     // Direct3D stuff
     ID3D11Device*           m_pDevice;
     ID3D11DeviceContext*    m_pContext;

@@ -63,7 +63,7 @@ void CreateBox( void )
     uint nObject = pObjMgr->CreateObject();
     CObject* pBox = pObjMgr->GetObject( nObject ); //new CObject(); // Considering objects are now statically sized, maybe we shouldn't new them?
     CMesh*   pMesh = pGfx->CreateMesh( 0 );
-    CMaterial* pMaterial = pGfx->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
+    CMaterial* pMaterial = pGfx->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS" );
 
     // Apply them to the main object
     pBox->SetMesh( pMesh );

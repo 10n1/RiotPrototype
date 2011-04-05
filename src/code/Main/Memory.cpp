@@ -60,7 +60,7 @@ static uint g_nTotalMemoryAllocated = 0;
 void AddAllocation(void* pData, uint nSize, const char* szFile, uint nLine)
 {
     MemoryAllocation allocation;
-    allocation.nAddress = (nativeuint)(pData);
+    allocation.nAddress = reinterpret_cast<nativeuint>(pData);
     allocation.nSize = nSize;
     strcpy(allocation.szFile, szFile);
     allocation.nLine = nLine;
@@ -74,7 +74,7 @@ void AddAllocation(void* pData, uint nSize, const char* szFile, uint nLine)
 
 void RemoveAllocation(void* pData)
 {
-    nativeuint nAddress = (nativeuint)(pData);
+    nativeuint nAddress = reinterpret_cast<nativeuint>(pData);
     for(uint i = 0; i < g_nCurrentAllocations; ++i)
     {
         if(g_pAllocations[i].nAddress == nAddress)
@@ -105,7 +105,7 @@ void __cdecl DumpMemoryLeaks(void)
 
         nTotalUnfreed += g_pAllocations[i].nSize;
 
-        free( (void*)g_pAllocations[i].nAddress );
+        free( reinterpret_cast<void*>(g_pAllocations[i].nAddress) );
 
         printf( szBuffer );
     }

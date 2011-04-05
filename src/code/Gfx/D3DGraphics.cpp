@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/3/2011 9:21:55 PM
+Modified:       4/4/2011 8:04:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -121,7 +121,7 @@ uint CD3DGraphics::CreateDevice( CWindow* pWindow )
 
     // TODO: Don't use these hardcoded values
     int     nAACount = 1,
-        nAAQuality = 0;
+            nAAQuality = 0;
     bool    bWindowed = true;
 
     /////////////////////////////////////////
@@ -177,18 +177,26 @@ uint CD3DGraphics::CreateDevice( CWindow* pWindow )
     {
     case D3D_FEATURE_LEVEL_11_0:
         {
+            strcpy( m_szVSProfile, "vs_5_0" );
+            strcpy( m_szPSProfile, "ps_5_0" );
             break;
         }
     case D3D_FEATURE_LEVEL_10_1:
         {
+            strcpy( m_szVSProfile, "vs_4_1" );
+            strcpy( m_szPSProfile, "ps_4_1" );
             break;
         }
     case D3D_FEATURE_LEVEL_10_0:
         {
+            strcpy( m_szVSProfile, "vs_4_0" );
+            strcpy( m_szPSProfile, "ps_4_0" );
             break;
         }
     case D3D_FEATURE_LEVEL_9_3:
         {
+            strcpy( m_szVSProfile, "vs_3_0" );
+            strcpy( m_szPSProfile, "ps_3_0" );
             break;
         }
     default:
@@ -462,7 +470,7 @@ CMesh* CD3DGraphics::CreateMesh( const wchar_t* szFilename )
             NULL,           // Array of macro definitions
             NULL,           // #include interface
             "VS",           // Function name
-            "vs_4_0",       // Shader profile
+            m_szVSProfile,       // Shader profile
             nCompileFlags,  // Compile flags
             0,              // Not used for shaders, only effects
             NULL,           // Thread pump
@@ -553,7 +561,7 @@ CMesh* CD3DGraphics::CreateMesh( const wchar_t* szFilename )
 //  CreateMaterial
 //  Creates a material from a shader file
 //-----------------------------------------------------------------------------
-CMaterial* CD3DGraphics::CreateMaterial( const wchar_t* szFilename, const char* szEntryPoint, const char* szProfile )
+CMaterial* CD3DGraphics::CreateMaterial( const wchar_t* szFilename, const char* szEntryPoint )
 {    
     ID3DBlob*   pShaderBlob = NULL;
     ID3DBlob*   pErrorBlob = NULL;
@@ -575,7 +583,7 @@ CMaterial* CD3DGraphics::CreateMaterial( const wchar_t* szFilename, const char* 
         NULL,          // Array of macro definitions
         NULL,          // #include interface
         szEntryPoint,  // Function name
-        szProfile,     // Shader profile
+        m_szPSProfile, // Shader profile
         nCompileFlags, // Compile flags
         0,             // Not used for shaders, only effects
         NULL,          // Thread pump
