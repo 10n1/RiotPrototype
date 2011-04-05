@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/4/2011 8:04:49 PM
+Modified:       4/4/2011 10:09:35 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -480,7 +480,6 @@ CMesh* CD3DGraphics::CreateMesh( const wchar_t* szFilename )
 
         if( FAILED( hr ) )
         {
-            char* szError = (char*)pErrorBlob->GetBufferPointer();
             // TODO: Handle error gracefully
             DebugBreak();
             MessageBox( 0, (wchar_t*)pErrorBlob->GetBufferPointer(), L"Error", 0 );

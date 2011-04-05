@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/4/2011 9:53:27 PM
+Modified:       4/4/2011 10:02:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -69,6 +69,8 @@ const eComponentMessageType C##Name##Component::MessagesReceived[] =    \
 const uint C##Name##Component::NumMessagesReceived   =  (MessagesReceived[0] == eNULLCOMPONENTMESSAGE) ? 0 : sizeof( MessagesReceived ) / sizeof( eComponentMessageType )
 //
 
+#define COMPONENT_REORDER_DATA( Data ) Data[nIndex] = Data[ m_nNumComponents - 1  ]
+
 /*****************************************************************************\
 \*****************************************************************************/
 
@@ -113,7 +115,7 @@ void CComponent::ProcessComponent( void )
 //  AddComponent
 //  "Adds" a component to an object
 //-----------------------------------------------------------------------------
-uint CComponent::AddComponent( CObject* pObject )
+sint CComponent::AddComponent( CObject* pObject )
 {
     if( m_nNumComponents >= m_nMaxComponents )
     {
@@ -167,17 +169,13 @@ void CComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg ) { }
 |*********************************************************************************|
 |*********************************************************************************|
 \*********************************************************************************/
-//BEGIN_DEFINE_COMPONENT_MESSAGES( Render )
-//END_DEFINE_COMPONENT_MESSAGES( Render );
-//
-////-----------------------------------------------------------------------------
-//DEFINE_COMPONENT_CONDESTRUCTOR( Render );
-//-----------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
 BEGIN_DEFINE_COMPONENT( Render )
     eComponentMessageUpdate, 
     eComponentMessageTransform
 END_DEFINE_COMPONENT( Render );
+//-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
@@ -202,8 +200,11 @@ void CRenderComponent::Attach( uint nIndex )
 void CRenderComponent::Detach( uint nIndex )
 {
     // Now initialize this component
-    m_pMesh[nIndex] = m_pMesh[ m_nNumComponents - 1  ];
-    m_pMaterial[nIndex] = m_pMaterial[ m_nNumComponents - 1  ];
+    COMPONENT_REORDER_DATA( m_pMesh );
+    COMPONENT_REORDER_DATA( m_pMaterial );
+    COMPONENT_REORDER_DATA( m_vPosition );
+    COMPONENT_REORDER_DATA( m_vOrientation );
+    COMPONENT_REORDER_DATA( m_mWorldMatrix );
 }
 
 //-----------------------------------------------------------------------------
@@ -215,12 +216,17 @@ void CRenderComponent::ProcessComponent( void )
     CGraphics* pGfx = Riot::GetGraphics();
     for( uint i = 0; i < m_nNumComponents; ++i )
     {
+        // Build the command
         CRenderCommand command = { m_pMaterial[i], m_pMesh[i] };
-        pGfx->AddCommand( command );
+
+        // Build the world matrix
         XMMATRIX mWorld = XMMatrixRotationQuaternion( m_vOrientation[i] );
         mWorld = mWorld * XMMatrixTranslationFromVector( m_vPosition[i] );
         mWorld = XMMatrixTranspose( mWorld );
         m_mWorldMatrix[i] = mWorld;
+
+        // Pass to the render engine
+        pGfx->AddCommand( command );
         pGfx->AddMatrix( &m_mWorldMatrix[i] );
     }
 }
@@ -284,7 +290,7 @@ void CUpdateComponent::Attach( uint nIndex )
 void CUpdateComponent::Detach( uint nIndex )
 {
     // Now initialize this component
-    m_Transform[nIndex] = m_Transform[ m_nNumComponents - 1 ];
+    COMPONENT_REORDER_DATA( m_Transform );
 }
 
 //-----------------------------------------------------------------------------
@@ -362,6 +368,9 @@ void CLightComponent::Attach( uint nIndex )
 void CLightComponent::Detach( uint nIndex )
 {
     // Now initialize this component
+    COMPONENT_REORDER_DATA( m_vPosition );
+    COMPONENT_REORDER_DATA( m_vOrientation );
+    COMPONENT_REORDER_DATA( m_bUpdated );
 }
 
 //-----------------------------------------------------------------------------

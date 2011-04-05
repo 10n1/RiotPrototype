@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/4/2011 9:42:06 PM
+Modified:       4/4/2011 9:58:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -64,7 +64,7 @@ public:
     // CComponent constructor
     CComponent();
 
-    // CComponent destructor
+    // CComponent destructor 
     virtual ~CComponent() = 0;
     /***************************************\
     | class methods                         |
@@ -74,7 +74,7 @@ public:
     //  AddComponent
     //  "Adds" a component to an object
     //-----------------------------------------------------------------------------
-    uint AddComponent( CObject* pObject );
+    sint AddComponent( CObject* pObject );
     
     //-----------------------------------------------------------------------------
     //  RemoveComponent

@@ -16,6 +16,8 @@ static const float gs_fEpsilon = (0.0001f);
 inline float DegToRad( float fDeg ) { return fDeg * gs_fDegToRad; }
 inline float RadToDeg( float fRad ) { return fRad * gs_fRadToDeg; }
 
+#pragma warning(disable:4201)
+
 class RVector2
 {
 public:
@@ -238,5 +240,7 @@ RVector4 RVector4Zero(  );
 //    RVector4<T> r3;
 //    RVector4<T> r4;
 //};
+
+#pragma warning(default:4201)
 
 #endif // #ifndef _RIOTMATH_H_

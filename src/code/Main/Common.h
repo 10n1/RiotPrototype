@@ -3,7 +3,7 @@ File:           Common.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/23/2011 7:07:42 PM
+Modified:       4/4/2011 10:09:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMMON_H_
@@ -24,5 +24,7 @@ Modified by:    Kyle Weicht
 #define new DEBUG_NEW
 
 #define MAX_LIGHTS 8
+
+#pragma warning(disable:4100)
 
 #endif // #ifndef _COMMON_H_

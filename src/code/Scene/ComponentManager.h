@@ -3,7 +3,7 @@ File:           ComponentManager.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       3/31/2011 1:03:39 PM
+Modified:       4/4/2011 9:58:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTMANAGER_H_
@@ -36,7 +36,7 @@ public:
     //  AddComponent
     //  Adds a component of the specified type
     //-----------------------------------------------------------------------------
-    uint AddComponent( eComponentType nType, CObject* pObject );
+    sint AddComponent( eComponentType nType, CObject* pObject );
 
     
     //-----------------------------------------------------------------------------

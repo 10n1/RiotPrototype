@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/4/2011 9:35:50 PM
+Modified:       4/4/2011 9:58:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -69,7 +69,7 @@ CComponentManager* CComponentManager::GetInstance( void )
 //  AddComponent
 //  Adds a component of the specified type
 //-----------------------------------------------------------------------------
-uint CComponentManager::AddComponent( eComponentType nType, CObject* pObject )
+sint CComponentManager::AddComponent( eComponentType nType, CObject* pObject )
 {
     return m_ppComponents[ nType ]->AddComponent( pObject );
 }
