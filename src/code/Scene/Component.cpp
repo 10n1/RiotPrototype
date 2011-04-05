@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/4/2011 9:36:59 PM
+Modified:       4/4/2011 9:53:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -18,36 +18,55 @@ Modified by:    Kyle Weicht
 
 /*****************************************************************************\
 \*****************************************************************************/
+////
+//#define BEGIN_DEFINE_COMPONENT_MESSAGES( Name )                         \
+//const eComponentMessageType C##Name##Component::MessagesReceived[] =    \
+//{
+////
 //
-#define BEGIN_DEFINE_COMPONENT_MESSAGES( Name )                         \
-const eComponentMessageType C##Name##Component::MessagesReceived[] =    \
-{
+////
+//#define END_DEFINE_COMPONENT_MESSAGES( Name ) \
+//};                                            \
+//const uint C##Name##Component::NumMessagesReceived   =  (MessagesReceived[0] == eNULLCOMPONENTMESSAGE) ? 0 : sizeof( MessagesReceived ) / sizeof( eComponentMessageType )
+////
 //
+////
+//#define DEFINE_NO_COMPONENT_MESSAGES( Name )                         \
+//const eComponentMessageType C##Name##Component::MessagesReceived[] = \
+//{                                                                    \
+//    eNULLCOMPONENTMESSAGE,                                           \
+//};                                                                   \
+//const uint C##Name##Component::NumMessagesReceived   = 0;
+////
+//
+////
+//#define DEFINE_COMPONENT_CONDESTRUCTOR( Name )      \
+//C##Name##Component::C##Name##Component()            \
+//{                                                   \
+//    m_nMaxComponents = MaxComponents;               \
+//    m_ppObjects = new CObject*[MaxComponents];      \
+//    memset( m_ppObjects, 0, sizeof(CObject*) * MaxComponents ); \
+//}                                                   \
+//C##Name##Component::~C##Name##Component() { }
+////
 
 //
-#define END_DEFINE_COMPONENT_MESSAGES( Name ) \
-};                                            \
-const uint C##Name##Component::NumMessagesReceived   = sizeof( MessagesReceived ) / sizeof( eComponentMessageType )
-//
-
-//
-#define DEFINE_NO_COMPONENT_MESSAGES( Name )                         \
-const eComponentMessageType C##Name##Component::MessagesReceived[] = \
-{                                                                    \
-    eNULLCOMPONENTMESSAGE,                                           \
-};                                                                   \
-const uint C##Name##Component::NumMessagesReceived   = 0;
-//
-
-//
-#define DEFINE_COMPONENT_CONDESTRUCTOR( Name )      \
+#define BEGIN_DEFINE_COMPONENT( Name )  \
 C##Name##Component::C##Name##Component()            \
 {                                                   \
     m_nMaxComponents = MaxComponents;               \
     m_ppObjects = new CObject*[MaxComponents];      \
     memset( m_ppObjects, 0, sizeof(CObject*) * MaxComponents ); \
 }                                                   \
-C##Name##Component::~C##Name##Component() { }
+C##Name##Component::~C##Name##Component() { }       \
+const eComponentMessageType C##Name##Component::MessagesReceived[] =    \
+{
+//
+
+//
+#define END_DEFINE_COMPONENT( Name ) \
+};                                            \
+const uint C##Name##Component::NumMessagesReceived   =  (MessagesReceived[0] == eNULLCOMPONENTMESSAGE) ? 0 : sizeof( MessagesReceived ) / sizeof( eComponentMessageType )
 //
 
 /*****************************************************************************\
@@ -96,8 +115,12 @@ void CComponent::ProcessComponent( void )
 //-----------------------------------------------------------------------------
 uint CComponent::AddComponent( CObject* pObject )
 {
-    //assert( m_nNumComponents < m_nMaxComponents );
-    int x = m_nMaxComponents;
+    if( m_nNumComponents >= m_nMaxComponents )
+    {
+        // TODO: Handle error more gracefully
+        return -1;
+    }
+
     // Calculate the free spot for this component
     uint nIndex = m_nNumComponents++;
     m_ppObjects[ nIndex ] = pObject;
@@ -125,39 +148,36 @@ void CComponent::RemoveComponent( uint nIndex )
 //  Attach
 //  Attaches a component to an object
 //-----------------------------------------------------------------------------
-void CComponent::Attach( uint nIndex )
-{
-}
+void CComponent::Attach( uint nIndex ) { }
     
 //-----------------------------------------------------------------------------
 //  Detach
 //  Detaches a component to an object
 //-----------------------------------------------------------------------------
-void CComponent::Detach( uint nIndex )
-{
-}
+void CComponent::Detach( uint nIndex ) { }
 
 //-----------------------------------------------------------------------------
 //  ReceiveMessage
 //  Receives and processes a message
 //-----------------------------------------------------------------------------
-void CComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
-{
-}
+void CComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg ) { }
 
 /*********************************************************************************\
 |*********************************************************************************|
 |*********************************************************************************|
 |*********************************************************************************|
 \*********************************************************************************/
-BEGIN_DEFINE_COMPONENT_MESSAGES( Render )
+//BEGIN_DEFINE_COMPONENT_MESSAGES( Render )
+//END_DEFINE_COMPONENT_MESSAGES( Render );
+//
+////-----------------------------------------------------------------------------
+//DEFINE_COMPONENT_CONDESTRUCTOR( Render );
+//-----------------------------------------------------------------------------
+
+BEGIN_DEFINE_COMPONENT( Render )
     eComponentMessageUpdate, 
     eComponentMessageTransform
-END_DEFINE_COMPONENT_MESSAGES( Render );
-
-//-----------------------------------------------------------------------------
-DEFINE_COMPONENT_CONDESTRUCTOR( Render );
-//-----------------------------------------------------------------------------
+END_DEFINE_COMPONENT( Render );
 
 
 //-----------------------------------------------------------------------------
@@ -239,14 +259,11 @@ void CRenderComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
 \*********************************************************************************/
 
 //-----------------------------------------------------------------------------
-BEGIN_DEFINE_COMPONENT_MESSAGES( Update )
+BEGIN_DEFINE_COMPONENT( Update )
     eComponentMessageTransform,
-END_DEFINE_COMPONENT_MESSAGES( Update );
+END_DEFINE_COMPONENT( Update );
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-DEFINE_COMPONENT_CONDESTRUCTOR( Update )
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 //  Attach
@@ -320,15 +337,10 @@ void CUpdateComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
 \*********************************************************************************/
 
 //-----------------------------------------------------------------------------
-BEGIN_DEFINE_COMPONENT_MESSAGES( Light )
+BEGIN_DEFINE_COMPONENT( Light )
     eComponentMessageTransform
-END_DEFINE_COMPONENT_MESSAGES( Light );
+END_DEFINE_COMPONENT( Light );
 //-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-DEFINE_COMPONENT_CONDESTRUCTOR( Light )
-//-----------------------------------------------------------------------------
-
 
 //-----------------------------------------------------------------------------
 //  Attach
@@ -382,9 +394,9 @@ void CLightComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
         {
             Transform& vTransform = *((Transform*)msg.m_pData);
 
-            m_vPosition[nSlot] = vTransform.vPosition;
-            m_vOrientation[nSlot] = vTransform.vOrientation;
-            m_bUpdated[nSlot] = true;
+            m_vPosition[nSlot]      = vTransform.vPosition;
+            m_vOrientation[nSlot]   = vTransform.vOrientation;
+            m_bUpdated[nSlot]       = true;
         }
         break;
 

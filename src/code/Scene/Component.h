@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/4/2011 9:38:19 PM
+Modified:       4/4/2011 9:42:06 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -185,20 +185,20 @@ END_DECLARE_COMPONENT;
 //-----------------------------------------------------------------------------
 BEGIN_DECLARE_COMPONENT( Update, MAX_OBJECTS )
 //
-DECLARE_COMPONENT_DATA(Transform, m_Transform );
+DECLARE_COMPONENT_DATA( Transform, m_Transform );
 //
 END_DECLARE_COMPONENT;
 //
 
 //-----------------------------------------------------------------------------
-//  Update component
-//  Handles basic updating of objects
+//  Light component
+//  Turns an object into a light!
 //-----------------------------------------------------------------------------
 BEGIN_DECLARE_COMPONENT( Light, MAX_LIGHTS )
 //
-DECLARE_COMPONENT_DATA(XMVECTOR, m_vPosition );
-DECLARE_COMPONENT_DATA(XMVECTOR, m_vOrientation );
-DECLARE_COMPONENT_DATA(bool, m_bUpdated );
+DECLARE_COMPONENT_DATA( XMVECTOR, m_vPosition );
+DECLARE_COMPONENT_DATA( XMVECTOR, m_vOrientation );
+DECLARE_COMPONENT_DATA( bool,     m_bUpdated );
 //
 END_DECLARE_COMPONENT;
 //
