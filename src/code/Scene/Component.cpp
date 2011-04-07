@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/6/2011 9:36:58 PM
+Modified:       4/7/2011 12:23:37 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -299,7 +299,6 @@ void CUpdateComponent::Detach( uint nIndex )
 //-----------------------------------------------------------------------------
 void CUpdateComponent::ProcessComponent( void )
 {
-    srand( *((uint*)(&Riot::m_fElapsedTime)) );
     for( uint i = 0; i < m_nNumComponents; ++i )
     {
         m_Transform[ i ].vPosition += XMVectorSet( 0.0f, Riot::m_fElapsedTime * 0.05f, 0.0f, 0.0f );
@@ -379,11 +378,18 @@ void CLightComponent::Detach( uint nIndex )
 //-----------------------------------------------------------------------------
 void CLightComponent::ProcessComponent( void )
 {
+    static float fAngle = 0.0f;
+    fAngle += Riot::m_fElapsedTime;
+
     for( uint i = 0; i < m_nNumComponents; ++i )
     {
+        m_vPosition[i] = XMVectorSetX( m_vPosition[i], sin( fAngle ) * 10.0f );
+        m_vPosition[i] = XMVectorSetZ( m_vPosition[i], cos( fAngle ) * 10.0f );
+        m_bUpdated[i] = true;
+
         if( m_bUpdated[i] == true )
         {
-            Riot::GetGraphics()->SetLight( m_vOrientation[i], i );
+            Riot::GetGraphics()->SetLight( m_vPosition[i], i );
             m_bUpdated[i] = false;
         }
     }

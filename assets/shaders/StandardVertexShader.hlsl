@@ -19,7 +19,7 @@ cbuffer World : register( b1 )
 
 cbuffer Lights : register( b0 )
 {
-    float4 vLightDir[8];
+    float4 vLightPos[8];
     int    nActiveLights;
 }
 
@@ -32,8 +32,9 @@ struct VS_INPUT
 
 struct PS_INPUT
 {
-    float4 Pos : SV_POSITION;
-    float3 Normal : TEXCOORD0;
+    float4 ScreenPos : SV_POSITION;
+    float4 Pos : TEXCOORD0;
+    float3 Normal : TEXCOORD1;
 };
 
 
@@ -44,7 +45,8 @@ PS_INPUT VS( VS_INPUT input )
 {
     PS_INPUT output = (PS_INPUT)0;
     output.Pos = mul( input.Pos, World );
-    output.Pos = mul( output.Pos, ViewProj );
+    output.ScreenPos = output.Pos;
+    output.ScreenPos = mul( output.Pos, ViewProj );
     output.Normal = mul( input.Normal, World);
     
     return output;
@@ -59,7 +61,9 @@ float4 PS( PS_INPUT input) : SV_Target
     float4 finalColor = 0.0f;
     for( int i = 0; i < nActiveLights; ++i )
     {
-        finalColor += saturate( dot( normalize((float3)vLightDir[i]), normalize(input.Normal) ) );
+        //float3 vLightDir = normalize(input.Pos - vLightPos[i]);
+        float3 vLightDir = normalize( vLightPos[i] - input.Pos );
+        finalColor += saturate( dot( vLightDir, normalize(input.Normal) ) );
     }
 
     return finalColor;

@@ -2,7 +2,7 @@
 File:           GraphicsDevice.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/6/2011 9:25:23 PM
+Modified:       4/7/2011 12:10:07 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Graphics.h"
@@ -96,10 +96,10 @@ void CGraphics::AddCommand( const CRenderCommand& command )
 //  SetLight
 //  Sets the specific light
 //-----------------------------------------------------------------------------
-void CGraphics::SetLight( const XMVECTOR& vDir, uint nIndex )
+void CGraphics::SetLight( const XMVECTOR& vPos, uint nIndex )
 {
     m_bUpdateLighting = true;
-    m_vLights[ nIndex ] = vDir;
+    m_vLights[ nIndex ] = vPos;
     m_nActiveLights = nIndex + 1;
 }
 

@@ -6,6 +6,10 @@ Purpose:    Definition of the input system
 #include "Common.h"
 
 RiotInput::RiotInput( )
+    : m_nMouseDeltaX( 0 )
+    , m_nMouseDeltaY( 0 )
+    , m_nMouseX( 0 )
+    , m_nMouseY( 0 )
 {
     for( int i = 0; i < 256; ++i )
     {
@@ -45,6 +49,15 @@ void RiotInput::PollInput( void )
             m_pKeys[i] = 0x00; // Not down
         }
     }
+
+    // Poll mouse
+    POINT curPos;
+    GetCursorPos( &curPos );
+    m_nMouseDeltaX = curPos.x - m_nMouseX;
+    m_nMouseDeltaY = curPos.y - m_nMouseY;
+
+    m_nMouseX = curPos.x;
+    m_nMouseY = curPos.y;
 }
 
 //-----------------------------------------------------------------------------
@@ -75,6 +88,39 @@ bool RiotInput::WasKeyPressed( uint8 nKey )
 {
     if( m_pKeys[nKey] == 0x80 )
         return true;
-    
+
     return false;
+}
+
+//-----------------------------------------------------------------------------
+//  GetMouseDelta
+//  Returns how much the mouse has changed since last frame
+//-----------------------------------------------------------------------------
+sint RiotInput::GetMouseDeltaX( void )
+{
+    return m_nMouseDeltaX;
+}
+
+sint RiotInput::GetMouseDeltaY( void )
+{
+    return m_nMouseDeltaY;
+}
+
+//-----------------------------------------------------------------------------
+//  SetMouseButtonState
+//  Sets whether or not the mouse buttons are down
+//  TODO: Handle all input with messages like this
+//-----------------------------------------------------------------------------
+void RiotInput::SetMouseButtonState( uint8 nMouseState )
+{
+    m_nMouseState = nMouseState;
+}
+
+//-----------------------------------------------------------------------------
+//  IsMouseDown
+//  Returns if the mouse button is down
+//-----------------------------------------------------------------------------
+bool RiotInput::IsMouseDown( uint8 nButton )
+{
+    return m_nMouseState & nButton;
 }

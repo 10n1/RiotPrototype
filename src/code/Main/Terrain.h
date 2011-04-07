@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       4/6/2011 10:42:01 PM
+Modified:       4/7/2011 12:07:40 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -16,8 +16,8 @@ class CMaterial;
 
 enum
 {
-    TERRAIN_WIDTH = 64,
-    TERRAIN_HEIGHT = 64,
+    TERRAIN_WIDTH = 128,
+    TERRAIN_HEIGHT = 128,
 };
 
 class CTerrain : public IRefCounted

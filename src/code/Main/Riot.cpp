@@ -40,6 +40,7 @@ CSceneGraph*        Riot::m_pSceneGraph     = NULL;
 CComponentManager*  Riot::m_pComponentManager = NULL;
 CObjectManager*     Riot::m_pObjectManager  = NULL;
 CTerrain*           Riot::m_pTerrain        = NULL;
+CView*              Riot::m_pMainView       = NULL;
 
 bool                Riot::m_bRunning        = true;
 
@@ -110,7 +111,7 @@ void Riot::Run( void )
             m_bRunning = false;
 
         // Add a box everytime UP arrow is pressed
-        if( m_pInput->WasKeyPressed( VK_UP ) )
+        if( m_pInput->WasKeyPressed( VK_UP ))
         {
             CreateBox();
         }
@@ -124,6 +125,44 @@ void Riot::Run( void )
             if( nObject != -1 )
             {
                 CObjectManager::GetInstance()->AddComponent( nObject, eComponentUpdate );
+            }
+        }
+
+        float fMovementSpeed = 5.0f;
+        if( m_pInput->IsKeyDown( VK_SHIFT ) )
+        {
+            fMovementSpeed = 15.0f;
+        }
+        if( m_pInput->IsKeyDown( 'W' ) )
+        {
+            m_pMainView->TranslateZ( m_fElapsedTime * fMovementSpeed );
+        }
+        if( m_pInput->IsKeyDown( 'S' ) )
+        {
+            m_pMainView->TranslateZ( -m_fElapsedTime * fMovementSpeed );
+        }
+        
+        if( m_pInput->IsKeyDown( 'D' ) )
+        {
+            m_pMainView->TranslateX( m_fElapsedTime * fMovementSpeed );
+        }
+        if( m_pInput->IsKeyDown( 'A' ) )
+        {
+            m_pMainView->TranslateX( -m_fElapsedTime * fMovementSpeed );
+        }
+        if( m_pInput->IsMouseDown( eLMouseButton ) )
+        {
+            sint nMouseDeltaX = m_pInput->GetMouseDeltaX();
+            sint nMouseDeltaY = m_pInput->GetMouseDeltaY();
+            float fLookSpeed = 25.0f;
+
+            if( nMouseDeltaX )
+            {
+                m_pMainView->RotateY( m_fElapsedTime * fLookSpeed * nMouseDeltaX );
+            }
+            if( nMouseDeltaY )
+            {
+                m_pMainView->RotateX( m_fElapsedTime * fLookSpeed * nMouseDeltaY );
             }
         }
         //-------------------------- Frame -------------------------
@@ -209,8 +248,8 @@ void Riot::Initialize( void )
 
     //////////////////////////////////////////
     // Create the main view
-    CView* pView = new CView();
-    m_pSceneGraph->AddView( pView );
+    m_pMainView = new CView();
+    m_pSceneGraph->AddView( m_pMainView );
 
     //////////////////////////////////////////
     // Load the managers
@@ -224,8 +263,11 @@ void Riot::Initialize( void )
     m_pTerrain->CreateMesh();
 
     //////////////////////////////////////////
-    // Add a light    
-    Transform t2 = { XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ), -XMVectorSet( 1.0f, -1.0f, 0.0f, 0.0f ) };
+    // Add a few lights
+    XMVECTOR lightPos = XMVectorSet( 0.0f, 5.0f, 0.0f, 0.0f );
+    XMVECTOR lightDir = lightPos - XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+
+    Transform t2 = { lightPos, lightDir };
     uint nObject = m_pObjectManager->CreateObject();
     m_pObjectManager->AddComponent( nObject, eComponentLight );
     m_pComponentManager->SendMessage( eComponentMessageTransform, m_pObjectManager->GetObject(nObject), &t2  );
@@ -237,6 +279,7 @@ void Riot::Initialize( void )
 //-----------------------------------------------------------------------------
 void Riot::Shutdown( void )
 {    
+    SAFE_RELEASE( m_pMainView );
     SAFE_RELEASE( m_pTerrain );
     SAFE_RELEASE( m_pInput );
     SAFE_RELEASE( m_pGraphics );
@@ -254,4 +297,13 @@ void Riot::Shutdown( void )
 CGraphics* Riot::GetGraphics( void )
 {
     return m_pGraphics;
+}
+
+//-----------------------------------------------------------------------------
+//  GetInput
+//  Returns the input device
+//-----------------------------------------------------------------------------
+RiotInput* Riot::GetInput( void )
+{
+    return m_pInput;
 }

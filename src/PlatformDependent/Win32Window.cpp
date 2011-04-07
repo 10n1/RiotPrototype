@@ -128,7 +128,15 @@ LRESULT CALLBACK _WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
             }
             return 0;
         }
+    case WM_MOUSEMOVE:
+        {
+            uint8 nMouse = 0;
+            nMouse |= ( (wParam & MK_LBUTTON) ? eLMouseButton : 0);
+            nMouse |= ( (wParam & MK_RBUTTON) ? eRMouseButton : 0);
+            Riot::GetInput()->SetMouseButtonState( nMouse );
 
+            return 0;
+        }
     case WM_KEYUP:
     case WM_SYSKEYUP:
         {

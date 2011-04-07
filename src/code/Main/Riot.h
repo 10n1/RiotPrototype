@@ -40,6 +40,13 @@ public:
     //  Returns the current graphics interface
     //-----------------------------------------------------------------------------
     static CGraphics* GetGraphics( void );
+
+    //-----------------------------------------------------------------------------
+    //  GetInput
+    //  Returns the input device
+    //-----------------------------------------------------------------------------
+    static RiotInput* GetInput( void );
+
 private:
     //-----------------------------------------------------------------------------
     //  Initialize
@@ -59,6 +66,7 @@ private:
     static CComponentManager*   m_pComponentManager;
     static CObjectManager*      m_pObjectManager;
     static CTerrain*            m_pTerrain;
+    static CView*               m_pMainView;
 
     static bool         m_bRunning;
 

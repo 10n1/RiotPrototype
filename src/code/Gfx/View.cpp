@@ -2,7 +2,7 @@
 File:           View.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/6/2011 9:34:42 PM
+Modified:       4/6/2011 11:52:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "View.h"
@@ -48,7 +48,13 @@ void CView::TranslateZ( float fTrans )
 void CView::RotateX( float fRad )
 {
     XMMATRIX rot = XMMatrixRotationAxis( m_vRight, fRad );
-    m_vLook = XMVector4Transform( m_vLook, rot );
+    XMVECTOR newLook = XMVector4Transform( m_vLook, rot );
+
+    float y = XMVectorGetY( newLook );
+    if( y < 0.99f && y > -0.99f )
+    {
+        m_vLook = XMVector4Transform( m_vLook, rot );
+    }
 }
 
 void CView::RotateY( float fRad )
