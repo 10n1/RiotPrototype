@@ -16,6 +16,7 @@ class CGraphics;
 class CView;
 class CComponentManager;
 class CObjectManager;
+class CTerrain;
 
 class Riot
 {
@@ -57,6 +58,7 @@ private:
     static CSceneGraph*         m_pSceneGraph;
     static CComponentManager*   m_pComponentManager;
     static CObjectManager*      m_pObjectManager;
+    static CTerrain*            m_pTerrain;
 
     static bool         m_bRunning;
 

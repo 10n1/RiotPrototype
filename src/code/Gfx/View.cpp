@@ -2,7 +2,7 @@
 File:           View.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/1/2011 12:24:51 AM
+Modified:       4/6/2011 9:34:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "View.h"
@@ -12,7 +12,7 @@ Modified by:    Kyle Weicht
 CView::CView()
 {
     SetPerspective( 60.0f, 1024.0f/768.0f, 0.1f, 10000.0f );
-    m_vPosition = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
+    m_vPosition = XMVectorSet( 0.0f, 2.0f, -5.0f, 0.0f );
     m_vLook = XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f );
     m_vUp = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 }

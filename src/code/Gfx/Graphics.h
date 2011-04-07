@@ -4,7 +4,7 @@ Purpose:        Base interface for the graphics hardware/API
                 abstraction
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/4/2011 8:09:53 PM
+Modified:       4/6/2011 10:05:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -28,6 +28,21 @@ class CMesh;
 class CMaterial;
 class CView;
 class CRenderObject;
+class CTerrain;
+
+enum eMaterial
+{
+    eMaterialStandard,
+
+    eNUMMATERIALS
+};
+
+
+struct SimpleVertex
+{
+    XMFLOAT3 Pos;
+    XMFLOAT3 Normal;
+};
 
 class CGraphics : public IRefCounted
 {
@@ -139,8 +154,21 @@ public:
     //  CreateMesh
     //  Creates a mesh from the file
     //-----------------------------------------------------------------------------
-    virtual CMesh* CreateMesh( const wchar_t* szFilename ) = 0;
+    virtual CMesh* CreateMesh( const wchar_t* szFilename ) = 0; 
     
+    //-----------------------------------------------------------------------------
+    //  CreateMesh
+    //  Creates a mesh from the file
+    //-----------------------------------------------------------------------------
+    virtual CMesh* CreateMesh( uint nVertexStride, uint nVertexCount, uint nIndexFormat, uint nIndexCount, void* pVertices, void* pIndices ) = 0; 
+    
+    //-----------------------------------------------------------------------------
+    //  GetMaterial
+    //  Returns the appropriate material
+    //-----------------------------------------------------------------------------
+    CMaterial* GetMaterial( eMaterial nMaterial );
+
+private:
     //-----------------------------------------------------------------------------
     //  CreateMaterial
     //  Creates a material from a shader file
@@ -157,11 +185,15 @@ protected:
     int32           m_nActiveLights;
     int32           _padding[3];
 
+
     CWindow*        m_pWindow;
     CView*          m_pCurrView;
 
+    // Default mesh
     CMesh*          m_pBoxMesh;
 
+    // Materials
+    CMaterial*      m_pMaterials[eNUMMATERIALS];
 
     uint            m_nNumCommands;
     uint            m_nNumMatrices;

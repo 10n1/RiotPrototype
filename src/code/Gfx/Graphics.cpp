@@ -2,7 +2,7 @@
 File:           GraphicsDevice.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/4/2011 8:10:04 PM
+Modified:       4/6/2011 9:25:23 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Graphics.h"
@@ -11,6 +11,8 @@ Modified by:    Kyle Weicht
 #include "RenderObject.h"
 #include "Mesh.h"
 #include "Material.h"
+#include <assert.h>
+#include "Main\Terrain.h"
 
 // CGraphics constructor
 CGraphics::CGraphics()
@@ -28,6 +30,11 @@ CGraphics::CGraphics()
 // CGraphics destructor
 CGraphics::~CGraphics()
 {
+    for( uint i = 0; i < eNUMMATERIALS; ++i )
+    {
+        SAFE_RELEASE( m_pMaterials[i] );
+    }
+
     SAFE_RELEASE( m_pBoxMesh );
 }
 
@@ -103,4 +110,18 @@ void CGraphics::SetLight( const XMVECTOR& vDir, uint nIndex )
 void CGraphics::AddMatrix( XMMATRIX* pMatrix )
 {
     m_ppMatrices[ m_nNumMatrices++ ] = pMatrix;
+}
+
+//-----------------------------------------------------------------------------
+//  GetMaterial
+//  Returns the appropriate material
+//-----------------------------------------------------------------------------
+CMaterial* CGraphics::GetMaterial( eMaterial nMaterial )
+{
+    assert( nMaterial < eNUMMATERIALS );
+
+    CMaterial* pMaterial = m_pMaterials[ nMaterial ];
+    pMaterial->AddRef();
+
+    return pMaterial;
 }

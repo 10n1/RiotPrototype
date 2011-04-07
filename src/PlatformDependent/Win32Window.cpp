@@ -44,7 +44,7 @@ uint CWin32Window::CreateMainWindow( uint nWidth, uint nHeight )
     m_pSystemWindow = CreateWindow(
         szName, szName,      // Class and window name
         WS_OVERLAPPEDWINDOW, // Window style
-        0, 0,                // X, Y position
+        CW_USEDEFAULT, 0,    // X, Y position
         nWidth, nHeight,     // Width and height (border width 16 and 38)
         0, 0,                // Parent window, Menu handle
         hInst,               // Instance

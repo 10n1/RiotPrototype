@@ -91,6 +91,9 @@
     <ClCompile Include="..\code\Main\AssetManager.cpp">
       <Filter>main</Filter>
     </ClCompile>
+    <ClCompile Include="..\code\main\Terrain.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\code\Main\Input.h">
@@ -166,6 +169,9 @@
     </ClInclude>
     <ClInclude Include="..\code\gfx\RenderCommand.h">
       <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\main\Terrain.h">
+      <Filter>main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

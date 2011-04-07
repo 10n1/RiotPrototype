@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Base interface for Direct3D
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/4/2011 8:04:50 PM
+Modified:       4/6/2011 10:04:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -99,12 +99,20 @@ public:
     //  Creates a mesh from the file
     //-----------------------------------------------------------------------------
     CMesh* CreateMesh( const wchar_t* szFilename );
+
+    //-----------------------------------------------------------------------------
+    //  CreateMesh
+    //  Creates a mesh from the file
+    //-----------------------------------------------------------------------------
+    CMesh* CreateMesh( uint nVertexStride, uint nVertexCount, uint nIndexFormat, uint nIndexCount, void* pVertices, void* pIndices ); 
     
+private:
     //-----------------------------------------------------------------------------
     //  CreateMaterial
     //  Creates a material from a shader file
     //-----------------------------------------------------------------------------
     CMaterial* CreateMaterial( const wchar_t* szFilename, const char* szEntryPoint );
+
 private:
     /***************************************\
     | class members                         |

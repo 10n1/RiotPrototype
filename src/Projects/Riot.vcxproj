@@ -33,6 +33,7 @@
     <ClCompile Include="..\code\Main\Math.cpp" />
     <ClCompile Include="..\code\Main\Memory.cpp" />
     <ClCompile Include="..\code\Main\Riot.cpp" />
+    <ClCompile Include="..\code\main\Terrain.cpp" />
     <ClCompile Include="..\code\Main\Window.cpp" />
     <ClCompile Include="..\code\scene\Component.cpp" />
     <ClCompile Include="..\code\scene\ComponentManager.cpp" />
@@ -58,6 +59,7 @@
     <ClInclude Include="..\code\Main\Memory.h" />
     <ClInclude Include="..\code\Main\Riot.h" />
     <ClInclude Include="..\code\Main\RiotMath.h" />
+    <ClInclude Include="..\code\main\Terrain.h" />
     <ClInclude Include="..\code\Main\Timer.h" />
     <ClInclude Include="..\code\Main\Types.h" />
     <ClInclude Include="..\code\Main\Window.h" />

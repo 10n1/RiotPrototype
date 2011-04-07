@@ -59,7 +59,7 @@ float4 PS( PS_INPUT input) : SV_Target
     float4 finalColor = 0.0f;
     for( int i = 0; i < nActiveLights; ++i )
     {
-        finalColor += saturate( dot( (float3)vLightDir[i], input.Normal ) );
+        finalColor += saturate( dot( normalize((float3)vLightDir[i]), normalize(input.Normal) ) );
     }
 
     return finalColor;

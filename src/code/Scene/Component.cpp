@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/4/2011 10:02:42 PM
+Modified:       4/6/2011 9:36:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -404,7 +404,7 @@ void CLightComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
             Transform& vTransform = *((Transform*)msg.m_pData);
 
             m_vPosition[nSlot]      = vTransform.vPosition;
-            m_vOrientation[nSlot]   = vTransform.vOrientation;
+            m_vOrientation[nSlot]   = XMVector4Normalize(vTransform.vOrientation);
             m_bUpdated[nSlot]       = true;
         }
         break;

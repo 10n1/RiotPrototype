@@ -14,6 +14,7 @@ Purpose:    Definition of the main engine
 #include "Gfx\Material.h"
 #include "Scene\ComponentManager.h"
 #include "Scene\ObjectManager.h"
+#include "Terrain.h"
 
 #include <stdlib.h>
 
@@ -38,6 +39,7 @@ CGraphics*          Riot::m_pGraphics       = NULL;
 CSceneGraph*        Riot::m_pSceneGraph     = NULL;
 CComponentManager*  Riot::m_pComponentManager = NULL;
 CObjectManager*     Riot::m_pObjectManager  = NULL;
+CTerrain*           Riot::m_pTerrain        = NULL;
 
 bool                Riot::m_bRunning        = true;
 
@@ -63,7 +65,7 @@ void CreateBox( void )
     uint nObject = pObjMgr->CreateObject();
     CObject* pBox = pObjMgr->GetObject( nObject ); //new CObject(); // Considering objects are now statically sized, maybe we shouldn't new them?
     CMesh*   pMesh = pGfx->CreateMesh( 0 );
-    CMaterial* pMaterial = pGfx->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS" );
+    CMaterial* pMaterial = pGfx->GetMaterial( eMaterialStandard );
 
     // Apply them to the main object
     pBox->SetMesh( pMesh );
@@ -73,15 +75,8 @@ void CreateBox( void )
     // Add some components
     pObjMgr->AddComponent( nObject, eComponentUpdate );
     pObjMgr->AddComponent( nObject, eComponentRender );
-    Transform t = { XMVectorSet( 1.0f, -2.0f, 0.0f, 0.0f ), XMQuaternionRotationRollPitchYaw( 27.5f * rand(), -82.7f * rand(), 413.7f * rand() ) };
+    Transform t = { XMVectorSet( 1.0f, 2.0f, 0.0f, 0.0f ), XMQuaternionRotationRollPitchYaw( 27.5f * rand(), -82.7f * rand(), 413.7f * rand() ) };
     CComponentManager::GetInstance()->SendMessage( eComponentMessageTransform, pBox, &t  );
-
-    //////////////////////////////////////////
-    // Create one light
-    Transform t2 = { XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ), XMVectorSet( GetRand(), GetRand(), GetRand(), 0.0f ) };
-    nObject = pObjMgr->CreateObject();
-    pObjMgr->AddComponent( nObject, eComponentLight );
-    CComponentManager::GetInstance()->SendMessage( eComponentMessageTransform, pObjMgr->GetObject(nObject), &t2  );
 }
     
 //-----------------------------------------------------------------------------
@@ -138,6 +133,9 @@ void Riot::Run( void )
         //////////////////////////////////////////
         // Update
         m_pSceneGraph->UpdateObjects( m_fElapsedTime );
+
+        // Make sure terrain is the last thing drawn
+        m_pTerrain->Render();
 
 
         //////////////////////////////////////////
@@ -218,6 +216,19 @@ void Riot::Initialize( void )
     // Load the managers
     m_pComponentManager = CComponentManager::GetInstance();
     m_pObjectManager = CObjectManager::GetInstance();
+
+    //////////////////////////////////////////
+    // Create the terrain
+    m_pTerrain = new CTerrain();
+    m_pTerrain->GenerateTerrain();
+    m_pTerrain->CreateMesh();
+
+    //////////////////////////////////////////
+    // Add a light    
+    Transform t2 = { XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ), -XMVectorSet( 1.0f, -1.0f, 0.0f, 0.0f ) };
+    uint nObject = m_pObjectManager->CreateObject();
+    m_pObjectManager->AddComponent( nObject, eComponentLight );
+    m_pComponentManager->SendMessage( eComponentMessageTransform, m_pObjectManager->GetObject(nObject), &t2  );
 }
 
 //-----------------------------------------------------------------------------
@@ -226,6 +237,7 @@ void Riot::Initialize( void )
 //-----------------------------------------------------------------------------
 void Riot::Shutdown( void )
 {    
+    SAFE_RELEASE( m_pTerrain );
     SAFE_RELEASE( m_pInput );
     SAFE_RELEASE( m_pGraphics );
     SAFE_RELEASE( m_pMainWindow );
