@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/6/2011 10:05:04 PM
+Modified:       4/6/2011 10:48:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -346,7 +346,7 @@ void CD3DGraphics::Render( void )
     SetViewProj( &mView, &mProj );
 
     // Set lighting
-    //if( m_bUpdateLighting == true )
+    if( m_bUpdateLighting == true )
     {
         m_pContext->UpdateSubresource( m_pLightCB, 0, NULL, m_vLights, 0, 0 );
         m_pContext->PSSetConstantBuffers( 0, 1, &m_pLightCB );

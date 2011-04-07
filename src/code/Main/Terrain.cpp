@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       4/6/2011 10:46:11 PM
+Modified:       4/6/2011 10:49:19 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -94,18 +94,18 @@ void CTerrain::CreateMesh( void )
 
     // Index them
     uint nIndex = 0;
-    for( uint x = 0; x < nPolysWidth; ++x )
+    for( nX = 0; nX < nPolysWidth; ++nX )
     {
-        for( uint y = 0; y < nPolysHeight; ++y )
+        for( nY = 0; nY < nPolysHeight; ++nY )
         {
-            uint nStart = x*nPolysWidth;
-            indices[ nIndex++ ] = x + y + nStart + 0;
-            indices[ nIndex++ ] = x + y + nStart + 1;
-            indices[ nIndex++ ] = x + y + nStart + 1 + nPolysWidth;
+            uint nStart = nX * nPolysWidth;
+            indices[ nIndex++ ] = nX + nY + nStart + 0;
+            indices[ nIndex++ ] = nX + nY + nStart + 1;
+            indices[ nIndex++ ] = nX + nY + nStart + 1 + nPolysWidth;
 
-            indices[ nIndex++ ] = x + y + nStart + 1 + nPolysWidth;
-            indices[ nIndex++ ] = x + y + nStart + 1;
-            indices[ nIndex++ ] = x + y + nStart + 1 + nPolysWidth + 1;
+            indices[ nIndex++ ] = nX + nY + nStart + 1 + nPolysWidth;
+            indices[ nIndex++ ] = nX + nY + nStart + 1;
+            indices[ nIndex++ ] = nX + nY + nStart + 1 + nPolysWidth + 1;
         }
     }
 
