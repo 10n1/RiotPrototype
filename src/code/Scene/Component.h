@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/4/2011 9:58:37 PM
+Modified:       4/7/2011 6:26:10 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -174,7 +174,7 @@ DECLARE_COMPONENT_DATA( CMesh*,     m_pMesh );
 DECLARE_COMPONENT_DATA( CMaterial*, m_pMaterial );    
 DECLARE_COMPONENT_DATA( XMVECTOR,   m_vPosition );
 DECLARE_COMPONENT_DATA( XMVECTOR,   m_vOrientation );
-DECLARE_COMPONENT_DATA( XMMATRIX,   m_mWorldMatrix );
+DECLARE_COMPONENT_DATA( RMatrix4,   m_mWorldMatrix );
 //
 END_DECLARE_COMPONENT;
 //

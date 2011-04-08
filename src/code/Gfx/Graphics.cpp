@@ -2,7 +2,7 @@
 File:           GraphicsDevice.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/7/2011 12:10:07 AM
+Modified:       4/7/2011 6:23:14 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Graphics.h"
@@ -23,6 +23,7 @@ CGraphics::CGraphics()
     , m_nActiveLights( 0 )
     , m_pBoxMesh( NULL )
     , m_nNumMatrices( 0 )
+    , m_pCurrentMaterial( NULL )
 {
     memset( m_ppRenderCommands, 0, sizeof( m_ppRenderCommands ) );
 }
@@ -72,7 +73,12 @@ void CGraphics::Render( void )
     uint nMatrix = 0;
     for( uint i = 0; i < m_nNumCommands; ++i )
     {
-        m_ppRenderCommands[i].m_pMaterial->ProcessObject();
+        if( m_ppRenderCommands[i].m_pMaterial != m_pCurrentMaterial )
+        {
+            m_ppRenderCommands[i].m_pMaterial->ProcessObject();
+            m_pCurrentMaterial = m_ppRenderCommands[i].m_pMaterial;
+        }
+
         SetWorldMatrix( m_ppMatrices[nMatrix++] );
         m_ppRenderCommands[i].m_pMesh->ProcessObject();
     }
@@ -107,7 +113,7 @@ void CGraphics::SetLight( const XMVECTOR& vPos, uint nIndex )
 //  AddMatrix
 //  Adds a matrix to the list of world matrices
 //-----------------------------------------------------------------------------
-void CGraphics::AddMatrix( XMMATRIX* pMatrix )
+void CGraphics::AddMatrix( RMatrix4* pMatrix )
 {
     m_ppMatrices[ m_nNumMatrices++ ] = pMatrix;
 }

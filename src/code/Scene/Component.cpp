@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/7/2011 12:23:37 AM
+Modified:       4/7/2011 7:37:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -190,7 +190,7 @@ void CRenderComponent::Attach( uint nIndex )
     m_pMaterial[nIndex] = pObject->GetMaterial();
     m_vPosition[nIndex] = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
     m_vOrientation[nIndex] = XMVectorSet( 0.0f, 0.0f, 0.0f, 1.0f );
-    m_mWorldMatrix[nIndex] = XMMatrixIdentity();
+    m_mWorldMatrix[nIndex] = RMatrix4Identity();
 }
 
 //-----------------------------------------------------------------------------
@@ -222,9 +222,11 @@ void CRenderComponent::ProcessComponent( void )
         // Build the world matrix
         XMMATRIX mWorld = XMMatrixRotationQuaternion( m_vOrientation[i] );
         mWorld = mWorld * XMMatrixTranslationFromVector( m_vPosition[i] );
-        mWorld = XMMatrixTranspose( mWorld );
-        m_mWorldMatrix[i] = mWorld;
 
+        RMatrix4 world( &mWorld._11 );
+        world.Transpose();
+        m_mWorldMatrix[i] = world;
+          
         // Pass to the render engine
         pGfx->AddCommand( command );
         pGfx->AddMatrix( &m_mWorldMatrix[i] );

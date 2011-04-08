@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/6/2011 10:48:04 PM
+Modified:       4/7/2011 6:23:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -73,7 +73,7 @@ uint CD3DGraphics::Initialize( CWindow* pWindow )
     //////////////////////////////////////////
     // Create the ViewProj Constant buffer
     bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth        = sizeof( XMMATRIX );
+    bufferDesc.ByteWidth        = sizeof( RMatrix4 );
     bufferDesc.BindFlags        = D3D11_BIND_CONSTANT_BUFFER;
     bufferDesc.CPUAccessFlags   = 0;
 
@@ -84,7 +84,7 @@ uint CD3DGraphics::Initialize( CWindow* pWindow )
     //////////////////////////////////////////
     // Create the World matrix Constant buffer
     bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth        = sizeof( XMMATRIX );
+    bufferDesc.ByteWidth        = sizeof( RMatrix4 );
     bufferDesc.BindFlags        = D3D11_BIND_CONSTANT_BUFFER;
     bufferDesc.CPUAccessFlags   = 0;
 
@@ -341,8 +341,8 @@ void CD3DGraphics::Render( void )
     // Perform rendering
 
     // Update and set the view matrix
-    XMMATRIX mView = m_pCurrView->GetViewMatrix();
-    XMMATRIX mProj = m_pCurrView->GetProjMatrix();
+    RMatrix4 mView = m_pCurrView->GetViewMatrix();
+    RMatrix4 mProj = m_pCurrView->GetProjMatrix();
     SetViewProj( &mView, &mProj );
 
     // Set lighting
@@ -634,11 +634,12 @@ CMaterial* CD3DGraphics::CreateMaterial( const wchar_t* szFilename, const char* 
 //-----------------------------------------------------------------------------
 void CD3DGraphics::SetViewProj( const void* pView, const void* pProj )
 {
-    XMMATRIX mMatrices[1] = 
+    RMatrix4 mMatrices[1] = 
     {
-        XMMatrixTranspose( *((XMMATRIX*)pView) * *((XMMATRIX*)pProj)), 
-
+        ( *((RMatrix4*)pView) * *((RMatrix4*)pProj)), 
     };
+
+    mMatrices[0].Transpose();
 
     m_pContext->UpdateSubresource( m_pViewProjCB, 0, NULL, mMatrices, 0, 0 );
     m_pContext->VSSetConstantBuffers( 0, 1, &m_pViewProjCB );
@@ -648,7 +649,7 @@ void CD3DGraphics::SetViewProj( const void* pView, const void* pProj )
 //  SetWorldMatrix
 //  Applies the world matrix to the pipeline
 //-----------------------------------------------------------------------------
-void CD3DGraphics::SetWorldMatrix( XMMATRIX* pMatrix )
+void CD3DGraphics::SetWorldMatrix( RMatrix4* pMatrix )
 {
     m_pContext->UpdateSubresource( m_pWorldCB, 0, NULL, pMatrix, 0, 0 );
     m_pContext->VSSetConstantBuffers( 1, 1, &m_pWorldCB );

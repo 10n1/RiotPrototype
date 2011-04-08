@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Base interface for Direct3D
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/6/2011 10:04:28 PM
+Modified:       4/7/2011 6:23:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -87,7 +87,7 @@ public:
     //  SetWorldMatrix
     //  Applies the world matrix to the pipeline
     //-----------------------------------------------------------------------------
-    void SetWorldMatrix( XMMATRIX* pMatrix );
+    void SetWorldMatrix( RMatrix4* pMatrix );
     
 public:
     /***************************************\

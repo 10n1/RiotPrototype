@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       4/7/2011 12:26:36 AM
+Modified:       4/7/2011 6:23:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -34,7 +34,7 @@ CTerrain::~CTerrain()
 void CTerrain::Render( void )
 {
     static CGraphics* pGfx = Riot::GetGraphics();
-    static XMMATRIX mWorld = XMMatrixIdentity();
+    static RMatrix4 mWorld = RMatrix4Identity();
 
     // Build the command and matrix
     CRenderCommand command = { m_pMaterial, m_pMesh };

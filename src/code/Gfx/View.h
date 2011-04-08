@@ -4,7 +4,7 @@ Purpose:        Interface for anything in the engine that
                 can "view", aka, a camera
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/3/2011 8:47:02 PM
+Modified:       4/7/2011 6:03:32 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VIEW_H_
@@ -64,20 +64,20 @@ public:
     //  GetView/ProjMatrix
     //  Returns the view/proj matrix
     //-----------------------------------------------------------------------------
-    const XMMATRIX& GetViewMatrix( void );
-    const XMMATRIX& GetProjMatrix( void );
+    const RMatrix4& GetViewMatrix( void );
+    const RMatrix4& GetProjMatrix( void );
 
 private:
     /***************************************\
     | class members                         |
     \***************************************/
-    XMMATRIX    m_mViewMatrix;
-    XMMATRIX    m_mProjMatrix;
+    RMatrix4    m_mNewView;
+    RMatrix4    m_mNewProj;
 
-    XMVECTOR    m_vPosition;
-    XMVECTOR    m_vUp;
-    XMVECTOR    m_vLook;
-    XMVECTOR    m_vRight;
+    RVector4    m_vNewPosition;
+    RVector4    m_vNewUp;
+    RVector4    m_vNewLook;
+    RVector4    m_vNewRight;
 };
 
 

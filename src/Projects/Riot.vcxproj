@@ -70,6 +70,7 @@
     <ClInclude Include="..\code\Scene\SceneGraph.h" />
     <ClInclude Include="..\Misc.h" />
     <ClInclude Include="..\PlatformDependent\Win32Window.h" />
+    <ClInclude Include="..\todo.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\shaders\StandardVertexShader.hlsl" />

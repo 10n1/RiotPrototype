@@ -173,6 +173,7 @@
     <ClInclude Include="..\code\main\Terrain.h">
       <Filter>main</Filter>
     </ClInclude>
+    <ClInclude Include="..\todo.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\shaders\StandardVertexShader.hlsl">

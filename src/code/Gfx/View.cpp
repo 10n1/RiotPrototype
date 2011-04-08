@@ -2,7 +2,7 @@
 File:           View.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/6/2011 11:52:53 PM
+Modified:       4/7/2011 6:20:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "View.h"
@@ -12,9 +12,10 @@ Modified by:    Kyle Weicht
 CView::CView()
 {
     SetPerspective( 60.0f, 1024.0f/768.0f, 0.1f, 10000.0f );
-    m_vPosition = XMVectorSet( 0.0f, 2.0f, -5.0f, 0.0f );
-    m_vLook = XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f );
-    m_vUp = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
+
+    m_vNewPosition = RVector4( 0.0f, 2.0f, -5.0f, 0.0f );
+    m_vNewLook =     RVector4( 0.0f, 0.0f, 1.0f, 0.0f );
+    m_vNewUp =       RVector4( 0.0f, 1.0f, 0.0f, 0.0f );
 }
 
 // CView destructor
@@ -28,17 +29,17 @@ CView::~CView()
 //-----------------------------------------------------------------------------
 void CView::TranslateX( float fTrans )
 {
-    m_vPosition += (m_vRight * fTrans);
+    m_vNewPosition += (m_vNewRight * fTrans);
 }
 
 void CView::TranslateY( float fTrans )
 {
-    m_vPosition += (m_vUp * fTrans);
+    m_vNewPosition += (m_vNewUp * fTrans);
 }
 
 void CView::TranslateZ( float fTrans )
 {
-    m_vPosition += (m_vLook * fTrans);
+    m_vNewPosition += (m_vNewLook * fTrans);
 }
 
 //-----------------------------------------------------------------------------
@@ -47,20 +48,20 @@ void CView::TranslateZ( float fTrans )
 //-----------------------------------------------------------------------------
 void CView::RotateX( float fRad )
 {
-    XMMATRIX rot = XMMatrixRotationAxis( m_vRight, fRad );
-    XMVECTOR newLook = XMVector4Transform( m_vLook, rot );
+    RMatrix4 newRot = RotationAxisMatrix( -fRad, m_vNewRight );
+    //RVector4 newNewLook = m_vLook * newRot;
+    RVector4 newNewLook = newRot * m_vNewLook;
 
-    float y = XMVectorGetY( newLook );
-    if( y < 0.99f && y > -0.99f )
+    float newY = newNewLook.y;
+    if( newY < 0.99f && newY > -0.99f )
     {
-        m_vLook = XMVector4Transform( m_vLook, rot );
+        m_vNewLook = newNewLook;
     }
 }
 
 void CView::RotateY( float fRad )
 {
-    XMMATRIX rot = XMMatrixRotationY( fRad );
-    m_vLook = XMVector4Transform( m_vLook, rot );
+    m_vNewLook =  RotationYMatrix( fRad ) * m_vNewLook;
 }
 
 
@@ -71,27 +72,17 @@ void CView::RotateY( float fRad )
 //-----------------------------------------------------------------------------
 void CView::Update( float fDeltaTime )
 {
-    XMVECTOR vX, vY, vZ;
+    RVector4 x, y, z;
 
-    m_vLook = vZ = XMVector4Normalize( m_vLook );
-    m_vRight = vX = XMVector4Normalize( XMVector3Cross( m_vUp, vZ ) );
-    vY = XMVector3Cross( vZ, vX );
+    z = m_vNewLook = Normalize( m_vNewLook );
+    x = m_vNewRight = Normalize( CrossProduct( m_vNewUp, z ) );
+    y = CrossProduct( z, x );
     
-    m_mViewMatrix._11 = XMVectorGetX(vX); m_mViewMatrix._12 = XMVectorGetY(vX); m_mViewMatrix._13 = XMVectorGetZ(vX); m_mViewMatrix._14 = -XMVectorGetX( XMVector3Dot(vX, m_vPosition) );
-    m_mViewMatrix._21 = XMVectorGetX(vY); m_mViewMatrix._22 = XMVectorGetY(vY); m_mViewMatrix._23 = XMVectorGetZ(vY); m_mViewMatrix._24 = -XMVectorGetX( XMVector3Dot(vY, m_vPosition) );
-    m_mViewMatrix._31 = XMVectorGetX(vZ); m_mViewMatrix._32 = XMVectorGetY(vZ); m_mViewMatrix._33 = XMVectorGetZ(vZ); m_mViewMatrix._34 = -XMVectorGetX( XMVector3Dot(vZ, m_vPosition) );
-    m_mViewMatrix._41 = 0.0f;             m_mViewMatrix._42 = 0.0f;             m_mViewMatrix._43 = 0.0f;             m_mViewMatrix._44 = 1.0f;
-
-    //m_mViewMatrix = XMMatrixIdentity();
-    //m_mViewMatrix.r[0] = vX;
-    //m_mViewMatrix.r[1] = vY;
-    //m_mViewMatrix.r[2] = vY;
-    //
-    //m_mViewMatrix._14 = -XMVectorGetX( XMVector3Dot( vX, m_vPosition ) );
-    //m_mViewMatrix._24 = -XMVectorGetX( XMVector3Dot( vY, m_vPosition ) );
-    //m_mViewMatrix._34 = -XMVectorGetX( XMVector3Dot( vZ, m_vPosition ) );
-
-    m_mViewMatrix = XMMatrixTranspose( m_mViewMatrix );
+    
+    m_mNewView.m11 = x.x;  m_mNewView.m21 = x.y;  m_mNewView.m31 = x.z;  m_mNewView.m41 = -DotProduct( x, m_vNewPosition);
+    m_mNewView.m12 = y.x;  m_mNewView.m22 = y.y;  m_mNewView.m32 = y.z;  m_mNewView.m42 = -DotProduct( y, m_vNewPosition);
+    m_mNewView.m13 = z.x;  m_mNewView.m23 = z.y;  m_mNewView.m33 = z.z;  m_mNewView.m43 = -DotProduct( z, m_vNewPosition);
+    m_mNewView.m14 = 0.0f; m_mNewView.m24 = 0.0f; m_mNewView.m34 = 0.0f; m_mNewView.m44 = 1.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -101,7 +92,7 @@ void CView::Update( float fDeltaTime )
 void CView::SetPerspective( float fFoV, float fAspectRatio, float fNear, float fFar )
 {
     fFoV = (fFoV/180.0f) * XM_PI;
-    m_mProjMatrix = XMMatrixPerspectiveFovLH( fFoV, fAspectRatio, fNear, fFar );
+    m_mNewProj = PerspectiveLHMatrix( fFoV, fAspectRatio, fNear, fFar );
 }
 
 
@@ -109,12 +100,12 @@ void CView::SetPerspective( float fFoV, float fAspectRatio, float fNear, float f
 //  GetView/ProjMatrix
 //  Returns the view/proj matrix
 //-----------------------------------------------------------------------------
-const XMMATRIX& CView::GetViewMatrix( void )
+const RMatrix4& CView::GetViewMatrix( void )
 {
-    return m_mViewMatrix;
+    return m_mNewView;
 }
 
-const XMMATRIX& CView::GetProjMatrix( void )
+const RMatrix4& CView::GetProjMatrix( void )
 {
-    return m_mProjMatrix;
+    return m_mNewProj;
 }

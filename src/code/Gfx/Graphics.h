@@ -4,7 +4,7 @@ Purpose:        Base interface for the graphics hardware/API
                 abstraction
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/6/2011 10:05:04 PM
+Modified:       4/7/2011 6:23:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -134,13 +134,13 @@ public:
     //  AddMatrix
     //  Adds a matrix to the list of world matrices
     //-----------------------------------------------------------------------------
-    void AddMatrix( XMMATRIX* pMatrix );
+    void AddMatrix( RMatrix4* pMatrix );
     
     //-----------------------------------------------------------------------------
     //  SetWorldMatrix
     //  Applies the world matrix to the pipeline
     //-----------------------------------------------------------------------------
-    virtual void SetWorldMatrix( XMMATRIX* pMatrix ) = 0;
+    virtual void SetWorldMatrix( RMatrix4* pMatrix ) = 0;
 
 public:
     /***************************************\
@@ -180,7 +180,7 @@ protected:
     | class members                         |
     \***************************************/
     CRenderCommand  m_ppRenderCommands[MAX_COMMANDS];
-    XMMATRIX*       m_ppMatrices[MAX_OBJECTS];
+    RMatrix4*       m_ppMatrices[MAX_OBJECTS];
     XMVECTOR        m_vLights[MAX_LIGHTS];
     int32           m_nActiveLights;
     int32           _padding[3];
@@ -194,6 +194,7 @@ protected:
 
     // Materials
     CMaterial*      m_pMaterials[eNUMMATERIALS];
+    CMaterial*      m_pCurrentMaterial;
 
     uint            m_nNumCommands;
     uint            m_nNumMatrices;

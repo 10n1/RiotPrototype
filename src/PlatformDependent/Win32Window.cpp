@@ -67,7 +67,7 @@ void CWin32Window::ProcessMessages( void )
     //----------------------------------------------------------
     // Perform Windows messaging
     MSG msg = { 0 };
-    while( PeekMessage( &msg, 0, 0, 0, PM_REMOVE ) )
+    if( PeekMessage( &msg, 0, 0, 0, PM_REMOVE ) )
     {
         if( msg.message == WM_QUIT )
         {
