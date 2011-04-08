@@ -16,12 +16,6 @@
     <Filter Include="Platform">
       <UniqueIdentifier>{036d69f0-a4bf-4432-a7db-84f191f9f36a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Gfx\D3D">
-      <UniqueIdentifier>{e211dfd9-ee35-4af4-a707-9db8e8d57ef2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Gfx\OGL">
-      <UniqueIdentifier>{5c691bcf-0bcc-4ae6-9167-4aed9e0be240}</UniqueIdentifier>
-    </Filter>
     <Filter Include="assets">
       <UniqueIdentifier>{fad24d1a-0d86-4382-a5a5-411a90ee6690}</UniqueIdentifier>
     </Filter>
@@ -30,155 +24,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\code\Main\architecture.cpp">
-      <Filter>main</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Main\Input.cpp">
-      <Filter>main</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Main\Math.cpp">
-      <Filter>main</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Main\Memory.cpp">
-      <Filter>main</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Main\Riot.cpp">
-      <Filter>main</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Main\Window.cpp">
-      <Filter>main</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PlatformDependent\Win32Window.cpp">
-      <Filter>Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Gfx\Graphics.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Gfx\D3DGraphics.cpp">
-      <Filter>Gfx\D3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Gfx\View.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Main\main.cpp" />
-    <ClCompile Include="..\code\Gfx\Mesh.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Gfx\D3DMesh.cpp">
-      <Filter>Gfx\D3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Scene\Object.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Scene\SceneGraph.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\gfx\Material.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\gfx\D3DMaterial.cpp">
-      <Filter>Gfx\D3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\scene\Component.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\scene\ComponentManager.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\scene\ObjectManager.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\Main\AssetManager.cpp">
-      <Filter>main</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\main\Terrain.cpp">
-      <Filter>main</Filter>
-    </ClCompile>
+    <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\memory.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\code\Main\Input.h">
-      <Filter>main</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Main\IRefCounted.h">
-      <Filter>main</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Main\Memory.h">
-      <Filter>main</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Main\Riot.h">
-      <Filter>main</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Main\Timer.h">
-      <Filter>main</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Main\Types.h">
-      <Filter>main</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Main\Window.h">
-      <Filter>main</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PlatformDependent\Win32Window.h">
-      <Filter>Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Gfx\Graphics.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Gfx\D3DGraphics.h">
-      <Filter>Gfx\D3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Gfx\View.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Gfx\Mesh.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Gfx\D3DMesh.h">
-      <Filter>Gfx\D3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Scene\SceneGraph.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Scene\Object.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Gfx\Material.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Gfx\D3DMaterial.h">
-      <Filter>Gfx\D3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Misc.h" />
-    <ClInclude Include="..\code\main\Common.h" />
-    <ClInclude Include="..\code\Scene\Component.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\scene\ComponentManager.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\scene\ObjectManager.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Main\AssetManager.h">
-      <Filter>main</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\gfx\RenderObject.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\Main\RiotMath.h">
-      <Filter>main</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\gfx\RenderCommand.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\main\Terrain.h">
-      <Filter>main</Filter>
-    </ClInclude>
     <ClInclude Include="..\todo.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\assets\shaders\StandardVertexShader.hlsl">
-      <Filter>assets\shaders</Filter>
-    </None>
-    <None Include="..\code\ComponentSystem.txt" />
+    <ClInclude Include="..\common.h" />
+    <ClInclude Include="..\config.h" />
+    <ClInclude Include="..\types.h" />
+    <ClInclude Include="..\memory.h" />
+    <ClInclude Include="..\assert.h" />
   </ItemGroup>
 </Project>

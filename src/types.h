@@ -1,6 +1,10 @@
 /*********************************************************\
-File:      Types.h
-Purpose:   Defining basic types
+File:           types.h
+Purpose:        Defining basic types
+Author:         Kyle Weicht
+Created:        4/7/2011
+Modified:       4/7/2011 10:41:22 PM
+Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TYPES_H_
 #define _TYPES_H_
@@ -41,10 +45,10 @@ typedef int64_t   sint64;
 typedef uint64_t  int64;
 #endif // defined( WIN32 ) || defined( WIN64 )
 
-typedef uint32 uint;
-typedef sint32 sint;
-typedef float float32;
-typedef double float64;
+typedef uint32  uint;
+typedef sint32  sint;
+typedef float   float32;
+typedef double  float64;
 
 typedef void* handle;
 typedef void* pvoid;
@@ -85,81 +89,6 @@ typedef uint32 nativeuint;
 #ifndef SAFE_DELETE_ARRAY
 #define SAFE_DELETE_ARRAY(p) if(p) { delete [] p; p = NULL; }
 #endif
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-//  Platform defines
-//-----------------------------------------------------------------------------
-#if defined( DEBUG ) || defined( _DEBUG )
-#ifndef DEBUG
-#define DEBUG
-#endif
-#else
-#ifndef RELEASE
-#define RELEASE
-#endif
-#endif
-
-//-----------------------------------------------------------------------------
-//  Windows
-#if defined( WIN32 ) || defined( WIN64 )
-
-#define OS_WINDOWS
-
-#define WIN32_LEAN_AND_MEAN // Make sure <Windows.h> is lightweight when its included
-
-#ifdef _M_X64
-#define _64BIT
-#else
-#define _32BIT
-#endif // #ifdef _M_X64
-
-#endif // #if defined( WIN32 ) || defined( WIN64 )
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// Compiling on OS X
-#if defined( __APPLE__ )
-
-#include <TargetConditionals.h>
-
-#if TARGET_OS_IPHONE
-#define OS_IOS
-#else
-#define OS_OSX
-#endif
-
-#if TARGET_RT_64_BIT
-#define _64BIT
-#else
-#define _32BIT
-#endif // #ifdef TARGET_RT_64_BIT
-
-#define DECLAREPOOL NSAutoreleasePool* pAPool = [[NSAutoreleasePool alloc] init];
-
-#define RELEASEPOOL [pAPool release];
-
-
-#endif // #if defined( _APPLE_ )
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// Linux
-#if defined( __LINUX__ )
-
-// TODO: Support Android
-#define OS_LINUX
-
-#ifdef __LP64__
-#define _64BIT
-#else
-#define _32BIT
-#endif // #ifdef __LP64__
-
-#endif // #if defined( __LINUX__ )
 //-----------------------------------------------------------------------------
 
 #endif // #ifndef _TYPES_H_

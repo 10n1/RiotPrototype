@@ -19,62 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\code\Gfx\D3DGraphics.cpp" />
-    <ClCompile Include="..\code\gfx\D3DMaterial.cpp" />
-    <ClCompile Include="..\code\Gfx\D3DMesh.cpp" />
-    <ClCompile Include="..\code\Gfx\Graphics.cpp" />
-    <ClCompile Include="..\code\gfx\Material.cpp" />
-    <ClCompile Include="..\code\Gfx\Mesh.cpp" />
-    <ClCompile Include="..\code\Gfx\View.cpp" />
-    <ClCompile Include="..\code\Main\architecture.cpp" />
-    <ClCompile Include="..\code\Main\AssetManager.cpp" />
-    <ClCompile Include="..\code\Main\Input.cpp" />
-    <ClCompile Include="..\code\Main\main.cpp" />
-    <ClCompile Include="..\code\Main\Math.cpp" />
-    <ClCompile Include="..\code\Main\Memory.cpp" />
-    <ClCompile Include="..\code\Main\Riot.cpp" />
-    <ClCompile Include="..\code\main\Terrain.cpp" />
-    <ClCompile Include="..\code\Main\Window.cpp" />
-    <ClCompile Include="..\code\scene\Component.cpp" />
-    <ClCompile Include="..\code\scene\ComponentManager.cpp" />
-    <ClCompile Include="..\code\Scene\Object.cpp" />
-    <ClCompile Include="..\code\scene\ObjectManager.cpp" />
-    <ClCompile Include="..\code\Scene\SceneGraph.cpp" />
-    <ClCompile Include="..\PlatformDependent\Win32Window.cpp" />
+    <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\memory.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\code\Gfx\D3DGraphics.h" />
-    <ClInclude Include="..\code\Gfx\D3DMaterial.h" />
-    <ClInclude Include="..\code\Gfx\D3DMesh.h" />
-    <ClInclude Include="..\code\Gfx\Graphics.h" />
-    <ClInclude Include="..\code\Gfx\Material.h" />
-    <ClInclude Include="..\code\Gfx\Mesh.h" />
-    <ClInclude Include="..\code\gfx\RenderCommand.h" />
-    <ClInclude Include="..\code\gfx\RenderObject.h" />
-    <ClInclude Include="..\code\Gfx\View.h" />
-    <ClInclude Include="..\code\Main\AssetManager.h" />
-    <ClInclude Include="..\code\main\Common.h" />
-    <ClInclude Include="..\code\Main\Input.h" />
-    <ClInclude Include="..\code\Main\IRefCounted.h" />
-    <ClInclude Include="..\code\Main\Memory.h" />
-    <ClInclude Include="..\code\Main\Riot.h" />
-    <ClInclude Include="..\code\Main\RiotMath.h" />
-    <ClInclude Include="..\code\main\Terrain.h" />
-    <ClInclude Include="..\code\Main\Timer.h" />
-    <ClInclude Include="..\code\Main\Types.h" />
-    <ClInclude Include="..\code\Main\Window.h" />
-    <ClInclude Include="..\code\Scene\Component.h" />
-    <ClInclude Include="..\code\scene\ComponentManager.h" />
-    <ClInclude Include="..\code\Scene\Object.h" />
-    <ClInclude Include="..\code\scene\ObjectManager.h" />
-    <ClInclude Include="..\code\Scene\SceneGraph.h" />
-    <ClInclude Include="..\Misc.h" />
-    <ClInclude Include="..\PlatformDependent\Win32Window.h" />
+    <ClInclude Include="..\assert.h" />
+    <ClInclude Include="..\common.h" />
+    <ClInclude Include="..\config.h" />
+    <ClInclude Include="..\memory.h" />
     <ClInclude Include="..\todo.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\assets\shaders\StandardVertexShader.hlsl" />
-    <None Include="..\code\ComponentSystem.txt" />
+    <ClInclude Include="..\types.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B5535174-0753-4265-9B6E-D9BB0806AB0D}</ProjectGuid>
