@@ -13,7 +13,7 @@ Modified by:    Kyle Weicht
 #ifdef OS_WINDOWS
 #define debugBreak() __debugbreak()
 #elif defined( OS_OSX )
-#define debugBreak() __asm { int 3 }
+#define debugBreak() __asm__( "int $3\n" : : )
 #endif
 
 #ifdef DEBUG

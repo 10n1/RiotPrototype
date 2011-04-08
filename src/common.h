@@ -1,7 +1,6 @@
 /*********************************************************\
 File:           common.h
 Purpose:        Global include file
-
 Author:         Kyle Weicht
 Created:        4/7/2011
 Modified:       4/7/2011 11:26:51 PM

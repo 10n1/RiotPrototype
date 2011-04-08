@@ -6,7 +6,12 @@ Modified:       4/7/2011 11:20:46 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "memory.h"
+
+#ifdef OS_WINDOWS
 #include <malloc.h>
+#else
+#include <stdlib.h>
+#endif
 
 enum { GLOBAL_MEMORY_ALLOCATION = 16*1024*1024 };
 
@@ -50,7 +55,7 @@ void* __cdecl operator new(size_t nSize)
     gs_pCurrAlloc       += nSize;
     gs_nActiveMemory    += nSize;
     gs_pPrevAlloc       = pNewAlloc;
-    gs_nPrevAllocSize   = nSize;
+    gs_nPrevAllocSize   = (uint)nSize;
 
     // Return it
     return pNewAlloc;
@@ -65,7 +70,7 @@ void* __cdecl operator new[](size_t nSize)
     gs_pCurrAlloc       += nSize;
     gs_nActiveMemory    += nSize;
     gs_pPrevAlloc       = pNewAlloc;
-    gs_nPrevAllocSize   = nSize;
+    gs_nPrevAllocSize   = (uint)nSize;
 
     // Return it
     return pNewAlloc;

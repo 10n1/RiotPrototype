@@ -8,14 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3633205113353BE90034C250 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3633205013353BE90034C250 /* Cocoa.framework */; };
-		36752B6113353D0400CFB14E /* riot-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 36752B6013353D0400CFB14E /* riot-Info.plist */; };
-		36752B7313353D9000CFB14E /* architecture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36752B6313353D9000CFB14E /* architecture.cpp */; };
-		36752B7413353D9000CFB14E /* Input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36752B6413353D9000CFB14E /* Input.cpp */; };
-		36752B7513353D9000CFB14E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36752B6513353D9000CFB14E /* main.cpp */; };
-		36752B7613353D9000CFB14E /* Math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36752B6613353D9000CFB14E /* Math.cpp */; };
-		36752B7713353D9000CFB14E /* Memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36752B6713353D9000CFB14E /* Memory.cpp */; };
-		36752B7813353D9000CFB14E /* Riot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36752B6813353D9000CFB14E /* Riot.cpp */; };
-		36752B7913353D9000CFB14E /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36752B6913353D9000CFB14E /* Window.cpp */; };
+		36E24372134EEA4900C2A0B7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36E24371134EEA4900C2A0B7 /* main.cpp */; };
+		36E2437A134EEAA000C2A0B7 /* memory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36E24376134EEAA000C2A0B7 /* memory.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,21 +19,14 @@
 		3633205413353BE90034C250 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		3633205513353BE90034C250 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		36752B6013353D0400CFB14E /* riot-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "riot-Info.plist"; sourceTree = SOURCE_ROOT; };
-		36752B6313353D9000CFB14E /* architecture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = architecture.cpp; sourceTree = "<group>"; };
-		36752B6413353D9000CFB14E /* Input.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Input.cpp; sourceTree = "<group>"; };
-		36752B6513353D9000CFB14E /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		36752B6613353D9000CFB14E /* Math.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Math.cpp; sourceTree = "<group>"; };
-		36752B6713353D9000CFB14E /* Memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Memory.cpp; sourceTree = "<group>"; };
-		36752B6813353D9000CFB14E /* Riot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Riot.cpp; sourceTree = "<group>"; };
-		36752B6913353D9000CFB14E /* Window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Window.cpp; sourceTree = "<group>"; };
-		36752B6A13353D9000CFB14E /* Window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Window.h; sourceTree = "<group>"; };
-		36752B6C13353D9000CFB14E /* Input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Input.h; sourceTree = "<group>"; };
-		36752B6D13353D9000CFB14E /* IRefCounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IRefCounted.h; sourceTree = "<group>"; };
-		36752B6E13353D9000CFB14E /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Memory.h; sourceTree = "<group>"; };
-		36752B6F13353D9000CFB14E /* Riot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Riot.h; sourceTree = "<group>"; };
-		36752B7013353D9000CFB14E /* RiotMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RiotMath.h; sourceTree = "<group>"; };
-		36752B7113353D9000CFB14E /* Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timer.h; sourceTree = "<group>"; };
-		36752B7213353D9000CFB14E /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		36E24371134EEA4900C2A0B7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
+		36E24373134EEAA000C2A0B7 /* assert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = assert.h; path = ../assert.h; sourceTree = "<group>"; };
+		36E24374134EEAA000C2A0B7 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = ../common.h; sourceTree = "<group>"; };
+		36E24375134EEAA000C2A0B7 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../config.h; sourceTree = "<group>"; };
+		36E24376134EEAA000C2A0B7 /* memory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = memory.cpp; path = ../memory.cpp; sourceTree = "<group>"; };
+		36E24377134EEAA000C2A0B7 /* memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memory.h; path = ../memory.h; sourceTree = "<group>"; };
+		36E24378134EEAA000C2A0B7 /* todo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = todo.h; path = ../todo.h; sourceTree = "<group>"; };
+		36E24379134EEAA000C2A0B7 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = ../types.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +44,15 @@
 		3633204113353BE90034C250 = {
 			isa = PBXGroup;
 			children = (
-				3633205613353BE90034C250 /* riot */,
+				36E24373134EEAA000C2A0B7 /* assert.h */,
+				36E24374134EEAA000C2A0B7 /* common.h */,
+				36E24375134EEAA000C2A0B7 /* config.h */,
+				36E24376134EEAA000C2A0B7 /* memory.cpp */,
+				36E24377134EEAA000C2A0B7 /* memory.h */,
+				36E24378134EEAA000C2A0B7 /* todo.h */,
+				36E24379134EEAA000C2A0B7 /* types.h */,
+				36752B6013353D0400CFB14E /* riot-Info.plist */,
+				36E24371134EEA4900C2A0B7 /* main.cpp */,
 				3633204F13353BE90034C250 /* Frameworks */,
 				3633204D13353BE90034C250 /* Products */,
 			);
@@ -88,47 +83,6 @@
 				3633205513353BE90034C250 /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
-			sourceTree = "<group>";
-		};
-		3633205613353BE90034C250 /* riot */ = {
-			isa = PBXGroup;
-			children = (
-				36752B6213353D9000CFB14E /* code */,
-				36752B6B13353D9000CFB14E /* include */,
-				36752B6013353D0400CFB14E /* riot-Info.plist */,
-			);
-			path = riot;
-			sourceTree = "<group>";
-		};
-		36752B6213353D9000CFB14E /* code */ = {
-			isa = PBXGroup;
-			children = (
-				36752B6313353D9000CFB14E /* architecture.cpp */,
-				36752B6413353D9000CFB14E /* Input.cpp */,
-				36752B6513353D9000CFB14E /* main.cpp */,
-				36752B6613353D9000CFB14E /* Math.cpp */,
-				36752B6713353D9000CFB14E /* Memory.cpp */,
-				36752B6813353D9000CFB14E /* Riot.cpp */,
-				36752B6913353D9000CFB14E /* Window.cpp */,
-				36752B6A13353D9000CFB14E /* Window.h */,
-			);
-			name = code;
-			path = ../../code;
-			sourceTree = "<group>";
-		};
-		36752B6B13353D9000CFB14E /* include */ = {
-			isa = PBXGroup;
-			children = (
-				36752B6C13353D9000CFB14E /* Input.h */,
-				36752B6D13353D9000CFB14E /* IRefCounted.h */,
-				36752B6E13353D9000CFB14E /* Memory.h */,
-				36752B6F13353D9000CFB14E /* Riot.h */,
-				36752B7013353D9000CFB14E /* RiotMath.h */,
-				36752B7113353D9000CFB14E /* Timer.h */,
-				36752B7213353D9000CFB14E /* Types.h */,
-			);
-			name = include;
-			path = ../../include;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -181,7 +135,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				36752B6113353D0400CFB14E /* riot-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -192,13 +145,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				36752B7313353D9000CFB14E /* architecture.cpp in Sources */,
-				36752B7413353D9000CFB14E /* Input.cpp in Sources */,
-				36752B7513353D9000CFB14E /* main.cpp in Sources */,
-				36752B7613353D9000CFB14E /* Math.cpp in Sources */,
-				36752B7713353D9000CFB14E /* Memory.cpp in Sources */,
-				36752B7813353D9000CFB14E /* Riot.cpp in Sources */,
-				36752B7913353D9000CFB14E /* Window.cpp in Sources */,
+				36E24372134EEA4900C2A0B7 /* main.cpp in Sources */,
+				36E2437A134EEAA000C2A0B7 /* memory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -244,8 +192,8 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "riot/riot-Prefix.pch";
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "riot-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -259,8 +207,8 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "riot/riot-Prefix.pch";
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "riot-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
