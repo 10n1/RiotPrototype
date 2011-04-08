@@ -28,6 +28,8 @@ Modified by:    Kyle Weicht
 
 #define OS_WINDOWS
 
+#define ARCH_IA32
+
 #define WIN32_LEAN_AND_MEAN // Make sure <Windows.h> is lightweight when its included
 
 #ifdef _M_X64
@@ -46,10 +48,13 @@ Modified by:    Kyle Weicht
 
 #include <TargetConditionals.h>
 
+
 #if TARGET_OS_IPHONE
 #define OS_IOS
+#define ARCH_ARM
 #else
 #define OS_OSX
+#define ARCH_IA32
 #endif
 
 #if TARGET_RT_64_BIT
@@ -74,6 +79,8 @@ Modified by:    Kyle Weicht
 // TODO: Support Android
 #define OS_LINUX
 
+#define ARCH_IA32
+
 #ifdef __LP64__
 #define _64BIT
 #else
@@ -86,6 +93,7 @@ Modified by:    Kyle Weicht
 //-----------------------------------------------------------------------------
 //  Build configuration
 //-----------------------------------------------------------------------------
+#define RIOT_ALIGN_MEMORY
 #define RIOT_USE_INTRINSICS
 
 #endif // #ifndef _CONFIG_H_

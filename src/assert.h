@@ -27,6 +27,8 @@ Modified by:    Kyle Weicht
 
 #else
 
+#define ASSERT(expression)
+
 #endif
 
 #endif // #ifndef _ASSERT_H_

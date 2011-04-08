@@ -18,6 +18,7 @@
 		3633205313353BE90034C250 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		3633205413353BE90034C250 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		3633205513353BE90034C250 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		3646DD09134F007000A65DAC /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = timer.h; path = ../timer.h; sourceTree = "<group>"; };
 		36752B6013353D0400CFB14E /* riot-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "riot-Info.plist"; sourceTree = SOURCE_ROOT; };
 		36E24371134EEA4900C2A0B7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
 		36E24373134EEAA000C2A0B7 /* assert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = assert.h; path = ../assert.h; sourceTree = "<group>"; };
@@ -44,6 +45,7 @@
 		3633204113353BE90034C250 = {
 			isa = PBXGroup;
 			children = (
+				3646DD09134F007000A65DAC /* timer.h */,
 				36E24373134EEAA000C2A0B7 /* assert.h */,
 				36E24374134EEAA000C2A0B7 /* common.h */,
 				36E24375134EEAA000C2A0B7 /* config.h */,
