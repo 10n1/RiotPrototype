@@ -2,7 +2,7 @@
 File:           main.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/8/2011 8:38:15 PM
+Modified:       4/8/2011 10:00:12 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "common.h"
@@ -13,6 +13,8 @@ Modified by:    Kyle Weicht
 
 #include <Windows.h>
 #include <xnamath.h>
+
+using namespace Riot;
 
 void FillRand( float* f, uint nCount )
 {
@@ -62,7 +64,7 @@ int main( int argc, char* argv[] )
     Normalize( q1 );
     RMatrix4 mqm;
 
-    for( uint i = 0; i < 32 * 1024 * 1024; ++i )
+    for( uint i = 0; i < 32 * 1024 * 0; ++i )
     {
         mqm = RMatrix4( RQuatGetMatrix( q0 ) );
         q0.x = mqm.m11;
@@ -75,6 +77,11 @@ int main( int argc, char* argv[] )
     {
         printf( "%f seconds, %f start\n", fEndTime, fStartTime );
     }
+
+    TestMath();
+
+    RVector4 v;
+    RQuaternion q(v);
 
     return 0;
 }
@@ -131,4 +138,36 @@ void TestMath( void )
     RMatrix4 mqm( RQuatGetMatrix( mq ) );
 
     PRINT_RESULT( Compare( (float*)&xqm, mqm, 4 ) );
+
+    xq = XMQuaternionConjugate( xq );
+    mq = Conjugate( mq );
+    PRINT_RESULT( Compare( xq.m128_f32, mq, 4 ) );
+
+    FillRand( vec, 3 );
+    XMVECTOR xvec = XMLoadFloat3( (XMFLOAT3*)&vec );
+
+    xvec = XMVector3Rotate( xvec, xq );
+    vec = Rotate( mq, vec );
+    PRINT_RESULT( Compare( xq.m128_f32, mq, 4 ) );
+
+        
+    FillRand( vec, 3 );
+    f = rand()/(float)(RAND_MAX);
+    f *= 360.0f;
+    XMVECTOR xq2 = XMQuaternionRotationAxis( XMLoadFloat3( (XMFLOAT3*)&vec ), f );
+    RQuaternion mq2 = RQuatFromAxisAngle( vec, f );
+
+    xq = XMQuaternionMultiply( xq2, xq );
+    mq = mq * mq2;
+    PRINT_RESULT( Compare( xq.m128_f32, mq, 4 ) );
+
+    XMMATRIX a( 
+        1.0f, 1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f, 1.0f );
+
+    XMMATRIX b = XMMatrixScaling( 2.0f, 2.0f, 2.0f );
+
+    XMMATRIX c = a * b;
 }

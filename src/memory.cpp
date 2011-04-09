@@ -2,7 +2,7 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/8/2011 7:41:13 PM
+Modified:       4/8/2011 9:57:09 PM
 Modified by:    Kyle Weicht
  
 TODO:           Add alignment support? Should be ultra easy
@@ -138,28 +138,45 @@ void* Memcpy( void* pDest, const void* pSource, uint nSize )
     byte* a = (byte*)pDest;
     const byte* b = (const byte*)pSource;
 
-    uint nVectorWidth = sizeof( __m128 );
+    const uint nWidth = sizeof( __m128 );
     __m128 v0;
+
+    while( nSize >= nWidth )
+    {
+        v0 =  _mm_loadu_ps( (float*)b );
+        b += nWidth;
+
+        _mm_storeu_ps( (float*)a, v0);
+        a += nWidth;
+
+        nSize -= nWidth;
+    }
 
     while( nSize > 0 )
     {
-        v0 =  _mm_loadu_ps( (float*)b );
-        b += nVectorWidth;
-
-        _mm_storeu_ps( (float*)a, v0);
-        a += nVectorWidth;
-
-        nSize -= nVectorWidth;
+        *a = *b;
+        a++, b++;
+        nSize--;
     }
 #else    
     uint64* a = (uint64*)pDest;
     const uint64* b = (const uint64*)pSource;
 
+    const uint nWidth = sizeof( uint64 );
+
     while( nSize )
     {
         *a = *b;
         a++, b++;
-        nSize -= sizeof( uint64 );
+        nSize -= nWidth;
+    }
+
+    
+    while( nSize > 0 )
+    {
+        *a = *b;
+        a++, b++;
+        nSize--;
     }
 #endif // #ifndef RIOT_USE_INTRINSICS
 

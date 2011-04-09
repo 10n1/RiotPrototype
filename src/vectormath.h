@@ -3,13 +3,16 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/8/2011 8:38:33 PM
+Modified:       4/8/2011 9:59:31 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
 #define _VECTORMATH_H_
 #include <math.h>
 #include "types.h"
+
+namespace Riot
+{
 
 #pragma warning(disable:4201)
 
@@ -178,7 +181,7 @@ inline float DotProduct( const RVector4& l, const RVector4& r ) { return l.x * r
 inline float MagnitudeSq( const RVector4& a ) { return DotProduct(a,a); }
 inline float Magnitude( const RVector4& a ) { return sqrtf(DotProduct(a,a)); }
 inline RVector4 Normalize( const RVector4&a ) { float recip = 1.0f/Magnitude(a); return a * recip; }
-inline RVector4 Vector3Zero( void ) { return RVector4( 0.0f, 0.0f, 0.0f, 0.0f ); }
+inline RVector4 Vector4Zero( void ) { return RVector4( 0.0f, 0.0f, 0.0f, 0.0f ); }
 
 
 //-----------------------------------------------------------------------------
@@ -396,30 +399,38 @@ public:
     inline const float& operator[](int i) const { return f[i]; }
 };
 
+// Basic math functions
+inline RQuaternion operator+( const RQuaternion& l, const RQuaternion& r ) { return RQuaternion( (RVector4&)l + (RVector4&)r ); }
+inline RQuaternion operator-( const RQuaternion& l, const RQuaternion& r ) { return RQuaternion( (RVector4&)l - (RVector4&)r ); }
+inline RQuaternion operator-( const RQuaternion& a ) { return RQuaternion( -(RVector4&)a ); }
+
+inline RQuaternion operator*( const RQuaternion& a, float f ) { return RQuaternion( (RVector4&)a * f ); }
+
+inline RQuaternion& operator+=( RQuaternion& l, const RQuaternion& r ) { l.x += r.x, l.y += r.y, l.z + r.z, l.w + r.w; return l; }
+inline RQuaternion& operator-=( RQuaternion& l, const RQuaternion& r ) { l.x -= r.x, l.y -= r.y, l.z - r.z, l.w - r.w; return l; }
+inline RQuaternion& operator*=( RQuaternion& a, float f ) { return (RQuaternion&)((RVector4&)a *= f); }
+
+// 3D functions
 inline RVector3 RQuatGetXAxis( const RQuaternion& q ) { return RVector3( 1-2*(q.y*q.y+q.z*q.z), 2*(q.x*q.y+q.w*q.z), 2*(q.x*q.z-q.y*q.w) ); }
 inline RVector3 RQuatGetYAxis( const RQuaternion& q ) { return RVector3( 2*(q.x*q.y-q.z*q.w), 1-2*(q.x*q.x+q.z*q.z), 2*(q.y*q.z+q.x*q.w) ); }
 inline RVector3 RQuatGetZAxis( const RQuaternion& q ) { return RVector3( 2*(q.x*q.z+q.y*q.w), 2*(q.y*q.z+q.x*q.w), 1-2*(q.x*q.x+q.y*q.y) ); }
 inline RMatrix3 RQuatGetMatrix( const RQuaternion& q ) 
 { 
-    //float xsq = q.x * q.x;
-    //float ysq = q.y * q.y;
-    //float zsq = q.z * q.z;
-    //
-    //float xy = q.x * q.y;
-    //float zw = q.z * q.w;
-    //float xz = q.x * q.z;
-    //float yw = q.y * q.w;
-    //float yz = q.y * q.z;
-    //float xw = q.x * q.w;
-    //
-    //return RMatrix3( 1-2*(ysq+zsq),     2*(xy+zw),     2*(xz-yw),
-    //                     2*(xy-zw), 1-2*(xsq-zsq),     2*(yz+xw),
-    //                     2*(xz+yw),     2*(yz-xw), 1-2*(xsq+ysq) ); 
-    //
-    return RMatrix3( RQuatGetXAxis(q), RQuatGetYAxis(q), RQuatGetZAxis(q) ); 
+    float xsq = q.x * q.x;
+    float ysq = q.y * q.y;
+    float zsq = q.z * q.z;
+    
+    float xy = q.x * q.y;
+    float zw = q.z * q.w;
+    float xz = q.x * q.z;
+    float yw = q.y * q.w;
+    float yz = q.y * q.z;
+    float xw = q.x * q.w;
+    
+    return RMatrix3( 1-2*(ysq+zsq),     2*(xy+zw),     2*(xz-yw),
+                         2*(xy-zw), 1-2*(xsq-zsq),     2*(yz+xw),
+                         2*(xz+yw),     2*(yz-xw), 1-2*(xsq+ysq) ); 
 }
-inline RQuaternion Normalize( const RQuaternion& q ) { return Normalize( (RVector4&)q ); }
-
 inline RQuaternion RQuatFromAxisAngle( const RVector3& axis, float angle )
 {
     angle /= 2.0f;
@@ -427,6 +438,64 @@ inline RQuaternion RQuatFromAxisAngle( const RVector3& axis, float angle )
     return RQuaternion( v.x, v.y, v.z, cosf( angle ) );
 }
 
+RQuaternion operator*( const RQuaternion& l, const RQuaternion& r );
+
+inline RQuaternion Normalize( const RQuaternion& q ) { return Normalize( (RVector4&)q ); }
+inline RQuaternion Conjugate( const RQuaternion& q ) { return RQuaternion( -q.x, -q.y, -q.z, q.w ); }
+inline RQuaternion Inverse( const RQuaternion& q ) { return Conjugate( q ); }
+
+inline RQuaternion RQuaternionZero( void ) { return RQuaternion( 0.0f, 0.0f, 0.0f, 1.0f ); }
+
+RVector3 Rotate( const RQuaternion& q, const RVector3& v );
+RQuaternion Lerp( const RQuaternion& a, const RQuaternion& b, float t );
+RQuaternion Slerp( const RQuaternion& a, const RQuaternion& b, float t );
+
+//-----------------------------------------------------------------------------
+//  Quaternion
+//-----------------------------------------------------------------------------
+class RTransform
+{
+public:
+    /***************************************\
+    | class members
+    \***************************************/
+    RQuaternion orientation;
+    RVector3    position;
+    float       scale;
+    
+    /***************************************\
+    | class methods
+    \***************************************/
+    RTransform() : orientation( RQuaternionZero() ), position( RVector3Zero() ), scale( 1.0f ) { }
+    RTransform( const RQuaternion& o, const RVector3& p, float s = 1.0f )
+        : orientation( 0 ), position( p ), scale( s ) { }
+
+    inline RMatrix4 GetTransformMatrix( void )
+    {
+        float xsq = orientation.x * orientation.x;
+        float ysq = orientation.y * orientation.y;
+        float zsq = orientation.z * orientation.z;
+
+        float xy = orientation.x * orientation.y;
+        float zw = orientation.z * orientation.w;
+        float xz = orientation.x * orientation.z;
+        float yw = orientation.y * orientation.w;
+        float yz = orientation.y * orientation.z;
+        float xw = orientation.x * orientation.w;
+
+        return RMatrix4( 
+        1-2*(ysq+zsq) * scale,     2*(xy+zw) * scale,     2*(xz-yw) * scale, 0.0f,
+            2*(xy-zw) * scale, 1-2*(xsq-zsq) * scale,     2*(yz+xw) * scale, 0.0f,
+            2*(xz+yw) * scale,     2*(yz-xw) * scale, 1-2*(xsq+ysq) * scale, 0.0f,
+                   position.x,            position.y,            position.z, 1.0f ); 
+    }
+
+    inline void TranslateX( float f ) { position += RQuatGetXAxis( orientation ) * f; }
+    inline void TranslateY( float f ) { position += RQuatGetYAxis( orientation ) * f; }
+    inline void TranslateZ( float f ) { position += RQuatGetZAxis( orientation ) * f; }
+};
+
+};
 #pragma warning(disable:4201)
 
 #endif // #ifndef _VECTORMATH_H_

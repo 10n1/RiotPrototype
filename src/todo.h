@@ -3,7 +3,7 @@ File:           todo.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/8/2011 12:49:46 PM
+Modified:       4/8/2011 9:56:01 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TODO_H_
@@ -16,12 +16,12 @@ Random number generator
     File system (a complete wrapper around files/directories)
         Support asyncronous loading/saving
     Network/socket wrapper
-    Math library
+    //Math library
     Graphics API wrapper (very low level, just passes draw calls, etc)
     Module manager (starts and shuts down all managers, etc)
     //Memory wrapper (new/delete wrapper)
     Memory allocators
-    Assertions
+    //Assertions
     Hash functions (hash string to ID)
     Debug printing
     Debug logging to file
@@ -33,8 +33,8 @@ Random number generator
     Post processing chain
     2D rendering system
     Input wrapper
-    Memory allocator (Off the bat, allocate a lot of memory, all other memory comes out of there)
-    Aligned allocations
+    //Memory allocator (Off the bat, allocate a lot of memory, all other memory comes out of there)
+    //Aligned allocations
     Threading API
 
 

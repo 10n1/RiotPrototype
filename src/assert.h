@@ -3,12 +3,12 @@ File:           assert.h
 Purpose:        Defines asserts
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/8/2011 12:49:46 PM
+Modified:       4/8/2011 9:58:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ASSERT_H_
 #define _ASSERT_H_
-#include "common.h"
+#include "config.h"
 
 #ifdef OS_WINDOWS
 #define debugBreak() __debugbreak()

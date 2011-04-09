@@ -2,11 +2,13 @@
 File:           vectormath.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/8/2011 7:39:09 PM
+Modified:       4/8/2011 9:59:46 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "vectormath.h"
 
+namespace Riot
+{
 
 //-----------------------------------------------------------------------------
 //  Matrix3
@@ -498,4 +500,53 @@ RVector3 RMatrix4GetZAxis( const RMatrix4& m  )
 RVector3 RMatrix4GetTranslation( const RMatrix4& m  )
 {
     return m.r3.xyz();
+}
+
+
+//-----------------------------------------------------------------------------
+//  Quaternion
+//-----------------------------------------------------------------------------
+RVector3 Rotate( const RQuaternion& q, const RVector3& v )
+{
+    float xsq = q.x * q.x;
+    float ysq = q.y * q.y;
+    float zsq = q.z * q.z;
+    
+    float xy = q.x * q.y;
+    float zw = q.z * q.w;
+    float xz = q.x * q.z;
+    float yw = q.y * q.w;
+    float yz = q.y * q.z;
+    float xw = q.x * q.w;
+    
+    return RVector3( (1-2*(ysq+zsq))*v.x + (    2*(xy+zw))*v.y + (    2*(xz-yw))*v.z,
+                     (    2*(xy-zw))*v.x + (1-2*(xsq-zsq))*v.y + (    2*(yz+xw))*v.z,
+                     (    2*(xz+yw))*v.x + (    2*(yz-xw))*v.y + (1-2*(xsq+ysq))*v.z );
+}
+
+RQuaternion operator*( const RQuaternion& l, const RQuaternion& r )
+{
+    return RQuaternion(
+        l.w*r.x + l.x*r.w + l.y*r.z - l.z*r.y,
+        l.w*r.y - l.x*r.z + l.y*r.w + l.z*r.x,
+        l.w*r.z + l.x*r.y - l.y*r.x + l.z*r.w,
+        l.w*r.w - l.x*r.x - l.y*r.y - l.z*r.z );
+}
+
+RQuaternion Lerp( const RQuaternion& a, const RQuaternion& b, float t )
+{
+    float inv = 1.0f - t;
+
+    return RQuaternion(
+        inv*a.x + t*b.x,
+        inv*a.y + t*b.y,
+        inv*a.z + t*b.z,
+        inv*a.w + t*b.w );
+}
+
+RQuaternion Slerp( const RQuaternion& a, const RQuaternion& b, float t )
+{
+    return Lerp( a, b, t );
+}
+
 }
