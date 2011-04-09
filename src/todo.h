@@ -3,23 +3,23 @@ File:           todo.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/7/2011 9:53:45 PM
+Modified:       4/8/2011 12:49:46 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TODO_H_
 #define _TODO_H_
 
 Random number generator
-    High resolution timer
+    //High resolution timer
     Platform detection code
-    Atomic operations wrapper (_Interlocked*)
+    //Atomic operations wrapper (_Interlocked*)
     File system (a complete wrapper around files/directories)
         Support asyncronous loading/saving
     Network/socket wrapper
     Math library
     Graphics API wrapper (very low level, just passes draw calls, etc)
     Module manager (starts and shuts down all managers, etc)
-    Memory wrapper (new/delete wrapper)
+    //Memory wrapper (new/delete wrapper)
     Memory allocators
     Assertions
     Hash functions (hash string to ID)

@@ -19,16 +19,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\atomic.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\memory.cpp" />
+    <ClCompile Include="..\timer.cpp" />
+    <ClCompile Include="..\vectormath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\assert.h" />
+    <ClInclude Include="..\atomic.h" />
     <ClInclude Include="..\common.h" />
     <ClInclude Include="..\config.h" />
     <ClInclude Include="..\memory.h" />
+    <ClInclude Include="..\timer.h" />
     <ClInclude Include="..\todo.h" />
     <ClInclude Include="..\types.h" />
+    <ClInclude Include="..\vectormath.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B5535174-0753-4265-9B6E-D9BB0806AB0D}</ProjectGuid>

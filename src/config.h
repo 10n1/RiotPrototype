@@ -3,7 +3,7 @@ File:           config.h
 Purpose:        Includes platform and build configurations
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/7/2011 10:39:58 PM
+Modified:       4/8/2011 12:15:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CONFIG_H_
@@ -93,7 +93,8 @@ Modified by:    Kyle Weicht
 //-----------------------------------------------------------------------------
 //  Build configuration
 //-----------------------------------------------------------------------------
-#define RIOT_ALIGN_MEMORY
-#define RIOT_USE_INTRINSICS
+#define RIOT_ALIGN_MEMORY               1
+#define RIOT_USE_INTRINSICS             1
+#define RIOT_USE_CUSTOM_ALLOCATOR       1
 
 #endif // #ifndef _CONFIG_H_

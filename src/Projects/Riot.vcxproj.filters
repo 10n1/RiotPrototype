@@ -26,6 +26,9 @@
   <ItemGroup>
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\memory.cpp" />
+    <ClCompile Include="..\timer.cpp" />
+    <ClCompile Include="..\atomic.cpp" />
+    <ClCompile Include="..\vectormath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\todo.h" />
@@ -34,5 +37,8 @@
     <ClInclude Include="..\types.h" />
     <ClInclude Include="..\memory.h" />
     <ClInclude Include="..\assert.h" />
+    <ClInclude Include="..\timer.h" />
+    <ClInclude Include="..\atomic.h" />
+    <ClInclude Include="..\vectormath.h" />
   </ItemGroup>
 </Project>

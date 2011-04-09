@@ -2,7 +2,7 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/7/2011 11:20:46 PM
+Modified:       4/8/2011 7:41:13 PM
 Modified by:    Kyle Weicht
  
 TODO:           Add alignment support? Should be ultra easy
@@ -12,7 +12,10 @@ TODO:           Add alignment support? Should be ultra easy
 #ifdef ARCH_IA32
 #include <emmintrin.h>
 #else
+// Arm doesn't support SSE
 #include <stdlib.h>
+#define _mm_malloc( nSize, nAlignment ) malloc( nSize )
+#define _mm_free( pData ) free( pData )
 #endif
 
 enum { GLOBAL_MEMORY_ALLOCATION = 16*1024*1024 };
@@ -56,11 +59,13 @@ void ReleasePool( void )
     if( gs_pGlobalPool )
     {
         _mm_free( (void*)gs_pGlobalPool );
+        gs_pGlobalPool = NULL;
     }
 }
 
 
 //-----------------------------------------------------------------------------
+#ifdef RIOT_USE_CUSTOM_ALLOCATOR
 void* __cdecl operator new(size_t nSize)
 {
     // Grab the current pointer
@@ -72,7 +77,7 @@ void* __cdecl operator new(size_t nSize)
     
     // Increment the counters
     gs_pCurrAlloc       += nSize;
-    gs_nActiveMemory    += nSize;
+    gs_nActiveMemory    += (uint)nSize;
     gs_pPrevAlloc       = pNewAlloc;
     gs_nPrevAllocSize   = (uint)nSize;
 
@@ -91,7 +96,7 @@ void* __cdecl operator new[](size_t nSize)
     
     // Increment the counters
     gs_pCurrAlloc       += nSize;
-    gs_nActiveMemory    += nSize;
+    gs_nActiveMemory    += (uint)nSize;
     gs_pPrevAlloc       = pNewAlloc;
     gs_nPrevAllocSize   = (uint)nSize;
     
@@ -124,36 +129,69 @@ void __cdecl operator delete[](void* pVoid)
         gs_pPrevAlloc = NULL;
     }
 };
+#endif // #ifdef RIOT_USE_CUSTOM_ALLOCATOR
 //-----------------------------------------------------------------------------
 
-void* memcpy( void* pDest, const void* pSource, uint nSize )
+void* Memcpy( void* pDest, const void* pSource, uint nSize )
 {
-#ifndef RIOT_USE_INTRINSICS
+#if RIOT_USE_INTRINSICS
+    byte* a = (byte*)pDest;
+    const byte* b = (const byte*)pSource;
+
+    uint nVectorWidth = sizeof( __m128 );
+    __m128 v0;
+
+    while( nSize > 0 )
+    {
+        v0 =  _mm_loadu_ps( (float*)b );
+        b += nVectorWidth;
+
+        _mm_storeu_ps( (float*)a, v0);
+        a += nVectorWidth;
+
+        nSize -= nVectorWidth;
+    }
+#else    
     uint64* a = (uint64*)pDest;
     const uint64* b = (const uint64*)pSource;
-    
+
     while( nSize )
     {
         *a = *b;
         a++, b++;
         nSize -= sizeof( uint64 );
     }
+#endif // #ifndef RIOT_USE_INTRINSICS
+
     return pDest;
-#else    
+}
+
+void* Memset( void* pDest, uint c, uint nSize )
+{
+#if RIOT_USE_INTRINSICS
     byte* a = (byte*)pDest;
-    const byte* b = (const byte*)pSource;
-    
+
     uint nVectorWidth = sizeof( __m128 );
-    
+    __m128 vFill = _mm_load1_ps( (float*)&c );
+
     while( nSize > 0 )
     {
-        __m128 v0 =  _mm_loadu_ps( (float*)b );        
-        _mm_storeu_ps( (float*)a, v0);
-        
-        a += nVectorWidth, b += nVectorWidth;
+        _mm_storeu_ps( (float*)a, vFill);
+        a += nVectorWidth;
+
         nSize -= nVectorWidth;
     }
-    
+
+#else
+    uint64* a = (uint64*)pDest;
+
+    while( nSize > 0 )
+    {
+        *a = c;
+        a++;
+        nSize -= sizeof( uint64 );
+    }
+#endif // #ifndef RIOT_USE_INTRINSICS
+
     return pDest;
-#endif
 }

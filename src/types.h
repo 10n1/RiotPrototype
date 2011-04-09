@@ -3,7 +3,7 @@ File:           types.h
 Purpose:        Defining basic types
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/7/2011 10:41:22 PM
+Modified:       4/8/2011 12:28:23 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TYPES_H_
@@ -56,7 +56,7 @@ typedef void* pvoid;
 
 static const uint ptr_size = sizeof( pvoid );
 
-#if defined( _M_X64) || defined( __LP64__ )
+#if defined( _M_X64 ) || defined( __LP64__ )
 typedef uint64 nativeuint;
 #else
 typedef uint32 nativeuint;
