@@ -3,16 +3,13 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/8/2011 9:59:31 PM
+Modified:       4/8/2011 10:21:56 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
 #define _VECTORMATH_H_
 #include <math.h>
 #include "types.h"
-
-namespace Riot
-{
 
 #pragma warning(disable:4201)
 
@@ -493,9 +490,15 @@ public:
     inline void TranslateX( float f ) { position += RQuatGetXAxis( orientation ) * f; }
     inline void TranslateY( float f ) { position += RQuatGetYAxis( orientation ) * f; }
     inline void TranslateZ( float f ) { position += RQuatGetZAxis( orientation ) * f; }
+
+    inline void RotateWorldX( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 1.0f, 0.0f, 0.0f ), rad ); }
+    inline void RotateWorldY( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 0.0f, 1.0f, 0.0f ), rad ); }
+    inline void RotateWorldZ( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 0.0f, 0.0f, 1.0f ), rad ); } 
+    inline void RotateLocalX( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetXAxis( orientation ), rad ); }
+    inline void RotateLocalY( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetYAxis( orientation ), rad ); }
+    inline void RotateLocalZ( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetZAxis( orientation ), rad ); } 
 };
 
-};
 #pragma warning(disable:4201)
 
 #endif // #ifndef _VECTORMATH_H_

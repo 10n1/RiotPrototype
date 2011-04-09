@@ -3,7 +3,7 @@ File:           types.h
 Purpose:        Defining basic types
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/8/2011 12:28:23 PM
+Modified:       4/8/2011 10:02:36 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TYPES_H_
@@ -90,6 +90,14 @@ typedef uint32 nativeuint;
 #ifndef SAFE_DELETE_ARRAY
 #define SAFE_DELETE_ARRAY(p) if(p) { delete [] p; p = NULL; }
 #endif
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+enum Result
+{
+    kResultSuccess,
+    kResultFailure,    
+};
 //-----------------------------------------------------------------------------
 
 #endif // #ifndef _TYPES_H_

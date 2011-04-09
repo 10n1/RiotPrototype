@@ -3,7 +3,7 @@ File:           timer.h
 Purpose:        High performance, high-resolution timer
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/8/2011 11:19:04 AM
+Modified:       4/8/2011 10:26:35 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TIMER_H_
@@ -27,6 +27,13 @@ public:
     //  Returns the elapsed time (in seconds) since the last call to GetElapsedTime
     //-----------------------------------------------------------------------------
     double GetElapsedTime( void );
+
+    
+    //-----------------------------------------------------------------------------
+    //  GetRunningTime
+    //  Returns the time (in seconds) since the last call to Reset
+    //-----------------------------------------------------------------------------
+    double GetRunningTime( void );
 
 private:
     float64     m_fFrequency;

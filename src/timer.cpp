@@ -2,7 +2,7 @@
 File:           timer.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/8/2011 7:40:39 PM
+Modified:       4/8/2011 10:31:00 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "timer.h"
@@ -17,7 +17,7 @@ CTimer::CTimer()
     : m_fFrequency( 0.0 )
     , m_fCurrTime( 0 )
     , m_fPrevTime( 0 )
-    , m_fStartTime(  )
+    , m_fStartTime( 0 )
 {        
 }
 
@@ -58,6 +58,23 @@ double CTimer::GetElapsedTime( void )
     m_fCurrTime = mach_absolute_time();
     dTime = (m_fCurrTime - m_fPrevTime) * m_fFrequency;
     m_fPrevTime = m_fCurrTime;
+#endif
+    return dTime;
+}
+
+//-----------------------------------------------------------------------------
+//  GetRunningTime
+//  Returns the time (in seconds) since the last call to Reset
+//-----------------------------------------------------------------------------
+double CTimer::GetRunningTime( void )
+{
+    float64 dTime;
+#ifdef OS_WINDOWS
+    QueryPerformanceCounter( (LARGE_INTEGER*)&m_fCurrTime );
+    dTime = ( m_fCurrTime - m_fStartTime ) * m_fFrequency;
+#else
+    m_fCurrTime = mach_absolute_time();
+    dTime = (m_fCurrTime - m_fStartTime) * m_fFrequency;
 #endif
     return dTime;
 }

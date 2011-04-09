@@ -29,6 +29,9 @@
     <ClCompile Include="..\timer.cpp" />
     <ClCompile Include="..\atomic.cpp" />
     <ClCompile Include="..\vectormath.cpp" />
+    <ClCompile Include="..\System.cpp" />
+    <ClCompile Include="..\TaskManager.cpp" />
+    <ClCompile Include="..\Thread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\todo.h" />
@@ -40,5 +43,8 @@
     <ClInclude Include="..\timer.h" />
     <ClInclude Include="..\atomic.h" />
     <ClInclude Include="..\vectormath.h" />
+    <ClInclude Include="..\System.h" />
+    <ClInclude Include="..\TaskManager.h" />
+    <ClInclude Include="..\Thread.h" />
   </ItemGroup>
 </Project>

@@ -2,13 +2,10 @@
 File:           vectormath.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/8/2011 9:59:46 PM
+Modified:       4/8/2011 10:22:15 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "vectormath.h"
-
-namespace Riot
-{
 
 //-----------------------------------------------------------------------------
 //  Matrix3
@@ -547,6 +544,4 @@ RQuaternion Lerp( const RQuaternion& a, const RQuaternion& b, float t )
 RQuaternion Slerp( const RQuaternion& a, const RQuaternion& b, float t )
 {
     return Lerp( a, b, t );
-}
-
 }
