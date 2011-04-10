@@ -59,20 +59,16 @@ namespace System
 #elif defined( OS_LINUX )
         gs_nNumHardwareThreads = sysconf( _SC_NPROCESSORS_ONLN );
 #elif defined( OS_OSX )
-        int mib[4];
-        size_t len = sizeof(gs_nNumHardwareThreads); 
+        int     mib[] = { CTL_HW, HW_AVAILCPU }; // Interested in availible CPUs
+        size_t  nLen = sizeof( gs_nNumHardwareThreads );
 
-        /* set the mib for hw.ncpu */
-        mib[0] = CTL_HW;
-        mib[1] = HW_AVAILCPU;  // alternatively, try HW_NCPU;
-
-        /* get the number of CPUs from the system */
-        sysctl(mib, 2, &gs_nNumHardwareThreads, &len, NULL, 0);
+        // Reads system info
+        sysctl(mib, ARRAY_LENGTH(mib), &gs_nNumHardwareThreads, &nLen, NULL, 0);
 
         if( gs_nNumHardwareThreads < 1 ) 
-        {
-             mib[1] = HW_NCPU;
-             sysctl( mib, 2, &gs_nNumHardwareThreads, &len, NULL, 0 );
+        {   // HW_AVAILCPU might have been the problem, try HW_NCPU
+            mib[1] = HW_NCPU;
+            sysctl(mib, ARRAY_LENGTH(mib), &gs_nNumHardwareThreads, &nLen, NULL, 0);
 
              if( gs_nNumHardwareThreads < 1 )
              {

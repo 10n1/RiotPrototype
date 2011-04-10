@@ -2,7 +2,7 @@
 File:           main.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/9/2011 8:17:25 PM
+Modified:       4/9/2011 8:48:11 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "common.h"
@@ -28,7 +28,6 @@ int main( int argc, char* argv[] )
     gTaskManager.Initialize();
 
     int x = sizeof( bool );
-
 
     printf("%f seconds\n", System::GetRunningTime());
 
