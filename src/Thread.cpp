@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 4:02:07 AM
+Modified:       4/10/2011 4:18:58 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -207,6 +207,7 @@ bool CThread::GiveUpWork( CThread* pIdleThread )
 //-----------------------------------------------------------------------------
 bool CThread::StealTasks( void )
 {
+    // Using this thread counter so we're not always trying to grab from the same thread
     static uint nThread = 0;
     nThread++;
     
@@ -214,7 +215,7 @@ bool CThread::StealTasks( void )
     {
         CThread* pThread = &m_pTaskManager->m_Thread[ (i + nThread) % m_pTaskManager->m_nNumThreads];
 
-        if( pThread == this ) continue; // Don't steal from yourself
+        if( pThread == this ) continue; // Don't steal from yourself, that's silly
 
         if( pThread->GiveUpWork( this ) )
         {
@@ -228,6 +229,7 @@ bool CThread::StealTasks( void )
             return true;
         }
     }
+
 
     return false;
 }
