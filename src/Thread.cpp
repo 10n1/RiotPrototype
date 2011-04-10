@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 11:50:55 PM
+Modified:       4/10/2011 12:55:51 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -48,7 +48,7 @@ void CThread::Start( CTaskManager* pTaskManager )
 {
     m_pTaskManager      = pTaskManager;
     m_bFinished         = false;
-    m_pSystemMutex      = System::CreateMutex();
+    m_pSystemMutex      = System::CreateRiotMutex();
     m_pWakeCondition    = System::CreateWaitCondition();
     
     m_pThread = System::SpawnThread( &_ThreadProc, this );

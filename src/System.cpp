@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 11:51:47 PM
+Modified:       4/10/2011 12:56:05 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -139,10 +139,10 @@ namespace System
     }
     
     //-----------------------------------------------------------------------------
-    //  SemaphoreCreate
+    //  CreateRiotSemaphore
     //  Creates a semaphore
     //-----------------------------------------------------------------------------
-    semaphore_t SemaphoreCreate( sint nInitialValue )
+    semaphore_t CreateRiotSemaphore( sint nInitialValue )
     {
         semaphore_t pSemaphore;
 #ifdef OS_WINDOWS
@@ -196,14 +196,14 @@ namespace System
     
     
     //-----------------------------------------------------------------------------
-    //  CreateMutex
+    //  CreateRiotMutex
     //  Creates a mutex
     //-----------------------------------------------------------------------------
-    mutex_t CreateMutex( void )
+    mutex_t CreateRiotMutex( void )
     {
         mutex_t pMutex;
 #ifdef OS_WINDOWS
-        ::WaitForSingleObject( *pSem, INFINITE );  
+        pMutex = ::CreateMutex( NULL, false, NULL ); 
 #else
         ::pthread_mutex_init(&pMutex, NULL);
 #endif        
@@ -217,8 +217,8 @@ namespace System
     wait_condition_t CreateWaitCondition( void )
     {
         wait_condition_t pCondition;
-#ifdef OS_WINDOWS
-        ::WaitForSingleObject( *pSem, INFINITE );  
+#ifdef OS_WINDOWS 
+        pCondition = ::CreateEvent( NULL, false, false, NULL );
 #else
         ::pthread_cond_init( &pCondition, NULL);
 #endif        
@@ -233,7 +233,7 @@ namespace System
     void WaitForCondition( wait_condition_t* pCondition, mutex_t* pMutex )
     {
 #ifdef OS_WINDOWS
-        ::WaitForSingleObject( *pSem, INFINITE );  
+        ::WaitForSingleObject( *pCondition, INFINITE );  
 #else
         ::pthread_cond_wait(pCondition, pMutex);
 #endif        
@@ -246,6 +246,8 @@ namespace System
     void SignalCondition( wait_condition_t* pCondition )
     {
 #ifdef OS_WINDOWS
+        ::ResetEvent( *pCondition );
+        ::SetEvent( *pCondition );
 #else
         ::pthread_cond_signal(pCondition);
 #endif

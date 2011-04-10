@@ -2,13 +2,19 @@
 File:           main.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/9/2011 11:47:28 PM
+Modified:       4/10/2011 12:56:33 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "common.h"
 #include <stdlib.h> // For atexit on UNIX systems
 #include <stdio.h>
+
+#ifndef OS_WINDOWS
 #include <unistd.h>
+#else
+#include <Windows.h>
+#define sleep( x ) Sleep( x * 1000 )
+#endif
 
 #include "System.h"
 #include "TaskManager.h"
