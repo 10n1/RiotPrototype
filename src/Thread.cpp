@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 6:13:03 PM
+Modified:       4/9/2011 8:47:23 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -46,9 +46,9 @@ System::thread_return_t CThread::_ThreadProc( void* pData )
 //-----------------------------------------------------------------------------
 void CThread::Start( CTaskManager* pTaskManager )
 {
-    m_nThreadId = 0;
-    m_pTaskManager = pTaskManager;
-    m_bFinished = false;
+    m_pTaskManager  = pTaskManager;
+    m_bFinished     = false;
+    m_nNumTasks     = 0;
 
     m_pThread = System::ThreadSpawn( &_ThreadProc, this );
 }
@@ -67,18 +67,24 @@ void CThread::Destroy( void )
 //-----------------------------------------------------------------------------
 void CThread::ThreadProc( void )
 {
-    for( ;; )
+    do
     {
+        // Work if theres work to be done
+        while( m_pTaskManager->m_pMainTaskCompletion )
+        {
+            DoWork( NULL );
+
+            // If the task manager is shutting down, exit
+            if( m_pTaskManager->m_bShutdown )
+                break;
+        }
+        
         // Idle the thread
         Idle();
 
-        // If the task manager is shutting down, exit
-        if( m_pTaskManager->m_bShutdown )
-            break;
-    }
+    } while( !m_pTaskManager->m_bShutdown );
 
     m_bFinished = true;
-
 }
 
 //-----------------------------------------------------------------------------
@@ -103,4 +109,45 @@ void CThread::MakeMainThread( CTaskManager* pTaskManager )
     m_bFinished = false;
 }
 
+
+bool CThread::PushTask(CInternalTask* pTask)
+{
+    return true;
+}
+
+bool CThread::_PushTask(CInternalTask* pTask)
+{
+    return true;
+}
+
+bool CThread::PopTask(CInternalTask** ppTask)
+{
+    return true;
+}
+
+bool CThread::StealTasks()
+{
+    return true;
+}
+
+bool CThread::GiveUpSomeWork(CThread* pIdleThread)
+{
+    return true;
+}
+
+void CThread::WorkUntilDone(CTaskCompletion* pCard)
+{
+}
+
+void CThread::DoWork(CTaskCompletion* pCard)
+{
+    do
+    {
+        CInternalTask*  pTask;
+
+    } while ( StealTasks() );
+}
+
+
 } // namespace Riot
+    

@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 6:29:34 PM
+Modified:       4/9/2011 8:24:16 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -80,6 +80,8 @@ namespace System
              }
         }
 #endif // #ifdef OS_WINDOWS
+        if( gs_nNumHardwareThreads > MAX_THREADS )
+            gs_nNumHardwareThreads = MAX_THREADS;
 
 #endif // #if SINGLETHREADED
     }

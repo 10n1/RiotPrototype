@@ -2,7 +2,7 @@
 File:           main.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/9/2011 6:10:46 PM
+Modified:       4/9/2011 8:17:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "common.h"
@@ -11,8 +11,6 @@ Modified by:    Kyle Weicht
 
 #include "System.h"
 #include "TaskManager.h"
-
-#include <unistd.h>
 
 using namespace Riot;
 
@@ -29,8 +27,8 @@ int main( int argc, char* argv[] )
     System::Initialize();
     gTaskManager.Initialize();
 
-    int x = 83;
-    sleep( 100 );
+    int x = sizeof( bool );
+
 
     printf("%f seconds\n", System::GetRunningTime());
 

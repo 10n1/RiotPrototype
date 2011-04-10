@@ -3,7 +3,7 @@ File:           types.h
 Purpose:        Defining basic types
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/9/2011 6:29:34 PM
+Modified:       4/9/2011 8:17:26 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TYPES_H_

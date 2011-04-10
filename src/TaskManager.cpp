@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 6:29:34 PM
+Modified:       4/9/2011 8:24:17 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -29,8 +29,9 @@ CTaskManager::~CTaskManager()
 //-----------------------------------------------------------------------------
 void CTaskManager::Initialize( void )
 {
-    m_bShutdown = false;
-    m_bThreadsIdle = false;
+    m_bShutdown             = false;
+    m_bThreadsIdle          = false;
+    m_pMainTaskCompletion   = NULL;
 
     //  Get the number of hardware threads
     m_nNumActiveThreads = System::GetHardwareThreadCount();
@@ -45,6 +46,7 @@ void CTaskManager::Initialize( void )
     // Start up all other threads
     for( uint i = 1; i < m_nNumActiveThreads; ++i )
     {
+        m_Thread[i].m_nThreadId = i;
         m_Thread[i].Start( this );
     }
 }
@@ -76,7 +78,7 @@ void CTaskManager::Shutdown( void )
 void CTaskManager::WakeThreads( void )
 {
     m_bThreadsIdle = false;
-    for( uint i = 0; i < m_nNumActiveThreads-1; ++i )
+    for( uint i = 1; i < m_nNumActiveThreads; ++i )
     {
         System::SemaphoreRelease( &m_pWake );
     }
@@ -88,7 +90,7 @@ void CTaskManager::WakeThreads( void )
 //-----------------------------------------------------------------------------
 void CTaskManager::WaitForThreads( void )
 {
-    for( uint i = 0; i < m_nNumActiveThreads-1; ++i )
+    for( uint i = 1; i < m_nNumActiveThreads; ++i )
     {
         System::WaitForSemaphore( &m_pSleep );
     }
