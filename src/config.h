@@ -3,7 +3,7 @@ File:           config.h
 Purpose:        Includes platform and build configurations
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/9/2011 11:25:35 PM
+Modified:       4/10/2011 2:24:39 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CONFIG_H_
@@ -93,9 +93,10 @@ Modified by:    Kyle Weicht
 //-----------------------------------------------------------------------------
 //  Build configuration
 //-----------------------------------------------------------------------------
-#define SINGLETHREADED                  0
+#define MULTITHREADED                   1
 #define MAX_THREADS                     32
 #define MAX_TASKS_PER_THREAD            2048
+#define MAX_TASKS                       1024
 
 #define RIOT_ALIGN_MEMORY               1
 #define RIOT_USE_INTRINSICS             1

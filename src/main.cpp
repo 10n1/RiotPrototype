@@ -2,7 +2,7 @@
 File:           main.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/10/2011 12:56:33 AM
+Modified:       4/10/2011 2:26:13 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "common.h"
@@ -24,6 +24,21 @@ using namespace Riot;
 
 CTaskManager    gTaskManager;
 
+void TestFunc( void* pData, uint nThreadId, uint nStart, uint nCount )
+{
+    static CMutex lock;
+
+
+    lock.Lock();
+    printf( "Thread %d\tcount %d:\t", nThreadId, nCount );
+    for( uint i = nStart; i < nStart+nCount; ++i )
+    {
+        printf( "%d ", i );
+    }
+    printf( "\n" );
+    lock.Unlock();
+}
+
 int main( int argc, char* argv[] )
 {
     //////////////////////////////////////////
@@ -38,7 +53,8 @@ int main( int argc, char* argv[] )
     CTimer timer;
     timer.Reset();
     
-    sleep( 10 );
+    task_handle_t nTaskHandle = gTaskManager.PushTask( &TestFunc, 0, 1024, 9 );
+    gTaskManager.WaitForCompletion( nTaskHandle );
 
 
     float fTime = timer.GetElapsedTime();

@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 12:56:05 AM
+Modified:       4/10/2011 2:02:49 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -48,7 +48,7 @@ namespace System
         gs_GlobalTimer.Reset();
         
         // Calculate the number of hardware threads
-#if SINGLETHREADED
+#if (MULTITHREADED == 0)
         gs_nNumHardwareThreads = 1;
 #else
 
@@ -225,7 +225,6 @@ namespace System
         return pCondition;
     }
     
-#include <stdio.h>
     //-----------------------------------------------------------------------------
     //  WaitForCondition
     //  Waits for the specified condition
@@ -233,7 +232,8 @@ namespace System
     void WaitForCondition( wait_condition_t* pCondition, mutex_t* pMutex )
     {
 #ifdef OS_WINDOWS
-        ::WaitForSingleObject( *pCondition, INFINITE );  
+        ::WaitForSingleObject( *pCondition, INFINITE );
+        ::ResetEvent( *pCondition ); // It was just signaled, turn it back off
 #else
         ::pthread_cond_wait(pCondition, pMutex);
 #endif        
@@ -246,7 +246,6 @@ namespace System
     void SignalCondition( wait_condition_t* pCondition )
     {
 #ifdef OS_WINDOWS
-        ::ResetEvent( *pCondition );
         ::SetEvent( *pCondition );
 #else
         ::pthread_cond_signal(pCondition);

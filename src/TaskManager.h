@@ -3,7 +3,7 @@ File:           TaskManager.h
 Purpose:        Task manager
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 11:46:57 PM
+Modified:       4/10/2011 2:09:25 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TASKMANAGER_H_
@@ -14,9 +14,10 @@ Modified by:    Kyle Weicht
 namespace Riot
 {
 
-
 class CTaskManager
 {
+private:
+
     friend class CThread;
 public:
     /***************************************\
@@ -42,13 +43,13 @@ public:
     //  PushTask
     //  Adds the task to the queue
     //-----------------------------------------------------------------------------
-    void PushTask( void );
+    task_handle_t PushTask( TaskFunc* pFunc, void* pData, uint nCount, uint nChunkSize = 1 );
     
     //-----------------------------------------------------------------------------
     //  WaitForCompletion
     //  Works until the completion is done
     //-----------------------------------------------------------------------------
-    void WaitForCompletion( void );
+    void WaitForCompletion( task_handle_t nHandle );
 
 private:
     //-----------------------------------------------------------------------------
@@ -67,8 +68,10 @@ private:
     /***************************************\
     | class members                         |
     \***************************************/
-    CThread                     m_Thread[ MAX_THREADS ];
-    System::semaphore_t         m_pSleep;
+    volatile sint       m_nTaskCompletion[ MAX_TASKS ];
+    CThread             m_Thread[ MAX_THREADS ];
+    uint                m_nCurrentTask;
+    System::semaphore_t m_pSleep;
 
     uint    m_nNumThreads;
     bool    m_bShutdown;

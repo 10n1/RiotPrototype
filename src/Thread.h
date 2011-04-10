@@ -3,7 +3,7 @@ File:           Thread.h
 Purpose:        Interface for hardware threads
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 11:50:54 PM
+Modified:       4/10/2011 2:23:09 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _THREAD_H_
@@ -12,7 +12,23 @@ Modified by:    Kyle Weicht
 #include "System.h"
 
 namespace Riot
-{
+{    
+    
+    //////////////////////////////////////////
+    //  Typedef for user functions
+    typedef void (TaskFunc)( void* pData, uint nThreadId, uint nStart, uint nCount );
+    typedef uint    task_handle_t;
+    static const    task_handle_t INVALID_HANDLE = 0xFFFFFFFF;
+
+    // Task definition
+    struct TTask
+    {
+        TaskFunc*           pFunc;
+        void*               pData;
+        uint                nStart;
+        uint                nCount;
+        volatile sint*      pCompletion;
+    };
 
 class CMutex
 {
@@ -118,8 +134,7 @@ public:
     //  Start
     //  Starts the thread, running the input function, then returning
     //-----------------------------------------------------------------------------
-    void Start( CTaskManager* pTaskManager );
-  
+    void Start( CTaskManager* pTaskManager );  
 
     //-----------------------------------------------------------------------------
     //  ThreadProc
@@ -144,19 +159,39 @@ public:
     //  Idles the thread until it gets work
     //-----------------------------------------------------------------------------
     void Idle( void );
+
+    //-----------------------------------------------------------------------------
+    //  Wake
+    //  Wakes the thread up so it can get to work
+    //-----------------------------------------------------------------------------
+    void Wake( void );
+    
+    //-----------------------------------------------------------------------------
+    //  PushTask
+    //  Pushes a task onto the top of the task queue
+    //-----------------------------------------------------------------------------
+    void PushTask( TTask& task );
+    
+    //-----------------------------------------------------------------------------
+    //  PopTask
+    //  Pops a task off the queue
+    //-----------------------------------------------------------------------------
+    bool PopTask( TTask* task );
     
 private:
     /***************************************\
     | class members                         |
      \***************************************/
+    TTask                       m_pTasks[ MAX_TASKS_PER_THREAD ];
     System::thread_handle_t     m_pThread;
     System::wait_condition_t    m_pWakeCondition;
     System::mutex_t             m_pSystemMutex;
     CTaskManager*               m_pTaskManager;
 
-    CMutex                  m_TaskMutex;
-    uint                    m_nThreadId;
-    bool                    m_bFinished;
+    CMutex      m_TaskMutex;
+    uint        m_nThreadId;
+    uint        m_nNumTasks;
+    bool        m_bFinished;
 };
 
 } // namespace Riot
