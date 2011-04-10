@@ -24,9 +24,10 @@ using namespace Riot;
 
 CTaskManager    gTaskManager;
 
+static CMutex lock;
+
 void TestFunc( void* pData, uint nThreadId, uint nStart, uint nCount )
 {
-    static CMutex lock;
 
 
     lock.Lock();
@@ -53,7 +54,7 @@ int main( int argc, char* argv[] )
     CTimer timer;
     timer.Reset();
     
-    task_handle_t nTaskHandle = gTaskManager.PushTask( &TestFunc, 0, 1024, 9 );
+    task_handle_t nTaskHandle = gTaskManager.PushTask( &TestFunc, 0, 1024, 1 );
     gTaskManager.WaitForCompletion( nTaskHandle );
 
 

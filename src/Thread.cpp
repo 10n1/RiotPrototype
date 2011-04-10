@@ -8,8 +8,6 @@ Modified by:    Kyle Weicht
 #include "Thread.h"
 #include "TaskManager.h"
 
-#include <Windows.h>
-
 namespace Riot
 {
 
