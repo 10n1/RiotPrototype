@@ -2,7 +2,7 @@
 File:           timer.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/8/2011 10:31:00 PM
+Modified:       4/9/2011 6:10:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "timer.h"
@@ -12,6 +12,9 @@ Modified by:    Kyle Weicht
 #else
 #include <mach/mach_time.h>
 #endif
+
+namespace Riot
+{
 
 CTimer::CTimer()
     : m_fFrequency( 0.0 )
@@ -78,3 +81,5 @@ double CTimer::GetRunningTime( void )
 #endif
     return dTime;
 }
+
+} // namespace Riot

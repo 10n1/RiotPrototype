@@ -3,7 +3,7 @@ File:           Thread.h
 Purpose:        Interface for hardware threads
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/8/2011 11:44:48 PM
+Modified:       4/9/2011 6:10:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _THREAD_H_
@@ -11,13 +11,16 @@ Modified by:    Kyle Weicht
 #include "common.h"
 #include "System.h"
 
-//////////////////////////////////////////
-//  All user functions have this signature
-typedef void (*WorkThread)(void*);
+namespace Riot
+{
+
+class CTaskManager;
 
 class CThread
 {
-public:
+    friend class CTaskManager;
+
+private:
     // CThread constructor
     CThread();
 
@@ -31,28 +34,48 @@ public:
     //  Start
     //  Starts the thread, running the input function, then returning
     //-----------------------------------------------------------------------------
-    void Start( WorkThread pFunc, void* pData );
+    void Start( CTaskManager* pTaskManager );
+    
+    //-----------------------------------------------------------------------------
+    //  Destroy
+    //  Destroys the thread
+    //-----------------------------------------------------------------------------
+    void Destroy( void );
 
+    //-----------------------------------------------------------------------------
+    //  ThreadProc
+    //  The thread's main loop
+    //-----------------------------------------------------------------------------
+    void ThreadProc( void );
+
+    //-----------------------------------------------------------------------------
+    //  MakeMainThread
+    //  Attaches this CThread to the main program thread
+    //-----------------------------------------------------------------------------
+    void MakeMainThread( CTaskManager* pTaskManager );
+    
     //-----------------------------------------------------------------------------
     //  _ThreadProc
     //  The most basic OS thread function
     //-----------------------------------------------------------------------------
-#ifdef OS_WINDOWS
-    static unsigned long _ThreadProc( void* pData );
-#else
-    static void* _ThreadProc( void* pData );
-#endif
+    static System::thread_return_t _ThreadProc( void* pData );
 
+        //-----------------------------------------------------------------------------
+    //  Idle
+    //  Idles the thread until it gets work
+    //-----------------------------------------------------------------------------
+    void Idle( void );
+    
 private:
     /***************************************\
     | class members                         |
     \***************************************/
-    handle      m_pThread;
-    WorkThread  m_pFunc;
-    void*       m_pData;
-    uint        m_nThreadId;
+    System::thread_handle   m_pThread;
+    CTaskManager*           m_pTaskManager;
+    uint                    m_nThreadId;
+    bool                    m_bFinished;
 };
 
-
+} // namespace Riot
 
 #endif // #ifndef _THREAD_H_

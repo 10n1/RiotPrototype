@@ -2,7 +2,7 @@
 File:           main.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/8/2011 11:41:43 PM
+Modified:       4/9/2011 6:10:46 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "common.h"
@@ -12,10 +12,9 @@ Modified by:    Kyle Weicht
 #include "System.h"
 #include "TaskManager.h"
 
-void TestFunc( void* pVoid )
-{
-    printf( "%d thread time!\n", *((int*)pVoid) );
-}
+using namespace Riot;
+
+CTaskManager    gTaskManager;
 
 int main( int argc, char* argv[] )
 {
@@ -26,16 +25,14 @@ int main( int argc, char* argv[] )
     //////////////////////////////////////////
     // Initialize sub systems
     System::Initialize();
-    CTaskManager::Initialize();
+    gTaskManager.Initialize();
 
     int x = 83;
-    CThread thread;
-    thread.Start( TestFunc, &x );
 
 
     //////////////////////////////////////////
     //  Clean up subsystems
-    CTaskManager::Shutdown();
+    gTaskManager.Shutdown();
     System::Shutdown();
 
     return 0;

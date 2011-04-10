@@ -4,7 +4,7 @@ Purpose:        Platform independent atomic operations
                 (InterlockedIncrement, etc)
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/8/2011 12:45:41 PM
+Modified:       4/9/2011 6:10:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ATOMIC_H_
@@ -12,18 +12,27 @@ Modified by:    Kyle Weicht
 #include "types.h"
 #include "config.h"
 
-//-----------------------------------------------------------------------------
-uint AtomicIncrement( volatile uint* pValue );
-uint AtomicDecrement( volatile uint* pValue );
-uint64 AtomicIncrement64( volatile uint64* pValue );
-uint64 AtomicDecrement64( volatile uint64* pValue );
+namespace Riot
+{
 
 //-----------------------------------------------------------------------------
-uint AtomicAdd( volatile uint* pValue, uint nValue );
-uint64 AtomicAdd64( volatile uint64* pValue, uint nValue );
+sint AtomicIncrement( volatile sint* pValue );
+sint AtomicDecrement( volatile sint* pValue );
+sint64 AtomicIncrement64( volatile sint64* pValue );
+sint64 AtomicDecrement64( volatile sint64* pValue );
 
 //-----------------------------------------------------------------------------
-uint AtomicOr( volatile uint* pValue, uint nMask );
-uint AtomicAnd( volatile uint* pValue, uint nMask );
+sint AtomicAdd( volatile sint* pValue, sint nValue );
+sint64 AtomicAdd64( volatile sint64* pValue, sint64 nValue );
+
+//-----------------------------------------------------------------------------
+sint AtomicOr( volatile sint* pValue, sint nMask );
+sint AtomicAnd( volatile sint* pValue, sint nMask );
+
+//-----------------------------------------------------------------------------
+sint AtomicExchange( volatile sint* pValue, sint nNewValue );
+sint AtomicCompareAndSwap( volatile sint* pValue, sint nNewValue, sint nComparison );
+
+} // namespace Riot
 
 #endif // #ifndef _ATOMIC_H_

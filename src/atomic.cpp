@@ -2,7 +2,7 @@
 File:           atomic.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/8/2011 12:45:40 PM
+Modified:       4/9/2011 6:10:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "atomic.h"
@@ -14,8 +14,11 @@ Modified by:    Kyle Weicht
 #else
 #endif
 
+namespace Riot
+{
+
 //-----------------------------------------------------------------------------
-uint AtomicIncrement( volatile uint* pValue )
+sint AtomicIncrement( volatile sint* pValue )
 {
 #ifdef OS_WINDOWS
     return _InterlockedIncrement( (volatile long*)pValue );
@@ -23,7 +26,7 @@ uint AtomicIncrement( volatile uint* pValue )
     return OSAtomicIncrement32( pValue );
 #endif // #ifdef OS_WINDOWS
 }
-uint AtomicDecrement( volatile uint* pValue )
+sint AtomicDecrement( volatile sint* pValue )
 {
 #ifdef OS_WINDOWS
     return _InterlockedDecrement( (volatile long*)pValue );
@@ -31,7 +34,7 @@ uint AtomicDecrement( volatile uint* pValue )
     return OSAtomicDecrement32( pValue );
 #endif // #ifdef OS_WINDOWS
 }
-uint64 AtomicIncrement64( volatile uint64* pValue )
+sint64 AtomicIncrement64( volatile sint64* pValue )
 {
 #ifdef OS_WINDOWS
     return _InterlockedIncrement64( (volatile __int64*)pValue );
@@ -39,7 +42,7 @@ uint64 AtomicIncrement64( volatile uint64* pValue )
     return OSAtomicIncrement64( pValue );
 #endif // #ifdef OS_WINDOWS
 }
-uint64 AtomicDecrement64( volatile uint64* pValue )
+sint64 AtomicDecrement64( volatile sint64* pValue )
 {
 #ifdef OS_WINDOWS
     return _InterlockedDecrement64( (volatile __int64*)pValue );
@@ -49,7 +52,7 @@ uint64 AtomicDecrement64( volatile uint64* pValue )
 }
 
 //-----------------------------------------------------------------------------
-uint AtomicAdd( volatile uint* pValue, uint nValue )
+sint AtomicAdd( volatile sint* pValue, sint nValue )
 {
 #ifdef OS_WINDOWS
     return _InterlockedExchangeAdd( (volatile long*)pValue, nValue );
@@ -57,7 +60,7 @@ uint AtomicAdd( volatile uint* pValue, uint nValue )
     return OSAtomicAdd32( nValue, pValue );
 #endif // #ifdef OS_WINDOWS
 }
-uint64 AtomicAdd64( volatile uint64* pValue, uint nValue )
+sint64 AtomicAdd64( volatile sint64* pValue, sint64 nValue )
 {
 #ifdef OS_WINDOWS
     return _InterlockedExchangeAdd64( (volatile __int64*)pValue, nValue );
@@ -68,7 +71,7 @@ uint64 AtomicAdd64( volatile uint64* pValue, uint nValue )
 
 
 //-----------------------------------------------------------------------------
-uint AtomicOr( volatile uint* pValue, uint nMask )
+sint AtomicOr( volatile sint* pValue, sint nMask )
 {
 #ifdef OS_WINDOWS
     return _InterlockedOr( (volatile long*)pValue, nMask );
@@ -76,7 +79,7 @@ uint AtomicOr( volatile uint* pValue, uint nMask )
     return OSAtomicOr32( nMask, pValue );
 #endif // #ifdef OS_WINDOWS
 }
-uint AtomicAnd( volatile uint* pValue, uint nMask )
+sint AtomicAnd( volatile sint* pValue, sint nMask )
 {
 #ifdef OS_WINDOWS
     return _InterlockedAnd( (volatile long*)pValue, nMask );
@@ -84,3 +87,30 @@ uint AtomicAnd( volatile uint* pValue, uint nMask )
     return OSAtomicAnd32( nMask, pValue );
 #endif // #ifdef OS_WINDOWS
 }
+
+
+//-----------------------------------------------------------------------------
+sint AtomicExchange( volatile sint* pValue, sint nNewValue )
+{    
+#ifdef OS_WINDOWS
+    return _InterlockedExchange( (volatile long*)pValue, nNewValue );
+#else
+    sint nOrigValue = *pValue;
+    OSAtomicCompareAndSwap32( nOrigValue, nNewValue, pValue );
+    return nOrigValue;
+#endif // #ifdef OS_WINDOWS
+}
+
+sint AtomicCompareAndSwap( volatile sint* pValue, sint nNewValue, sint nComparison )
+{
+#ifdef OS_WINDOWS
+    return _InterlockedCompareExchange( (volatile long*)pValue, nNewValue, nComparison );
+#else
+    sint nOrigValue = *pValue;
+    OSAtomicCompareAndSwap32( nComparison, nNewValue, pValue );
+    return nOrigValue;
+#endif // #ifdef OS_WINDOWS
+
+}
+
+} // namespace Riot

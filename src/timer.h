@@ -3,14 +3,16 @@ File:           timer.h
 Purpose:        High performance, high-resolution timer
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/8/2011 10:26:35 PM
+Modified:       4/9/2011 6:10:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TIMER_H_
 #define _TIMER_H_
 #include "common.h"
 
-
+namespace Riot
+{
+    
 class CTimer
 {
 public:
@@ -41,6 +43,8 @@ private:
     uint64      m_fCurrTime;
     uint64      m_fStartTime;
 };
+
+} // namespace Riot
 
 
 #endif // #ifndef _TIMER_H_
