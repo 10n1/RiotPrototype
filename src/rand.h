@@ -12,6 +12,8 @@ Modified by:    Kyle Weicht
 #include "types.h"
 #include "config.h"
 
+#if 0
+
 namespace Riot
 {
 
@@ -99,5 +101,7 @@ inline uint Rand() { return gs_RandomNumberGenerator.Rand(); }
 //-----------------------------------------------------------------------------
 
 }
+
+#endif
 
 #endif // #ifndef _RAND_H_

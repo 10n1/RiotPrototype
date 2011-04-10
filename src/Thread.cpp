@@ -49,6 +49,7 @@ void CThread::Start( CTaskManager* pTaskManager )
     m_pTaskManager  = pTaskManager;
     m_bFinished     = false;
     m_nNumTasks     = 0;
+    m_pCurrentCompletion = NULL;
 
     m_pThread = System::ThreadSpawn( &_ThreadProc, this );
 }
@@ -158,20 +159,20 @@ bool CThread::_PushTask(CInternalTask* pTask)
         }
     }
 
-    // Lock our list to make sure it doesn't change
-    m_TaskMutex.Lock();
-    // make sure we aren't full already
-    if( m_nNumTasks >= MAX_TASKS_PER_THREAD )
     {
-        m_TaskMutex.Unlock();
-        return false;
+        // Lock our list to make sure it doesn't change
+        CScopedMutex lock( &m_TaskMutex );
+        // make sure we aren't full already
+        if( m_nNumTasks >= MAX_TASKS_PER_THREAD )
+        {
+            return false;
+        }
+        
+        // Add the task to our list
+        pTask->m_pCompletion->MarkBusy();
+        m_pTasks[ m_nNumTasks++ ] = pTask;
     }
-
-    // Add the task to our list
-    pTask->m_pCompletion->MarkBusy();
-    m_pTasks[ m_nNumTasks++ ] = pTask;
-    m_TaskMutex.Unlock();
-
+    
     if( m_pTaskManager->m_pMainTaskCompletion == NULL )
     {
         m_pTaskManager->m_pMainTaskCompletion = pTask->m_pCompletion;
@@ -183,7 +184,7 @@ bool CThread::_PushTask(CInternalTask* pTask)
 
 bool CThread::PopTask(CInternalTask** ppTask)
 {
-    CScopedMutex mutex( &m_TaskMutex, true );
+    CScopedMutex mutex( &m_TaskMutex );
     
     if( m_nNumTasks == 0 )
     {
@@ -278,7 +279,7 @@ bool CThread::GiveUpSomeWork(CThread* pIdleThread)
         }
 
         // Couldn't be split
-        //return false;
+        return false;
     }
 
     // Give the idle thread half of the tasks
@@ -297,7 +298,7 @@ bool CThread::GiveUpSomeWork(CThread* pIdleThread)
     pIdleThread->m_nNumTasks = nGrabCount;
 
     // Unlock the idle thread so it can start working
-    idleMutex.Unlock();
+    //idleMutex.Unlock();
 
     // Move our tasks down
     ppNewTasks = m_pTasks;

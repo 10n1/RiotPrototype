@@ -8,3 +8,5 @@ obj
 *.DS_Store
 copy.bat
 *.exe
+*.xcbkptlist
+*.xcuserstate

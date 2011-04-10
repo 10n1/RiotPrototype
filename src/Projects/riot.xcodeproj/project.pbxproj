@@ -19,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3602086A13517E2C007042D7 /* rand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rand.h; path = ../rand.h; sourceTree = "<group>"; };
 		3633204C13353BE90034C250 /* riot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = riot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3633205013353BE90034C250 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		3633205313353BE90034C250 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -62,6 +63,7 @@
 		3633204113353BE90034C250 = {
 			isa = PBXGroup;
 			children = (
+				3602086A13517E2C007042D7 /* rand.h */,
 				36DBB7C7135140F500712EE7 /* atomic.cpp */,
 				36DBB7C8135140F500712EE7 /* atomic.h */,
 				36DBB7C9135140F500712EE7 /* System.cpp */,

@@ -17,7 +17,9 @@ using namespace Riot;
 
 CTaskManager    gTaskManager;
 
-#define NUM_TASKS 1024*32
+#define NUM_TASKS 1024
+#define NUM_LOOPS 32
+#define TOTAL_WORK (NUM_TASKS*NUM_LOOPS)
 
 uint            nTest[ NUM_TASKS ];
 volatile sint   nTaskId = 0;
@@ -38,9 +40,9 @@ public:
     {
         nTest[ nTaskId ] = pThread->GetThreadId();
         
-        for( uint i = 0; i < 1024; ++i )
+        for( uint i = 0; i < TOTAL_WORK; ++i )
         {
-            pMatricesA[i].r1.x = i;
+            pMatricesA[nTaskId].r1.x = i;
             pMatricesC[ nTaskId ] = pMatricesA[nTaskId] * pMatricesB[nTaskId];
         }
         return true;

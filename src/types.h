@@ -12,8 +12,8 @@ Modified by:    Kyle Weicht
 //-----------------------------------------------------------------------------
 //    Types
 //-----------------------------------------------------------------------------
-#include <limits.h>
 #if defined( WIN32 ) || defined( WIN64 ) // TODO: Add a RIOT_WINDOWS define?
+#include <limits.h>
 typedef unsigned __int8  byte;
 typedef unsigned __int8  uint8;
 typedef signed   __int8  sint8;
