@@ -29,6 +29,7 @@
     <ClCompile Include="..\Thread.cpp" />
     <ClCompile Include="..\timer.cpp" />
     <ClCompile Include="..\vectormath.cpp" />
+    <ClCompile Include="MessageDispatcher.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\assert.h" />

@@ -3,7 +3,7 @@ File:           types.h
 Purpose:        Defining basic types
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/10/2011 12:42:34 PM
+Modified:       4/10/2011 3:15:36 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TYPES_H_
@@ -103,11 +103,11 @@ typedef uint32 nativeuint;
 namespace Riot
 {
 
-enum Result
-{
-    rResultSuccess,
-    rResultFailure,    
-};
+    enum Result
+    {
+        rResultSuccess,
+        rResultFailure,    
+    };
 
 } // namespace Riot
 //-----------------------------------------------------------------------------

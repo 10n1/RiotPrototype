@@ -1,10 +1,10 @@
 /*********************************************************\
 File:           memory.h
 Purpose:        Overloading new/delete. They now allocate
-                out of a pre-allocated buffer.
+out of a pre-allocated buffer.
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/8/2011 12:59:04 PM
+Modified:       4/10/2011 3:15:38 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MEMORY_H_

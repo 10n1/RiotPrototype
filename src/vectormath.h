@@ -3,7 +3,7 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 11:47:50 AM
+Modified:       4/10/2011 3:15:36 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
@@ -43,7 +43,7 @@ public:
         struct { float x, y; };
         float f[2];
     };
-    
+
     /***************************************\
     | class methods
     \***************************************/
@@ -82,7 +82,7 @@ public:
         struct { float x, y, z; };
         float f[3];
     };
-    
+
     /***************************************\
     | class methods
     \***************************************/
@@ -142,7 +142,7 @@ public:
         struct { float x, y, z, w; };
         float f[4];
     };
-    
+
     /***************************************\
     | class methods
     \***************************************/
@@ -210,11 +210,11 @@ public:
     \***************************************/
     inline RMatrix3() {}
     inline RMatrix3( float M11, float M12, float M13, 
-                     float M21, float M22, float M23,
-                     float M31, float M32, float M33)
-                     : r0( M11, M12, M13 )
-                     , r1( M21, M22, M23 )
-                     , r2( M31, M32, M33 )
+        float M21, float M22, float M23,
+        float M31, float M32, float M33)
+        : r0( M11, M12, M13 )
+        , r1( M21, M22, M23 )
+        , r2( M31, M32, M33 )
     {
     }
     inline RMatrix3( const RVector3& R0, const RVector3& R1, const RVector3& R2 ) : r0(R0), r1(R1), r2(R2) { }
@@ -227,7 +227,7 @@ public:
         return *this; 
     }
 
-    
+
     // Misc
     inline operator float*() { return &r0.x; }
     inline operator const float*() const { return &r0.x; }
@@ -236,7 +236,7 @@ public:
 
     inline float& operator()(int r, int c ) { return ((&r0)[r])[c]; }
     inline const float& operator()(int r, int c ) const { return ((&r0)[r])[c]; }
-    
+
     inline float& m11() { return r0.x; }
 };
 
@@ -271,8 +271,8 @@ RMatrix3 RMatrix3Scale( float fScale );
 inline RMatrix3 RMatrix3Identity( void ) 
 { 
     return RMatrix3( 1.0f, 0.0f, 0.0f,
-                     0.0f, 1.0f, 0.0f,
-                     0.0f, 0.0f, 1.0f ); 
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f ); 
 }
 
 
@@ -295,13 +295,13 @@ public:
     \***************************************/
     inline RMatrix4() {}
     inline RMatrix4( float M11, float M12, float M13, float M14,
-                     float M21, float M22, float M23, float M24,
-                     float M31, float M32, float M33, float M34,
-                     float M41, float M42, float M43, float M44 )
-                    : r0(M11, M12, M13, M14)
-                    , r1(M21, M22, M23, M24)
-                    , r2(M31, M32, M33, M34)
-                    , r3(M41, M42, M43, M44) { }
+        float M21, float M22, float M23, float M24,
+        float M31, float M32, float M33, float M34,
+        float M41, float M42, float M43, float M44 )
+        : r0(M11, M12, M13, M14)
+        , r1(M21, M22, M23, M24)
+        , r2(M31, M32, M33, M34)
+        , r3(M41, M42, M43, M44) { }
     inline RMatrix4( const RVector4& R0, const RVector4& R1, const RVector4& R2, const RVector4& R3 ) : r0(R0), r1(R1), r2(R2), r3(R3) { }
     inline RMatrix4( const float* F) : r0( F ), r1( F + 4 ), r2( F + 8 ), r3( F + 12 ) { }
     inline RMatrix4( const RMatrix3& m ) : r0( m.r0, 0.0f ), r1( m.r1, 0.0f ), r2( m.r2, 0.0f ), r3( 0.0f, 0.0f, 0.0f, 1.0f ) { }
@@ -313,7 +313,7 @@ public:
         r3 = a.r3;
         return *this; 
     }
-    
+
     // Misc
     inline operator float*() { return &r0.x; }
     inline operator const float*() const { return &r0.x; }
@@ -364,9 +364,9 @@ RVector3 RMatrix4GetTranslation( const RMatrix4& m  );
 inline RMatrix4 RMatrix4Identity( void ) 
 { 
     return RMatrix4( 1.0f, 0.0f, 0.0f, 0.0f,
-                     0.0f, 1.0f, 0.0f, 0.0f,
-                     0.0f, 0.0f, 1.0f, 0.0f, 
-                     0.0f, 0.0f, 0.0f, 1.0f ); 
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f, 
+        0.0f, 0.0f, 0.0f, 1.0f ); 
 }
 
 
@@ -380,7 +380,7 @@ public:
     | class members
     \***************************************/
 
-    
+
     /***************************************\
     | class methods
     \***************************************/
@@ -416,17 +416,17 @@ inline RMatrix3 RQuatGetMatrix( const RQuaternion& q )
     float xsq = q.x * q.x;
     float ysq = q.y * q.y;
     float zsq = q.z * q.z;
-    
+
     float xy = q.x * q.y;
     float zw = q.z * q.w;
     float xz = q.x * q.z;
     float yw = q.y * q.w;
     float yz = q.y * q.z;
     float xw = q.x * q.w;
-    
+
     return RMatrix3( 1-2*(ysq+zsq),     2*(xy+zw),     2*(xz-yw),
-                         2*(xy-zw), 1-2*(xsq-zsq),     2*(yz+xw),
-                         2*(xz+yw),     2*(yz-xw), 1-2*(xsq+ysq) ); 
+        2*(xy-zw), 1-2*(xsq-zsq),     2*(yz+xw),
+        2*(xz+yw),     2*(yz-xw), 1-2*(xsq+ysq) ); 
 }
 inline RQuaternion RQuatFromAxisAngle( const RVector3& axis, float angle )
 {
@@ -459,7 +459,7 @@ public:
     RQuaternion orientation;
     RVector3    position;
     float       scale;
-    
+
     /***************************************\
     | class methods
     \***************************************/
@@ -481,10 +481,10 @@ public:
         float xw = orientation.x * orientation.w;
 
         return RMatrix4( 
-        1-2*(ysq+zsq) * scale,     2*(xy+zw) * scale,     2*(xz-yw) * scale, 0.0f,
+            1-2*(ysq+zsq) * scale,     2*(xy+zw) * scale,     2*(xz-yw) * scale, 0.0f,
             2*(xy-zw) * scale, 1-2*(xsq-zsq) * scale,     2*(yz+xw) * scale, 0.0f,
             2*(xz+yw) * scale,     2*(yz-xw) * scale, 1-2*(xsq+ysq) * scale, 0.0f,
-                   position.x,            position.y,            position.z, 1.0f ); 
+            position.x,            position.y,            position.z, 1.0f ); 
     }
 
     inline void TranslateX( float f ) { position += RQuatGetXAxis( orientation ) * f; }

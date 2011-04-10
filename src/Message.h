@@ -3,7 +3,7 @@ File:           Message.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 12:45:29 PM
+Modified:       4/10/2011 3:51:11 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MESSAGE_H_
@@ -12,22 +12,35 @@ Modified by:    Kyle Weicht
 namespace Riot
 {
 
-enum MessageType
-{
-    // Main
-    mShutdown,
+    enum MessageType
+    {
+        // Main
+        mShutdown,
+
+        // Graphics/Window
+        mFullscreen,
+        mResize,
+
+        // Input
+        mKeyboard,
+        mMouseMove,
+        mMouseButton,
+
+        mNUMMESSAGES
+    };
+
+    class IListener;
     
-    // Graphics/Window
-    mFullscreen
-    mResize,
-
-    // Input
-    mKeyboard,
-    mMouseMove,
-    mMouseButton,
-
-    mNUMMESSAGES
-};
+    // Message definition
+    struct TMessage
+    {
+        MessageType nType;
+        union
+        {
+            pvoid       pMessage;
+            nativeuint  nMessage;
+        };
+    };
 
 } // namespace Riot
 

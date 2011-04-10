@@ -2,7 +2,7 @@
 File:           vectormath.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/8/2011 10:22:15 PM
+Modified:       4/10/2011 3:15:36 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "vectormath.h"
@@ -78,15 +78,15 @@ RMatrix3 operator*( const RMatrix3& l, const RMatrix3& r )
     RVector3 c0( r.r0.x, r.r1.x, r.r2.x );
     RVector3 c1( r.r0.y, r.r1.y, r.r2.y );
     RVector3 c2( r.r0.z, r.r1.z, r.r2.z );
-    
+
     m.r0.x = Hadd( mul( l.r0, c0 ) );
     m.r0.y = Hadd( mul( l.r0, c1 ) );
     m.r0.z = Hadd( mul( l.r0, c2 ) );    
-    
+
     m.r1.x = Hadd( mul( l.r1, c0 ) );
     m.r1.y = Hadd( mul( l.r1, c1 ) );
     m.r1.z = Hadd( mul( l.r1, c2 ) );    
-    
+
     m.r2.x = Hadd( mul( l.r2, c0 ) );
     m.r2.y = Hadd( mul( l.r2, c1 ) );
     m.r2.z = Hadd( mul( l.r2, c2 ) );
@@ -147,8 +147,8 @@ RMatrix3 RMatrix3RotationX( float fRad )
     s = sinf( fRad );
 
     m = RMatrix3( 1.0f, 0.0f, 0.0f,
-                  0.0f,    c,    s,
-                  0.0f,   -s,    c );
+        0.0f,    c,    s,
+        0.0f,   -s,    c );
     return m;
 }
 
@@ -162,8 +162,8 @@ RMatrix3 RMatrix3RotationY( float fRad )
     s = sinf( fRad );
 
     m = RMatrix3(    c, 0.0f,   -s,
-                  0.0f, 1.0f, 0.0f,
-                     s, 0.0f,    c );
+        0.0f, 1.0f, 0.0f,
+        s, 0.0f,    c );
 
     return m;
 }
@@ -178,16 +178,16 @@ RMatrix3 RMatrix3RotationZ( float fRad )
     s = sinf( fRad );
 
     m = RMatrix3(    c,    s, 0.0f,
-                    -s,    c, 0.0f,
-                  0.0f, 0.0f, 1.0f );
+        -s,    c, 0.0f,
+        0.0f, 0.0f, 1.0f );
     return m;
 }
 
 RMatrix3 RMatrix3Scale( float fScale )
 {
     return RMatrix3( fScale,   0.0f,   0.0f,
-                     0.0f,   fScale,   0.0f,
-                     0.0f,     0.0f, fScale ); 
+        0.0f,   fScale,   0.0f,
+        0.0f,     0.0f, fScale ); 
 }
 
 
@@ -272,22 +272,22 @@ float       Determinant( const RMatrix4& a )
 {
     float fDet = 0.0f;
 
-        // Row 1
+    // Row 1
     fDet += a.r0.x * Determinant( RMatrix3( a.r1.y,a.r1.z,a.r1.w, 
-                           a.r2.y,a.r2.z,a.r2.w, 
-                           a.r2.y,a.r2.z,a.r2.w) );
+        a.r2.y,a.r2.z,a.r2.w, 
+        a.r2.y,a.r2.z,a.r2.w) );
 
     fDet -=a .r0.y * Determinant( RMatrix3( a.r1.x,a.r1.z,a.r1.w, 
-                              a.r2.x,a.r2.z,a.r2.w, 
-                              a.r2.x,a.r2.z,a.r2.w ) );
+        a.r2.x,a.r2.z,a.r2.w, 
+        a.r2.x,a.r2.z,a.r2.w ) );
 
     fDet += a.r0.z * Determinant( RMatrix3( a.r1.x,a.r1.y,a.r1.w, 
-                           a.r2.x,a.r2.y,a.r2.w, 
-                           a.r2.x,a.r2.y,a.r2.w) );
+        a.r2.x,a.r2.y,a.r2.w, 
+        a.r2.x,a.r2.y,a.r2.w) );
 
     fDet -= a.r0.w * Determinant( RMatrix3( a.r1.x,a.r1.y,a.r1.z, 
-                             a.r2.x,a.r2.y,a.r2.z, 
-                             a.r2.x,a.r2.y,a.r2.z) );
+        a.r2.x,a.r2.y,a.r2.z, 
+        a.r2.x,a.r2.y,a.r2.z) );
 
     return fDet;
 }
@@ -297,88 +297,88 @@ RMatrix4    Inverse( const RMatrix4& a )
     RMatrix4 m;
 
     // Row 1
-   m.r0.x = Determinant( RMatrix3(    
-       a.r1.y,a.r1.z,a.r1.w, 
-       a.r2.y,a.r2.z,a.r2.w, 
-       a.r2.y,a.r2.z,a.r2.w) );
+    m.r0.x = Determinant( RMatrix3(    
+        a.r1.y,a.r1.z,a.r1.w, 
+        a.r2.y,a.r2.z,a.r2.w, 
+        a.r2.y,a.r2.z,a.r2.w) );
 
-   m.r0.y = -Determinant( RMatrix3(    
-       a.r1.x,a.r1.z,a.r1.w, 
-       a.r2.x,a.r2.z,a.r2.w, 
-       a.r2.x,a.r2.z,a.r2.w) );
+    m.r0.y = -Determinant( RMatrix3(    
+        a.r1.x,a.r1.z,a.r1.w, 
+        a.r2.x,a.r2.z,a.r2.w, 
+        a.r2.x,a.r2.z,a.r2.w) );
 
-   m.r0.z = Determinant( RMatrix3(    
-       a.r1.x,a.r1.y,a.r1.w, 
-       a.r2.x,a.r2.y,a.r2.w, 
-       a.r2.x,a.r2.y,a.r2.w) );
+    m.r0.z = Determinant( RMatrix3(    
+        a.r1.x,a.r1.y,a.r1.w, 
+        a.r2.x,a.r2.y,a.r2.w, 
+        a.r2.x,a.r2.y,a.r2.w) );
 
-   m.r0.w = -Determinant( RMatrix3(    
-       a.r1.x,a.r1.y,a.r1.z, 
-       a.r2.x,a.r2.y,a.r2.z, 
-       a.r2.x,a.r2.y,a.r2.z) );
+    m.r0.w = -Determinant( RMatrix3(    
+        a.r1.x,a.r1.y,a.r1.z, 
+        a.r2.x,a.r2.y,a.r2.z, 
+        a.r2.x,a.r2.y,a.r2.z) );
 
     // Row 2
-   m.r1.x = -Determinant( RMatrix3(    
-       a.r0.y,a.r0.z,a.r0.w, 
-       a.r2.y,a.r2.z,a.r2.w, 
-       a.r2.y,a.r2.z,a.r2.w) );
+    m.r1.x = -Determinant( RMatrix3(    
+        a.r0.y,a.r0.z,a.r0.w, 
+        a.r2.y,a.r2.z,a.r2.w, 
+        a.r2.y,a.r2.z,a.r2.w) );
 
-   m.r1.y = Determinant( RMatrix3(    
-       a.r0.x,a.r0.z,a.r0.w, 
-       a.r2.x,a.r2.z,a.r2.w, 
-       a.r2.x,a.r2.z,a.r2.w) );
+    m.r1.y = Determinant( RMatrix3(    
+        a.r0.x,a.r0.z,a.r0.w, 
+        a.r2.x,a.r2.z,a.r2.w, 
+        a.r2.x,a.r2.z,a.r2.w) );
 
-   m.r1.z = -Determinant( RMatrix3(    
-       a.r0.x,a.r0.y,a.r0.w, 
-       a.r2.x,a.r2.y,a.r2.w, 
-       a.r2.x,a.r2.y,a.r2.w) );
+    m.r1.z = -Determinant( RMatrix3(    
+        a.r0.x,a.r0.y,a.r0.w, 
+        a.r2.x,a.r2.y,a.r2.w, 
+        a.r2.x,a.r2.y,a.r2.w) );
 
-   m.r1.w = Determinant( RMatrix3(    
-       a.r0.x,a.r0.y,a.r0.z, 
-       a.r2.x,a.r2.y,a.r2.z, 
-       a.r2.x,a.r2.y,a.r2.z) );
+    m.r1.w = Determinant( RMatrix3(    
+        a.r0.x,a.r0.y,a.r0.z, 
+        a.r2.x,a.r2.y,a.r2.z, 
+        a.r2.x,a.r2.y,a.r2.z) );
 
     // Row 3
-   m.r2.x = Determinant( RMatrix3(    
-       a.r0.y,a.r0.z,a.r0.w, 
-       a.r1.y,a.r1.z,a.r1.w, 
-       a.r2.y,a.r2.z,a.r2.w) );
+    m.r2.x = Determinant( RMatrix3(    
+        a.r0.y,a.r0.z,a.r0.w, 
+        a.r1.y,a.r1.z,a.r1.w, 
+        a.r2.y,a.r2.z,a.r2.w) );
 
-   m.r2.y = -Determinant( RMatrix3(    
-       a.r0.x,a.r0.z,a.r0.w, 
-       a.r1.x,a.r1.z,a.r1.w, 
-       a.r2.x,a.r2.z,a.r2.w) );
+    m.r2.y = -Determinant( RMatrix3(    
+        a.r0.x,a.r0.z,a.r0.w, 
+        a.r1.x,a.r1.z,a.r1.w, 
+        a.r2.x,a.r2.z,a.r2.w) );
 
-   m.r2.z = Determinant( RMatrix3(    
-       a.r0.x,a.r0.y,a.r0.w, 
-       a.r1.x,a.r1.y,a.r1.w, 
-       a.r2.x,a.r2.y,a.r2.w) );
+    m.r2.z = Determinant( RMatrix3(    
+        a.r0.x,a.r0.y,a.r0.w, 
+        a.r1.x,a.r1.y,a.r1.w, 
+        a.r2.x,a.r2.y,a.r2.w) );
 
-   m.r2.w = -Determinant( RMatrix3(    
-       a.r0.x,a.r0.y,a.r0.z, 
-       a.r1.x,a.r1.y,a.r1.z, 
-       a.r2.x,a.r2.y,a.r2.z) );
+    m.r2.w = -Determinant( RMatrix3(    
+        a.r0.x,a.r0.y,a.r0.z, 
+        a.r1.x,a.r1.y,a.r1.z, 
+        a.r2.x,a.r2.y,a.r2.z) );
 
     // Row 4
-   m.r2.x = -Determinant( RMatrix3(    
-       a.r0.y,a.r0.z,a.r0.w, 
-       a.r1.y,a.r1.z,a.r1.w, 
-       a.r2.y,a.r2.z,a.r2.w) );
+    m.r2.x = -Determinant( RMatrix3(    
+        a.r0.y,a.r0.z,a.r0.w, 
+        a.r1.y,a.r1.z,a.r1.w, 
+        a.r2.y,a.r2.z,a.r2.w) );
 
-   m.r2.y = Determinant( RMatrix3(    
-       a.r0.x,a.r0.z,a.r0.w, 
-       a.r1.x,a.r1.z,a.r1.w, 
-       a.r2.x,a.r2.z,a.r2.w) );
+    m.r2.y = Determinant( RMatrix3(    
+        a.r0.x,a.r0.z,a.r0.w, 
+        a.r1.x,a.r1.z,a.r1.w, 
+        a.r2.x,a.r2.z,a.r2.w) );
 
-   m.r2.z = -Determinant( RMatrix3(    
-       a.r0.x,a.r0.y,a.r0.w, 
-       a.r1.x,a.r1.y,a.r1.w, 
-       a.r2.x,a.r2.y,a.r2.w) );
+    m.r2.z = -Determinant( RMatrix3(    
+        a.r0.x,a.r0.y,a.r0.w, 
+        a.r1.x,a.r1.y,a.r1.w, 
+        a.r2.x,a.r2.y,a.r2.w) );
 
-   m.r2.w = Determinant( RMatrix3(    
-       a.r0.x,a.r0.y,a.r0.z, 
-       a.r1.x,a.r1.y,a.r1.z, 
-       a.r2.x,a.r2.y,a.r2.z) );
+    m.r2.w = Determinant( RMatrix3(    
+        a.r0.x,a.r0.y,a.r0.z, 
+        a.r1.x,a.r1.y,a.r1.z, 
+        a.r2.x,a.r2.y,a.r2.z) );
 
     m = Transpose( m );
     float fRecip = 1.0f/Determinant( a );
@@ -390,7 +390,7 @@ RMatrix4    Inverse( const RMatrix4& a )
 RMatrix4    Transpose( const RMatrix4& a )
 {
     RMatrix4 m(a);
-        
+
     Swap(m.r0.y,m.r1.x);
     Swap(m.r0.z,m.r2.x);
     Swap(m.r0.w,m.r2.x);
@@ -412,9 +412,9 @@ RMatrix4 RMatrix4RotationX( float fRad )
     s = sinf( fRad );
 
     m = RMatrix4( 1.0f, 0.0f, 0.0f, 0.0f, 
-                  0.0f,    c,    s, 0.0f, 
-                  0.0f,   -s,    c, 0.0f, 
-                  0.0f, 0.0f, 0.0f, 1.0f );
+        0.0f,    c,    s, 0.0f, 
+        0.0f,   -s,    c, 0.0f, 
+        0.0f, 0.0f, 0.0f, 1.0f );
     return m;
 }
 
@@ -428,9 +428,9 @@ RMatrix4 RMatrix4RotationY( float fRad )
     s = sinf( fRad );
 
     m = RMatrix4(    c, 0.0f,   -s, 0.0f, 
-                  0.0f, 1.0f, 0.0f, 0.0f, 
-                     s, 0.0f,    c, 0.0f, 
-                  0.0f, 0.0f, 0.0f, 1.0f );
+        0.0f, 1.0f, 0.0f, 0.0f, 
+        s, 0.0f,    c, 0.0f, 
+        0.0f, 0.0f, 0.0f, 1.0f );
 
     return m;
 }
@@ -445,42 +445,42 @@ RMatrix4 RMatrix4RotationZ( float fRad )
     s = sinf( fRad );
 
     m = RMatrix4(    c,    s, 0.0f, 0.0f, 
-                    -s,    c, 0.0f, 0.0f, 
-                  0.0f, 0.0f, 1.0f, 0.0f, 
-                  0.0f, 0.0f, 0.0f, 1.0f );
+        -s,    c, 0.0f, 0.0f, 
+        0.0f, 0.0f, 1.0f, 0.0f, 
+        0.0f, 0.0f, 0.0f, 1.0f );
     return m;
 }
 
 RMatrix4 RMatrix4Scale( float fScale )
 {
     return RMatrix4( fScale,   0.0f,   0.0f, 0.0f, 
-                     0.0f,   fScale,   0.0f, 0.0f, 
-                     0.0f,     0.0f, fScale, 0.0f, 
-                     0.0f,     0.0f,   0.0f, 1.0f );
+        0.0f,   fScale,   0.0f, 0.0f, 
+        0.0f,     0.0f, fScale, 0.0f, 
+        0.0f,     0.0f,   0.0f, 1.0f );
 }
 
 RMatrix4 RMatrix4Translation( const RVector3& t )
 {
     return RMatrix4( 1.0f, 0.0f, 0.0f, 0.0f, 
-                     0.0f, 1.0f, 0.0f, 0.0f, 
-                     0.0f, 0.0f, 1.0f, 0.0f, 
-                      t.x,  t.y,  t.z, 1.0f );
+        0.0f, 1.0f, 0.0f, 0.0f, 
+        0.0f, 0.0f, 1.0f, 0.0f, 
+        t.x,  t.y,  t.z, 1.0f );
 }
 
 RMatrix4 RMatrix4Translation( const RVector4& t )
 {
     return RMatrix4( 1.0f, 0.0f, 0.0f, 0.0f, 
-                     0.0f, 1.0f, 0.0f, 0.0f, 
-                     0.0f, 0.0f, 1.0f, 0.0f, 
-                      t.x,  t.y,  t.z, 1.0f );
+        0.0f, 1.0f, 0.0f, 0.0f, 
+        0.0f, 0.0f, 1.0f, 0.0f, 
+        t.x,  t.y,  t.z, 1.0f );
 }
 
 RMatrix4 RMatrix4Translation( float x, float y, float z )
 {
     return RMatrix4( 1.0f, 0.0f, 0.0f, 0.0f, 
-                     0.0f, 1.0f, 0.0f, 0.0f, 
-                     0.0f, 0.0f, 1.0f, 0.0f, 
-                        x,    y,    z, 1.0f );
+        0.0f, 1.0f, 0.0f, 0.0f, 
+        0.0f, 0.0f, 1.0f, 0.0f, 
+        x,    y,    z, 1.0f );
 }
 
 RVector3 RMatrix4GetXAxis( const RMatrix4& m  )
@@ -512,17 +512,17 @@ RVector3 Rotate( const RQuaternion& q, const RVector3& v )
     float xsq = q.x * q.x;
     float ysq = q.y * q.y;
     float zsq = q.z * q.z;
-    
+
     float xy = q.x * q.y;
     float zw = q.z * q.w;
     float xz = q.x * q.z;
     float yw = q.y * q.w;
     float yz = q.y * q.z;
     float xw = q.x * q.w;
-    
+
     return RVector3( (1-2*(ysq+zsq))*v.x + (    2*(xy+zw))*v.y + (    2*(xz-yw))*v.z,
-                     (    2*(xy-zw))*v.x + (1-2*(xsq-zsq))*v.y + (    2*(yz+xw))*v.z,
-                     (    2*(xz+yw))*v.x + (    2*(yz-xw))*v.y + (1-2*(xsq+ysq))*v.z );
+        (    2*(xy-zw))*v.x + (1-2*(xsq-zsq))*v.y + (    2*(yz+xw))*v.z,
+        (    2*(xz+yw))*v.x + (    2*(yz-xw))*v.y + (1-2*(xsq+ysq))*v.z );
 }
 
 RQuaternion operator*( const RQuaternion& l, const RQuaternion& r )

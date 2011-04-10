@@ -3,7 +3,7 @@ File:           IRefCounted.h
 Purpose:        A reference counting interface
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 12:35:36 PM
+Modified:       4/10/2011 3:15:38 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _IREFCOUNTED_H_
@@ -15,36 +15,36 @@ Modified by:    Kyle Weicht
 namespace Riot
 {
 
-class IRefCounted
-{
-public:
-    // IRefCounted constructor
-    IRefCounted()
-        : m_nRefCount( 1 )
-    { }
+    class IRefCounted
+    {
+    public:
+        // IRefCounted constructor
+        IRefCounted()
+            : m_nRefCount( 1 )
+        { }
 
-    // IRefCounted destructor
-    virtual ~IRefCounted() { }
-    /***************************************\
-    | class methods                         |
-    \***************************************/
-    
-    inline void AddRef( void ) { AtomicIncrement( &m_nRefCount ); }
-    inline void Release( void ) 
-    { 
-        AtomicDecrement( &m_nRefCount ); 
-        if( m_nRefCount == 0 ) 
+        // IRefCounted destructor
+        virtual ~IRefCounted() { }
+        /***************************************\
+        | class methods                         |
+        \***************************************/
+
+        inline void AddRef( void ) { AtomicIncrement( &m_nRefCount ); }
+        inline void Release( void ) 
         { 
-            delete this; 
-        } 
-    }
+            AtomicDecrement( &m_nRefCount ); 
+            if( m_nRefCount == 0 ) 
+            { 
+                delete this; 
+            } 
+        }
 
-private:
-    /***************************************\
-    | class members                         |
-    \***************************************/
-    atomic_t    m_nRefCount;
-};
+    private:
+        /***************************************\
+        | class members                         |
+        \***************************************/
+        atomic_t    m_nRefCount;
+    };
 
 } // namespace Riot
 

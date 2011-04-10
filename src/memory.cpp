@@ -2,9 +2,9 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/10/2011 11:56:54 AM
+Modified:       4/10/2011 3:15:38 PM
 Modified by:    Kyle Weicht
- 
+
 TODO:           Add alignment support? Should be ultra easy
 \*********************************************************/
 #include "memory.h"
@@ -77,7 +77,7 @@ void* __cdecl operator new(size_t nSize)
 #ifdef RIOT_ALIGN_MEMORY
     nSize = RoundUp( nSize );
 #endif
-    
+
     // Increment the counters
     gs_pCurrAlloc       += nSize;
     gs_nActiveMemory    += (uint)nSize;
@@ -94,17 +94,17 @@ void* __cdecl operator new[](size_t nSize)
 
     // Grab the current pointer
     byte* pNewAlloc = gs_pCurrAlloc;
-    
+
 #ifdef RIOT_ALIGN_MEMORY
     nSize = RoundUp( nSize );
 #endif
-    
+
     // Increment the counters
     gs_pCurrAlloc       += nSize;
     gs_nActiveMemory    += (uint)nSize;
     gs_pPrevAlloc       = pNewAlloc;
     gs_nPrevAllocSize   = (uint)nSize;
-    
+
     // Return it
     return pNewAlloc;
 };
@@ -176,7 +176,7 @@ void* Memcpy( void* pDest, const void* pSource, uint nSize )
         nSize -= nWidth;
     }
 
-    
+
     while( nSize > 0 )
     {
         *a = *b;
