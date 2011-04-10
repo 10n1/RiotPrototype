@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 9:59:59 PM
+Modified:       4/9/2011 11:51:47 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -31,7 +31,6 @@ void CTaskManager::Initialize( void )
 {
     m_bShutdown             = false;
     m_bThreadsIdle          = false;
-    m_pMainTaskCompletion   = NULL;
 
     //  Get the number of hardware threads
     m_nNumThreads = System::GetHardwareThreadCount();
@@ -66,9 +65,12 @@ void CTaskManager::Shutdown( void )
     {
         while( m_Thread[i].m_bFinished == false )
         {
+            ;
         }
-        m_Thread[i].Destroy();
     }
+
+    System::SemaphoreDestroy( &m_pSleep );
+    System::SemaphoreDestroy( &m_pWake );
 }
 
 //-----------------------------------------------------------------------------
@@ -77,6 +79,8 @@ void CTaskManager::Shutdown( void )
 //-----------------------------------------------------------------------------
 void CTaskManager::WakeThreads( void )
 {
+    //ASSERT( m_bThreadsIdle );
+
     m_bThreadsIdle = false;
     for( uint i = 1; i < m_nNumThreads; ++i )
     {
@@ -90,6 +94,8 @@ void CTaskManager::WakeThreads( void )
 //-----------------------------------------------------------------------------
 void CTaskManager::WaitForThreads( void )
 {
+    //ASSERT( !m_bThreadsIdle );
+
     for( uint i = 1; i < m_nNumThreads; ++i )
     {
         System::WaitForSemaphore( &m_pSleep );
@@ -102,18 +108,16 @@ void CTaskManager::WaitForThreads( void )
 //  PushTask
 //  Adds the task to the queue
 //-----------------------------------------------------------------------------
-void CTaskManager::PushTask( CInternalTask* pTask )
+void CTaskManager::PushTask( void )
 {
-    m_Thread[0].PushTask( pTask );
 }
 
 //-----------------------------------------------------------------------------
 //  WaitForCompletion
 //  Works until the completion is done
 //-----------------------------------------------------------------------------
-void CTaskManager::WaitForCompletion( CTaskCompletion* pCompletion )
+void CTaskManager::WaitForCompletion( void )
 {
-    m_Thread[0].WorkUntilDone( pCompletion );
 }
 
 } // namespace Riot

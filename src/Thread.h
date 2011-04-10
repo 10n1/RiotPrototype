@@ -3,7 +3,7 @@ File:           Thread.h
 Purpose:        Interface for hardware threads
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 10:35:41 PM
+Modified:       4/9/2011 11:50:54 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _THREAD_H_
@@ -91,42 +91,7 @@ private:
     CMutex* m_pMutex;
 };
 
-class CTaskCompletion
-{
-public:
-    // CTaskCompletion constructor
-    CTaskCompletion() : m_nBusy( 0 ) { }
-
-    /***************************************\
-    | class methods                         |
-    \***************************************/
-
-    inline bool IsBusy( void ) const
-    {
-        return m_nBusy != 0;
-    }
-
-    void MarkBusy( void )
-    {
-        AtomicIncrement( &m_nBusy );
-    }
-
-    void MarkComplete( void )
-    {
-        AtomicDecrement( &m_nBusy );
-    }
-
-private:
-    /***************************************\
-    | class members                         |
-    \***************************************/
-    volatile sint   m_nBusy;
-};
-
-
 class CTaskManager;
-class CTaskCompletion;
-class CInternalTask;
 
 class CThread
 {
@@ -154,12 +119,7 @@ public:
     //  Starts the thread, running the input function, then returning
     //-----------------------------------------------------------------------------
     void Start( CTaskManager* pTaskManager );
-    
-    //-----------------------------------------------------------------------------
-    //  Destroy
-    //  Destroys the thread
-    //-----------------------------------------------------------------------------
-    void Destroy( void );
+  
 
     //-----------------------------------------------------------------------------
     //  ThreadProc
@@ -171,18 +131,7 @@ public:
     //  MakeMainThread
     //  Attaches this CThread to the main program thread
     //-----------------------------------------------------------------------------
-    void MakeMainThread( CTaskManager* pTaskManager );
-    
-	bool PushTask(CInternalTask* pTask);	/* queue task if there is space, and run it otherwise */ 
-	bool _PushTask(CInternalTask* pTask);	/* queue task if there is space (or do nothing) */ 
-	
-	bool PopTask(CInternalTask** ppTask);				/* pop task from queue */ 
-	bool StealTasks();									/* fill queue with work from another thread */ 
-	bool GiveUpSomeWork(CThread* pIdleThread);	/* request from an idle thread to give up some work */ 
-	
-	void WorkUntilDone(CTaskCompletion* pCard);
-	void DoWork(CTaskCompletion* pCard);
-    
+    void MakeMainThread( CTaskManager* pTaskManager );    
     
     //-----------------------------------------------------------------------------
     //  _ThreadProc
@@ -200,16 +149,10 @@ private:
     /***************************************\
     | class members                         |
     \***************************************/
-    CInternalTask*          m_pTasks[ MAX_TASKS_PER_THREAD ];
-
     System::thread_handle   m_pThread;
     CTaskManager*           m_pTaskManager;
-    CTaskCompletion*        m_pCurrentCompletion;
 
     CMutex                  m_TaskMutex;
-
-    uint                    m_nNumTasks;
-
     uint                    m_nThreadId;
     bool                    m_bFinished;
 };

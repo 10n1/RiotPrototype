@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 8:24:16 PM
+Modified:       4/9/2011 11:51:47 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -112,17 +112,6 @@ namespace System
         nResult = pthread_create( &hThread, NULL, pFunc, pData );
 #endif
         return hThread;
-    }
-    
-    //-----------------------------------------------------------------------------
-    //  DestroyThread
-    //  Destroys the thread
-    //-----------------------------------------------------------------------------
-    void DestroyThread( thread_handle pThread )
-    {
-#ifdef OS_WINDOWS
-        ::CloseHandle( pThread );
-#endif
     }
     
     //-----------------------------------------------------------------------------

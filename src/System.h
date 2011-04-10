@@ -4,7 +4,7 @@ Purpose:        Interface to the base system. All platform
                 specific functions will be called here.
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 8:24:17 PM
+Modified:       4/9/2011 11:50:55 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEM_H_
@@ -56,12 +56,6 @@ namespace System
     //  Creates and starts the thread, running until the function completes
     //-----------------------------------------------------------------------------
     thread_handle ThreadSpawn( _SystemThreadProc* pFunc, void* pData );
-    
-    //-----------------------------------------------------------------------------
-    //  DestroyThread
-    //  Destroys the thread
-    //-----------------------------------------------------------------------------
-    void DestroyThread( thread_handle pThread );
     
     //-----------------------------------------------------------------------------
     //  GetHardwareThreadCount
