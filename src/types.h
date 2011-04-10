@@ -91,6 +91,10 @@ typedef uint32 nativeuint;
 #ifndef SAFE_DELETE_ARRAY
 #define SAFE_DELETE_ARRAY(p) if(p) { delete [] p; p = NULL; }
 #endif
+
+#ifndef ARRAY_LENGTH
+#define ARRAY_LENGTH( a ) (sizeof(a) / sizeof(a[0]) )
+#endif
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

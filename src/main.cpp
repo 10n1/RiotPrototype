@@ -30,7 +30,7 @@ int main( int argc, char* argv[] )
     gTaskManager.Initialize();
 
     int x = 83;
-    sleep( 100 );
+    sleep( 10 );
 
     printf("%f seconds\n", System::GetRunningTime());
 
