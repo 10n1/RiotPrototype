@@ -3,7 +3,7 @@ File:           TaskManager.h
 Purpose:        Task manager
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 2:09:25 AM
+Modified:       4/10/2011 4:02:07 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TASKMANAGER_H_
@@ -68,9 +68,10 @@ private:
     /***************************************\
     | class members                         |
     \***************************************/
-    volatile sint       m_nTaskCompletion[ MAX_TASKS ];
+    task_completion_t   m_nTaskCompletion[ MAX_TASKS ];
     CThread             m_Thread[ MAX_THREADS ];
     uint                m_nCurrentTask;
+    volatile sint       m_nActiveTasks;
     System::semaphore_t m_pSleep;
 
     uint    m_nNumThreads;

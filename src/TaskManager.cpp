@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 2:15:02 AM
+Modified:       4/10/2011 4:04:38 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -29,9 +29,10 @@ CTaskManager::~CTaskManager()
 //-----------------------------------------------------------------------------
 void CTaskManager::Initialize( void )
 {
-    m_bShutdown             = false;
-    m_bThreadsIdle          = false;
-    m_nCurrentTask          = 0;
+    m_bShutdown     = false;
+    m_bThreadsIdle  = false;
+    m_nCurrentTask  = 0;
+    m_nActiveTasks  = 0;
 
     Memset( (void*)&m_nTaskCompletion[0], 0, sizeof( m_nTaskCompletion ) );
 
@@ -50,6 +51,9 @@ void CTaskManager::Initialize( void )
         m_Thread[i].m_nThreadId = i;
         m_Thread[i].Start( this );
     }
+
+    // Now just make sure they're all running by syncing them up
+    WaitForThreads();
 }
 
 //-----------------------------------------------------------------------------
@@ -112,26 +116,6 @@ void CTaskManager::WaitForThreads( void )
 //-----------------------------------------------------------------------------
 task_handle_t CTaskManager::PushTask( TaskFunc* pFunc, void* pData, uint nCount, uint nChunkSize )
 {
-    WaitForThreads();
-
-    // If we already have too many tasks, just run this task
-    if( m_nCurrentTask >= MAX_TASKS )
-    {
-        uint i;
-        for( i = 0; i < nCount; i += nChunkSize )
-        {
-            pFunc( pData, 0, i, nChunkSize );
-        }
-
-        // We went past the count, finish the rest
-        if( i > nCount )
-        {
-            pFunc( pData, 0, i-nChunkSize, nCount-(i-nChunkSize) );
-        }
-
-        return INVALID_HANDLE;
-    }
-
     // Create our new task
     TTask   newTask = 
     { 
@@ -161,9 +145,13 @@ task_handle_t CTaskManager::PushTask( TaskFunc* pFunc, void* pData, uint nCount,
 
         nStart += nChunkSize;
     }
+    
+    // Let the threads know theres another active task
+    AtomicIncrement( &m_nActiveTasks );
 
     // Make sure the threads are awake
     WakeThreads();
+
 
     return m_nCurrentTask++;
 }
@@ -180,10 +168,13 @@ void CTaskManager::WaitForCompletion( task_handle_t nHandle )
         return;
     }
 
+    // While we're waiting, work
     while( m_nTaskCompletion[nHandle] )
     {
-        ;
+        m_Thread[0].DoWork( &m_nTaskCompletion[nHandle] );
     }
+
+    AtomicDecrement( &m_nActiveTasks );
 }
 
 } // namespace Riot

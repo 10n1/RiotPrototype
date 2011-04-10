@@ -3,7 +3,7 @@ File:           Thread.h
 Purpose:        Interface for hardware threads
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 2:23:09 AM
+Modified:       4/10/2011 3:29:08 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _THREAD_H_
@@ -17,8 +17,9 @@ namespace Riot
     //////////////////////////////////////////
     //  Typedef for user functions
     typedef void (TaskFunc)( void* pData, uint nThreadId, uint nStart, uint nCount );
-    typedef uint    task_handle_t;
-    static const    task_handle_t INVALID_HANDLE = 0xFFFFFFFF;
+    typedef uint            task_handle_t;
+    typedef volatile sint   task_completion_t;
+    static const            task_handle_t INVALID_HANDLE = 0xFFFFFFFF;
 
     // Task definition
     struct TTask
@@ -27,7 +28,7 @@ namespace Riot
         void*               pData;
         uint                nStart;
         uint                nCount;
-        volatile sint*      pCompletion;
+        task_completion_t*  pCompletion;
     };
 
 class CMutex
@@ -177,6 +178,24 @@ public:
     //  Pops a task off the queue
     //-----------------------------------------------------------------------------
     bool PopTask( TTask* task );
+
+    //-----------------------------------------------------------------------------
+    //  DoWork
+    //  The thread starts doing work. It'll steal more if it has to
+    //-----------------------------------------------------------------------------
+    void DoWork( task_completion_t* pCompletion );
+        
+    //-----------------------------------------------------------------------------
+    //  GiveUpWork
+    //  Gives up work to the idle thread
+    //-----------------------------------------------------------------------------
+    bool GiveUpWork( CThread* pIdleThread );
+
+    //-----------------------------------------------------------------------------
+    //  StealTasks
+    //  Steals tasks from the other threads
+    //-----------------------------------------------------------------------------
+    bool StealTasks( void );
     
 private:
     /***************************************\
@@ -192,6 +211,7 @@ private:
     uint        m_nThreadId;
     uint        m_nNumTasks;
     bool        m_bFinished;
+    bool        m_bAwake;
 };
 
 } // namespace Riot

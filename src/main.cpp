@@ -2,7 +2,7 @@
 File:           main.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/10/2011 2:26:13 AM
+Modified:       4/10/2011 4:02:40 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "common.h"
@@ -28,8 +28,6 @@ static CMutex lock;
 
 void TestFunc( void* pData, uint nThreadId, uint nStart, uint nCount )
 {
-
-
     lock.Lock();
     printf( "Thread %d\tcount %d:\t", nThreadId, nCount );
     for( uint i = nStart; i < nStart+nCount; ++i )
@@ -54,7 +52,8 @@ int main( int argc, char* argv[] )
     CTimer timer;
     timer.Reset();
     
-    task_handle_t nTaskHandle = gTaskManager.PushTask( &TestFunc, 0, 1024, 1 );
+    task_handle_t nTaskHandle = gTaskManager.PushTask( &TestFunc, 0, 2048, 1 );
+    sleep( 5 );
     gTaskManager.WaitForCompletion( nTaskHandle );
 
 

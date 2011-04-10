@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 2:02:49 AM
+Modified:       4/10/2011 3:36:17 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -194,6 +194,20 @@ namespace System
 #endif
     }
     
+    //-----------------------------------------------------------------------------
+    //  GetSemaphoreValue
+    //  Returns the value of the semaphore
+    //-----------------------------------------------------------------------------
+    sint GetSemaphoreValue( semaphore_t* pSem )
+    {
+        sint nValue;
+#ifdef OS_WINDOWS
+        ::WaitForSingleObject( *pSem, INFINITE );
+#else
+        ::sem_getvalue( pSem, &nValue );
+#endif
+        return nValue;
+    }
     
     //-----------------------------------------------------------------------------
     //  CreateRiotMutex

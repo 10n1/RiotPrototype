@@ -4,7 +4,7 @@ Purpose:        Interface to the base system. All platform
                 specific functions will be called here.
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 12:55:52 AM
+Modified:       4/10/2011 3:29:08 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEM_H_
@@ -96,6 +96,12 @@ namespace System
     //  Waits until the semaphore value is non-zero
     //-----------------------------------------------------------------------------
     void WaitForSemaphore( semaphore_t* pSem );
+
+    //-----------------------------------------------------------------------------
+    //  GetSemaphoreValue
+    //  Returns the value of the semaphore
+    //-----------------------------------------------------------------------------
+    sint GetSemaphoreValue( semaphore_t* pSem );
     
     //-----------------------------------------------------------------------------
     //  CreateRiotMutex
