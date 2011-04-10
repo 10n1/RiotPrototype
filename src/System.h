@@ -4,7 +4,7 @@ Purpose:        Interface to the base system. All platform
                 specific functions will be called here.
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 6:13:22 PM
+Modified:       4/9/2011 6:29:34 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEM_H_
@@ -75,7 +75,7 @@ namespace System
     //  SemaphoreCreate
     //  Creates a semaphore
     //-----------------------------------------------------------------------------
-    semaphore_t SemaphoreCreate( sint nInitialValue, sint nMaximumValue );
+    semaphore_t SemaphoreCreate( sint nInitialValue );
     
     //-----------------------------------------------------------------------------
     //  SemaphoreDestroy

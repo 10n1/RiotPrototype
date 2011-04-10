@@ -3,7 +3,7 @@ File:           types.h
 Purpose:        Defining basic types
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/8/2011 10:02:36 PM
+Modified:       4/9/2011 6:29:34 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TYPES_H_
@@ -12,6 +12,7 @@ Modified by:    Kyle Weicht
 //-----------------------------------------------------------------------------
 //    Types
 //-----------------------------------------------------------------------------
+#include <limits.h>
 #if defined( WIN32 ) || defined( WIN64 ) // TODO: Add a RIOT_WINDOWS define?
 typedef unsigned __int8  byte;
 typedef unsigned __int8  uint8;

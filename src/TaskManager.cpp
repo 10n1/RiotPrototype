@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 6:17:54 PM
+Modified:       4/9/2011 6:29:34 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -36,8 +36,8 @@ void CTaskManager::Initialize( void )
     m_nNumActiveThreads = System::GetHardwareThreadCount();
 
     // Create semaphores
-    m_pSleep = System::SemaphoreCreate( 0, m_nNumActiveThreads );
-    m_pWake = System::SemaphoreCreate( 0, m_nNumActiveThreads );
+    m_pSleep = System::SemaphoreCreate( 0 );
+    m_pWake = System::SemaphoreCreate( 0 );
 
     // Attach thread 0 to the main thread
     m_Thread[0].MakeMainThread( this );

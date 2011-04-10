@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 6:19:06 PM
+Modified:       4/9/2011 6:29:34 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -152,11 +152,11 @@ namespace System
     //  SemaphoreCreate
     //  Creates a semaphore
     //-----------------------------------------------------------------------------
-    semaphore_t SemaphoreCreate( sint nInitialValue, sint nMaximumValue )
+    semaphore_t SemaphoreCreate( sint nInitialValue )
     {
         semaphore_t pSemaphore;
 #ifdef OS_WINDOWS
-        pSemaphore = ::CreateSemaphore( NULL, nInitialValue, nMaximumValue, NULL );      
+        pSemaphore = ::CreateSemaphore( NULL, nInitialValue, LONG_MAX, NULL );      
 #else
         uint nError = ::sem_init( &pSemaphore, 0, nInitialValue );
 #endif
