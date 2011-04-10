@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 3:57:25 PM
+Modified:       4/10/2011 4:26:46 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -153,7 +153,7 @@ namespace Riot
         // Make sure the threads are awake
         WakeThreads();
 
-
+        System::mutex_t x;
         return nHandle;
     }
 

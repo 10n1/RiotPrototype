@@ -4,7 +4,7 @@ Purpose:        Implementation of Mersenne twister
 TODO:           Further optimize, SIMD
 Author:         Kyle Weicht
 Created:        7/17/2010
-Modified:       4/10/2011 3:15:37 PM
+Modified:       4/10/2011 4:42:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RAND_H_
@@ -15,15 +15,17 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
-
     //-----------------------------------------------------------------------------
     //  Random Number Generator -- Better than C rand()
     //-----------------------------------------------------------------------------
-#define StateSize 624   // Array size
-#define MiddleWord 397  // Middle word
-
     class CRandom
     {
+    private:
+        enum
+        {
+            StateSize  = 624, // Array size
+            MiddleWord = 397, // Middle word
+        };
     private: 
         uint m_nMT[StateSize];
         atomic_t m_nIndex;

@@ -2,12 +2,14 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 4:06:35 PM
+Modified:       4/10/2011 4:39:21 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
 #include "TaskManager.h"
 #include "MessageDispatcher.h"
+#include "Window.h"
+#include "System.h"
 
 #define SHUTDOWN_AND_DELETE( Module ) if( Module ) { Module->Shutdown(); delete Module; Module = NULL; }
 #define NEW_AND_INITIALIZE( Module, Type ) Module = new Type; Module->Initialize();
@@ -21,6 +23,8 @@ namespace Riot
     Engine*             Engine::m_pInstance             = NULL;
     CTaskManager*       Engine::m_pTaskManager          = NULL;
     CMessageDispatcher* Engine::m_pMessageDispatcher    = NULL;
+    CWindow*            Engine::m_pMainWindow           = NULL;
+
     bool                Engine::m_bRunning              = true;
 
     const MessageType   Engine::MessagesReceived[] = 
@@ -118,6 +122,12 @@ namespace Riot
         NEW_AND_INITIALIZE( m_pMessageDispatcher, CMessageDispatcher );
         m_pMessageDispatcher->RegisterListener( Engine::GetInstance(), Engine::MessagesReceived, Engine::NumMessagesReceived );
         // New Modules here
+
+        //////////////////////////////////////////
+        // Now perform any other initialization
+
+        // Create a window
+        m_pMainWindow = System::CreateMainWindow( 1024, 768 );
     }
 
     //-----------------------------------------------------------------------------
@@ -125,10 +135,13 @@ namespace Riot
     //  Shuts down and cleans up the engine
     //-----------------------------------------------------------------------------
     void Engine::Shutdown( void )
-    {
+    {        
         //////////////////////////////////////////
-        // Shutdown and delete all task managers
+        // Now perform any shutdown needed
+        SAFE_RELEASE( m_pMainWindow );
 
+        //////////////////////////////////////////
+        // ...then shutdown and delete all modules
         // New modules here
         SHUTDOWN_AND_DELETE( m_pMessageDispatcher );
         SHUTDOWN_AND_DELETE( m_pTaskManager );

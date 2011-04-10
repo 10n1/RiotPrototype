@@ -2,7 +2,7 @@
 File:           rand.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 3:15:37 PM
+Modified:       4/10/2011 4:41:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Rand.h"

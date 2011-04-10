@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 3:46:36 PM
+Modified:       4/10/2011 4:26:45 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -130,7 +130,7 @@ namespace Riot
 
         return true;
     }
-
+ 
     //-----------------------------------------------------------------------------
     //  DoWork
     //  The thread starts doing work. It'll steal more if it has to

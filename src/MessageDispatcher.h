@@ -3,7 +3,7 @@ File:           MessageDispatcher.h
 Purpose:        Dispatches engine messages
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 4:05:36 PM
+Modified:       4/10/2011 4:42:45 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MESSAGEDISPATCHER_H_
@@ -17,8 +17,11 @@ namespace Riot
     class CMessageDispatcher
     {
     private:
-        static const uint MAX_REGISTERED_PER_MESSAGE = 16;
-        static const uint MESSAGE_QUEUE_LENGTH = 1024;
+        enum
+        {
+            MAX_REGISTERED_PER_MESSAGE = 16,
+            MESSAGE_QUEUE_LENGTH = 1024,
+        };
     public:
         // CMessageDispatcher constructor
         CMessageDispatcher();

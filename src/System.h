@@ -4,12 +4,13 @@ Purpose:        Interface to the base system. All platform
 specific functions will be called here.
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 3:15:37 PM
+Modified:       4/10/2011 4:33:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEM_H_
 #define _SYSTEM_H_
 #include "common.h"
+#include "timer.h"
 
 #ifndef OS_WINDOWS
 #include <pthread.h>
@@ -18,9 +19,11 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
+    class CWindow;
 
-    namespace System
+    class System
     {
+    public:
 #ifdef OS_WINDOWS
         typedef unsigned long   thread_return_t;
         typedef handle          thread_handle_t;
@@ -42,92 +45,105 @@ namespace Riot
         //-----------------------------------------------------------------------------
         //  Initialize
         //-----------------------------------------------------------------------------
-        void Initialize( void );
+        static void Initialize( void );
 
         //-----------------------------------------------------------------------------
         //  Shutdown
         //-----------------------------------------------------------------------------
-        void Shutdown( void );
+        static void Shutdown( void );
 
         //-----------------------------------------------------------------------------
         //  GetRunningTime
         //  Returns the time, in seconds, since the application was started
         //-----------------------------------------------------------------------------
-        double GetRunningTime( void );
+        static double GetRunningTime( void );
 
         //-----------------------------------------------------------------------------
         //  SpawnThread
         //  Creates and starts the thread, running until the function completes
         //-----------------------------------------------------------------------------
-        thread_handle_t SpawnThread( _SystemThreadProc* pFunc, void* pData );
+        static thread_handle_t SpawnThread( _SystemThreadProc* pFunc, void* pData );
 
         //-----------------------------------------------------------------------------
         //  GetHardwareThreadCount
         //  Returns the number of hardware threads in the system
         //-----------------------------------------------------------------------------
-        uint GetHardwareThreadCount( void );
+        static uint GetHardwareThreadCount( void );
 
         //-----------------------------------------------------------------------------
         //  GetCurrentThreadHandle
         //  Returns a handle to the calling thread
         //-----------------------------------------------------------------------------
-        thread_handle_t GetCurrentThreadHandle( void );    
+        static thread_handle_t GetCurrentThreadHandle( void );    
 
         //-----------------------------------------------------------------------------
         //  CreateRiotSemaphore
         //  Creates a semaphore
         //-----------------------------------------------------------------------------
-        semaphore_t CreateRiotSemaphore( sint nInitialValue );
+        static semaphore_t CreateRiotSemaphore( sint nInitialValue );
 
         //-----------------------------------------------------------------------------
         //  SemaphoreDestroy
         //  Destroys a semaphore
         //-----------------------------------------------------------------------------
-        void SemaphoreDestroy( semaphore_t* pSem );
+        static void SemaphoreDestroy( semaphore_t* pSem );
 
         //-----------------------------------------------------------------------------
         //  SemaphoreRelease
         //  Increments semaphore value
         //-----------------------------------------------------------------------------
-        void SemaphoreRelease( semaphore_t* pSem );
+        static void SemaphoreRelease( semaphore_t* pSem );
 
         //-----------------------------------------------------------------------------
         //  WaitForSemaphore
         //  Waits until the semaphore value is non-zero
         //-----------------------------------------------------------------------------
-        void WaitForSemaphore( semaphore_t* pSem );
+        static void WaitForSemaphore( semaphore_t* pSem );
 
         //-----------------------------------------------------------------------------
         //  GetSemaphoreValue
         //  Returns the value of the semaphore
         //-----------------------------------------------------------------------------
-        sint GetSemaphoreValue( semaphore_t* pSem );
+        static sint GetSemaphoreValue( semaphore_t* pSem );
 
         //-----------------------------------------------------------------------------
         //  CreateRiotMutex
         //  Creates a mutex
         //-----------------------------------------------------------------------------
-        mutex_t CreateRiotMutex( void );
+        static mutex_t CreateRiotMutex( void );
 
         //-----------------------------------------------------------------------------
         //  CreateWaitCondition
         //  Creates a condition to wait for
         //-----------------------------------------------------------------------------
-        wait_condition_t CreateWaitCondition( void );    
+        static wait_condition_t CreateWaitCondition( void );    
 
         //-----------------------------------------------------------------------------
         //  WaitForCondition
         //  Waits for the specified condition
         //-----------------------------------------------------------------------------
-        void WaitForCondition( wait_condition_t* pCondition, mutex_t* pMutex );    
+        static void WaitForCondition( wait_condition_t* pCondition, mutex_t* pMutex );    
 
         //-----------------------------------------------------------------------------
         //  SignalCondition
         //  Signals a condition, waking anything waiting for it
         //-----------------------------------------------------------------------------
-        void SignalCondition( wait_condition_t* pCondition );
+        static void SignalCondition( wait_condition_t* pCondition );
+        
+        //-----------------------------------------------------------------------------
+        //  CreateMainWindow
+        //  Creates the main application window
+        //-----------------------------------------------------------------------------
+        static CWindow* CreateMainWindow( uint nWidth, uint nHeight );
 
-    } // namespace System
+    private:
+        /***************************************\
+        | class members                         |
+        \***************************************/
+        static CTimer   gs_GlobalTimer;
+        static CWindow* gs_pMainWindow;
+        static uint     gs_nNumHardwareThreads;
+    };
 
 } // namespace Riot
 

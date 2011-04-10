@@ -3,7 +3,7 @@ File:           Engine.h
 Purpose:        The main engine
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 3:44:34 PM
+Modified:       4/10/2011 4:39:21 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ENGINE_H_
@@ -15,6 +15,7 @@ namespace Riot
 {
     class CTaskManager;
     class CMessageDispatcher;
+    class CWindow;
 
     class Engine : public IListener
     {
@@ -72,6 +73,8 @@ namespace Riot
         static Engine*              m_pInstance;
         static CTaskManager*        m_pTaskManager;
         static CMessageDispatcher*  m_pMessageDispatcher;
+
+        static CWindow*             m_pMainWindow;
 
         static bool                 m_bRunning;
     };

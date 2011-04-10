@@ -34,7 +34,8 @@
     <ClCompile Include="..\Thread.cpp" />
     <ClCompile Include="..\rand.cpp" />
     <ClCompile Include="..\Engine.cpp" />
-    <ClCompile Include="MessageDispatcher.cpp" />
+    <ClCompile Include="..\MessageDispatcher.cpp" />
+    <ClCompile Include="..\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\todo.h" />
@@ -55,5 +56,6 @@
     <ClInclude Include="..\MessageDispatcher.h" />
     <ClInclude Include="..\Message.h" />
     <ClInclude Include="..\IListener.h" />
+    <ClInclude Include="..\Window.h" />
   </ItemGroup>
 </Project>
