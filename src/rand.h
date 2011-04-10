@@ -4,7 +4,7 @@ Purpose:        Implementation of Mersenne twister
 TODO:           Further optimize, SIMD
 Author:         Kyle Weicht
 Created:        7/17/2010
-Modified:       4/9/2011 10:16:01 PM
+Modified:       4/10/2011 12:34:32 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RAND_H_
@@ -28,7 +28,7 @@ class CRandom
 {
 private: 
     uint m_nMT[StateSize];
-    volatile sint m_nIndex;
+    atomic_t m_nIndex;
 public:
     CRandom();
     

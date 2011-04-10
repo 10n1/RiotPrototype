@@ -2,7 +2,7 @@
 File:           atomic.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 6:10:27 PM
+Modified:       4/10/2011 12:21:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "atomic.h"
@@ -34,6 +34,18 @@ sint AtomicDecrement( volatile sint* pValue )
     return OSAtomicDecrement32( pValue );
 #endif // #ifdef OS_WINDOWS
 }
+
+sint AtomicAdd( volatile sint* pValue, sint nValue )
+{
+#ifdef OS_WINDOWS
+    return _InterlockedExchangeAdd( (volatile long*)pValue, nValue );
+#else
+    return OSAtomicAdd32( nValue, pValue );
+#endif // #ifdef OS_WINDOWS
+}
+
+#ifdef _64BIT
+//-----------------------------------------------------------------------------
 sint64 AtomicIncrement64( volatile sint64* pValue )
 {
 #ifdef OS_WINDOWS
@@ -50,16 +62,6 @@ sint64 AtomicDecrement64( volatile sint64* pValue )
     return OSAtomicDecrement64( pValue );
 #endif // #ifdef OS_WINDOWS
 }
-
-//-----------------------------------------------------------------------------
-sint AtomicAdd( volatile sint* pValue, sint nValue )
-{
-#ifdef OS_WINDOWS
-    return _InterlockedExchangeAdd( (volatile long*)pValue, nValue );
-#else
-    return OSAtomicAdd32( nValue, pValue );
-#endif // #ifdef OS_WINDOWS
-}
 sint64 AtomicAdd64( volatile sint64* pValue, sint64 nValue )
 {
 #ifdef OS_WINDOWS
@@ -69,6 +71,7 @@ sint64 AtomicAdd64( volatile sint64* pValue, sint64 nValue )
 #endif // #ifdef OS_WINDOWS
 }
 
+#endif // #ifdef _64BIT
 
 //-----------------------------------------------------------------------------
 sint AtomicOr( volatile uint* pValue, uint nMask )

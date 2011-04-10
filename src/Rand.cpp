@@ -1,9 +1,9 @@
 /*********************************************************\
- File:           atomic.cpp
+ File:           rand.cpp
  Author:         Kyle Weicht
  Created:        4/8/2011
- Modified:       4/9/2011 6:10:27 PM
- Modified by:    Kyle Weicht
+ Modified:      4/10/2011 11:51:59 AM
+ Modified by:   Kyle Weicht
  \*********************************************************/
 #include "Rand.h"
 #include <time.h>       // TODO: Figure out better way to do this?
@@ -33,6 +33,10 @@ CRandom::CRandom( uint nSeed )
     Reset();
 }
 
+//-----------------------------------------------------------------------------
+//  Reset
+//  Resets the random number generator to a "random" state
+//-----------------------------------------------------------------------------
 void CRandom::Reset()
 {
     for( int i = 0; i < 624; ++i )
@@ -44,13 +48,17 @@ void CRandom::Reset()
     m_nIndex = StateSize;
 }
 
+//-----------------------------------------------------------------------------
+//  Rand
+//  Returns a random uint
+//-----------------------------------------------------------------------------
 uint CRandom::Rand()
 {
     if( !(AtomicDecrement(&m_nIndex)) )
     {
         Reset();
     }
-    
+
     uint n = m_nMT[m_nIndex];
     n ^= n >> 11;
     n ^= ( n << 7 ) & 0x9d2c5680;

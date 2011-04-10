@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 4:04:38 AM
+Modified:       4/10/2011 12:18:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -31,7 +31,7 @@ void CTaskManager::Initialize( void )
 {
     m_bShutdown     = false;
     m_bThreadsIdle  = false;
-    m_nCurrentTask  = 0;
+    m_nCurrentHandle= 0;
     m_nActiveTasks  = 0;
 
     Memset( (void*)&m_nTaskCompletion[0], 0, sizeof( m_nTaskCompletion ) );
@@ -84,8 +84,6 @@ void CTaskManager::Shutdown( void )
 //-----------------------------------------------------------------------------
 void CTaskManager::WakeThreads( void )
 {
-    ASSERT( m_bThreadsIdle );
-
     m_bThreadsIdle = false;
     for( uint i = 1; i < m_nNumThreads; ++i )
     {
@@ -100,8 +98,6 @@ void CTaskManager::WakeThreads( void )
 //-----------------------------------------------------------------------------
 void CTaskManager::WaitForThreads( void )
 {
-    ASSERT( !m_bThreadsIdle );
-
     for( uint i = 1; i < m_nNumThreads; ++i )
     {
         System::WaitForSemaphore( &m_pSleep );
@@ -116,6 +112,13 @@ void CTaskManager::WaitForThreads( void )
 //-----------------------------------------------------------------------------
 task_handle_t CTaskManager::PushTask( TaskFunc* pFunc, void* pData, uint nCount, uint nChunkSize )
 {
+    // First we need to find a new handle to use
+    task_handle_t   nHandle = m_nCurrentHandle % MAX_TASKS;
+
+    while( nHandle = (++m_nCurrentHandle %= MAX_TASKS) && m_nTaskCompletion[nHandle] )
+    {
+    }
+
     // Create our new task
     TTask   newTask = 
     { 
@@ -123,11 +126,11 @@ task_handle_t CTaskManager::PushTask( TaskFunc* pFunc, void* pData, uint nCount,
         pData,              // Void* data
         0,                  // start index
         nChunkSize,         // the count
-        &m_nTaskCompletion[ m_nCurrentTask ]  
+        &m_nTaskCompletion[ nHandle ]  
     };
 
     // Distribute the tasks to the threads
-    uint nThread = 0;
+    static uint nThread = 0;
     uint nStart = 0;
     while( nStart < nCount )
     {
@@ -153,7 +156,7 @@ task_handle_t CTaskManager::PushTask( TaskFunc* pFunc, void* pData, uint nCount,
     WakeThreads();
 
 
-    return m_nCurrentTask++;
+    return nHandle;
 }
 
 //-----------------------------------------------------------------------------

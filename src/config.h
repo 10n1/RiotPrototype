@@ -3,7 +3,7 @@ File:           config.h
 Purpose:        Includes platform and build configurations
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/10/2011 4:34:05 AM
+Modified:       4/10/2011 12:25:10 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CONFIG_H_
@@ -32,6 +32,8 @@ Modified by:    Kyle Weicht
 
 #define WIN32_LEAN_AND_MEAN // Make sure <Windows.h> is lightweight when its included
 
+#define SYSTEM_API_CONVENTION __stdcall
+
 #ifdef _M_X64
 #define _64BIT
 #else
@@ -48,6 +50,7 @@ Modified by:    Kyle Weicht
 
 #include <TargetConditionals.h>
 
+#define SYSTEM_API_CONVENTION
 
 #if TARGET_OS_IPHONE
 #define OS_IOS
@@ -81,6 +84,8 @@ Modified by:    Kyle Weicht
 
 #define ARCH_IA32
 
+#define SYSTEM_API_CONVENTION
+
 #ifdef __LP64__
 #define _64BIT
 #else
@@ -96,7 +101,7 @@ Modified by:    Kyle Weicht
 #define MULTITHREADED                   1
 #define MAX_THREADS                     32
 #define MAX_TASKS_PER_THREAD            2048
-#define MAX_TASKS                       1024
+#define MAX_TASKS                       256
 
 #define RIOT_ALIGN_MEMORY               1
 #define RIOT_USE_INTRINSICS             1

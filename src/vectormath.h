@@ -3,7 +3,7 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/8/2011 10:21:56 PM
+Modified:       4/10/2011 11:47:50 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
@@ -465,7 +465,7 @@ public:
     \***************************************/
     RTransform() : orientation( RQuaternionZero() ), position( RVector3Zero() ), scale( 1.0f ) { }
     RTransform( const RQuaternion& o, const RVector3& p, float s = 1.0f )
-        : orientation( 0 ), position( p ), scale( s ) { }
+        : orientation( o ), position( p ), scale( s ) { }
 
     inline RMatrix4 GetTransformMatrix( void )
     {

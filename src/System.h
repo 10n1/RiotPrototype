@@ -4,7 +4,7 @@ Purpose:        Interface to the base system. All platform
                 specific functions will be called here.
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 3:29:08 AM
+Modified:       4/10/2011 12:25:10 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEM_H_
@@ -34,7 +34,7 @@ namespace System
     typedef pthread_cond_t  wait_condition_t;
     typedef pthread_mutex_t mutex_t;
 #endif
-    typedef thread_return_t (_SystemThreadProc)( void* pData );
+    typedef thread_return_t (SYSTEM_API_CONVENTION _SystemThreadProc)( void* pData );
 
     /***************************************\
     | class methods                         |

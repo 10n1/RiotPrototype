@@ -3,7 +3,7 @@ File:           Thread.h
 Purpose:        Interface for hardware threads
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 4:47:02 AM
+Modified:       4/10/2011 12:36:38 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _THREAD_H_
@@ -17,9 +17,9 @@ namespace Riot
     //////////////////////////////////////////
     //  Typedef for user functions
     typedef void (TaskFunc)( void* pData, uint nThreadId, uint nStart, uint nCount );
-    typedef uint            task_handle_t;
-    typedef volatile sint   task_completion_t;
-    static const            task_handle_t INVALID_HANDLE = 0xFFFFFFFF;
+    typedef uint        task_handle_t;
+    typedef atomic_t    task_completion_t;
+    static const        task_handle_t INVALID_HANDLE = 0xFFFFFFFF;
 
     // Task definition
     struct TTask
@@ -62,7 +62,7 @@ private:
     /***************************************\
     | class members                         |
     \***************************************/
-    volatile sint   m_nLock;
+    atomic_t    m_nLock;
 };
 
 
@@ -113,15 +113,7 @@ class CTaskManager;
 class CThread
 {
     friend class CTaskManager;
-public:
-    
-    //-----------------------------------------------------------------------------
-    //  GetThreadId
-    //  Returns the thread Id
-    //-----------------------------------------------------------------------------
-    uint GetThreadId( void );
-
-//private:
+private:
     // CThread constructor
     CThread();
 
@@ -153,7 +145,7 @@ public:
     //  _ThreadProc
     //  The most basic OS thread function
     //-----------------------------------------------------------------------------
-    static System::thread_return_t _ThreadProc( void* pData );
+    static System::thread_return_t SYSTEM_API_CONVENTION _ThreadProc( void* pData );
 
     //-----------------------------------------------------------------------------
     //  Idle
@@ -196,6 +188,12 @@ public:
     //  Steals tasks from the other threads
     //-----------------------------------------------------------------------------
     bool StealTasks( void );
+
+    //-----------------------------------------------------------------------------
+    //  GetThreadId
+    //  Returns the thread Id
+    //-----------------------------------------------------------------------------
+    uint GetThreadId( void );
     
 private:
     /***************************************\
