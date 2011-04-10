@@ -3,7 +3,7 @@ File:           TaskManager.h
 Purpose:        Task manager
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/9/2011 8:32:48 PM
+Modified:       4/9/2011 9:59:59 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TASKMANAGER_H_
@@ -13,93 +13,6 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
-
-class CMutex
-{
-public:
-    // CMutex constructor
-    CMutex() : m_nLock( 0 ) { }
-
-    /***************************************\
-    | class methods                         |
-    \***************************************/
-    inline void Lock( void )
-    {
-        while( !TryLock() )
-        {
-        }
-    }
-
-    inline bool TryLock( void )
-    {
-        return AtomicExchange( &m_nLock, 1 ) == 0;
-    }
-
-    void Unlock( void )
-    {
-        AtomicExchange( &m_nLock, 0 );
-    }
-
-private:
-    /***************************************\
-    | class members                         |
-    \***************************************/
-    volatile sint   m_nLock;
-};
-
-
-class CScopedMutex
-{
-public:
-    // CScopedMutex constructor
-    CScopedMutex() { m_Mutex.Lock(); }
-
-    // CScopedMutex destructor
-    ~CScopedMutex() { m_Mutex.Unlock(); }
-
-    /***************************************\
-    | class methods                         |
-    \***************************************/
-private:
-    /***************************************\
-    | class members                         |
-    \***************************************/
-    CMutex  m_Mutex;
-};
-
-#define SCOPED_MUTEX CScopedMutex m;
-
-class CTaskCompletion
-{
-public:
-    // CTaskCompletion constructor
-    CTaskCompletion() : m_nBusy( 0 ) { }
-
-    /***************************************\
-    | class methods                         |
-    \***************************************/
-
-    inline bool IsBusy( void ) const
-    {
-        return m_nBusy != 0;
-    }
-
-    void MarkBusy( void )
-    {
-        AtomicIncrement( &m_nBusy );
-    }
-
-    void MarkComplete( void )
-    {
-        AtomicDecrement( &m_nBusy );
-    }
-
-private:
-    /***************************************\
-    | class members                         |
-    \***************************************/
-    volatile sint   m_nBusy;
-};
 
 //________________________________________________________________________________
 class CInternalTask
@@ -155,6 +68,18 @@ public:
     //  Shutdown
     //-----------------------------------------------------------------------------
     void Shutdown( void );
+    
+    //-----------------------------------------------------------------------------
+    //  PushTask
+    //  Adds the task to the queue
+    //-----------------------------------------------------------------------------
+    void PushTask( CInternalTask* pTask );
+    
+    //-----------------------------------------------------------------------------
+    //  WaitForCompletion
+    //  Works until the completion is done
+    //-----------------------------------------------------------------------------
+    void WaitForCompletion( CTaskCompletion* pCompletion );
 
 private:
     //-----------------------------------------------------------------------------
@@ -179,7 +104,7 @@ private:
 
     volatile CTaskCompletion*   m_pMainTaskCompletion;
 
-    uint    m_nNumActiveThreads;
+    uint    m_nNumThreads;
     bool    m_bShutdown;
     bool    m_bThreadsIdle;
 };

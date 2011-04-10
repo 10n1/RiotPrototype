@@ -3,7 +3,7 @@ File:           common.h
 Purpose:        Global include file
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/8/2011 12:59:12 PM
+Modified:       4/9/2011 9:28:52 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMMON_H_
@@ -24,5 +24,6 @@ Modified by:    Kyle Weicht
 #include "memory.h"
 #include "assert.h"
 #include "vectormath.h"
+#include "rand.h"
 
 #endif // #ifndef _COMMON_H_

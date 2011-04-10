@@ -46,5 +46,6 @@
     <ClInclude Include="..\System.h" />
     <ClInclude Include="..\TaskManager.h" />
     <ClInclude Include="..\Thread.h" />
+    <ClInclude Include="..\rand.h" />
   </ItemGroup>
 </Project>
