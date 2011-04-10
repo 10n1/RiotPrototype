@@ -148,9 +148,11 @@ public:
 private:
     /***************************************\
     | class members                         |
-    \***************************************/
-    System::thread_handle   m_pThread;
-    CTaskManager*           m_pTaskManager;
+     \***************************************/
+    System::thread_handle_t     m_pThread;
+    System::wait_condition_t    m_pWakeCondition;
+    System::mutex_t             m_pSystemMutex;
+    CTaskManager*               m_pTaskManager;
 
     CMutex                  m_TaskMutex;
     uint                    m_nThreadId;

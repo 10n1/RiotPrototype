@@ -23,12 +23,16 @@ namespace System
 {
 #ifdef OS_WINDOWS
     typedef unsigned long   thread_return_t;
-    typedef handle          thread_handle;
+    typedef handle          thread_handle_t;
     typedef handle          semaphore_t;
+    typedef handle          wait_condition_t;
+    typedef handle          mutex_t;
 #else
-    typedef void*       thread_return_t;
-    typedef pthread_t   thread_handle;
-    typedef sem_t       semaphore_t;
+    typedef void*           thread_return_t;
+    typedef pthread_t       thread_handle_t;
+    typedef sem_t           semaphore_t;
+    typedef pthread_cond_t  wait_condition_t;
+    typedef pthread_mutex_t mutex_t;
 #endif
     typedef thread_return_t (_SystemThreadProc)( void* pData );
 
@@ -52,10 +56,10 @@ namespace System
     double GetRunningTime( void );
     
     //-----------------------------------------------------------------------------
-    //  ThreadSpawn
+    //  SpawnThread
     //  Creates and starts the thread, running until the function completes
     //-----------------------------------------------------------------------------
-    thread_handle ThreadSpawn( _SystemThreadProc* pFunc, void* pData );
+    thread_handle_t SpawnThread( _SystemThreadProc* pFunc, void* pData );
     
     //-----------------------------------------------------------------------------
     //  GetHardwareThreadCount
@@ -67,7 +71,7 @@ namespace System
     //  GetCurrentThreadHandle
     //  Returns a handle to the calling thread
     //-----------------------------------------------------------------------------
-    thread_handle GetCurrentThreadHandle( void );    
+    thread_handle_t GetCurrentThreadHandle( void );    
     
     //-----------------------------------------------------------------------------
     //  SemaphoreCreate
@@ -92,6 +96,30 @@ namespace System
     //  Waits until the semaphore value is non-zero
     //-----------------------------------------------------------------------------
     void WaitForSemaphore( semaphore_t* pSem );
+    
+    //-----------------------------------------------------------------------------
+    //  CreateMutex
+    //  Creates a mutex
+    //-----------------------------------------------------------------------------
+    mutex_t CreateMutex( void );
+    
+    //-----------------------------------------------------------------------------
+    //  CreateWaitCondition
+    //  Creates a condition to wait for
+    //-----------------------------------------------------------------------------
+    wait_condition_t CreateWaitCondition( void );    
+    
+    //-----------------------------------------------------------------------------
+    //  WaitForCondition
+    //  Waits for the specified condition
+    //-----------------------------------------------------------------------------
+    void WaitForCondition( wait_condition_t* pCondition, mutex_t* pMutex );    
+    
+    //-----------------------------------------------------------------------------
+    //  SignalCondition
+    //  Signals a condition, waking anything waiting for it
+    //-----------------------------------------------------------------------------
+    void SignalCondition( wait_condition_t* pCondition );
 
 } // namespace System
 

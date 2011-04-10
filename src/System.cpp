@@ -99,12 +99,12 @@ namespace System
     }
 
     //-----------------------------------------------------------------------------
-    //  ThreadSpawn
+    //  SpawnThread
     //  Creates and starts the thread, running until the function completes
     //-----------------------------------------------------------------------------
-    thread_handle ThreadSpawn( _SystemThreadProc* pFunc, void* pData )
+    thread_handle_t SpawnThread( _SystemThreadProc* pFunc, void* pData )
     {
-        thread_handle hThread = NULL;
+        thread_handle_t hThread = NULL;
 #ifdef OS_WINDOWS
         hThread = ::CreateThread( NULL, 0, pFunc, pData, 0, 0 );        
 #else
@@ -127,9 +127,9 @@ namespace System
     //  GetCurrentThreadHandle
     //  Returns a handle to the calling thread
     //-----------------------------------------------------------------------------
-    thread_handle GetCurrentThreadHandle( void )
+    thread_handle_t GetCurrentThreadHandle( void )
     {        
-        thread_handle hThread = NULL;
+        thread_handle_t hThread = NULL;
 #ifdef OS_WINDOWS
         hThread = ::GetCurrentThread();        
 #else
@@ -191,6 +191,63 @@ namespace System
         ::WaitForSingleObject( *pSem, INFINITE );  
 #else
         ::sem_wait( pSem );
+#endif
+    }
+    
+    
+    //-----------------------------------------------------------------------------
+    //  CreateMutex
+    //  Creates a mutex
+    //-----------------------------------------------------------------------------
+    mutex_t CreateMutex( void )
+    {
+        mutex_t pMutex;
+#ifdef OS_WINDOWS
+        ::WaitForSingleObject( *pSem, INFINITE );  
+#else
+        ::pthread_mutex_init(&pMutex, NULL);
+#endif        
+        return pMutex;
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  CreateWaitCondition
+    //  Creates a condition to wait for
+    //-----------------------------------------------------------------------------
+    wait_condition_t CreateWaitCondition( void )
+    {
+        wait_condition_t pCondition;
+#ifdef OS_WINDOWS
+        ::WaitForSingleObject( *pSem, INFINITE );  
+#else
+        ::pthread_cond_init( &pCondition, NULL);
+#endif        
+        return pCondition;
+    }
+    
+#include <stdio.h>
+    //-----------------------------------------------------------------------------
+    //  WaitForCondition
+    //  Waits for the specified condition
+    //-----------------------------------------------------------------------------
+    void WaitForCondition( wait_condition_t* pCondition, mutex_t* pMutex )
+    {
+#ifdef OS_WINDOWS
+        ::WaitForSingleObject( *pSem, INFINITE );  
+#else
+        ::pthread_cond_wait(pCondition, pMutex);
+#endif        
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  SignalCondition
+    //  Signals a condition, waking anything waiting for it
+    //-----------------------------------------------------------------------------
+    void SignalCondition( wait_condition_t* pCondition )
+    {
+#ifdef OS_WINDOWS
+#else
+        ::pthread_cond_signal(pCondition);
 #endif
     }
         

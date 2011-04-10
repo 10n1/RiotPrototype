@@ -37,7 +37,6 @@ void CTaskManager::Initialize( void )
 
     // Create semaphores
     m_pSleep = System::SemaphoreCreate( 0 );
-    m_pWake = System::SemaphoreCreate( 0 );
 
     // Attach thread 0 to the main thread
     m_Thread[0].MakeMainThread( this );
@@ -70,7 +69,6 @@ void CTaskManager::Shutdown( void )
     }
 
     System::SemaphoreDestroy( &m_pSleep );
-    System::SemaphoreDestroy( &m_pWake );
 }
 
 //-----------------------------------------------------------------------------
@@ -79,13 +77,14 @@ void CTaskManager::Shutdown( void )
 //-----------------------------------------------------------------------------
 void CTaskManager::WakeThreads( void )
 {
-    //ASSERT( m_bThreadsIdle );
+    ASSERT( m_bThreadsIdle );
 
     m_bThreadsIdle = false;
     for( uint i = 1; i < m_nNumThreads; ++i )
     {
-        System::SemaphoreRelease( &m_pWake );
+        System::SignalCondition( &m_Thread[i].m_pWakeCondition);
     }
+    
 }
 
 //-----------------------------------------------------------------------------
@@ -94,7 +93,7 @@ void CTaskManager::WakeThreads( void )
 //-----------------------------------------------------------------------------
 void CTaskManager::WaitForThreads( void )
 {
-    //ASSERT( !m_bThreadsIdle );
+    ASSERT( !m_bThreadsIdle );
 
     for( uint i = 1; i < m_nNumThreads; ++i )
     {

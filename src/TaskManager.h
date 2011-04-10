@@ -67,9 +67,8 @@ private:
     /***************************************\
     | class members                         |
     \***************************************/
-    CThread             m_Thread[ MAX_THREADS ];
-    System::semaphore_t m_pSleep;
-    System::semaphore_t m_pWake;
+    CThread                     m_Thread[ MAX_THREADS ];
+    System::semaphore_t         m_pSleep;
 
     uint    m_nNumThreads;
     bool    m_bShutdown;

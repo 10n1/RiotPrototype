@@ -46,10 +46,12 @@ System::thread_return_t CThread::_ThreadProc( void* pData )
 //-----------------------------------------------------------------------------
 void CThread::Start( CTaskManager* pTaskManager )
 {
-    m_pTaskManager  = pTaskManager;
-    m_bFinished     = false;
-
-    m_pThread = System::ThreadSpawn( &_ThreadProc, this );
+    m_pTaskManager      = pTaskManager;
+    m_bFinished         = false;
+    m_pSystemMutex      = System::CreateMutex();
+    m_pWakeCondition    = System::CreateWaitCondition();
+    
+    m_pThread = System::SpawnThread( &_ThreadProc, this );
 }
 
 //-----------------------------------------------------------------------------
@@ -77,6 +79,7 @@ void CThread::ThreadProc( void )
     m_bFinished = true;
 }
 
+#include <stdio.h>
 //-----------------------------------------------------------------------------
 //  Idle
 //  Idles the thread until it gets work
@@ -85,7 +88,10 @@ void CThread::Idle( void )
 {
     System::SemaphoreRelease( &m_pTaskManager->m_pSleep );
 
-    System::WaitForSemaphore( &m_pTaskManager->m_pWake );
+    //System::WaitForSemaphore( &m_pTaskManager->m_pWake );
+    printf( "Thread %d waiting!\n", m_nThreadId );
+    System::WaitForCondition(&m_pWakeCondition, &m_pSystemMutex);
+    printf( "Thread %d Awake!\n", m_nThreadId );
 }
 
 //-----------------------------------------------------------------------------

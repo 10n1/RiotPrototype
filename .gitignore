@@ -10,3 +10,5 @@ copy.bat
 *.exe
 *.xcbkptlist
 *.xcuserstate
+*.xcscheme
+*.xcsettings

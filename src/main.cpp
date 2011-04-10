@@ -8,6 +8,7 @@ Modified by:    Kyle Weicht
 #include "common.h"
 #include <stdlib.h> // For atexit on UNIX systems
 #include <stdio.h>
+#include <unistd.h>
 
 #include "System.h"
 #include "TaskManager.h"
@@ -30,6 +31,8 @@ int main( int argc, char* argv[] )
 
     CTimer timer;
     timer.Reset();
+    
+    sleep( 10 );
 
 
     float fTime = timer.GetElapsedTime();
