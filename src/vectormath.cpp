@@ -64,9 +64,9 @@ RVector3 operator*( const RVector3& v, const RMatrix3& m )
 {
     RVector3 a;
 
-    a.x = m.m11 * v.x + m.m12 * v.y + m.m13 * v.z;
-    a.y = m.m21 * v.x + m.m22 * v.y + m.m23 * v.z;
-    a.z = m.m31 * v.x + m.m32 * v.y + m.m33 * v.z;
+    a.x = Hadd( mul(m.r0, v) );
+    a.y = Hadd( mul(m.r1, v) );    
+    a.z = Hadd( mul(m.r2, v) );
 
     return a;
 }
@@ -75,17 +75,21 @@ RMatrix3 operator*( const RMatrix3& l, const RMatrix3& r )
 {
     RMatrix3 m;
 
-    m.m11 = l.m11 * r.m11 + l.m12 * r.m21 + l.m13 * r.m31;
-    m.m12 = l.m11 * r.m12 + l.m12 * r.m22 + l.m13 * r.m32;
-    m.m13 = l.m11 * r.m13 + l.m12 * r.m23 + l.m13 * r.m33;
-
-    m.m21 = l.m21 * r.m11 + l.m22 * r.m21 + l.m23 * r.m31;
-    m.m22 = l.m21 * r.m12 + l.m22 * r.m22 + l.m23 * r.m32;
-    m.m23 = l.m21 * r.m13 + l.m22 * r.m23 + l.m23 * r.m33;
-
-    m.m31 = l.m31 * r.m11 + l.m32 * r.m21 + l.m33 * r.m31;
-    m.m32 = l.m31 * r.m12 + l.m32 * r.m22 + l.m33 * r.m32;
-    m.m33 = l.m31 * r.m13 + l.m32 * r.m23 + l.m33 * r.m33;
+    RVector3 c0( r.r0.x, r.r1.x, r.r2.x );
+    RVector3 c1( r.r0.y, r.r1.y, r.r2.y );
+    RVector3 c2( r.r0.z, r.r1.z, r.r2.z );
+    
+    m.r0.x = Hadd( mul( l.r0, c0 ) );
+    m.r0.y = Hadd( mul( l.r0, c1 ) );
+    m.r0.z = Hadd( mul( l.r0, c2 ) );    
+    
+    m.r1.x = Hadd( mul( l.r1, c0 ) );
+    m.r1.y = Hadd( mul( l.r1, c1 ) );
+    m.r1.z = Hadd( mul( l.r1, c2 ) );    
+    
+    m.r2.x = Hadd( mul( l.r2, c0 ) );
+    m.r2.y = Hadd( mul( l.r2, c1 ) );
+    m.r2.z = Hadd( mul( l.r2, c2 ) );
 
     return m;
 }
@@ -94,8 +98,8 @@ RMatrix3 operator*( const RMatrix3& l, const RMatrix3& r )
 // Matrix functions
 float       Determinant( const RMatrix3& a )
 {
-    float det1 = ( (a.m11*a.m22*a.m33) + (a.m12*a.m23*a.m31) + (a.m13*a.m21*a.m32) );
-    float det2 = ( (a.m13*a.m22*a.m31) + (a.m12*a.m21*a.m33) + (a.m11*a.m23*a.m32) );
+    float det1 = ( (a.r0.x*a.r1.y*a.r2.z) + (a.r0.y*a.r1.z*a.r2.x) + (a.r0.z*a.r1.x*a.r2.y) );
+    float det2 = ( (a.r0.z*a.r1.y*a.r2.x) + (a.r0.y*a.r1.x*a.r2.z) + (a.r0.x*a.r1.z*a.r2.y) );
     return det1 - det2;
 }
 
@@ -103,17 +107,17 @@ RMatrix3    Inverse( const RMatrix3& a )
 {
     RMatrix3 inv;
 
-    inv.m11 =   (a.m22*a.m33) - (a.m23*a.m32);
-    inv.m12 = -((a.m21*a.m33) - (a.m23*a.m31));
-    inv.m13 =   (a.m21*a.m32) - (a.m22*a.m31);
+    inv.r0.x =   (a.r1.y*a.r2.z) - (a.r1.z*a.r2.y);
+    inv.r0.y = -((a.r1.x*a.r2.z) - (a.r1.z*a.r2.x));
+    inv.r0.z =   (a.r1.x*a.r2.y) - (a.r1.y*a.r2.x);
 
-    inv.m21 = -((a.m12*a.m33) - (a.m13*a.m32));
-    inv.m22 =   (a.m11*a.m33) - (a.m13*a.m31);
-    inv.m23 = -((a.m11*a.m32) - (a.m12*a.m31));
+    inv.r1.x = -((a.r0.y*a.r2.z) - (a.r0.z*a.r2.y));
+    inv.r1.y =   (a.r0.x*a.r2.z) - (a.r0.z*a.r2.x);
+    inv.r1.z = -((a.r0.x*a.r2.y) - (a.r0.y*a.r2.x));
 
-    inv.m31 = (a.m12*a.m23) - (a.m13*a.m22);
-    inv.m32 = -((a.m11*a.m23) - (a.m13*a.m21));
-    inv.m33 = (a.m11*a.m22) - (a.m12*a.m21);
+    inv.r2.x = (a.r0.y*a.r1.z) - (a.r0.z*a.r1.y);
+    inv.r2.y = -((a.r0.x*a.r1.z) - (a.r0.z*a.r1.x));
+    inv.r2.z = (a.r0.x*a.r1.y) - (a.r0.y*a.r1.x);
 
     inv = Transpose( inv );
     float fRecip = 1.0f/Determinant( a );
@@ -126,9 +130,9 @@ RMatrix3    Transpose( const RMatrix3& a )
 {
     RMatrix3 m(a);
 
-    Swap(m.m12, m.m21);
-    Swap(m.m13, m.m31);    
-    Swap(m.m23, m.m32);
+    Swap(m.r0.y, m.r1.x);
+    Swap(m.r0.z, m.r2.x);    
+    Swap(m.r1.z, m.r2.y);
 
     return m;
 }
@@ -269,21 +273,21 @@ float       Determinant( const RMatrix4& a )
     float fDet = 0.0f;
 
         // Row 1
-    fDet += a.m11 * Determinant( RMatrix3( a.m22,a.m23,a.m24, 
-                           a.m32,a.m33,a.m34, 
-                           a.m42,a.m43,a.m44) );
+    fDet += a.r0.x * Determinant( RMatrix3( a.r1.y,a.r1.z,a.r1.w, 
+                           a.r2.y,a.r2.z,a.r2.w, 
+                           a.r2.y,a.r2.z,a.r2.w) );
 
-    fDet -=a .m12 * Determinant( RMatrix3( a.m21,a.m23,a.m24, 
-                              a.m31,a.m33,a.m34, 
-                              a.m41,a.m43,a.m44 ) );
+    fDet -=a .r0.y * Determinant( RMatrix3( a.r1.x,a.r1.z,a.r1.w, 
+                              a.r2.x,a.r2.z,a.r2.w, 
+                              a.r2.x,a.r2.z,a.r2.w ) );
 
-    fDet += a.m13 * Determinant( RMatrix3( a.m21,a.m22,a.m24, 
-                           a.m31,a.m32,a.m34, 
-                           a.m41,a.m42,a.m44) );
+    fDet += a.r0.z * Determinant( RMatrix3( a.r1.x,a.r1.y,a.r1.w, 
+                           a.r2.x,a.r2.y,a.r2.w, 
+                           a.r2.x,a.r2.y,a.r2.w) );
 
-    fDet -= a.m14 * Determinant( RMatrix3( a.m21,a.m22,a.m23, 
-                             a.m31,a.m32,a.m33, 
-                             a.m41,a.m42,a.m43) );
+    fDet -= a.r0.w * Determinant( RMatrix3( a.r1.x,a.r1.y,a.r1.z, 
+                             a.r2.x,a.r2.y,a.r2.z, 
+                             a.r2.x,a.r2.y,a.r2.z) );
 
     return fDet;
 }
@@ -293,88 +297,88 @@ RMatrix4    Inverse( const RMatrix4& a )
     RMatrix4 m;
 
     // Row 1
-   m.m11 = Determinant( RMatrix3(    
-       a.m22,a.m23,a.m24, 
-       a.m32,a.m33,a.m34, 
-       a.m42,a.m43,a.m44) );
+   m.r0.x = Determinant( RMatrix3(    
+       a.r1.y,a.r1.z,a.r1.w, 
+       a.r2.y,a.r2.z,a.r2.w, 
+       a.r2.y,a.r2.z,a.r2.w) );
 
-   m.m12 = -Determinant( RMatrix3(    
-       a.m21,a.m23,a.m24, 
-       a.m31,a.m33,a.m34, 
-       a.m41,a.m43,a.m44) );
+   m.r0.y = -Determinant( RMatrix3(    
+       a.r1.x,a.r1.z,a.r1.w, 
+       a.r2.x,a.r2.z,a.r2.w, 
+       a.r2.x,a.r2.z,a.r2.w) );
 
-   m.m13 = Determinant( RMatrix3(    
-       a.m21,a.m22,a.m24, 
-       a.m31,a.m32,a.m34, 
-       a.m41,a.m42,a.m44) );
+   m.r0.z = Determinant( RMatrix3(    
+       a.r1.x,a.r1.y,a.r1.w, 
+       a.r2.x,a.r2.y,a.r2.w, 
+       a.r2.x,a.r2.y,a.r2.w) );
 
-   m.m14 = -Determinant( RMatrix3(    
-       a.m21,a.m22,a.m23, 
-       a.m31,a.m32,a.m33, 
-       a.m41,a.m42,a.m43) );
+   m.r0.w = -Determinant( RMatrix3(    
+       a.r1.x,a.r1.y,a.r1.z, 
+       a.r2.x,a.r2.y,a.r2.z, 
+       a.r2.x,a.r2.y,a.r2.z) );
 
     // Row 2
-   m.m21 = -Determinant( RMatrix3(    
-       a.m12,a.m13,a.m14, 
-       a.m32,a.m33,a.m34, 
-       a.m42,a.m43,a.m44) );
+   m.r1.x = -Determinant( RMatrix3(    
+       a.r0.y,a.r0.z,a.r0.w, 
+       a.r2.y,a.r2.z,a.r2.w, 
+       a.r2.y,a.r2.z,a.r2.w) );
 
-   m.m22 = Determinant( RMatrix3(    
-       a.m11,a.m13,a.m14, 
-       a.m31,a.m33,a.m34, 
-       a.m41,a.m43,a.m44) );
+   m.r1.y = Determinant( RMatrix3(    
+       a.r0.x,a.r0.z,a.r0.w, 
+       a.r2.x,a.r2.z,a.r2.w, 
+       a.r2.x,a.r2.z,a.r2.w) );
 
-   m.m23 = -Determinant( RMatrix3(    
-       a.m11,a.m12,a.m14, 
-       a.m31,a.m32,a.m34, 
-       a.m41,a.m42,a.m44) );
+   m.r1.z = -Determinant( RMatrix3(    
+       a.r0.x,a.r0.y,a.r0.w, 
+       a.r2.x,a.r2.y,a.r2.w, 
+       a.r2.x,a.r2.y,a.r2.w) );
 
-   m.m24 = Determinant( RMatrix3(    
-       a.m11,a.m12,a.m13, 
-       a.m31,a.m32,a.m33, 
-       a.m41,a.m42,a.m43) );
+   m.r1.w = Determinant( RMatrix3(    
+       a.r0.x,a.r0.y,a.r0.z, 
+       a.r2.x,a.r2.y,a.r2.z, 
+       a.r2.x,a.r2.y,a.r2.z) );
 
     // Row 3
-   m.m31 = Determinant( RMatrix3(    
-       a.m12,a.m13,a.m14, 
-       a.m22,a.m23,a.m24, 
-       a.m42,a.m43,a.m44) );
+   m.r2.x = Determinant( RMatrix3(    
+       a.r0.y,a.r0.z,a.r0.w, 
+       a.r1.y,a.r1.z,a.r1.w, 
+       a.r2.y,a.r2.z,a.r2.w) );
 
-   m.m32 = -Determinant( RMatrix3(    
-       a.m11,a.m13,a.m14, 
-       a.m21,a.m23,a.m24, 
-       a.m41,a.m43,a.m44) );
+   m.r2.y = -Determinant( RMatrix3(    
+       a.r0.x,a.r0.z,a.r0.w, 
+       a.r1.x,a.r1.z,a.r1.w, 
+       a.r2.x,a.r2.z,a.r2.w) );
 
-   m.m33 = Determinant( RMatrix3(    
-       a.m11,a.m12,a.m14, 
-       a.m21,a.m22,a.m24, 
-       a.m41,a.m42,a.m44) );
+   m.r2.z = Determinant( RMatrix3(    
+       a.r0.x,a.r0.y,a.r0.w, 
+       a.r1.x,a.r1.y,a.r1.w, 
+       a.r2.x,a.r2.y,a.r2.w) );
 
-   m.m34 = -Determinant( RMatrix3(    
-       a.m11,a.m12,a.m13, 
-       a.m21,a.m22,a.m23, 
-       a.m41,a.m42,a.m43) );
+   m.r2.w = -Determinant( RMatrix3(    
+       a.r0.x,a.r0.y,a.r0.z, 
+       a.r1.x,a.r1.y,a.r1.z, 
+       a.r2.x,a.r2.y,a.r2.z) );
 
     // Row 4
-   m.m41 = -Determinant( RMatrix3(    
-       a.m12,a.m13,a.m14, 
-       a.m22,a.m23,a.m24, 
-       a.m32,a.m33,a.m34) );
+   m.r2.x = -Determinant( RMatrix3(    
+       a.r0.y,a.r0.z,a.r0.w, 
+       a.r1.y,a.r1.z,a.r1.w, 
+       a.r2.y,a.r2.z,a.r2.w) );
 
-   m.m42 = Determinant( RMatrix3(    
-       a.m11,a.m13,a.m14, 
-       a.m21,a.m23,a.m24, 
-       a.m31,a.m33,a.m34) );
+   m.r2.y = Determinant( RMatrix3(    
+       a.r0.x,a.r0.z,a.r0.w, 
+       a.r1.x,a.r1.z,a.r1.w, 
+       a.r2.x,a.r2.z,a.r2.w) );
 
-   m.m43 = -Determinant( RMatrix3(    
-       a.m11,a.m12,a.m14, 
-       a.m21,a.m22,a.m24, 
-       a.m31,a.m32,a.m34) );
+   m.r2.z = -Determinant( RMatrix3(    
+       a.r0.x,a.r0.y,a.r0.w, 
+       a.r1.x,a.r1.y,a.r1.w, 
+       a.r2.x,a.r2.y,a.r2.w) );
 
-   m.m44 = Determinant( RMatrix3(    
-       a.m11,a.m12,a.m13, 
-       a.m21,a.m22,a.m23, 
-       a.m31,a.m32,a.m33) );
+   m.r2.w = Determinant( RMatrix3(    
+       a.r0.x,a.r0.y,a.r0.z, 
+       a.r1.x,a.r1.y,a.r1.z, 
+       a.r2.x,a.r2.y,a.r2.z) );
 
     m = Transpose( m );
     float fRecip = 1.0f/Determinant( a );
@@ -387,12 +391,12 @@ RMatrix4    Transpose( const RMatrix4& a )
 {
     RMatrix4 m(a);
         
-    Swap(m.m12,m.m21);
-    Swap(m.m13,m.m31);
-    Swap(m.m14,m.m41);
-    Swap(m.m23,m.m32);
-    Swap(m.m24,m.m42);
-    Swap(m.m34,m.m43);
+    Swap(m.r0.y,m.r1.x);
+    Swap(m.r0.z,m.r2.x);
+    Swap(m.r0.w,m.r2.x);
+    Swap(m.r1.z,m.r2.y);
+    Swap(m.r1.w,m.r2.y);
+    Swap(m.r2.w,m.r2.z);
 
     return m;
 }

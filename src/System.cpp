@@ -11,6 +11,9 @@ Modified by:    Kyle Weicht
 
 #ifdef OS_WINDOWS
 #include <Windows.h>
+#elif defined( OS_OSX )
+#include <sys/types.h>
+#include <sys/sysctl.h>
 #else
 #endif
 
@@ -158,7 +161,8 @@ namespace System
 #ifdef OS_WINDOWS
         pSemaphore = ::CreateSemaphore( NULL, nInitialValue, LONG_MAX, NULL );      
 #else
-        uint nError = ::sem_init( &pSemaphore, 0, nInitialValue );
+        ::sem_init( &pSemaphore, 0, nInitialValue );
+        // TODO: Handle error
 #endif
 
         return pSemaphore;

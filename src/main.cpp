@@ -12,6 +12,8 @@ Modified by:    Kyle Weicht
 #include "System.h"
 #include "TaskManager.h"
 
+#include <unistd.h>
+
 using namespace Riot;
 
 CTaskManager    gTaskManager;
@@ -28,7 +30,9 @@ int main( int argc, char* argv[] )
     gTaskManager.Initialize();
 
     int x = 83;
+    sleep( 100 );
 
+    printf("%f seconds\n", System::GetRunningTime());
 
     //////////////////////////////////////////
     //  Clean up subsystems

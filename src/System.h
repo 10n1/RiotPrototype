@@ -11,6 +11,11 @@ Modified by:    Kyle Weicht
 #define _SYSTEM_H_
 #include "common.h"
 
+#ifndef OS_WINDOWS
+#include <pthread.h>
+#include <semaphore.h>
+#endif
+
 namespace Riot
 {
 

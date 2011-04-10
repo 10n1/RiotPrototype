@@ -26,8 +26,8 @@ sint AtomicAdd( volatile sint* pValue, sint nValue );
 sint64 AtomicAdd64( volatile sint64* pValue, sint64 nValue );
 
 //-----------------------------------------------------------------------------
-sint AtomicOr( volatile sint* pValue, sint nMask );
-sint AtomicAnd( volatile sint* pValue, sint nMask );
+sint AtomicOr( volatile uint* pValue, uint nMask );
+sint AtomicAnd( volatile uint* pValue, uint nMask );
 
 //-----------------------------------------------------------------------------
 sint AtomicExchange( volatile sint* pValue, sint nNewValue );

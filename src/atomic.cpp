@@ -71,7 +71,7 @@ sint64 AtomicAdd64( volatile sint64* pValue, sint64 nValue )
 
 
 //-----------------------------------------------------------------------------
-sint AtomicOr( volatile sint* pValue, sint nMask )
+sint AtomicOr( volatile uint* pValue, uint nMask )
 {
 #ifdef OS_WINDOWS
     return _InterlockedOr( (volatile long*)pValue, nMask );
@@ -79,7 +79,7 @@ sint AtomicOr( volatile sint* pValue, sint nMask )
     return OSAtomicOr32( nMask, pValue );
 #endif // #ifdef OS_WINDOWS
 }
-sint AtomicAnd( volatile sint* pValue, sint nMask )
+sint AtomicAnd( volatile uint* pValue, uint nMask )
 {
 #ifdef OS_WINDOWS
     return _InterlockedAnd( (volatile long*)pValue, nMask );

@@ -51,6 +51,7 @@ public:
     inline RVector2(  ) { }
     inline RVector2( float X, float Y ) : x(X), y(Y) { }
     inline RVector2( const float* F ) : x(F[0]), y(F[1]) { }
+    inline RVector2& operator=( const RVector2& a ) { x = a.x, y = a.y; return *this; }
 
     // Misc
     inline operator float*() { return f; }
@@ -64,6 +65,8 @@ inline RVector2 operator+( const RVector2& l, const RVector2& r ) { return RVect
 inline RVector2 operator-( const RVector2& l, const RVector2& r ) { return RVector2( l.x - r.x, l.y - r.y ); }
 inline uint operator==( const RVector2& l, const RVector2& r ) { return l.x == r.x && l.y == r.y; }
 inline RVector2 RVector2Zero( void ) { return RVector2( 0.0f, 0.0f ); }
+inline RVector2 mul( const RVector2& l, const RVector2& r ) { return RVector2( l.x*r.x, l.y*r.y ); }
+inline float Hadd( const RVector2& v ) { return v.x + v.y; }
 
 //-----------------------------------------------------------------------------
 //  Vector3
@@ -87,6 +90,7 @@ public:
     inline RVector3(  ) { }
     inline RVector3( float X, float Y, float Z ) : x(X), y(Y), z(Z) { }
     inline RVector3( const float* F ) : x(F[0]), y(F[1]), z(F[2]) { }
+    inline RVector3& operator=( const RVector3& a ) { x = a.x, y = a.y, z = a.z; return *this; }
 
     // Misc
     inline operator float*() { return f; }
@@ -104,10 +108,13 @@ inline RVector3 operator/( const RVector3& a, float f ) { f = 1.0f/f; return RVe
 inline RVector3 operator*( const RVector3& a, float f ) { return RVector3( a.x * f, a.y * f, a.z * f ); }
 inline RVector3 operator*( float f, const RVector3& a ) { return a * f; }
 
-inline RVector3& operator+=( RVector3& l, const RVector3& r ) { l.x += r.x, l.y += r.y, l.z + r.z; return l; }
-inline RVector3& operator-=( RVector3& l, const RVector3& r ) { l.x -= r.x, l.y -= r.y, l.z - r.z; return l; }
+inline RVector3& operator+=( RVector3& l, const RVector3& r ) { l.x += r.x, l.y += r.y, l.z += r.z; return l; }
+inline RVector3& operator-=( RVector3& l, const RVector3& r ) { l.x -= r.x, l.y -= r.y, l.z -= r.z; return l; }
 inline RVector3& operator/=( RVector3& a, float f ) { f = 1.0f/f; a.x *= f, a.y *= f, a.z *= f; return a; }
 inline RVector3& operator*=( RVector3& a, float f ) { a.x *= f, a.y *= f, a.z *= f; return a; }
+
+inline RVector3 mul( const RVector3& l, const RVector3& r ) { return RVector3( l.x*r.x, l.y*r.y, l.z*r.z ); }
+inline float Hadd( const RVector3& v ) { return v.x + v.y + v.z; }
 
 // Comparisons
 inline uint operator==( const RVector3& l, const RVector3& r ) { return l.x == r.x && l.y == r.y && l.z == r.z; }
@@ -144,6 +151,7 @@ public:
     inline RVector4( float X, float Y, float Z, float W ) : x(X), y(Y), z(Z), w(W) { }
     inline RVector4( const RVector3& V, float W ): x(V.x), y(V.y), z(V.z), w(W) { }
     inline RVector4( const float* F ) : x(F[0]), y(F[1]), z(F[2]), w(F[3]) { }
+    inline RVector4& operator=( const RVector4& a ) { x = a.x, y = a.y, z = a.z, w = a.w; return *this; }
 
     // Misc
     inline operator float*() { return f; }
@@ -164,10 +172,13 @@ inline RVector4 operator/( const RVector4& a, float f ) { f = 1.0f/f; return RVe
 inline RVector4 operator*( const RVector4& a, float f ) { return RVector4( a.x * f, a.y * f, a.z * f, a.w * f ); }
 inline RVector4 operator*( float f, const RVector4& a ) { return a * f; }
 
-inline RVector4& operator+=( RVector4& l, const RVector4& r ) { l.x += r.x, l.y += r.y, l.z + r.z, l.w + r.w; return l; }
-inline RVector4& operator-=( RVector4& l, const RVector4& r ) { l.x -= r.x, l.y -= r.y, l.z - r.z, l.w - r.w; return l; }
+inline RVector4& operator+=( RVector4& l, const RVector4& r ) { l.x += r.x, l.y += r.y, l.z += r.z, l.w += r.w; return l; }
+inline RVector4& operator-=( RVector4& l, const RVector4& r ) { l.x -= r.x, l.y -= r.y, l.z -= r.z, l.w -= r.w; return l; }
 inline RVector4& operator/=( RVector4& a, float f ) { f = 1.0f/f; a.x *= f, a.y *= f, a.z *= f, a.w *= f; return a; }
 inline RVector4& operator*=( RVector4& a, float f ) { a.x *= f, a.y *= f, a.z *= f, a.w *= f; return a; }
+
+inline RVector4 mul( const RVector4& l, const RVector4& r ) { return RVector4( l.x*r.x, l.y*r.y, l.z*r.z, l.w*r.w ); }
+inline float Hadd( const RVector4& v ) { return v.x + v.y + v.z + v.w; }
 
 // Comparisons
 inline uint operator==( const RVector4& l, const RVector4& r ) { return l.x == r.x && l.y == r.y && l.z == r.z && l.w == r.w; }
@@ -190,22 +201,9 @@ public:
     /***************************************\
     | class members
     \***************************************/
-    union
-    {
-        struct
-        {    
-        float m11, m12, m13,
-              m21, m22, m23,
-              m31, m32, m33; 
-        };
-        float f[9];
-        struct
-        {
-            RVector3    r0;
-            RVector3    r1;
-            RVector3    r2;
-        };
-    };
+    RVector3    r0;
+    RVector3    r1;
+    RVector3    r2;
 
     /***************************************\
     | class methods
@@ -220,7 +218,14 @@ public:
     {
     }
     inline RMatrix3( const RVector3& R0, const RVector3& R1, const RVector3& R2 ) : r0(R0), r1(R1), r2(R2) { }
-    RMatrix3(const float* F) : r0( F ), r1( F + 3 ), r2( F + 6 ) { }
+    inline RMatrix3(const float* F) : r0( F ), r1( F + 3 ), r2( F + 6 ) { }
+    inline RMatrix3& operator=( const RMatrix3& a ) 
+    { 
+        r0 = a.r0;
+        r1 = a.r1;
+        r2 = a.r2;
+        return *this; 
+    }
 
     
     // Misc
@@ -231,6 +236,8 @@ public:
 
     inline float& operator()(int r, int c ) { return ((&r0)[r])[c]; }
     inline const float& operator()(int r, int c ) const { return ((&r0)[r])[c]; }
+    
+    inline float& m11() { return r0.x; }
 };
 
 // Basic math
@@ -278,24 +285,10 @@ public:
     /***************************************\
     | class members
     \***************************************/
-union
-    {
-        struct 
-        { float    
-            m11, m12, m13, m14,
-            m21, m22, m23, m24,
-            m31, m32, m33, m34,
-            m41, m42, m43, m44; 
-        };
-        float f[16];
-        struct
-        {
-            RVector4 r0;
-            RVector4 r1;
-            RVector4 r2;
-            RVector4 r3;
-        };
-    };
+    RVector4 r0;
+    RVector4 r1;
+    RVector4 r2;
+    RVector4 r3;
 
     /***************************************\
     | class methods
@@ -305,14 +298,21 @@ union
                      float M21, float M22, float M23, float M24,
                      float M31, float M32, float M33, float M34,
                      float M41, float M42, float M43, float M44 )
-                    : m11(M11), m12(M12), m13(M13), m14(M14)
-                    , m21(M21), m22(M22), m23(M23), m24(M24)
-                    , m31(M31), m32(M32), m33(M33), m34(M34)
-                    , m41(M41), m42(M42), m43(M43), m44(M44) { }
+                    : r0(M11, M12, M13, M14)
+                    , r1(M21, M22, M23, M24)
+                    , r2(M31, M32, M33, M34)
+                    , r3(M41, M42, M43, M44) { }
     inline RMatrix4( const RVector4& R0, const RVector4& R1, const RVector4& R2, const RVector4& R3 ) : r0(R0), r1(R1), r2(R2), r3(R3) { }
     inline RMatrix4( const float* F) : r0( F ), r1( F + 4 ), r2( F + 8 ), r3( F + 12 ) { }
     inline RMatrix4( const RMatrix3& m ) : r0( m.r0, 0.0f ), r1( m.r1, 0.0f ), r2( m.r2, 0.0f ), r3( 0.0f, 0.0f, 0.0f, 1.0f ) { }
-
+    inline RMatrix4& operator=( const RMatrix4& a ) 
+    { 
+        r0 = a.r0;
+        r1 = a.r1;
+        r2 = a.r2;
+        r3 = a.r3;
+        return *this; 
+    }
     
     // Misc
     inline operator float*() { return &r0.x; }
@@ -403,8 +403,8 @@ inline RQuaternion operator-( const RQuaternion& a ) { return RQuaternion( -(RVe
 
 inline RQuaternion operator*( const RQuaternion& a, float f ) { return RQuaternion( (RVector4&)a * f ); }
 
-inline RQuaternion& operator+=( RQuaternion& l, const RQuaternion& r ) { l.x += r.x, l.y += r.y, l.z + r.z, l.w + r.w; return l; }
-inline RQuaternion& operator-=( RQuaternion& l, const RQuaternion& r ) { l.x -= r.x, l.y -= r.y, l.z - r.z, l.w - r.w; return l; }
+inline RQuaternion& operator+=( RQuaternion& l, const RQuaternion& r ) { l.x += r.x, l.y += r.y, l.z += r.z, l.w += r.w; return l; }
+inline RQuaternion& operator-=( RQuaternion& l, const RQuaternion& r ) { l.x -= r.x, l.y -= r.y, l.z -= r.z, l.w -= r.w; return l; }
 inline RQuaternion& operator*=( RQuaternion& a, float f ) { return (RQuaternion&)((RVector4&)a *= f); }
 
 // 3D functions
@@ -437,7 +437,7 @@ inline RQuaternion RQuatFromAxisAngle( const RVector3& axis, float angle )
 
 RQuaternion operator*( const RQuaternion& l, const RQuaternion& r );
 
-inline RQuaternion Normalize( const RQuaternion& q ) { return Normalize( (RVector4&)q ); }
+inline RQuaternion Normalize( const RQuaternion& q ) { float recip = 1.0f/Magnitude(q); return q * recip; }
 inline RQuaternion Conjugate( const RQuaternion& q ) { return RQuaternion( -q.x, -q.y, -q.z, q.w ); }
 inline RQuaternion Inverse( const RQuaternion& q ) { return Conjugate( q ); }
 
