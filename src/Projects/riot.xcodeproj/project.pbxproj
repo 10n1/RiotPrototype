@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		361E60DA13523070002051EB /* Rand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 361E60D913523070002051EB /* Rand.cpp */; };
 		3633205113353BE90034C250 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3633205013353BE90034C250 /* Cocoa.framework */; };
 		36DBB7D2135140F500712EE7 /* atomic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36DBB7C7135140F500712EE7 /* atomic.cpp */; };
 		36DBB7D3135140F500712EE7 /* System.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36DBB7C9135140F500712EE7 /* System.cpp */; };
@@ -20,6 +21,7 @@
 
 /* Begin PBXFileReference section */
 		3602086A13517E2C007042D7 /* rand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rand.h; path = ../rand.h; sourceTree = "<group>"; };
+		361E60D913523070002051EB /* Rand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rand.cpp; path = ../../../riot/src/Rand.cpp; sourceTree = "<group>"; };
 		3633204C13353BE90034C250 /* riot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = riot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3633205013353BE90034C250 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		3633205313353BE90034C250 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -63,6 +65,7 @@
 		3633204113353BE90034C250 = {
 			isa = PBXGroup;
 			children = (
+				361E60D913523070002051EB /* Rand.cpp */,
 				3602086A13517E2C007042D7 /* rand.h */,
 				36DBB7C7135140F500712EE7 /* atomic.cpp */,
 				36DBB7C8135140F500712EE7 /* atomic.h */,
@@ -79,12 +82,12 @@
 				36E24373134EEAA000C2A0B7 /* assert.h */,
 				36E24374134EEAA000C2A0B7 /* common.h */,
 				36E24375134EEAA000C2A0B7 /* config.h */,
+				36E24371134EEA4900C2A0B7 /* main.cpp */,
 				36E24376134EEAA000C2A0B7 /* memory.cpp */,
 				36E24377134EEAA000C2A0B7 /* memory.h */,
 				36E24378134EEAA000C2A0B7 /* todo.h */,
 				36E24379134EEAA000C2A0B7 /* types.h */,
 				36752B6013353D0400CFB14E /* riot-Info.plist */,
-				36E24371134EEA4900C2A0B7 /* main.cpp */,
 				3633204F13353BE90034C250 /* Frameworks */,
 				3633204D13353BE90034C250 /* Products */,
 			);
@@ -185,6 +188,7 @@
 				36DBB7D5135140F500712EE7 /* Thread.cpp in Sources */,
 				36DBB7D6135140F500712EE7 /* timer.cpp in Sources */,
 				36DBB7D7135140F500712EE7 /* vectormath.cpp in Sources */,
+				361E60DA13523070002051EB /* Rand.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

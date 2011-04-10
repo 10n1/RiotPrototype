@@ -9,7 +9,7 @@ Modified by:    Kyle Weicht
 #ifndef _TODO_H_
 #define _TODO_H_
 
-Random number generator
+    //Random number generator
     //High resolution timer
     Platform detection code
     //Atomic operations wrapper (_Interlocked*)
@@ -18,9 +18,8 @@ Random number generator
     Network/socket wrapper
     //Math library
     Graphics API wrapper (very low level, just passes draw calls, etc)
-    Module manager (starts and shuts down all managers, etc)
+    //Module manager (starts and shuts down all managers, etc)
     //Memory wrapper (new/delete wrapper)
-    Memory allocators
     //Assertions
     Hash functions (hash string to ID)
     Debug printing
@@ -35,7 +34,7 @@ Random number generator
     Input wrapper
     //Memory allocator (Off the bat, allocate a lot of memory, all other memory comes out of there)
     //Aligned allocations
-    Threading API
+    //Threading API
 
 
 #endif // #ifndef _TODO_H_

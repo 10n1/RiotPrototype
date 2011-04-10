@@ -30,6 +30,7 @@ typedef signed   __int64 int64;
 #else // not defined( WIN32 ) || defined( WIN64 )
 #include <stdint.h>
 #include <stddef.h>
+#include <limits.h>
 typedef int8_t    bool8;
 typedef uint8_t   byte;
 typedef uint8_t   uint8;
