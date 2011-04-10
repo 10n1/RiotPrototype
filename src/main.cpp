@@ -2,7 +2,7 @@
 File:           main.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/10/2011 4:30:20 AM
+Modified:       4/10/2011 4:34:30 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "common.h"
@@ -26,9 +26,9 @@ CTaskManager    gTaskManager;
 
 static CMutex lock;
 
-#define NUM_TASKS 8192
+#define NUM_TASKS 8192*2
 #define TASK_CHUNK 64
-#define NUM_MATH 2048*1
+#define NUM_MATH 2048*4
 
 RMatrix4    matrixA[MAX_THREADS][NUM_MATH];
 RMatrix4    matrixB[MAX_THREADS][NUM_MATH];
