@@ -9,3 +9,4 @@ obj
 copy.bat
 *.exe
 *.xcbkptlist
+*.xcuserstate
