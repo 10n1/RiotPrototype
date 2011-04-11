@@ -3,19 +3,21 @@ File:           Engine.h
 Purpose:        The main engine
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 5:33:22 PM
+Modified:       4/10/2011 8:26:11 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ENGINE_H_
 #define _ENGINE_H_
 #include "common.h"
 #include "IListener.h"
+#include "timer.h"
 
 namespace Riot
 {
     class CTaskManager;
     class CMessageDispatcher;
     class CWindow;
+    class CInputManager;
 
     class Engine : public IListener
     {
@@ -63,6 +65,12 @@ namespace Riot
         //-----------------------------------------------------------------------------
         static void SendMsg( const TMessage& msg );
         static void SendMsg( MessageType nType );
+        
+        //-----------------------------------------------------------------------------
+        //  GetTaskManager
+        //  Returns the task manager
+        //-----------------------------------------------------------------------------
+        static CTaskManager* GetTaskManager( void );
 
     private:    
         //-----------------------------------------------------------------------------
@@ -84,13 +92,17 @@ namespace Riot
         static const MessageType    MessagesReceived[];
         static const uint           NumMessagesReceived;
 
+        static CTimer               m_MainTimer;
         static Engine*              m_pInstance;
         static CTaskManager*        m_pTaskManager;
         static CMessageDispatcher*  m_pMessageDispatcher;
+        static CInputManager*       m_pInputManager;
 
         static CWindow*             m_pMainWindow;
 
-        static bool                 m_bRunning;
+        static float    m_fElapsedTime;
+        static uint     m_nFrame;
+        static bool     m_bRunning;
     };
 
 

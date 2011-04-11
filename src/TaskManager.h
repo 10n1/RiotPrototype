@@ -3,7 +3,7 @@ File:           TaskManager.h
 Purpose:        Task manager
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 3:15:39 PM
+Modified:       4/10/2011 7:28:00 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TASKMANAGER_H_
@@ -19,7 +19,8 @@ namespace Riot
     private:
 
         friend class CThread;
-    public:
+        friend class Engine;
+
         /***************************************\
         | class methods                         |
         \***************************************/
@@ -28,6 +29,7 @@ namespace Riot
 
         // CTaskManagerDestructor
         ~CTaskManager();
+    public:
 
         //-----------------------------------------------------------------------------
         //  Initialize

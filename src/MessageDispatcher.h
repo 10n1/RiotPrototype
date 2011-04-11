@@ -3,7 +3,7 @@ File:           MessageDispatcher.h
 Purpose:        Dispatches engine messages
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 5:31:51 PM
+Modified:       4/10/2011 8:12:54 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MESSAGEDISPATCHER_H_
@@ -17,17 +17,20 @@ namespace Riot
     class CMessageDispatcher
     {
     private:
+        friend class Engine;
+
         enum
         {
             MAX_REGISTERED_PER_MESSAGE = 16,
             MESSAGE_QUEUE_LENGTH = 1024,
         };
-    public:
+
         // CMessageDispatcher constructor
         CMessageDispatcher();
 
         // CMessageDispatcher destructor
         ~CMessageDispatcher();
+    public:
         /***************************************\
         | class methods                         |
         \***************************************/
@@ -80,11 +83,14 @@ namespace Riot
         | class members                         |
         \***************************************/
         IListener*  m_ppListeners[mNUMMESSAGES][MAX_REGISTERED_PER_MESSAGE];
-        TMessage    m_pMessages[ MESSAGE_QUEUE_LENGTH ];
         uint        m_nNumRegistered[mNUMMESSAGES];
+        TMessage    m_pMessages[2][ MESSAGE_QUEUE_LENGTH ];
+        atomic_t    m_nNumMessages[2];
 
-        atomic_t    m_nMessageIndex;
+        TMessage*   m_pCurrentQueue;
+        atomic_t*   m_pCurrentIndex;
 
+        uint        m_nCurrentQueue;
     };
 
 } // namespace Riot

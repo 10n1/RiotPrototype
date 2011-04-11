@@ -3,7 +3,7 @@ File:           Message.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 5:45:54 PM
+Modified:       4/10/2011 8:22:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MESSAGE_H_
@@ -22,13 +22,17 @@ namespace Riot
         mResize,
 
         // Hardware Input
-        mHardwareKeyboard,
+        mHardwareKeyboardDown,
+        mHardwareKeyboardUp,
         mHardwareMouseMove,
         mHardwareMouseButton,
 
         // "Processed" input
-        mKey,
-        mMouseButton,
+        mKeyPressed,
+        mKeyDown,
+        mKeyUp,
+        mMouseButtonDown,
+        mMouseButtonPressed,
         mMouseMove,
 
         mNUMMESSAGES

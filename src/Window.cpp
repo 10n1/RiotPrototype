@@ -2,11 +2,13 @@
 File:           Window.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 5:14:47 PM
+Modified:       4/10/2011 7:43:21 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Window.h"
 #include "System.h"
+#include "Engine.h"
+#include "TaskManager.h"
 
 namespace Riot
 {

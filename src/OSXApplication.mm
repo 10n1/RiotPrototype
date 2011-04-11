@@ -1,11 +1,10 @@
-//
-//  OSXApplication.m
-//  riot
-//
-//  Created by Kyle Weicht on 4/10/11.
-//  Copyright 2011 none. All rights reserved.
-//
-
+/*********************************************************\
+File:           OSXApplication.mm
+Author:         Kyle Weicht
+Created:        4/10/2011
+Modified:       4/10/2011 7:59:25 PM
+Modified by:    Kyle Weicht
+\*********************************************************/
 #import "OSXApplication.h"
 #include "Window.h"
 #include "Input.h"
@@ -98,11 +97,14 @@ using namespace Riot;
 {    
     char c = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     
-    Engine::PostMsg( TMessage( mHardwareKeyboard, c ) );
+    Engine::PostMsg( TMessage( mHardwareKeyboardDown, c ) );
 }
 
 -(void) keyUp:(NSEvent *)theEvent
 {
+    char c = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+    
+    Engine::PostMsg( TMessage( mHardwareKeyboardUp, c ) );
 }
 
 @end

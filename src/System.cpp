@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 5:45:54 PM
+Modified:       4/10/2011 7:59:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -429,7 +429,7 @@ namespace Riot
             {
                 // TODO: Use this or the GetKeyboardState method?
                 //       This should be faster, no extra overhead from GetKeyboardState
-                Engine::PostMsg( TMessage( mHardwareKeyboard, wParam ) );
+                Engine::PostMsg( TMessage( mHardwareKeyboardDown, wParam ) );
                 return 0;
             }
         case WM_MOUSEMOVE:
@@ -441,7 +441,12 @@ namespace Riot
         case WM_KEYUP:
         case WM_SYSKEYUP:
             {
-                break;
+                Engine::PostMsg( TMessage( mHardwareKeyboardUp, wParam ) );
+                return 0;
+            }
+        case WM_PAINT:
+            {
+                return 0;
             }
         default:
             return DefWindowProc(hWnd, nMsg, wParam, lParam);

@@ -1,10 +1,13 @@
-//
-//  OSXApplication.h
-//  riot
-//
-//  Created by Kyle Weicht on 4/10/11.
-//  Copyright 2011 none. All rights reserved.
-//
+/*********************************************************\
+File:           OSXApplication.h
+Purpose:        Interface for the Cocoa application
+Author:         Kyle Weicht
+Created:        4/10/2011
+Modified:       4/10/2011 6:55:07 PM
+Modified by:    Kyle Weicht
+\*********************************************************/
+#ifndef _OSXAPPLICATION_H_
+#define _OSXAPPLICATION_H_
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #include "common.h"
@@ -59,3 +62,6 @@ namespace Riot
 -(void) m_pOwnerApplication:(NSApplication*)pApplication;
 
 @end
+
+
+#endif // #ifndef _OSXAPPLICATION_H_

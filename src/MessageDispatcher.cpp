@@ -2,7 +2,7 @@
 File:           MessageDispatcher.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 5:33:22 PM
+Modified:       4/10/2011 8:15:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "MessageDispatcher.h"
@@ -38,7 +38,12 @@ namespace Riot
         }
 
         // We have no messages pending
-        m_nMessageIndex = 0;
+        m_nNumMessages[0] = 0;
+        m_nNumMessages[1] = 0;
+
+        m_nCurrentQueue = 0;
+        m_pCurrentIndex = &m_nNumMessages[m_nCurrentQueue];
+        m_pCurrentQueue = m_pMessages[m_nCurrentQueue];
     }
 
     //-----------------------------------------------------------------------------
@@ -55,14 +60,14 @@ namespace Riot
     void CMessageDispatcher::PostMsg( const TMessage& msg )
     {
         // If the queue is full, process it immediately
-        if( m_nMessageIndex >= MESSAGE_QUEUE_LENGTH )
+        if( *m_pCurrentIndex >= MESSAGE_QUEUE_LENGTH )
         {
             DispatchMsg( msg );
             return;
         }
 
-        uint nIndex = AtomicIncrement( &m_nMessageIndex ) - 1;
-        m_pMessages[ nIndex ] = msg;
+        uint nIndex = AtomicIncrement( m_pCurrentIndex ) - 1;
+        m_pCurrentQueue[ nIndex ] = msg;
     }
     void CMessageDispatcher::PostMsg( MessageType nType )
     {
@@ -88,13 +93,19 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CMessageDispatcher::ProcessMessages( void )
     {
-        uint nCount = m_nMessageIndex;
+        uint nQueueToProcess = m_nCurrentQueue;
+
+        m_nCurrentQueue = (++m_nCurrentQueue % 2);
+        m_pCurrentIndex = &m_nNumMessages[m_nCurrentQueue];
+        m_pCurrentQueue = m_pMessages[m_nCurrentQueue];
+
+        uint nCount = m_nNumMessages[nQueueToProcess];
         for( uint i = 0; i < nCount; ++i )
         {
-            DispatchMsg( m_pMessages[i] );
+            DispatchMsg( m_pMessages[nQueueToProcess][i] );
         }
 
-        m_nMessageIndex = 0;
+        m_nNumMessages[nQueueToProcess] = 0;
     }
 
     //-----------------------------------------------------------------------------

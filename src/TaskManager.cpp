@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 4:26:46 PM
+Modified:       4/10/2011 7:42:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -110,11 +110,15 @@ namespace Riot
     //-----------------------------------------------------------------------------
     task_handle_t CTaskManager::PushTask( TaskFunc* pFunc, void* pData, uint nCount, uint nChunkSize )
     {
+        if( nChunkSize == 0 )
+            nChunkSize = 1;
+
         // First we need to find a new handle to use
         task_handle_t   nHandle = m_nCurrentHandle % MAX_TASKS;
 
         while( nHandle = (++m_nCurrentHandle %= MAX_TASKS) && m_nTaskCompletion[nHandle] )
         {
+            ;
         }
 
         // Create our new task
@@ -174,8 +178,6 @@ namespace Riot
         {
             m_Thread[0].DoWork( &m_nTaskCompletion[nHandle] );
         }
-
-        AtomicDecrement( &m_nActiveTasks );
     }
 
 } // namespace Riot

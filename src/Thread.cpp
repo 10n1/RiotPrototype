@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 4:26:45 PM
+Modified:       4/10/2011 7:42:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -51,6 +51,7 @@ namespace Riot
         m_bAwake            = false;
         m_pSystemMutex      = System::CreateRiotMutex();
         m_pWakeCondition    = System::CreateWaitCondition();
+        m_nNumTasks         = 0;
 
         m_pThread = System::SpawnThread( &_ThreadProc, this );
     }
@@ -150,6 +151,10 @@ namespace Riot
 
                 pFunc( pData, m_nThreadId, nStart, nCount );
                 AtomicDecrement( task.pCompletion );
+                if( task.pCompletion == 0 )
+                {
+                    AtomicDecrement( &m_pTaskManager->m_nActiveTasks );
+                }
 
                 if( pCompletion && (*pCompletion == 0) )
                 {
@@ -174,7 +179,7 @@ namespace Riot
             return false;
         }
 
-        if( m_nNumTasks == 0 )
+        if( m_nNumTasks == 0 || m_nNumTasks == 1 )
         {
             // We've just finished our work, leave
             return false;
@@ -255,9 +260,11 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CThread::MakeMainThread( CTaskManager* pTaskManager )
     {
-        m_pTaskManager = pTaskManager;
-        m_pThread = System::GetCurrentThreadHandle();
-        m_bFinished = false;
+        m_pTaskManager  = pTaskManager;
+        m_pThread           = System::GetCurrentThreadHandle();
+        m_bFinished         = false;
+        m_bAwake            = true;
+        m_nNumTasks         = 0;
     }
 
     //-----------------------------------------------------------------------------

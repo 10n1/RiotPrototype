@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 5:45:54 PM
+Modified:       4/10/2011 8:32:47 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -10,6 +10,8 @@ Modified by:    Kyle Weicht
 #include "MessageDispatcher.h"
 #include "Window.h"
 #include "System.h"
+#include "timer.h"
+#include "InputManager.h"
 
 #define SHUTDOWN_AND_DELETE( Module ) if( Module ) { Module->Shutdown(); delete Module; Module = NULL; }
 #define NEW_AND_INITIALIZE( Module, Type ) Module = new Type; Module->Initialize();
@@ -20,19 +22,23 @@ namespace Riot
     /***************************************\
     | class members                         |
     \***************************************/
+    CTimer              Engine::m_MainTimer;
     Engine*             Engine::m_pInstance             = NULL;
     CTaskManager*       Engine::m_pTaskManager          = NULL;
     CMessageDispatcher* Engine::m_pMessageDispatcher    = NULL;
     CWindow*            Engine::m_pMainWindow           = NULL;
+    CInputManager*      Engine::m_pInputManager         = NULL;
 
+    float               Engine::m_fElapsedTime          = 0.0f;
+    uint                Engine::m_nFrame                = 0;
     bool                Engine::m_bRunning              = true;
 
     const MessageType   Engine::MessagesReceived[] = 
     {
         mShutdown,
-        mHardwareKeyboard,
         mFullscreen,
         mResize,
+        mKeyPressed,
     };
     const uint          Engine::NumMessagesReceived = ARRAY_LENGTH( MessagesReceived );
 
@@ -68,14 +74,27 @@ namespace Riot
         // Run the engine
         while( m_bRunning )
         {
-            
+
             //////////////////////////////////////////
             //  Process OS messages
             m_pMainWindow->ProcessMessages();
 
             //////////////////////////////////////////
+            // Update input
+            m_pInputManager->ProcessInput();
+
+            //////////////////////////////////////////
             //  Process this frames messages
             m_pMessageDispatcher->ProcessMessages();
+
+            //////////////////////////////////////////
+            // Perform end of frame timing, etc.
+            m_fElapsedTime = (float)m_MainTimer.GetElapsedTime();
+            if( m_fElapsedTime > 1.0f )
+            {   // Prevent huge lapses in frame rate (when debugging, etc.)
+                m_fElapsedTime = 1.0f/60.0f;
+            }
+            ++m_nFrame;
         }
 
         //////////////////////////////////////////
@@ -96,27 +115,16 @@ namespace Riot
                 m_bRunning = false;
                 break;
             }
-        case mHardwareKeyboard:
+        case mKeyPressed:
             {
                 switch( msg.nMessage )
                 {
                 case KEY_ESCAPE:
                     {
-                        SendMsg( mShutdown );
-                        break;
-                    }
-                case KEY_ENTER:
-                    {
-                        break;
-                    }
-                    case KEY_LEFT:
-                    {
-                        int x = 0;
-                        
+                        m_pMessageDispatcher->SendMsg( mShutdown );
                         break;
                     }
                 }
-                break;
             }
         case mFullscreen:
             {
@@ -147,6 +155,15 @@ namespace Riot
     void Engine::SendMsg( MessageType nType ) { m_pMessageDispatcher->SendMsg( nType ); }
 
     //-----------------------------------------------------------------------------
+    //  GetTaskManager
+    //  Returns the task manager
+    //-----------------------------------------------------------------------------
+    CTaskManager* Engine::GetTaskManager( void )
+    {
+        return m_pTaskManager;
+    }
+
+    //-----------------------------------------------------------------------------
     //  Initialize
     //  Initializes the engine. This is called from Run
     //-----------------------------------------------------------------------------
@@ -158,6 +175,8 @@ namespace Riot
         NEW_AND_INITIALIZE( m_pTaskManager, CTaskManager );
         NEW_AND_INITIALIZE( m_pMessageDispatcher, CMessageDispatcher );
         m_pMessageDispatcher->RegisterListener( Engine::GetInstance(), Engine::MessagesReceived, Engine::NumMessagesReceived );
+        NEW_AND_INITIALIZE( m_pInputManager, CInputManager );
+        m_pMessageDispatcher->RegisterListener( m_pInputManager, CInputManager::MessagesReceived, CInputManager::NumMessagesReceived );
         // New Modules here
 
         //////////////////////////////////////////
@@ -165,6 +184,10 @@ namespace Riot
 
         // Create a window
         m_pMainWindow = System::CreateMainWindow( 1024, 768 );
+
+
+        // Finally reset the timer
+        m_MainTimer.Reset();
     }
 
     //-----------------------------------------------------------------------------
@@ -180,6 +203,7 @@ namespace Riot
         //////////////////////////////////////////
         // ...then shutdown and delete all modules
         // New modules here
+        SHUTDOWN_AND_DELETE( m_pInputManager );
         SHUTDOWN_AND_DELETE( m_pMessageDispatcher );
         SHUTDOWN_AND_DELETE( m_pTaskManager );
         System::Shutdown();

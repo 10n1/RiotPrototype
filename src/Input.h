@@ -3,7 +3,7 @@ File:           Input.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 5:28:31 PM
+Modified:       4/10/2011 6:53:10 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _INPUT_H_
@@ -16,7 +16,8 @@ namespace Riot
     {
 #ifdef OS_WINDOWS
         // Utility keys
-        KEY_ESCAPE = 0x1B, // VK_ESCAPE
+        KEY_ESCAPE  = 0x1B, // VK_ESCAPE
+        KEY_ENTER   = 0x0D,
 
         // Arrows
         KEY_LEFT    = 0x25, // VK_LEFT 
@@ -24,19 +25,6 @@ namespace Riot
         KEY_UP      = 0x26, // VK_UP   
         KEY_DOWN    = 0x28, // VK_DOWN 
         
-#elif defined( OS_OSX )
-        // Utility keys
-        KEY_ESCAPE  = '\e', // VK_ESCAPE
-        KEY_ENTER   = 0x0003,
-        
-        // Arrows
-        KEY_LEFT    = 0x02, // VK_LEFT 
-        KEY_RIGHT   = 0x03, // VK_RIGHT
-        KEY_UP      = 0x0,  // VK_UP   
-        KEY_DOWN    = 0x01, // VK_DOWN 
-#else
-#endif
-
         // Letters
         KEY_A = 'A',
         KEY_B = 'B',
@@ -65,6 +53,48 @@ namespace Riot
         KEY_Y = 'Y',
         KEY_Z = 'Z',
         KEY_SPACE = ' ',
+
+#elif defined( OS_OSX )
+        // Utility keys
+        KEY_ESCAPE  = '\e', // VK_ESCAPE
+        KEY_ENTER   = 0x0003,
+        
+        // Arrows
+        KEY_LEFT    = 0x02, // VK_LEFT 
+        KEY_RIGHT   = 0x03, // VK_RIGHT
+        KEY_UP      = 0x0,  // VK_UP   
+        KEY_DOWN    = 0x01, // VK_DOWN 
+        
+        // Letters
+        KEY_A = 'a',
+        KEY_B = 'b',
+        KEY_C = 'c',
+        KEY_D = 'd',
+        KEY_E = 'e',
+        KEY_F = 'f',
+        KEY_G = 'g',
+        KEY_H = 'h',
+        KEY_I = 'i',
+        KEY_J = 'j',
+        KEY_K = 'k',
+        KEY_L = 'l',
+        KEY_M = 'm',
+        KEY_N = 'n',
+        KEY_O = 'o',
+        KEY_P = 'p',
+        KEY_Q = 'q',
+        KEY_R = 'r',
+        KEY_S = 's',
+        KEY_T = 't',
+        KEY_U = 'u',
+        KEY_V = 'v',
+        KEY_W = 'w',
+        KEY_X = 'x',
+        KEY_Y = 'y',
+        KEY_Z = 'z',
+        KEY_SPACE = ' ',
+#else
+#endif
 
 
     };
