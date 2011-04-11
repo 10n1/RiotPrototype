@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 5:34:59 PM
+Modified:       4/10/2011 5:45:54 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -30,7 +30,7 @@ namespace Riot
     const MessageType   Engine::MessagesReceived[] = 
     {
         mShutdown,
-        mKeyboard,
+        mHardwareKeyboard,
         mFullscreen,
         mResize,
     };
@@ -96,7 +96,7 @@ namespace Riot
                 m_bRunning = false;
                 break;
             }
-        case mKeyboard:
+        case mHardwareKeyboard:
             {
                 switch( msg.nMessage )
                 {
@@ -113,6 +113,9 @@ namespace Riot
             }
         case mResize:
             {
+                uint nWidth = msg.nMessage >> 16;
+                uint nHeight = msg.nMessage & 0x0000FFFF;
+
                 break;
             }
         }

@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 5:30:08 PM
+Modified:       4/10/2011 5:45:54 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -372,12 +372,14 @@ namespace Riot
                 PostQuitMessage(0);
                 return 0;
             }
+        case WM_SIZING:
         case WM_SIZE:
             {
                 RECT rcClient;
                 GetClientRect( hWnd, &rcClient );
                 unsigned int nWidth = rcClient.right - rcClient.left;
                 unsigned int nHeight = rcClient.bottom - rcClient.top;
+                Engine::PostMsg( TMessage( mResize, ((nWidth << 16 ) | nHeight) ) );
                 return 0;
             }
         case WM_KEYDOWN: 
@@ -385,7 +387,7 @@ namespace Riot
             {
                 // TODO: Use this or the GetKeyboardState method?
                 //       This should be faster, no extra overhead from GetKeyboardState
-                Engine::PostMsg( TMessage( mKeyboard, wParam ) );
+                Engine::PostMsg( TMessage( mHardwareKeyboard, wParam ) );
                 return 0;
             }
         case WM_MOUSEMOVE:
