@@ -4,7 +4,7 @@ Purpose:        Interface to the base system. All platform
 specific functions will be called here.
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 10:33:41 PM
+Modified:       4/10/2011 11:39:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEM_H_
@@ -21,7 +21,7 @@ Modified by:    Kyle Weicht
 namespace Riot
 {
     class CWindow;
-    class CGraphics;
+    class CGraphicsDevice;
 #ifdef OS_WINDOWS
     class CWin32Application;
 #endif
@@ -148,25 +148,26 @@ namespace Riot
         static void ProcessOSMessages( void );
         
         //-----------------------------------------------------------------------------
-        //  CGraphics
+        //  CGraphicsDevice
         //  Creates and returns an OpenGL interface for the specified window
         //-----------------------------------------------------------------------------
-        static CGraphics* CreateOpenGLDevice( CWindow* pWindow );
+        static CGraphicsDevice* CreateOpenGLDevice( CWindow* pWindow );
 
     private:
         /***************************************\
         | class members                         |
         \***************************************/
-        static CTimer   gs_GlobalTimer;
-        static CWindow* gs_pMainWindow;
+        static CTimer       m_GlobalTimer;
+        static CWindow*     m_pMainWindow;
+        static CGraphicsDevice*   m_pGraphics;
 #ifdef OS_WINDOWS
-        static CWin32Application*   gs_pApplication;
+        static CWin32Application*   m_pApplication;
 #elif defined( OS_OSX )
         // OS X has NS App automatically defined
 #else
 #endif
 
-        static uint     gs_nNumHardwareThreads;
+        static uint     m_nNumHardwareThreads;
     };
 
 } // namespace Riot

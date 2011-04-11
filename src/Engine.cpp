@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 10:39:38 PM
+Modified:       4/10/2011 11:42:45 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -12,6 +12,7 @@ Modified by:    Kyle Weicht
 #include "System.h"
 #include "timer.h"
 #include "InputManager.h"
+#include "Graphics.h"
 
 #define SHUTDOWN_AND_DELETE( Module ) if( Module ) { Module->Shutdown(); delete Module; Module = NULL; }
 #define NEW_AND_INITIALIZE( Module, Type ) Module = new Type; Module->Initialize();
@@ -28,6 +29,7 @@ namespace Riot
     CMessageDispatcher* Engine::m_pMessageDispatcher    = NULL;
     CWindow*            Engine::m_pMainWindow           = NULL;
     CInputManager*      Engine::m_pInputManager         = NULL;
+    CGraphicsDevice*          Engine::m_pGraphics             = NULL;
 
     float               Engine::m_fElapsedTime          = 0.0f;
     uint                Engine::m_nFrame                = 0;
@@ -74,6 +76,8 @@ namespace Riot
         // Run the engine
         while( m_bRunning )
         {
+            m_pGraphics->Clear();
+            m_pGraphics->Present();
 
             //////////////////////////////////////////
             //  Process OS messages
@@ -189,6 +193,10 @@ namespace Riot
         // Create a window
         m_pMainWindow = System::CreateMainWindow( 1024, 768 );
 
+        // Load the graphics device
+        m_pGraphics = System::CreateOpenGLDevice( m_pMainWindow );
+        m_pGraphics->SetClearColor( 0.25f, 0.25f, 0.75f, 1.0f );
+        m_pGraphics->SetClearDepth( 1.0f );
 
         // Finally reset the timer
         m_MainTimer.Reset();
@@ -202,6 +210,7 @@ namespace Riot
     {        
         //////////////////////////////////////////
         // Now perform any shutdown needed
+        SAFE_RELEASE( m_pGraphics );
         SAFE_RELEASE( m_pMainWindow );
 
         //////////////////////////////////////////

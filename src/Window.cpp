@@ -2,7 +2,7 @@
 File:           Window.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 10:39:45 PM
+Modified:       4/10/2011 11:14:34 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Window.h"
@@ -15,7 +15,7 @@ namespace Riot
 
     // CWindow constructor
     CWindow::CWindow()
-        : m_pSystemWindow( NULL )
+        : m_pWindow( NULL )
         , m_nHeight( 0 )
         , m_nWidth( 0 )
     {
@@ -33,9 +33,9 @@ namespace Riot
     //-----------------------------------------------------------------------------
     //  Accessors/Mutators
     //-----------------------------------------------------------------------------
-    handle CWindow::GetSystemWindow( void )
+    handle CWindow::GetWindow( void )
     {
-        return m_pSystemWindow;
+        return m_pWindow;
     }
 
     uint CWindow::GetWidth( void )

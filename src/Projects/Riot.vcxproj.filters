@@ -39,6 +39,8 @@
     <ClCompile Include="..\InputManager.cpp" />
     <ClCompile Include="..\Graphics.cpp" />
     <ClCompile Include="..\Win32Application.cpp" />
+    <ClCompile Include="..\Win32OpenGL.cpp" />
+    <ClCompile Include="..\OGLGraphics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\todo.h" />
@@ -64,5 +66,7 @@
     <ClInclude Include="..\InputManager.h" />
     <ClInclude Include="..\Graphics.h" />
     <ClInclude Include="..\Win32Application.h" />
+    <ClInclude Include="..\SystemOpenGL.h" />
+    <ClInclude Include="..\OGLGraphics.h" />
   </ItemGroup>
 </Project>

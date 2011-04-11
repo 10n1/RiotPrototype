@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 10:38:42 PM
+Modified:       4/10/2011 11:39:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -10,6 +10,10 @@ Modified by:    Kyle Weicht
 #include "Thread.h"
 #include "Window.h"
 #include "Engine.h"
+#include "Graphics.h"
+#include "SystemOpenGL.h"
+
+#include "OGLGraphics.h"
 
 #ifdef OS_WINDOWS
 #include <Windows.h>
@@ -36,11 +40,12 @@ namespace Riot
     /***************************************\
     | System members
     \***************************************/
-    CTimer      System::gs_GlobalTimer;
-    uint        System::gs_nNumHardwareThreads = 0;
-    CWindow*    System::gs_pMainWindow  = NULL;
+    CTimer      System::m_GlobalTimer;
+    uint        System::m_nNumHardwareThreads   = 0;
+    CWindow*    System::m_pMainWindow           = NULL;
+    CGraphicsDevice*  System::m_pGraphics             = NULL;
 #ifdef OS_WINDOWS
-    CWin32Application*  System::gs_pApplication = NULL;
+    CWin32Application*  System::m_pApplication  = NULL;
 #elif defined( OS_OSX )
     // OS X has NS App automatically defined
 #else
@@ -55,39 +60,39 @@ namespace Riot
     void System::Initialize( void )
     {
         // Reset the running timer
-        gs_GlobalTimer.Reset();
+        m_GlobalTimer.Reset();
 
         // Calculate the number of hardware threads
 #if (MULTITHREADED == 0)
-        gs_nNumHardwareThreads = 1;
+        m_nNumHardwareThreads = 1;
 #else
 
 #ifdef OS_WINDOWS
         SYSTEM_INFO si;
         GetSystemInfo( &si );
-        gs_nNumHardwareThreads = si.dwNumberOfProcessors;
+        m_nNumHardwareThreads = si.dwNumberOfProcessors;
 #elif defined( OS_LINUX )
-        gs_nNumHardwareThreads = sysconf( _SC_NPROCESSORS_ONLN );
+        m_nNumHardwareThreads = sysconf( _SC_NPROCESSORS_ONLN );
 #elif defined( OS_OSX )
         int     mib[] = { CTL_HW, HW_AVAILCPU }; // Interested in availible CPUs
-        size_t  nLen = sizeof( gs_nNumHardwareThreads );
+        size_t  nLen = sizeof( m_nNumHardwareThreads );
 
         // Reads system info
-        sysctl(mib, ARRAY_LENGTH(mib), &gs_nNumHardwareThreads, &nLen, NULL, 0);
+        sysctl(mib, ARRAY_LENGTH(mib), &m_nNumHardwareThreads, &nLen, NULL, 0);
 
-        if( gs_nNumHardwareThreads < 1 ) 
+        if( m_nNumHardwareThreads < 1 ) 
         {   // HW_AVAILCPU might have been the problem, try HW_NCPU
             mib[1] = HW_NCPU;
-            sysctl(mib, ARRAY_LENGTH(mib), &gs_nNumHardwareThreads, &nLen, NULL, 0);
+            sysctl(mib, ARRAY_LENGTH(mib), &m_nNumHardwareThreads, &nLen, NULL, 0);
 
-            if( gs_nNumHardwareThreads < 1 )
+            if( m_nNumHardwareThreads < 1 )
             {
-                gs_nNumHardwareThreads = 1;
+                m_nNumHardwareThreads = 1;
             }
         }
 #endif // #ifdef OS_WINDOWS
-        if( gs_nNumHardwareThreads > MAX_THREADS )
-            gs_nNumHardwareThreads = MAX_THREADS;
+        if( m_nNumHardwareThreads > MAX_THREADS )
+            m_nNumHardwareThreads = MAX_THREADS;
 
 #endif // #if SINGLETHREADED
     }
@@ -105,7 +110,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     double System::GetRunningTime( void )
     {
-        return gs_GlobalTimer.GetRunningTime();
+        return m_GlobalTimer.GetRunningTime();
     }
 
     //-----------------------------------------------------------------------------
@@ -130,7 +135,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     uint System::GetHardwareThreadCount( void )
     {
-        return gs_nNumHardwareThreads;
+        return m_nNumHardwareThreads;
     }
 
     //-----------------------------------------------------------------------------
@@ -283,20 +288,18 @@ namespace Riot
     CWindow* System::CreateMainWindow( uint nWidth, uint nHeight )
     {
         // If we already have a window, just return it
-        if( gs_pMainWindow != NULL )
+        if( m_pMainWindow != NULL )
         {
-            gs_pMainWindow->AddRef();
-            return gs_pMainWindow;
+            m_pMainWindow->AddRef();
+            return m_pMainWindow;
         }
 
-        gs_pMainWindow = new CWindow();
+        m_pMainWindow = new CWindow();
 #ifdef OS_WINDOWS
-        ASSERT( gs_pApplication == NULL );
-        gs_pApplication = new CWin32Application();
+        ASSERT( m_pApplication == NULL );
+        m_pApplication = new CWin32Application();
 
-        gs_pApplication->CreateMainWindow( nWidth, nHeight );
-
-        gs_pMainWindow->m_pSystemWindow = gs_pApplication;
+        m_pMainWindow->m_pWindow = m_pApplication->CreateMainWindow( nWidth, nHeight );
 #else
         ///////////////////////////////////
         // Create the Window
@@ -305,27 +308,25 @@ namespace Riot
         NSApp = [COSXApplication sharedApplication];
         
         ASSERT( NSApp );
-        
-        
+
+
         ///////////////////////////////////
         // Load the Xib
         if( ![NSBundle loadNibNamed:@"Menu" owner:NSApp] )
         {
             // TODO: Handle error
+            ASSERT( 0 );
         }
-        
+
         
         ///////////////////////////////////
         // Initialize the Window
-        [NSApp CreateWindowWithWidth:nWidth Height:nHeight Fullscreen:false Window:gs_pMainWindow];
+        m_pMainWindow->m_pWindow = [NSApp CreateWindowWithWidth:nWidth Height:nHeight Fullscreen:false Window:m_pMainWindow];
+#endif        
+        m_pMainWindow->m_nWidth = nWidth;
+        m_pMainWindow->m_nHeight = nHeight;
         
-        gs_pMainWindow->m_pSystemWindow = NSApp;
-#endif
-        
-        gs_pMainWindow->m_nWidth = nWidth;
-        gs_pMainWindow->m_nHeight = nHeight;
-        
-        return gs_pMainWindow;
+        return m_pMainWindow;
     }
 
     //-----------------------------------------------------------------------------
@@ -335,7 +336,7 @@ namespace Riot
     void System::ProcessOSMessages( void )
     {
 #ifdef OS_WINDOWS
-        gs_pApplication->ProcessOSMessages();
+        m_pApplication->ProcessOSMessages();
 #else
         [NSApp ProcessOSMessages];
 #endif
@@ -343,12 +344,21 @@ namespace Riot
 
 
     //-----------------------------------------------------------------------------
-    //  CGraphics
+    //  CGraphicsDevice
     //  Creates and returns an OpenGL interface for the specified window
     //-----------------------------------------------------------------------------
-    CGraphics* System::CreateOpenGLDevice( CWindow* pWindow )
+    CGraphicsDevice* System::CreateOpenGLDevice( CWindow* pWindow )
     {
-        return 0;
+        ASSERT( m_pGraphics == NULL );
+
+        COGLDevice* pGraphics = new COGLDevice();
+#ifdef OS_WINDOWS
+        SystemOpenGL::CreateOpenGLDevice( &pGraphics->m_pDevice, pWindow );
+#else
+#endif
+
+        m_pGraphics = pGraphics;
+        return m_pGraphics;
     }
 
 } // namespace Riot

@@ -2,7 +2,7 @@
 File:           Win32Application.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 10:38:56 PM
+Modified:       4/10/2011 11:14:34 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Win32Application.h"
@@ -30,7 +30,7 @@ namespace Riot
     //  CreateMainWindow
     //  Creates a window (only 1 for now)
     //-----------------------------------------------------------------------------
-    void CWin32Application::CreateMainWindow( uint nWidth, uint nHeight )
+    handle CWin32Application::CreateMainWindow( uint nWidth, uint nHeight )
     {
         ASSERT( m_hWnd == NULL );
 
@@ -62,6 +62,8 @@ namespace Riot
         ASSERT( m_hWnd );
 
         ShowWindow( m_hWnd, SW_SHOWNORMAL ); // TODO: Don't hardcode the SW_SHOWNORMAL
+
+        return m_hWnd;
     }
 
     //-----------------------------------------------------------------------------

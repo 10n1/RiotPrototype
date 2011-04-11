@@ -26,6 +26,7 @@
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\memory.cpp" />
     <ClCompile Include="..\MessageDispatcher.cpp" />
+    <ClCompile Include="..\OGLGraphics.cpp" />
     <ClCompile Include="..\rand.cpp" />
     <ClCompile Include="..\System.cpp" />
     <ClCompile Include="..\TaskManager.cpp" />
@@ -33,6 +34,7 @@
     <ClCompile Include="..\timer.cpp" />
     <ClCompile Include="..\vectormath.cpp" />
     <ClCompile Include="..\Win32Application.cpp" />
+    <ClCompile Include="..\Win32OpenGL.cpp" />
     <ClCompile Include="..\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -49,8 +51,10 @@
     <ClInclude Include="..\memory.h" />
     <ClInclude Include="..\Message.h" />
     <ClInclude Include="..\MessageDispatcher.h" />
+    <ClInclude Include="..\OGLGraphics.h" />
     <ClInclude Include="..\rand.h" />
     <ClInclude Include="..\System.h" />
+    <ClInclude Include="..\SystemOpenGL.h" />
     <ClInclude Include="..\TaskManager.h" />
     <ClInclude Include="..\Thread.h" />
     <ClInclude Include="..\timer.h" />
@@ -148,7 +152,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;d3dx11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;d3d11.lib;d3dx11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -167,7 +171,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;d3dx11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;d3d11.lib;d3dx11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -190,7 +194,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;d3dx11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;d3d11.lib;d3dx11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -213,7 +217,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;d3dx11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;d3d11.lib;d3dx11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

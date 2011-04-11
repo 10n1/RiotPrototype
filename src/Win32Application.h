@@ -3,7 +3,7 @@ File:           Win32Application.h
 Purpose:        Interface for the Win32 application
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 10:34:18 PM
+Modified:       4/10/2011 11:15:20 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _WIN32APPLICATION_H_
@@ -30,7 +30,7 @@ public:
     //  CreateMainWindow
     //  Creates a window (only 1 for now)
     //-----------------------------------------------------------------------------
-    void CreateMainWindow( uint nWidth, uint nHeight );
+    handle CreateMainWindow( uint nWidth, uint nHeight );
 
     //-----------------------------------------------------------------------------
     //  ProcessOSMessages

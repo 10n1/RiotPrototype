@@ -1,44 +1,45 @@
 /*********************************************************\
-File:           Graphics.h
-Purpose:        Base graphics hardware API
+File:           OGLGraphics.h
+Purpose:        OpenGL graphics interface
 Author:         Kyle Weicht
 Created:        4/10/2011
 Modified:       4/10/2011 11:42:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#ifndef _GRAPHICS_H_
-#define _GRAPHICS_H_
+#ifndef _OGLGRAPHICS_H_
+#define _OGLGRAPHICS_H_
 #include "common.h"
-#include "IRefCounted.h"
+#include "Graphics.h"
+#include "SystemOpenGL.h"
 
 namespace Riot
 {
 
-    class CGraphicsDevice : public IRefCounted
+    class COGLDevice : public CGraphicsDevice
     {
+        friend class System;
     public:
-        // CGraphicsDevice constructor
-        CGraphicsDevice();
+        // COGLDevice constructor
+        COGLDevice();
 
-        // CGraphicsDevice destructor
-        virtual ~CGraphicsDevice();
+        // COGLDevice destructor
+        ~COGLDevice();
         /***************************************\
         | class methods                         |
         \***************************************/
         
-        virtual void SetClearColor( float fRed, float fGreen, float fBlue, float fAlpha ) = 0;
-        virtual void SetClearDepth( float fDepth ) = 0;
-        virtual void Clear( void ) = 0;
-        virtual void Present( void ) = 0;
+        void SetClearColor( float fRed, float fGreen, float fBlue, float fAlpha );
+        void SetClearDepth( float fDepth );
+        void Clear( void );
+        void Present( void );
 
     private:
         /***************************************\
         | class members                         |
         \***************************************/
-
+        SystemOpenGL::TOpenGLDevice m_pDevice;
     };
-
 
 } // namespace Riot
 
-#endif // #ifndef _GRAPHICS_H_
+#endif // #ifndef _OGLGRAPHICS_H_

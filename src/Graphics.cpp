@@ -2,7 +2,7 @@
 File:           Graphics.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 10:15:49 PM
+Modified:       4/10/2011 11:39:03 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Graphics.h"
@@ -10,13 +10,13 @@ Modified by:    Kyle Weicht
 namespace Riot
 {
 
-    // CGraphics constructor
-    CGraphics::CGraphics()
+    // CGraphicsDevice constructor
+    CGraphicsDevice::CGraphicsDevice()
     {
     }
 
-    // CGraphics destructor
-    CGraphics::~CGraphics()
+    // CGraphicsDevice destructor
+    CGraphicsDevice::~CGraphicsDevice()
     {
     }
 

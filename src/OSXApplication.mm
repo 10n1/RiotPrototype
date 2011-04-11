@@ -2,7 +2,7 @@
 File:           OSXApplication.mm
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 10:38:42 PM
+Modified:       4/10/2011 11:14:34 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #import "OSXApplication.h"
@@ -59,7 +59,7 @@ using namespace Riot;
 //  CreateWindowWithWidth
 //  Creates the main application window
 //-----------------------------------------------------------------------------
-- (void) CreateWindowWithWidth:(int)nWidth Height:(int)nHeight Fullscreen:(bool)bFullscreen Window:(Riot::CWindow *)pWindow
+- (handle) CreateWindowWithWidth:(int)nWidth Height:(int)nHeight Fullscreen:(bool)bFullscreen Window:(Riot::CWindow *)pWindow
 {
     ASSERT( m_pSystemWindow == NULL );
 
@@ -97,6 +97,8 @@ using namespace Riot;
     [m_pSystemWindow makeKeyAndOrderFront:self];
     
     RELEASEPOOL;
+
+    return m_pSystemWindow;
 }
 
 //-----------------------------------------------------------------------------

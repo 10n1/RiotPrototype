@@ -2,7 +2,7 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/10/2011 5:11:24 PM
+Modified:       4/10/2011 11:30:46 PM
 Modified by:    Kyle Weicht
 
 TODO:           Add alignment support? Should be ultra easy
@@ -169,7 +169,7 @@ void* Memcpy( void* pDest, const void* pSource, uint nSize )
     {
         *a = *b;
         a++, b++;
-        nSize--;
+        --nSize;
     }
 #else    
     uint64* a = (uint64*)pDest;
@@ -201,17 +201,23 @@ void* Memset( void* pDest, uint c, uint nSize )
 #if RIOT_USE_INTRINSICS
     byte* a = (byte*)pDest;
 
-    uint nVectorWidth = sizeof( __m128 );
+    const uint nVectorWidth = sizeof( __m128 );
     __m128 vFill = _mm_load1_ps( (float*)&c );
 
-    while( nSize > 0 )
+    while( nSize >= nVectorWidth )
     {
         _mm_storeu_ps( (float*)a, vFill);
         a += nVectorWidth;
 
         nSize -= nVectorWidth;
     }
-
+    
+    while( nSize > 0 )
+    {
+        *a = c;
+        a++;
+        --nSize;
+    }
 #else
     uint64* a = (uint64*)pDest;
 

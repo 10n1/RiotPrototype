@@ -3,9 +3,11 @@ File:           OSXApplication.h
 Purpose:        Interface for the Cocoa application
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 10:38:41 PM
+Modified:       4/10/2011 11:14:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
+#ifndef _OSXAPPLICATION_H_
+#define _OSXAPPLICATION_H_
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #include "common.h"
@@ -36,7 +38,7 @@ namespace Riot
 //  CreateWindowWithWidth
 //  Creates the main application window
 //-----------------------------------------------------------------------------
-- (void) CreateWindowWithWidth:(int)nWidth Height:(int)nHeight Fullscreen:(bool)bFullscreen Window:(Riot::CWindow *)pWindow;
+- (handle) CreateWindowWithWidth:(int)nWidth Height:(int)nHeight Fullscreen:(bool)bFullscreen Window:(Riot::CWindow *)pWindow;
 
 //-----------------------------------------------------------------------------
 //  ProcessOSMessages
@@ -65,3 +67,6 @@ namespace Riot
 -(void) m_pOwnerApplication:(NSApplication*)pApplication;
 
 @end
+
+
+#endif // #ifndef _OSXAPPLICATION_H_
