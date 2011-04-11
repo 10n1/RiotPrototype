@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\atomic.cpp" />
     <ClCompile Include="..\Engine.cpp" />
+    <ClCompile Include="..\Graphics.cpp" />
     <ClCompile Include="..\InputManager.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\memory.cpp" />
@@ -31,6 +32,7 @@
     <ClCompile Include="..\Thread.cpp" />
     <ClCompile Include="..\timer.cpp" />
     <ClCompile Include="..\vectormath.cpp" />
+    <ClCompile Include="..\Win32Application.cpp" />
     <ClCompile Include="..\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -39,6 +41,7 @@
     <ClInclude Include="..\common.h" />
     <ClInclude Include="..\config.h" />
     <ClInclude Include="..\Engine.h" />
+    <ClInclude Include="..\Graphics.h" />
     <ClInclude Include="..\IListener.h" />
     <ClInclude Include="..\Input.h" />
     <ClInclude Include="..\InputManager.h" />
@@ -54,6 +57,7 @@
     <ClInclude Include="..\todo.h" />
     <ClInclude Include="..\types.h" />
     <ClInclude Include="..\vectormath.h" />
+    <ClInclude Include="..\Win32Application.h" />
     <ClInclude Include="..\Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

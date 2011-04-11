@@ -2,7 +2,7 @@
 File:           Window.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 7:43:21 PM
+Modified:       4/10/2011 10:39:45 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Window.h"
@@ -29,15 +29,6 @@ namespace Riot
     /***************************************\
     | class methods                         |
     \***************************************/
-
-    //-----------------------------------------------------------------------------
-    //  ProcessMessages
-    //  Processes system messages
-    //-----------------------------------------------------------------------------
-    void CWindow::ProcessMessages( void )
-    {
-        System::ProcessOSMessages();
-    }
 
     //-----------------------------------------------------------------------------
     //  Accessors/Mutators

@@ -2,7 +2,7 @@
 File:           OSXApplication.mm
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 7:59:25 PM
+Modified:       4/10/2011 10:38:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #import "OSXApplication.h"
@@ -21,6 +21,14 @@ using namespace Riot;
     self = [super init];
     if (self) 
     {
+        m_pDistantFuture    = NULL;
+        m_pDistantPast      = NULL;    
+        m_pSystemWindow     = NULL;
+        m_pRunLoop          = NULL;
+        
+        m_pView         = NULL;        
+        m_pMainWindow   = NULL;
+
         // Initalize distant dates
         m_pDistantFuture = [[NSDate distantFuture] retain];
         m_pDistantPast = [[NSDate distantPast] retain];    
@@ -53,6 +61,8 @@ using namespace Riot;
 //-----------------------------------------------------------------------------
 - (void) CreateWindowWithWidth:(int)nWidth Height:(int)nHeight Fullscreen:(bool)bFullscreen Window:(Riot::CWindow *)pWindow
 {
+    ASSERT( m_pSystemWindow == NULL );
+
     DECLAREPOOL;    
     
     NSRect windowRect;
@@ -86,6 +96,34 @@ using namespace Riot;
     [m_pSystemWindow setContentView:m_pView];
     [m_pSystemWindow makeKeyAndOrderFront:self];
     
+    RELEASEPOOL;
+}
+
+//-----------------------------------------------------------------------------
+//  ProcessOSMessages
+//  Handles Windows messages
+//-----------------------------------------------------------------------------
+- (void) ProcessOSMessages
+{
+    DECLAREPOOL;
+    for( ;; )
+    {
+        NSEvent* pEvent = [NSApp nextEventMatchingMask:NSAnyEventMask 
+                                             untilDate:[NSApp m_pDistantPast] 
+                                                inMode:NSDefaultRunLoopMode 
+                                               dequeue:YES];
+
+        if( pEvent == nil )
+            break;
+
+        [self sendEvent:pEvent];
+
+        if( ![self isRunning] )
+            break;
+
+        [pAPool release];
+        pAPool = [[NSAutoreleasePool alloc] init];
+    }
     RELEASEPOOL;
 }
 

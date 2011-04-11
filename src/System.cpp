@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 7:59:25 PM
+Modified:       4/10/2011 10:38:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -13,6 +13,7 @@ Modified by:    Kyle Weicht
 
 #ifdef OS_WINDOWS
 #include <Windows.h>
+#include "Win32Application.h"
 #elif defined( OS_OSX )
 #include <sys/types.h>
 #include <sys/sysctl.h>
@@ -26,10 +27,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     //  Function declarations
     //-----------------------------------------------------------------------------
-#ifdef OS_WINDOWS
-    // Windows message handler
-    LRESULT CALLBACK _WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam);
-#endif
+
 
     //-----------------------------------------------------------------------------
     //  Struct definitions
@@ -40,6 +38,12 @@ namespace Riot
     CTimer      System::gs_GlobalTimer;
     uint        System::gs_nNumHardwareThreads = 0;
     CWindow*    System::gs_pMainWindow  = NULL;
+#ifdef OS_WINDOWS
+    CWin32Application*  System::gs_pApplication = NULL;
+#elif defined( OS_OSX )
+        // OS X has NS App automatically defined
+#else
+#endif
 
     /***************************************\
     | Public methods
@@ -286,35 +290,12 @@ namespace Riot
 
         gs_pMainWindow = new CWindow();
 #ifdef OS_WINDOWS
-        wchar_t szName[] = L"Riot"; // TODO: Don't hardcode
-        /////////////////////////////////////
-        // Create and register the class
-        HINSTANCE hInst = GetModuleHandle( NULL );
-        WNDCLASS wndClass;
-        memset(&wndClass, 0, sizeof(wndClass));
-        wndClass.lpfnWndProc    = _WndProc;
-        wndClass.hInstance      = hInst;
-        wndClass.hCursor        = LoadCursor(0, IDC_ARROW);
-        wndClass.lpszClassName  = szName;
-        wndClass.style          = CS_HREDRAW | CS_VREDRAW;
+        ASSERT( gs_pApplication == NULL );
+        gs_pApplication = new CWin32Application();
 
-        RegisterClass(&wndClass);
+        gs_pApplication->CreateMainWindow( nWidth, nHeight );
 
-        /////////////////////////////////////
-        // Create and show the window
-        gs_pMainWindow->m_pSystemWindow = CreateWindow(
-            szName, szName,      // Class and window name
-            WS_OVERLAPPEDWINDOW, // Window style
-            CW_USEDEFAULT, 0,    // X, Y position
-            nWidth, nHeight,     // Width and height (border width 16 and 38)
-            0, 0,                // Parent window, Menu handle
-            hInst,               // Instance
-            gs_pMainWindow );    // void misc
-
-        ASSERT( gs_pMainWindow->m_pSystemWindow );
-
-        ShowWindow( (HWND)gs_pMainWindow->m_pSystemWindow, SW_SHOWNORMAL ); // TODO: Don't hardcode the SW_SHOWNORMAL
-
+        gs_pMainWindow->m_pSystemWindow = gs_pApplication;
 #else
         ///////////////////////////////////
         // Create the Window
@@ -353,107 +334,20 @@ namespace Riot
     void System::ProcessOSMessages( void )
     {
 #ifdef OS_WINDOWS
-        //----------------------------------------------------------
-        // Perform Windows messaging
-        MSG msg = { 0 };
-        if( PeekMessage( &msg, 0, 0, 0, PM_REMOVE ) )
-        {
-            if( msg.message == WM_QUIT )
-            {
-                // TODO: Pass to the engine
-                Engine::SendMsg( TMessage( mShutdown ) );
-            }
-
-            TranslateMessage( &msg );
-            DispatchMessage( &msg );
-        }
+        gs_pApplication->ProcessOSMessages();
 #else
-        DECLAREPOOL;
-        for( ;; )
-        {
-            NSEvent* pEvent = [NSApp nextEventMatchingMask:NSAnyEventMask 
-                                                untilDate:[NSApp m_pDistantPast] 
-                                                   inMode:NSDefaultRunLoopMode 
-                                                  dequeue:YES];
-            
-            if( pEvent == nil )
-                break;
-            
-            [NSApp sendEvent:pEvent];
-            
-            if( ![NSApp isRunning] )
-                break;
-            
-            [pAPool release];
-            pAPool = [[NSAutoreleasePool alloc] init];
-        }
-        RELEASEPOOL;
+        [NSApp ProcessOSMessages];
 #endif
     }
 
-#ifdef OS_WINDOWS
-    // Windows message handler
-    LRESULT CALLBACK _WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
-    {    
-        static CWindow*     pWindow = NULL;
-        switch(nMsg)
-        {
-        case WM_CREATE:
-            {
-                CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
-                pWindow = (CWindow*)pCreate->lpCreateParams;
-                return 0;
-            }
-        case WM_CLOSE:
-            {
-                PostQuitMessage(0);
-                return 0;
-            }
-        case WM_DESTROY:
-            {
-                PostQuitMessage(0);
-                return 0;
-            }
-        case WM_SIZING:
-        case WM_SIZE:
-            {
-                RECT rcClient;
-                GetClientRect( hWnd, &rcClient );
-                unsigned int nWidth = rcClient.right - rcClient.left;
-                unsigned int nHeight = rcClient.bottom - rcClient.top;
-                Engine::PostMsg( TMessage( mResize, ((nWidth << 16 ) | nHeight) ) );
-                return 0;
-            }
-        case WM_KEYDOWN: 
-        case WM_SYSKEYDOWN:
-            {
-                // TODO: Use this or the GetKeyboardState method?
-                //       This should be faster, no extra overhead from GetKeyboardState
-                Engine::PostMsg( TMessage( mHardwareKeyboardDown, wParam ) );
-                return 0;
-            }
-        case WM_MOUSEMOVE:
-            {
-                uint8 nMouse = 0;
 
-                return 0;
-            }
-        case WM_KEYUP:
-        case WM_SYSKEYUP:
-            {
-                Engine::PostMsg( TMessage( mHardwareKeyboardUp, wParam ) );
-                return 0;
-            }
-        case WM_PAINT:
-            {
-                return 0;
-            }
-        default:
-            return DefWindowProc(hWnd, nMsg, wParam, lParam);
-        }
-
-        return DefWindowProc(hWnd, nMsg, wParam, lParam);
+    //-----------------------------------------------------------------------------
+    //  CGraphics
+    //  Creates and returns an OpenGL interface for the specified window
+    //-----------------------------------------------------------------------------
+    CGraphics* System::CreateOpenGLDevice( CWindow* pWindow )
+    {
+        return 0;
     }
-#endif
 
 } // namespace Riot

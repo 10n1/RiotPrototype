@@ -37,6 +37,8 @@
     <ClCompile Include="..\MessageDispatcher.cpp" />
     <ClCompile Include="..\Window.cpp" />
     <ClCompile Include="..\InputManager.cpp" />
+    <ClCompile Include="..\Graphics.cpp" />
+    <ClCompile Include="..\Win32Application.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\todo.h" />
@@ -60,5 +62,7 @@
     <ClInclude Include="..\Window.h" />
     <ClInclude Include="..\Input.h" />
     <ClInclude Include="..\InputManager.h" />
+    <ClInclude Include="..\Graphics.h" />
+    <ClInclude Include="..\Win32Application.h" />
   </ItemGroup>
 </Project>

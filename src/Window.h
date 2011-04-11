@@ -3,7 +3,7 @@ File:           Window.h
 Purpose:        Main window
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 5:14:47 PM
+Modified:       4/10/2011 10:39:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _WINDOW_H_
@@ -27,12 +27,6 @@ namespace Riot
         \***************************************/
 
         //-----------------------------------------------------------------------------
-        //  ProcessMessages
-        //  Processes system messages
-        //-----------------------------------------------------------------------------
-        void ProcessMessages( void );
-
-        //-----------------------------------------------------------------------------
         //  Accessors/Mutators
         //-----------------------------------------------------------------------------
         handle GetSystemWindow( void );
@@ -42,8 +36,8 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        handle  m_pSystemWindow;    // Win32:   HWND
-                                    // OS X:    NSWindow*
+        handle  m_pSystemWindow;    // Win32:   Win32Application
+                                    // OS X:    NSApplication*
                                     // Linux:   LinuxWindow*??????? <-- 98% sure its called LinuxWindow
         uint    m_nWidth;
         uint    m_nHeight;
