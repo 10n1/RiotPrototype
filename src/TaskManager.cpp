@@ -116,7 +116,7 @@ namespace Riot
         // First we need to find a new handle to use
         task_handle_t   nHandle = m_nCurrentHandle % MAX_TASKS;
 
-        while( nHandle = (++m_nCurrentHandle %= MAX_TASKS) && m_nTaskCompletion[nHandle] )
+        while( (nHandle = (++m_nCurrentHandle %= MAX_TASKS)) && m_nTaskCompletion[nHandle] )
         {
             ;
         }
@@ -157,7 +157,6 @@ namespace Riot
         // Make sure the threads are awake
         WakeThreads();
 
-        System::mutex_t x;
         return nHandle;
     }
 

@@ -25,7 +25,7 @@ namespace Riot
         // Engine constructor
         Engine() { }
         Engine( const Engine& ref ) { }
-        Engine& operator=( const Engine& ref ) { }
+        Engine& operator=( const Engine& ref ) { return *this; }
 
         // Engine destructor
         ~Engine() { }

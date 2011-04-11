@@ -19,6 +19,7 @@ Modified by:    Kyle Weicht
 #include <sys/sysctl.h>
 #include "OSXApplication.h"
 #else
+// Linux
 #endif
 
 namespace Riot
@@ -41,7 +42,7 @@ namespace Riot
 #ifdef OS_WINDOWS
     CWin32Application*  System::gs_pApplication = NULL;
 #elif defined( OS_OSX )
-        // OS X has NS App automatically defined
+    // OS X has NS App automatically defined
 #else
 #endif
 

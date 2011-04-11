@@ -137,6 +137,10 @@ namespace Riot
 
                 break;
             }
+        default:
+            {
+                break;
+            }
         }
     }
 

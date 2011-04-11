@@ -6,8 +6,6 @@ Created:        4/10/2011
 Modified:       4/10/2011 10:38:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#ifndef _OSXAPPLICATION_H_
-#define _OSXAPPLICATION_H_
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #include "common.h"
@@ -67,6 +65,3 @@ namespace Riot
 -(void) m_pOwnerApplication:(NSApplication*)pApplication;
 
 @end
-
-
-#endif // #ifndef _OSXAPPLICATION_H_
