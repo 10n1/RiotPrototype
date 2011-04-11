@@ -57,5 +57,6 @@
     <ClInclude Include="..\Message.h" />
     <ClInclude Include="..\IListener.h" />
     <ClInclude Include="..\Window.h" />
+    <ClInclude Include="..\Input.h" />
   </ItemGroup>
 </Project>

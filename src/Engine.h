@@ -3,7 +3,7 @@ File:           Engine.h
 Purpose:        The main engine
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 4:39:21 PM
+Modified:       4/10/2011 5:33:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ENGINE_H_
@@ -49,6 +49,20 @@ namespace Riot
         //  Processes the input message
         //-----------------------------------------------------------------------------
         void ProcessMessage( const TMessage& msg );
+        
+        //-----------------------------------------------------------------------------
+        //  PostMsg
+        //  Posts a message to be processed later
+        //-----------------------------------------------------------------------------
+        static void PostMsg( const TMessage& msg );
+        static void PostMsg( MessageType nType );
+        
+        //-----------------------------------------------------------------------------
+        //  SendMsg
+        //  Sends a message immediately
+        //-----------------------------------------------------------------------------
+        static void SendMsg( const TMessage& msg );
+        static void SendMsg( MessageType nType );
 
     private:    
         //-----------------------------------------------------------------------------

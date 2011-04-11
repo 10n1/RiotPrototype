@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 4:39:21 PM
+Modified:       4/10/2011 5:34:59 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -68,8 +68,10 @@ namespace Riot
         // Run the engine
         while( m_bRunning )
         {
-            TMessage msg = { mShutdown, 0 };
-            m_pMessageDispatcher->PostMsg( msg );
+            
+            //////////////////////////////////////////
+            //  Process OS messages
+            m_pMainWindow->ProcessMessages();
 
             //////////////////////////////////////////
             //  Process this frames messages
@@ -96,6 +98,13 @@ namespace Riot
             }
         case mKeyboard:
             {
+                switch( msg.nMessage )
+                {
+                case KEY_ESCAPE:
+                    {
+                        SendMsg( mShutdown );
+                    }
+                }
                 break;
             }
         case mFullscreen:
@@ -108,6 +117,20 @@ namespace Riot
             }
         }
     }
+
+    //-----------------------------------------------------------------------------
+    //  PostMsg
+    //  Posts a message to be processed later
+    //-----------------------------------------------------------------------------
+    void Engine::PostMsg( const TMessage& msg ) { m_pMessageDispatcher->PostMsg( msg ); }
+    void Engine::PostMsg( MessageType nType ) { m_pMessageDispatcher->PostMsg( nType ); }
+
+    //-----------------------------------------------------------------------------
+    //  SendMsg
+    //  Sends a message immediately
+    //-----------------------------------------------------------------------------
+    void Engine::SendMsg( const TMessage& msg ) { m_pMessageDispatcher->SendMsg( msg ); }
+    void Engine::SendMsg( MessageType nType ) { m_pMessageDispatcher->SendMsg( nType ); }
 
     //-----------------------------------------------------------------------------
     //  Initialize

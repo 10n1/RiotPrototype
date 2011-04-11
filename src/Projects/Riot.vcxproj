@@ -39,6 +39,7 @@
     <ClInclude Include="..\config.h" />
     <ClInclude Include="..\Engine.h" />
     <ClInclude Include="..\IListener.h" />
+    <ClInclude Include="..\Input.h" />
     <ClInclude Include="..\IRefCounted.h" />
     <ClInclude Include="..\memory.h" />
     <ClInclude Include="..\Message.h" />

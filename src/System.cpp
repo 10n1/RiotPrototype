@@ -2,13 +2,14 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 4:35:26 PM
+Modified:       4/10/2011 5:30:08 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
 #include "timer.h"
 #include "Thread.h"
 #include "Window.h"
+#include "Engine.h"
 
 #ifdef OS_WINDOWS
 #include <Windows.h>
@@ -24,6 +25,10 @@ namespace Riot
     //-----------------------------------------------------------------------------
     //  Function declarations
     //-----------------------------------------------------------------------------
+#ifdef OS_WINDOWS
+    // Windows message handler
+    LRESULT CALLBACK _WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam);
+#endif
 
     //-----------------------------------------------------------------------------
     //  Struct definitions
@@ -278,13 +283,128 @@ namespace Riot
             return gs_pMainWindow;
         }
 
+        gs_pMainWindow = new CWindow();
 #ifdef OS_WINDOWS
-        gs_pMainWindow = NULL;
+        wchar_t szName[] = L"Riot"; // TODO: Don't hardcode
+        /////////////////////////////////////
+        // Create and register the class
+        HINSTANCE hInst = GetModuleHandle( NULL );
+        WNDCLASS wndClass;
+        memset(&wndClass, 0, sizeof(wndClass));
+        wndClass.lpfnWndProc    = _WndProc;
+        wndClass.hInstance      = hInst;
+        wndClass.hCursor        = LoadCursor(0, IDC_ARROW);
+        wndClass.lpszClassName  = szName;
+        wndClass.style          = CS_HREDRAW | CS_VREDRAW;
+
+        RegisterClass(&wndClass);
+
+        /////////////////////////////////////
+        // Create and show the window
+        gs_pMainWindow->m_pSystemWindow = CreateWindow(
+            szName, szName,      // Class and window name
+            WS_OVERLAPPEDWINDOW, // Window style
+            CW_USEDEFAULT, 0,    // X, Y position
+            nWidth, nHeight,     // Width and height (border width 16 and 38)
+            0, 0,                // Parent window, Menu handle
+            hInst,               // Instance
+            gs_pMainWindow );    // void misc
+
+        ASSERT( gs_pMainWindow->m_pSystemWindow );
+
+        ShowWindow( (HWND)gs_pMainWindow->m_pSystemWindow, SW_SHOWNORMAL ); // TODO: Don't hardcode the SW_SHOWNORMAL
+
+        gs_pMainWindow->m_nWidth = nWidth;
+        gs_pMainWindow->m_nHeight = nHeight;
 #else
         gs_pMainWindow = NULL;
 #endif
 
         return gs_pMainWindow;
     }
+
+    //-----------------------------------------------------------------------------
+    //  ProcessOSMessages
+    //  Processes messages from the OS
+    //-----------------------------------------------------------------------------
+    void System::ProcessOSMessages( void )
+    {
+#ifdef OS_WINDOWS
+        //----------------------------------------------------------
+        // Perform Windows messaging
+        MSG msg = { 0 };
+        if( PeekMessage( &msg, 0, 0, 0, PM_REMOVE ) )
+        {
+            if( msg.message == WM_QUIT )
+            {
+                // TODO: Pass to the engine
+                Engine::SendMsg( TMessage( mShutdown ) );
+            }
+
+            TranslateMessage( &msg );
+            DispatchMessage( &msg );
+        }
+#else
+        gs_pMainWindow = NULL;
+#endif
+    }
+
+#ifdef OS_WINDOWS
+    // Windows message handler
+    LRESULT CALLBACK _WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
+    {    
+        static CWindow*     pWindow = NULL;
+        switch(nMsg)
+        {
+        case WM_CREATE:
+            {
+                CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
+                pWindow = (CWindow*)pCreate->lpCreateParams;
+                return 0;
+            }
+        case WM_CLOSE:
+            {
+                PostQuitMessage(0);
+                return 0;
+            }
+        case WM_DESTROY:
+            {
+                PostQuitMessage(0);
+                return 0;
+            }
+        case WM_SIZE:
+            {
+                RECT rcClient;
+                GetClientRect( hWnd, &rcClient );
+                unsigned int nWidth = rcClient.right - rcClient.left;
+                unsigned int nHeight = rcClient.bottom - rcClient.top;
+                return 0;
+            }
+        case WM_KEYDOWN: 
+        case WM_SYSKEYDOWN:
+            {
+                // TODO: Use this or the GetKeyboardState method?
+                //       This should be faster, no extra overhead from GetKeyboardState
+                Engine::PostMsg( TMessage( mKeyboard, wParam ) );
+                return 0;
+            }
+        case WM_MOUSEMOVE:
+            {
+                uint8 nMouse = 0;
+
+                return 0;
+            }
+        case WM_KEYUP:
+        case WM_SYSKEYUP:
+            {
+                break;
+            }
+        default:
+            return DefWindowProc(hWnd, nMsg, wParam, lParam);
+        }
+
+        return DefWindowProc(hWnd, nMsg, wParam, lParam);
+    }
+#endif
 
 } // namespace Riot

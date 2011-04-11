@@ -2,7 +2,7 @@
 File:           MessageDispatcher.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 4:09:03 PM
+Modified:       4/10/2011 5:33:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "MessageDispatcher.h"
@@ -64,6 +64,10 @@ namespace Riot
         uint nIndex = AtomicIncrement( &m_nMessageIndex ) - 1;
         m_pMessages[ nIndex ] = msg;
     }
+    void CMessageDispatcher::PostMsg( MessageType nType )
+    {
+        PostMsg( TMessage( nType ) );
+    }
 
     //-----------------------------------------------------------------------------
     //  SendMsg
@@ -72,6 +76,10 @@ namespace Riot
     void CMessageDispatcher::SendMsg( const TMessage& msg )
     {
         DispatchMsg( msg );
+    }
+    void CMessageDispatcher::SendMsg( MessageType nType )
+    {
+        DispatchMsg( TMessage(nType) );
     }
 
     //-----------------------------------------------------------------------------

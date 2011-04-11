@@ -4,13 +4,14 @@ Purpose:        Interface to the base system. All platform
 specific functions will be called here.
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 4:33:58 PM
+Modified:       4/10/2011 5:29:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEM_H_
 #define _SYSTEM_H_
 #include "common.h"
 #include "timer.h"
+#include "Input.h"
 
 #ifndef OS_WINDOWS
 #include <pthread.h>
@@ -135,6 +136,12 @@ namespace Riot
         //  Creates the main application window
         //-----------------------------------------------------------------------------
         static CWindow* CreateMainWindow( uint nWidth, uint nHeight );
+        
+        //-----------------------------------------------------------------------------
+        //  ProcessOSMessages
+        //  Processes messages from the OS
+        //-----------------------------------------------------------------------------
+        static void ProcessOSMessages( void );
 
     private:
         /***************************************\

@@ -2,7 +2,7 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/10/2011 3:15:38 PM
+Modified:       4/10/2011 5:11:24 PM
 Modified by:    Kyle Weicht
 
 TODO:           Add alignment support? Should be ultra easy
@@ -69,6 +69,8 @@ void ReleasePool( void )
 #ifdef RIOT_USE_CUSTOM_ALLOCATOR
 void* __cdecl operator new(size_t nSize)
 {
+    ASSERT( gs_pGlobalPool );
+
     ASSERT( gs_nActiveMemory + nSize < GLOBAL_MEMORY_ALLOCATION );
 
     // Grab the current pointer
@@ -90,6 +92,8 @@ void* __cdecl operator new(size_t nSize)
 
 void* __cdecl operator new[](size_t nSize)
 {
+    ASSERT( gs_pGlobalPool );
+
     ASSERT( gs_nActiveMemory + nSize < GLOBAL_MEMORY_ALLOCATION );
 
     // Grab the current pointer

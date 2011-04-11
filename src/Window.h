@@ -3,7 +3,7 @@ File:           Window.h
 Purpose:        Main window
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 4:32:31 PM
+Modified:       4/10/2011 5:14:47 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _WINDOW_H_
@@ -15,6 +15,7 @@ namespace Riot
 {
     class CWindow : public IRefCounted
     {
+        friend class System;
     public:
         // CWindow constructor
         CWindow();
@@ -24,18 +25,12 @@ namespace Riot
         /***************************************\
         | class methods                         |
         \***************************************/
-        //-----------------------------------------------------------------------------
-        //  CreateMainWindow
-        //  Creates the main window
-        //  TODO: Support multiple windows/views. Eg, the editor
-        //-----------------------------------------------------------------------------
-        virtual uint CreateMainWindow( uint nWidth, uint nHeight ) = 0;
 
         //-----------------------------------------------------------------------------
         //  ProcessMessages
         //  Processes system messages
         //-----------------------------------------------------------------------------
-        virtual void ProcessMessages( void ) = 0;
+        void ProcessMessages( void );
 
         //-----------------------------------------------------------------------------
         //  Accessors/Mutators

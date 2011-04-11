@@ -2,10 +2,11 @@
 File:           Window.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 4:36:29 PM
+Modified:       4/10/2011 5:14:47 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Window.h"
+#include "System.h"
 
 namespace Riot
 {
@@ -26,6 +27,15 @@ namespace Riot
     /***************************************\
     | class methods                         |
     \***************************************/
+
+    //-----------------------------------------------------------------------------
+    //  ProcessMessages
+    //  Processes system messages
+    //-----------------------------------------------------------------------------
+    void CWindow::ProcessMessages( void )
+    {
+        System::ProcessOSMessages();
+    }
 
     //-----------------------------------------------------------------------------
     //  Accessors/Mutators

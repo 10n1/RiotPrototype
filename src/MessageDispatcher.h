@@ -3,7 +3,7 @@ File:           MessageDispatcher.h
 Purpose:        Dispatches engine messages
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 4:42:45 PM
+Modified:       4/10/2011 5:31:51 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MESSAGEDISPATCHER_H_
@@ -53,12 +53,14 @@ namespace Riot
         //  Posts a message to be processed later
         //-----------------------------------------------------------------------------
         void PostMsg( const TMessage& msg );
+        void PostMsg( MessageType nType );
         
         //-----------------------------------------------------------------------------
         //  SendMsg
         //  Sends a message immediately
         //-----------------------------------------------------------------------------
         void SendMsg( const TMessage& msg );
+        void SendMsg( MessageType nType );
         
         //-----------------------------------------------------------------------------
         //  ProcessMessages

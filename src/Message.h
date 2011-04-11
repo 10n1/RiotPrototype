@@ -3,7 +3,7 @@ File:           Message.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 3:51:11 PM
+Modified:       4/10/2011 5:20:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MESSAGE_H_
@@ -40,6 +40,23 @@ namespace Riot
             pvoid       pMessage;
             nativeuint  nMessage;
         };
+
+        TMessage() { }
+        TMessage( MessageType type )
+            : nType( type )
+            , nMessage( 0 )
+        {
+        }
+        TMessage( MessageType type, uint msg )
+            : nType( type )
+            , nMessage( msg )
+        {
+        }
+        TMessage( MessageType type, pvoid msg )
+            : nType( type )
+            , pMessage( msg )
+        {
+        }
     };
 
 } // namespace Riot
