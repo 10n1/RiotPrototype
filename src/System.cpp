@@ -16,6 +16,7 @@ Modified by:    Kyle Weicht
 #elif defined( OS_OSX )
 #include <sys/types.h>
 #include <sys/sysctl.h>
+#include "OSXApplication.h"
 #else
 #endif
 
@@ -314,12 +315,34 @@ namespace Riot
 
         ShowWindow( (HWND)gs_pMainWindow->m_pSystemWindow, SW_SHOWNORMAL ); // TODO: Don't hardcode the SW_SHOWNORMAL
 
+#else
+        ///////////////////////////////////
+        // Create the Window
+        ASSERT( NSApp == nil );
+        
+        NSApp = [COSXApplication sharedApplication];
+        
+        ASSERT( NSApp );
+        
+        
+        ///////////////////////////////////
+        // Load the Xib
+        if( ![NSBundle loadNibNamed:@"Menu" owner:NSApp] )
+        {
+            // TODO: Handle error
+        }
+        
+        
+        ///////////////////////////////////
+        // Initialize the Window
+        [NSApp CreateWindowWithWidth:nWidth Height:nHeight Fullscreen:false Window:gs_pMainWindow];
+        
+        gs_pMainWindow->m_pSystemWindow = NSApp;
+#endif
+        
         gs_pMainWindow->m_nWidth = nWidth;
         gs_pMainWindow->m_nHeight = nHeight;
-#else
-        gs_pMainWindow = NULL;
-#endif
-
+        
         return gs_pMainWindow;
     }
 
@@ -345,7 +368,26 @@ namespace Riot
             DispatchMessage( &msg );
         }
 #else
-        gs_pMainWindow = NULL;
+        DECLAREPOOL;
+        for( ;; )
+        {
+            NSEvent* pEvent = [NSApp nextEventMatchingMask:NSAnyEventMask 
+                                                untilDate:[NSApp m_pDistantPast] 
+                                                   inMode:NSDefaultRunLoopMode 
+                                                  dequeue:YES];
+            
+            if( pEvent == nil )
+                break;
+            
+            [NSApp sendEvent:pEvent];
+            
+            if( ![NSApp isRunning] )
+                break;
+            
+            [pAPool release];
+            pAPool = [[NSAutoreleasePool alloc] init];
+        }
+        RELEASEPOOL;
 #endif
     }
 

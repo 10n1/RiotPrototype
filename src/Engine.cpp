@@ -103,6 +103,17 @@ namespace Riot
                 case KEY_ESCAPE:
                     {
                         SendMsg( mShutdown );
+                        break;
+                    }
+                case KEY_ENTER:
+                    {
+                        break;
+                    }
+                    case KEY_LEFT:
+                    {
+                        int x = 0;
+                        
+                        break;
                     }
                 }
                 break;

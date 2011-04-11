@@ -52,16 +52,20 @@ static const byte* AllocateGlobalMemory( void )
     return pAlloc;
 }
 
-//-----------------------------------------------------------------------------
-//  Frees the array
-//-----------------------------------------------------------------------------
-void ReleasePool( void )
+namespace Memory
 {
-    if( gs_pGlobalPool )
+    //-----------------------------------------------------------------------------
+    //  Frees the array
+    //-----------------------------------------------------------------------------
+    void ReleasePool( void )
     {
-        _mm_free( (void*)gs_pGlobalPool );
-        gs_pGlobalPool = NULL;
+        if( gs_pGlobalPool )
+        {
+            _mm_free( (void*)gs_pGlobalPool );
+            gs_pGlobalPool = NULL;
+        }
     }
+    
 }
 
 

@@ -14,7 +14,7 @@ int main( int argc, char* argv[] )
 {
     //////////////////////////////////////////
     // Free our memory last
-    atexit( ReleasePool );
+    atexit( Memory::ReleasePool );
 
     //////////////////////////////////////////
     // Run the engine

@@ -9,8 +9,11 @@
 /* Begin PBXBuildFile section */
 		361E60DA13523070002051EB /* Rand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 361E60D913523070002051EB /* Rand.cpp */; };
 		3633205113353BE90034C250 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3633205013353BE90034C250 /* Cocoa.framework */; };
+		36424A2E135287CE00444FBF /* OSXApplication.mm in Sources */ = {isa = PBXBuildFile; fileRef = 36424A2D135287CE00444FBF /* OSXApplication.mm */; };
+		36424A3013528A8E00444FBF /* Menu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 36424A2F13528A8E00444FBF /* Menu.xib */; };
 		36C4BB5D1352708200A2DFDA /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36C4BB571352708200A2DFDA /* Engine.cpp */; };
 		36C4BB60135270B200A2DFDA /* MessageDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36C4BB5F135270B200A2DFDA /* MessageDispatcher.cpp */; };
+		36CC68F4135278D700594E81 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36CC68F2135278D700594E81 /* Window.cpp */; };
 		36DBB7D2135140F500712EE7 /* atomic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36DBB7C7135140F500712EE7 /* atomic.cpp */; };
 		36DBB7D3135140F500712EE7 /* System.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36DBB7C9135140F500712EE7 /* System.cpp */; };
 		36DBB7D4135140F500712EE7 /* TaskManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36DBB7CB135140F500712EE7 /* TaskManager.cpp */; };
@@ -29,6 +32,10 @@
 		3633205313353BE90034C250 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		3633205413353BE90034C250 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		3633205513353BE90034C250 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		36424A2A135287A000444FBF /* Input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Input.h; path = ../Input.h; sourceTree = "<group>"; };
+		36424A2C135287CE00444FBF /* OSXApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OSXApplication.h; path = ../OSXApplication.h; sourceTree = "<group>"; };
+		36424A2D135287CE00444FBF /* OSXApplication.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = OSXApplication.mm; path = ../OSXApplication.mm; sourceTree = "<group>"; };
+		36424A2F13528A8E00444FBF /* Menu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = Menu.xib; path = ../Menu.xib; sourceTree = "<group>"; };
 		3646DD09134F007000A65DAC /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = timer.h; path = ../timer.h; sourceTree = "<group>"; };
 		36752B6013353D0400CFB14E /* riot-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "riot-Info.plist"; sourceTree = SOURCE_ROOT; };
 		36C4BB571352708200A2DFDA /* Engine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Engine.cpp; path = ../Engine.cpp; sourceTree = "<group>"; };
@@ -38,9 +45,11 @@
 		36C4BB5B1352708200A2DFDA /* Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Message.h; path = ../Message.h; sourceTree = "<group>"; };
 		36C4BB5C1352708200A2DFDA /* MessageDispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MessageDispatcher.h; path = ../MessageDispatcher.h; sourceTree = "<group>"; };
 		36C4BB5F135270B200A2DFDA /* MessageDispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MessageDispatcher.cpp; path = ../MessageDispatcher.cpp; sourceTree = "<group>"; };
+		36CC68F2135278D700594E81 /* Window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Window.cpp; path = ../Window.cpp; sourceTree = "<group>"; };
+		36CC68F3135278D700594E81 /* Window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Window.h; path = ../Window.h; sourceTree = "<group>"; };
 		36DBB7C7135140F500712EE7 /* atomic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = atomic.cpp; path = ../../../riot/src/atomic.cpp; sourceTree = "<group>"; };
 		36DBB7C8135140F500712EE7 /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = ../../../riot/src/atomic.h; sourceTree = "<group>"; };
-		36DBB7C9135140F500712EE7 /* System.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = System.cpp; path = ../../../riot/src/System.cpp; sourceTree = "<group>"; };
+		36DBB7C9135140F500712EE7 /* System.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = System.cpp; path = ../../../riot/src/System.cpp; sourceTree = "<group>"; };
 		36DBB7CA135140F500712EE7 /* System.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = System.h; path = ../../../riot/src/System.h; sourceTree = "<group>"; };
 		36DBB7CB135140F500712EE7 /* TaskManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TaskManager.cpp; path = ../../../riot/src/TaskManager.cpp; sourceTree = "<group>"; };
 		36DBB7CC135140F500712EE7 /* TaskManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TaskManager.h; path = ../../../riot/src/TaskManager.h; sourceTree = "<group>"; };
@@ -74,8 +83,14 @@
 		3633204113353BE90034C250 = {
 			isa = PBXGroup;
 			children = (
+				36424A2F13528A8E00444FBF /* Menu.xib */,
+				36424A2C135287CE00444FBF /* OSXApplication.h */,
+				36424A2D135287CE00444FBF /* OSXApplication.mm */,
+				36424A2A135287A000444FBF /* Input.h */,
 				36C4BB5F135270B200A2DFDA /* MessageDispatcher.cpp */,
 				36C4BB571352708200A2DFDA /* Engine.cpp */,
+				36CC68F2135278D700594E81 /* Window.cpp */,
+				36CC68F3135278D700594E81 /* Window.h */,
 				36C4BB581352708200A2DFDA /* Engine.h */,
 				36C4BB591352708200A2DFDA /* IListener.h */,
 				36C4BB5A1352708200A2DFDA /* IRefCounted.h */,
@@ -186,6 +201,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				36424A3013528A8E00444FBF /* Menu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,6 +223,8 @@
 				361E60DA13523070002051EB /* Rand.cpp in Sources */,
 				36C4BB5D1352708200A2DFDA /* Engine.cpp in Sources */,
 				36C4BB60135270B200A2DFDA /* MessageDispatcher.cpp in Sources */,
+				36CC68F4135278D700594E81 /* Window.cpp in Sources */,
+				36424A2E135287CE00444FBF /* OSXApplication.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

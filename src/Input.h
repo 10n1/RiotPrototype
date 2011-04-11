@@ -14,6 +14,7 @@ namespace Riot
 
     enum Keyboard
     {
+#ifdef OS_WINDOWS
         // Utility keys
         KEY_ESCAPE = 0x1B, // VK_ESCAPE
 
@@ -22,6 +23,19 @@ namespace Riot
         KEY_RIGHT   = 0x27, // VK_RIGHT
         KEY_UP      = 0x26, // VK_UP   
         KEY_DOWN    = 0x28, // VK_DOWN 
+        
+#elif defined( OS_OSX )
+        // Utility keys
+        KEY_ESCAPE  = '\e', // VK_ESCAPE
+        KEY_ENTER   = 0x0003,
+        
+        // Arrows
+        KEY_LEFT    = 0x02, // VK_LEFT 
+        KEY_RIGHT   = 0x03, // VK_RIGHT
+        KEY_UP      = 0x0,  // VK_UP   
+        KEY_DOWN    = 0x01, // VK_DOWN 
+#else
+#endif
 
         // Letters
         KEY_A = 'A',
