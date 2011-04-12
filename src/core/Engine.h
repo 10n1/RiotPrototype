@@ -3,7 +3,7 @@ File:           Engine.h
 Purpose:        The main engine
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 11:39:04 PM
+Modified:       4/11/2011 10:48:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ENGINE_H_
@@ -18,7 +18,7 @@ namespace Riot
     class CMessageDispatcher;
     class CWindow;
     class CInputManager;
-    class CGraphicsDevice;
+    class CRenderer;
 
     class Engine : public IListener
     {
@@ -100,7 +100,7 @@ namespace Riot
         static CInputManager*       m_pInputManager;
 
         static CWindow*             m_pMainWindow;
-        static CGraphicsDevice*           m_pGraphics;
+        static CRenderer*           m_pRenderer;
 
         static float    m_fElapsedTime;
         static uint     m_nFrame;

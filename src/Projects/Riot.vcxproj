@@ -19,50 +19,52 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\atomic.cpp" />
-    <ClCompile Include="..\Engine.cpp" />
-    <ClCompile Include="..\Graphics.cpp" />
-    <ClCompile Include="..\InputManager.cpp" />
+    <ClCompile Include="..\core\Engine.cpp" />
+    <ClCompile Include="..\core\InputManager.cpp" />
+    <ClCompile Include="..\core\MessageDispatcher.cpp" />
+    <ClCompile Include="..\core\System.cpp" />
+    <ClCompile Include="..\core\TaskManager.cpp" />
+    <ClCompile Include="..\core\Thread.cpp" />
+    <ClCompile Include="..\core\timer.cpp" />
+    <ClCompile Include="..\core\Window.cpp" />
+    <ClCompile Include="..\gfx\Graphics.cpp" />
+    <ClCompile Include="..\gfx\OGL\OGLGraphics.cpp" />
+    <ClCompile Include="..\gfx\Renderer.cpp" />
+    <ClCompile Include="..\global\atomic.cpp" />
+    <ClCompile Include="..\global\memory.cpp" />
+    <ClCompile Include="..\global\Rand.cpp" />
+    <ClCompile Include="..\global\vectormath.cpp" />
     <ClCompile Include="..\main.cpp" />
-    <ClCompile Include="..\memory.cpp" />
-    <ClCompile Include="..\MessageDispatcher.cpp" />
-    <ClCompile Include="..\OGLGraphics.cpp" />
-    <ClCompile Include="..\rand.cpp" />
-    <ClCompile Include="..\System.cpp" />
-    <ClCompile Include="..\TaskManager.cpp" />
-    <ClCompile Include="..\Thread.cpp" />
-    <ClCompile Include="..\timer.cpp" />
-    <ClCompile Include="..\vectormath.cpp" />
-    <ClCompile Include="..\Win32Application.cpp" />
-    <ClCompile Include="..\Win32OpenGL.cpp" />
-    <ClCompile Include="..\Window.cpp" />
+    <ClCompile Include="..\platform\WIN32\Win32Application.cpp" />
+    <ClCompile Include="..\platform\WIN32\Win32OpenGL.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\assert.h" />
-    <ClInclude Include="..\atomic.h" />
-    <ClInclude Include="..\common.h" />
-    <ClInclude Include="..\config.h" />
-    <ClInclude Include="..\Engine.h" />
-    <ClInclude Include="..\Graphics.h" />
-    <ClInclude Include="..\IListener.h" />
-    <ClInclude Include="..\Input.h" />
-    <ClInclude Include="..\InputManager.h" />
-    <ClInclude Include="..\IRefCounted.h" />
-    <ClInclude Include="..\memory.h" />
-    <ClInclude Include="..\Message.h" />
-    <ClInclude Include="..\MessageDispatcher.h" />
-    <ClInclude Include="..\OGLGraphics.h" />
-    <ClInclude Include="..\rand.h" />
-    <ClInclude Include="..\System.h" />
-    <ClInclude Include="..\SystemOpenGL.h" />
-    <ClInclude Include="..\TaskManager.h" />
-    <ClInclude Include="..\Thread.h" />
-    <ClInclude Include="..\timer.h" />
+    <ClInclude Include="..\core\Engine.h" />
+    <ClInclude Include="..\core\IListener.h" />
+    <ClInclude Include="..\core\Input.h" />
+    <ClInclude Include="..\core\InputManager.h" />
+    <ClInclude Include="..\core\IRefCounted.h" />
+    <ClInclude Include="..\core\Message.h" />
+    <ClInclude Include="..\core\MessageDispatcher.h" />
+    <ClInclude Include="..\core\System.h" />
+    <ClInclude Include="..\core\TaskManager.h" />
+    <ClInclude Include="..\core\Thread.h" />
+    <ClInclude Include="..\core\timer.h" />
+    <ClInclude Include="..\core\Window.h" />
+    <ClInclude Include="..\gfx\Graphics.h" />
+    <ClInclude Include="..\gfx\OGL\OGLGraphics.h" />
+    <ClInclude Include="..\gfx\Renderer.h" />
+    <ClInclude Include="..\global\assert.h" />
+    <ClInclude Include="..\global\atomic.h" />
+    <ClInclude Include="..\global\common.h" />
+    <ClInclude Include="..\global\config.h" />
+    <ClInclude Include="..\global\memory.h" />
+    <ClInclude Include="..\global\rand.h" />
+    <ClInclude Include="..\global\types.h" />
+    <ClInclude Include="..\global\vectormath.h" />
+    <ClInclude Include="..\platform\SystemOpenGL.h" />
+    <ClInclude Include="..\platform\WIN32\Win32Application.h" />
     <ClInclude Include="..\todo.h" />
-    <ClInclude Include="..\types.h" />
-    <ClInclude Include="..\vectormath.h" />
-    <ClInclude Include="..\Win32Application.h" />
-    <ClInclude Include="..\Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B5535174-0753-4265-9B6E-D9BB0806AB0D}</ProjectGuid>
@@ -147,7 +149,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\Code;..\Code\Main;..\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\global;..\core</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -166,7 +168,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\Code;..\Code\Main;..\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\global;..\core</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -187,7 +189,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\Code;..\Code\Main;..\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\global;..\core</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -210,7 +212,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\Code;..\Code\Main;..\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\global;..\core</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

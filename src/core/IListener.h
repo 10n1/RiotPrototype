@@ -3,7 +3,7 @@ File:           IListener.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 3:51:12 PM
+Modified:       4/11/2011 9:52:32 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ILISTENER_H_
@@ -13,7 +13,6 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
-
 
     class IListener
     {

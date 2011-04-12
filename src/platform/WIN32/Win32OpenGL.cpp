@@ -2,12 +2,11 @@
 File:           Win32OpenGL.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 11:36:56 PM
+Modified:       4/11/2011 11:18:03 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#include "SystemOpenGL.h"
+#include "platform/SystemOpenGL.h"
 #include "Window.h"
-#define GL3_PROTOTYPES
 #include <gl3/gl3.h>
 #include <gl/wglext.h>
 
@@ -18,9 +17,10 @@ namespace Riot
         //-----------------------------------------------------------------------------
         //  WGL extensions
         //-----------------------------------------------------------------------------
-#define GET_OPENGL_EXTENSION( ext, type ) ext = (type)wglGetProcAddress( #ext )
-        static PFNWGLCREATECONTEXTATTRIBSARBPROC    wglCreateContextAttribsARB  = NULL;
-        static PFNWGLCHOOSEPIXELFORMATARBPROC       wglChoosePixelFormatARB     = NULL;
+#define GET_OPENGL_EXTENSION( type, ext ) ext = (type)wglGetProcAddress( #ext )
+        PFNGLBINDFRAMEBUFFERPROC             glBindFramebuffer           = NULL;
+        PFNWGLCREATECONTEXTATTRIBSARBPROC    wglCreateContextAttribsARB  = NULL;
+        PFNWGLCHOOSEPIXELFORMATARBPROC       wglChoosePixelFormatARB     = NULL;
 
         //-----------------------------------------------------------------------------
         //  LoadOpenGLExtensions
@@ -28,8 +28,14 @@ namespace Riot
         //-----------------------------------------------------------------------------
         void LoadOpenGLExtensions( void )
         {
-            GET_OPENGL_EXTENSION( wglCreateContextAttribsARB, PFNWGLCREATECONTEXTATTRIBSARBPROC);
-            GET_OPENGL_EXTENSION( wglChoosePixelFormatARB, PFNWGLCHOOSEPIXELFORMATARBPROC );
+            //GET_OPENGL_EXTENSION( PFNGLCLEARPROC                   , glClear                    );
+            //GET_OPENGL_EXTENSION( PFNGLCLEARCOLORPROC              , glClearColor               );
+            //GET_OPENGL_EXTENSION( PFNGLCLEARDEPTHPROC              , glClearDepth               );
+            //GET_OPENGL_EXTENSION( PFNGLDRAWBUFFERPROC              , glDrawBuffer               );
+            //GET_OPENGL_EXTENSION( PFNGLVIEWPORTPROC                , glViewport                 );
+            GET_OPENGL_EXTENSION( PFNGLBINDFRAMEBUFFERPROC         , glBindFramebuffer          );
+            GET_OPENGL_EXTENSION( PFNWGLCREATECONTEXTATTRIBSARBPROC, wglCreateContextAttribsARB );
+            GET_OPENGL_EXTENSION( PFNWGLCHOOSEPIXELFORMATARBPROC   , wglChoosePixelFormatARB    );
         }
 
         //-----------------------------------------------------------------------------
@@ -40,8 +46,6 @@ namespace Riot
         {
             Result nResult = rResultSuccess;
 
-
-
             HWND hWnd = static_cast<HWND>( pWindow->GetWindow() );
             //////////////////////////////////////////
             // Create a rendering context
@@ -51,9 +55,10 @@ namespace Riot
             bool bSuccess = SetPixelFormat( (HDC)pDevice->m_hDC, pDevice->m_nPixelFormat, &pfd );
             pDevice->m_hGLRC = wglCreateContext( (HDC)pDevice->m_hDC );
             wglMakeCurrent( (HDC)pDevice->m_hDC, (HGLRC)pDevice->m_hGLRC );
-
-            // Load functions
-            LoadOpenGLExtensions();    
+            
+            // Load the creation functions we need
+            GET_OPENGL_EXTENSION( PFNWGLCREATECONTEXTATTRIBSARBPROC, wglCreateContextAttribsARB );
+            GET_OPENGL_EXTENSION( PFNWGLCHOOSEPIXELFORMATARBPROC   , wglChoosePixelFormatARB    );
 
             // Release and start over
             wglMakeCurrent( NULL, NULL );
@@ -105,6 +110,10 @@ namespace Riot
             }
 
             wglMakeCurrent( (HDC)pDevice->m_hDC, (HGLRC)pDevice->m_hGLRC );
+
+            
+            // Load functions
+            LoadOpenGLExtensions();
 
             return nResult;
         }

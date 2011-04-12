@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 11:39:04 PM
+Modified:       4/11/2011 11:20:01 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -10,18 +10,17 @@ Modified by:    Kyle Weicht
 #include "Thread.h"
 #include "Window.h"
 #include "Engine.h"
-#include "Graphics.h"
-#include "SystemOpenGL.h"
-
-#include "OGLGraphics.h"
+#include "Gfx/Graphics.h"
+#include "gfx/OGL/OGLGraphics.h"
+#include "Platform/SystemOpenGL.h"
 
 #ifdef OS_WINDOWS
 #include <Windows.h>
-#include "Win32Application.h"
+#include "platform/Win32/Win32Application.h"
 #elif defined( OS_OSX )
 #include <sys/types.h>
 #include <sys/sysctl.h>
-#include "OSXApplication.h"
+#include "platform/OSX/OSXApplication.h"
 #else
 // Linux
 #endif
@@ -362,8 +361,13 @@ namespace Riot
 
         COGLDevice* pGraphics = new COGLDevice();
         
+        // Create the system specific OpenGL device
         SystemOpenGL::CreateOpenGLDevice( &pGraphics->m_pDevice, pWindow );
+
+        // Let it initialize itself
+        pGraphics->Initialize();
         
+        // Return it
         m_pGraphics = pGraphics;
         return m_pGraphics;
     }
