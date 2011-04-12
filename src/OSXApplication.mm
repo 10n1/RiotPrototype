@@ -11,7 +11,11 @@ Modified by:    Kyle Weicht
 #include "Engine.h"
 
 #import <OpenGL/OpenGL.h>
+#if (MAC_OS_X_VERSION_MAX_ALLOWED == MAC_OS_X_VERSION_10_7)
 #include <OpenGL/gl3.h>
+#else
+#include <OpenGL/GL.h>
+#endif
 
 using namespace Riot;
 

@@ -13,7 +13,13 @@ Modified by:    Kyle Weicht
 #elif defined( OS_OSX )
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
+
+#if (MAC_OS_X_VERSION_MAX_ALLOWED == MAC_OS_X_VERSION_10_7)
 #include <OpenGL/gl3.h>
+#else
+#include <OpenGL/GL.h>
+#endif
+
 #else
 // linux
 #endif
