@@ -149,7 +149,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\;..\global;..\core</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\global;..\core;..\gfx;..\platform\win32;..\platform;..\gfx\ogl;..\gfx\d3d</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -168,7 +168,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\;..\global;..\core</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\global;..\core;..\gfx;..\platform\win32;..\platform;..\gfx\ogl;..\gfx\d3d</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -189,7 +189,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\;..\global;..\core</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\global;..\core;..\gfx;..\platform\win32;..\platform;..\gfx\ogl;..\gfx\d3d</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -212,7 +212,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\;..\global;..\core</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\global;..\core;..\gfx;..\platform\win32;..\platform;..\gfx\ogl;..\gfx\d3d</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
