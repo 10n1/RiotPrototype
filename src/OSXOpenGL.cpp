@@ -50,6 +50,8 @@ namespace Riot
         //-----------------------------------------------------------------------------
         void * NSGLGetProcAddress (const char *name)
         {
+            DECLAREPOOL;
+            
             NSSymbol symbol;
             char *symbolName;
             symbolName = new char[strlen (name) + 2]; // 1
@@ -61,6 +63,8 @@ namespace Riot
             
             delete symbolName; // 5
             return symbol ? NSAddressOfSymbol (symbol) : NULL; // 6
+            
+            RELEASEPOOL;
         }
         
         //-----------------------------------------------------------------------------
@@ -80,6 +84,8 @@ namespace Riot
         //-----------------------------------------------------------------------------
         Result CreateOpenGLDevice( TOpenGLDevice* pDevice, CWindow* pWindow )
         {
+            DECLAREPOOL;
+            
             Result nResult = rResultSuccess;
             
             CGLContextObj       pContext = NULL;
@@ -127,6 +133,8 @@ namespace Riot
             pDevice->m_pGLContext = pContext;
             pDevice->m_pGLPixelFormat = pPixelFormat;
             return nResult;
+            
+            RELEASEPOOL;
         }
         
         //-----------------------------------------------------------------------------
@@ -135,11 +143,14 @@ namespace Riot
         //-----------------------------------------------------------------------------
         void Present( TOpenGLDevice* pDevice )
         {
+            DECLAREPOOL;
             CGLContextObj pContext = (CGLContextObj)pDevice->m_pGLContext;
             
             CGLLockContext( pContext );
             CGLFlushDrawable( pContext );
             CGLUnlockContext( pContext );
+            
+            RELEASEPOOL;
         }
         
         //-----------------------------------------------------------------------------
@@ -148,7 +159,11 @@ namespace Riot
         //-----------------------------------------------------------------------------
         void SetView( handle pView )
         {
+            DECLAREPOOL;
+            
             gs_pView = (COSXDefaultView*)pView;
+            
+            RELEASEPOOL;
         }
     }
 }

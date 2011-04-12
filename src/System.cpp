@@ -301,6 +301,7 @@ namespace Riot
 
         m_pMainWindow->m_pWindow = m_pApplication->CreateMainWindow( nWidth, nHeight );
 #else
+        DECLAREPOOL;
         ///////////////////////////////////
         // Create the Window
         ASSERT( NSApp == nil );
@@ -328,7 +329,8 @@ namespace Riot
         //  Make sure OpenGL knows about the view
         SystemOpenGL::SetView( [NSApp m_pView] );
         
-        m_pApplication = NSApp;      
+        m_pApplication = NSApp;    
+        RELEASEPOOL;
 #endif        
         m_pMainWindow->m_nWidth = nWidth;
         m_pMainWindow->m_nHeight = nHeight;

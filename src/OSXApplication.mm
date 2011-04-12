@@ -26,6 +26,8 @@ using namespace Riot;
 
 - (id)init
 {
+    DECLAREPOOL;
+    
     self = [super init];
     if (self) 
     {
@@ -48,6 +50,8 @@ using namespace Riot;
         [self finishLaunching];
         _running = 1;
     }
+    
+    RELEASEPOOL;
     
     return self;
 }
@@ -171,6 +175,8 @@ using namespace Riot;
 
 -(id) init
 {
+    DECLAREPOOL;
+    
     self = [super init];
     if (self) 
     {
@@ -183,11 +189,15 @@ using namespace Riot;
                                                        name:NSViewGlobalFrameDidChangeNotification 
                                                      object:self];
     }
+    
+    RELEASEPOOL;
     return self;
 }
 
 -(id) initWithFrame:(NSRect)frameRect
 {
+    DECLAREPOOL;
+    
     self = [super initWithFrame:frameRect];
     
     if (self) 
@@ -202,6 +212,7 @@ using namespace Riot;
                                                      object:self];
     }
     
+    RELEASEPOOL;
     return self;
 }
 

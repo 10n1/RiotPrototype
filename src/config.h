@@ -52,11 +52,6 @@ Modified by:    Kyle Weicht
 
 #define SYSTEM_API_CONVENTION
 
-#ifdef MAC_OS_X_VERSION_MIN_REQUIRED
-
-#define OSX_VERSION_10_7
-
-#endif
 
 #if TARGET_OS_IPHONE
 #define OS_IOS
