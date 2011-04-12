@@ -10,17 +10,18 @@ Modified by:    Kyle Weicht
 #include "Thread.h"
 #include "Window.h"
 #include "Engine.h"
-#include "Gfx/Graphics.h"
-#include "gfx/OGL/OGLGraphics.h"
-#include "Platform/SystemOpenGL.h"
+#include "Graphics.h"
+#include "OGLGraphics.h"
+#include "SystemOpenGL.h"
+
 
 #ifdef OS_WINDOWS
 #include <Windows.h>
-#include "platform/Win32/Win32Application.h"
+#include "Win32Application.h"
 #elif defined( OS_OSX )
 #include <sys/types.h>
 #include <sys/sysctl.h>
-#include "platform/OSX/OSXApplication.h"
+#include "OSXApplication.h"
 #else
 // Linux
 #endif

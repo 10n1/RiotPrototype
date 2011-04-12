@@ -9,8 +9,8 @@ Modified by:    Kyle Weicht
 #ifndef _OGLGRAPHICS_H_
 #define _OGLGRAPHICS_H_
 #include "common.h"
-#include "../Graphics.h"
-#include "platform/SystemOpenGL.h"
+#include "Graphics.h"
+#include "SystemOpenGL.h"
 
 namespace Riot
 {

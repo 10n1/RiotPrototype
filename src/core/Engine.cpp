@@ -12,7 +12,7 @@ Modified by:    Kyle Weicht
 #include "System.h"
 #include "timer.h"
 #include "InputManager.h"
-#include "Gfx/Renderer.h"
+#include "Renderer.h"
 
 #define SHUTDOWN_AND_DELETE( Module ) if( Module ) { Module->Shutdown(); delete Module; Module = NULL; }
 #define NEW_AND_INITIALIZE( Module, Type ) Module = new Type; Module->Initialize();
