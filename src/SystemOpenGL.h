@@ -23,8 +23,9 @@ namespace Riot
             handle  m_hDC;   // Type HDC
             handle  m_hGLRC; // Type HGLRC
             sint    m_nPixelFormat;
-#elif defined (OS_OSX)
-            handle  m_pView; // Type COSXView
+#elif defined (OS_OSX)            
+            handle  m_pGLContext;       // Type CGLContextObj  
+            handle  m_pGLPixelFormat;   // Type CGLPixelFormatObj
 #endif // #ifdef OS_WINDOWS
         };
 
@@ -45,6 +46,14 @@ namespace Riot
         //  Flips the buffers
         //-----------------------------------------------------------------------------
         void Present( TOpenGLDevice* pDevice );
+        
+#ifdef OS_OSX
+        //-----------------------------------------------------------------------------
+        //  SetView
+        //  Sets the current view
+        //-----------------------------------------------------------------------------
+        void SetView( handle pView );
+#endif
 
     } // namespace SystemOpenGL
 

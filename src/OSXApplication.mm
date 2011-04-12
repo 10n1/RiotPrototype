@@ -10,11 +10,15 @@ Modified by:    Kyle Weicht
 #include "Input.h"
 #include "Engine.h"
 
+#import <OpenGL/OpenGL.h>
+#include <OpenGL/gl3.h>
+
 using namespace Riot;
 
 @implementation COSXApplication
 
 @synthesize m_pDistantPast;
+@synthesize m_pView;
 
 - (id)init
 {
@@ -49,10 +53,18 @@ using namespace Riot;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [m_pDistantPast release];
     [m_pDistantFuture release];
+    [m_pSystemWindow release];
     
     [m_pRunLoop release];
     
     [super dealloc];
+}
+
+
+-(void) finalize
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [super finalize];
 }
 
 //-----------------------------------------------------------------------------
@@ -153,6 +165,80 @@ using namespace Riot;
      
 @synthesize m_pOwnerApplication;
 
+-(id) init
+{
+    self = [super init];
+    if (self) 
+    {
+        m_pOwnerApplication = NULL;
+        m_pContext = NULL;
+        
+        // Register to handle resizes
+        [[NSNotificationCenter defaultCenter]   addObserver:self 
+                                                   selector:@selector(reshape) 
+                                                       name:NSViewGlobalFrameDidChangeNotification 
+                                                     object:self];
+    }
+    return self;
+}
+
+-(id) initWithFrame:(NSRect)frameRect
+{
+    self = [super initWithFrame:frameRect];
+    
+    if (self) 
+    {
+        m_pOwnerApplication = NULL;
+        m_pContext = NULL;
+        
+        // Register to handle resizes
+        [[NSNotificationCenter defaultCenter]   addObserver:self 
+                                                   selector:@selector(reshape) 
+                                                       name:NSViewGlobalFrameDidChangeNotification 
+                                                     object:self];
+    }
+    
+    return self;
+}
+
+
+-(void) dealloc
+{     
+    // Unregister for resize events    
+	[[NSNotificationCenter defaultCenter] removeObserver:self 
+													name:NSViewGlobalFrameDidChangeNotification
+												  object:self];
+    [super dealloc];
+}
+
+/////////////////////////////////////////////
+//  View functions
+-(void) lockFocus
+{
+    [super lockFocus];
+    
+    if( [m_pContext view] != self )
+    {
+        [m_pContext setView:self];
+    }
+    
+    [m_pContext makeCurrentContext];
+}
+
+-(void) reshape
+{    
+    DECLAREPOOL;
+    NSRect bounds = [self bounds];
+    Engine::PostMsg( TMessage( mResize, (((uint)bounds.size.width << 16 ) | (uint)bounds.size.width) ) );
+    RELEASEPOOL;
+}
+
+-(void) drawRect:(NSRect)dirtyRect
+{
+}
+
+/////////////////////////////////////////////
+//  Misc
 -(BOOL) acceptsFirstResponder
 {
     return YES;
@@ -163,6 +249,15 @@ using namespace Riot;
     m_pOwnerApplication = pApplication;
 }
 
+-(void) SetContext:(CGLContextObj)pContext
+{
+    m_pContext = [[NSOpenGLContext alloc] initWithCGLContextObj:pContext]; 
+    [m_pContext setView:self];
+}
+
+
+/////////////////////////////////////////////
+//  Event handling
 -(void) keyDown:(NSEvent *)theEvent
 {
     [ m_pOwnerApplication keyDown:theEvent];

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		360F4B5F1353E138009C28A0 /* OGLGraphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 360F4B5C1353E138009C28A0 /* OGLGraphics.cpp */; };
+		360F4B621353E178009C28A0 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 360F4B611353E178009C28A0 /* OpenGL.framework */; };
+		360F4B651353E3EF009C28A0 /* OSXOpenGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 360F4B631353E3EF009C28A0 /* OSXOpenGL.cpp */; };
 		3633205113353BE90034C250 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3633205013353BE90034C250 /* Cocoa.framework */; };
 		36F6DBD21352CC0D0021EA1F /* atomic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36F6DBAC1352CC0D0021EA1F /* atomic.cpp */; };
 		36F6DBD31352CC0D0021EA1F /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36F6DBB01352CC0D0021EA1F /* Engine.cpp */; };
@@ -27,6 +30,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		360F4B5C1353E138009C28A0 /* OGLGraphics.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = OGLGraphics.cpp; path = ../OGLGraphics.cpp; sourceTree = "<group>"; };
+		360F4B5D1353E138009C28A0 /* OGLGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OGLGraphics.h; path = ../OGLGraphics.h; sourceTree = "<group>"; };
+		360F4B5E1353E138009C28A0 /* SystemOpenGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemOpenGL.h; path = ../SystemOpenGL.h; sourceTree = "<group>"; };
+		360F4B611353E178009C28A0 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		360F4B631353E3EF009C28A0 /* OSXOpenGL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = OSXOpenGL.cpp; path = ../OSXOpenGL.cpp; sourceTree = "<group>"; };
 		3633204C13353BE90034C250 /* riot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = riot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3633205013353BE90034C250 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		3633205313353BE90034C250 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -79,6 +87,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				360F4B621353E178009C28A0 /* OpenGL.framework in Frameworks */,
 				3633205113353BE90034C250 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -89,6 +98,10 @@
 		3633204113353BE90034C250 = {
 			isa = PBXGroup;
 			children = (
+				360F4B631353E3EF009C28A0 /* OSXOpenGL.cpp */,
+				360F4B5C1353E138009C28A0 /* OGLGraphics.cpp */,
+				360F4B5D1353E138009C28A0 /* OGLGraphics.h */,
+				360F4B5E1353E138009C28A0 /* SystemOpenGL.h */,
 				36F6DBAB1352CC0D0021EA1F /* assert.h */,
 				36F6DBAC1352CC0D0021EA1F /* atomic.cpp */,
 				36F6DBAD1352CC0D0021EA1F /* atomic.h */,
@@ -145,6 +158,7 @@
 		3633204F13353BE90034C250 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				360F4B611353E178009C28A0 /* OpenGL.framework */,
 				3633205013353BE90034C250 /* Cocoa.framework */,
 				3633205213353BE90034C250 /* Other Frameworks */,
 			);
@@ -237,6 +251,8 @@
 				36F6DBDF1352CC0D0021EA1F /* timer.cpp in Sources */,
 				36F6DBE01352CC0D0021EA1F /* vectormath.cpp in Sources */,
 				36F6DBE11352CC0D0021EA1F /* Window.cpp in Sources */,
+				360F4B5F1353E138009C28A0 /* OGLGraphics.cpp in Sources */,
+				360F4B651353E3EF009C28A0 /* OSXOpenGL.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

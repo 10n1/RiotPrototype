@@ -19,8 +19,8 @@ namespace Riot
         //  WGL extensions
         //-----------------------------------------------------------------------------
 #define GET_OPENGL_EXTENSION( ext, type ) ext = (type)wglGetProcAddress( #ext )
-        static PFNWGLCREATECONTEXTATTRIBSARBPROC    wglCreateContextAttribsARB = NULL;
-        static PFNWGLCHOOSEPIXELFORMATARBPROC       wglChoosePixelFormatARB = NULL;
+        static PFNWGLCREATECONTEXTATTRIBSARBPROC    wglCreateContextAttribsARB  = NULL;
+        static PFNWGLCHOOSEPIXELFORMATARBPROC       wglChoosePixelFormatARB     = NULL;
 
         //-----------------------------------------------------------------------------
         //  LoadOpenGLExtensions

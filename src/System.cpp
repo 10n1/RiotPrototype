@@ -47,7 +47,7 @@ namespace Riot
 #ifdef OS_WINDOWS
     CWin32Application*  System::m_pApplication  = NULL;
 #elif defined( OS_OSX )
-    // OS X has NS App automatically defined
+    handle  System::m_pApplication = NULL;
 #else
 #endif
 
@@ -322,6 +322,13 @@ namespace Riot
         ///////////////////////////////////
         // Initialize the Window
         m_pMainWindow->m_pWindow = [NSApp CreateWindowWithWidth:nWidth Height:nHeight Fullscreen:false Window:m_pMainWindow];
+          
+        
+        ///////////////////////////////////
+        //  Make sure OpenGL knows about the view
+        SystemOpenGL::SetView( [NSApp m_pView] );
+        
+        m_pApplication = NSApp;      
 #endif        
         m_pMainWindow->m_nWidth = nWidth;
         m_pMainWindow->m_nHeight = nHeight;
@@ -352,11 +359,9 @@ namespace Riot
         ASSERT( m_pGraphics == NULL );
 
         COGLDevice* pGraphics = new COGLDevice();
-#ifdef OS_WINDOWS
+        
         SystemOpenGL::CreateOpenGLDevice( &pGraphics->m_pDevice, pWindow );
-#else
-#endif
-
+        
         m_pGraphics = pGraphics;
         return m_pGraphics;
     }

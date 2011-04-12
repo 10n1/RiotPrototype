@@ -6,8 +6,17 @@ Modified:       4/10/2011 11:42:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "OGLGraphics.h"
+
+#ifdef OS_WINDOWS
 #define GL3_PROTOTYPES
 #include <gl3/gl3.h>
+#elif defined( OS_OSX )
+#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+#include <OpenGL/gl3.h>
+#else
+// linux
+#endif
 
 namespace Riot
 {

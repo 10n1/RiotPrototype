@@ -11,6 +11,7 @@ Modified by:    Kyle Weicht
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #include "common.h"
+#include "SystemOpenGL.h"
 
 namespace Riot
 {
@@ -19,6 +20,8 @@ namespace Riot
 
 @class COSXDefaultView;
 
+//////////////////////////////////////////
+// The default OS X application
 @interface COSXApplication : NSApplication 
 {
 @private
@@ -33,6 +36,7 @@ namespace Riot
 }
 
 @property (retain) NSDate* m_pDistantPast;
+@property (retain) COSXDefaultView* m_pView;
 
 //-----------------------------------------------------------------------------
 //  CreateWindowWithWidth
@@ -56,15 +60,20 @@ namespace Riot
 
 @end
 
+
+//////////////////////////////////////////
+//  Our view
 @interface COSXDefaultView : NSView 
 {
 @private
-    NSApplication*  m_pOwnerApplication;
+    NSApplication*      m_pOwnerApplication;
+    NSOpenGLContext*    m_pContext;    
 }
 
 @property (retain) NSApplication* m_pOwnerApplication;
 
 -(void) m_pOwnerApplication:(NSApplication*)pApplication;
+-(void) SetContext:(CGLContextObj)pContext;
 
 @end
 

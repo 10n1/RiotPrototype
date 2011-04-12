@@ -163,7 +163,7 @@ namespace Riot
 #ifdef OS_WINDOWS
         static CWin32Application*   m_pApplication;
 #elif defined( OS_OSX )
-        // OS X has NS App automatically defined
+        static handle   m_pApplication; // Type NSApplication*
 #else
 #endif
 
