@@ -2,10 +2,11 @@
 File:           OGLGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/12/2011 8:49:17 PM
+Modified:       4/12/2011 9:44:30 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "OGLGraphics.h"
+#include "OGLGraphicsObjects.h"
 
 namespace Riot
 {
@@ -85,6 +86,12 @@ namespace Riot
     void COGLDevice::Present( void )
     {
         SystemOpenGL::Present( &m_pDevice );
+    }
+
+    IGfxBuffer* COGLDevice::CreateConstantBuffer( uint nSize, void* pInitialData )
+    {
+
+        return NULL;
     }
 
 } // namespace Riot

@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/12/2011 9:14:02 PM
+Modified:       4/12/2011 9:48:46 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Renderer.h"
@@ -48,6 +48,7 @@ namespace Riot
     void CRenderer::Initialize( void )
     {        
         m_pDevice = NULL;
+        m_pViewProjCB = NULL;
     }
 
     //-----------------------------------------------------------------------------
@@ -55,6 +56,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Shutdown( void )
     {
+        SAFE_RELEASE( m_pViewProjCB );
         SAFE_RELEASE( m_pDevice );
     }
 
@@ -80,6 +82,9 @@ namespace Riot
         // Then set some basic parameters
         m_pDevice->SetClearColor( 0.25f, 0.25f, 0.75f, 1.0f );
         m_pDevice->SetClearDepth( 1.0f );
+
+        // Lets create a constant buffer
+        m_pViewProjCB = m_pDevice->CreateConstantBuffer( sizeof( RMatrix4 ) );
     }
 
     //-----------------------------------------------------------------------------

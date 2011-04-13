@@ -2,7 +2,7 @@
 File:           D3DGraphicsObjects.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 8:57:33 PM
+Modified:       4/12/2011 9:33:11 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphicsObjects.h"
@@ -24,6 +24,18 @@ namespace Riot
         SAFE_RELEASE( m_pRenderTargetView );
     }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+    CD3DBuffer::CD3DBuffer()
+        : m_pBuffer( NULL )
+    {
+    }
+    CD3DBuffer::~CD3DBuffer()
+    {
+        SAFE_RELEASE( m_pBuffer );
+    }
+    
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 

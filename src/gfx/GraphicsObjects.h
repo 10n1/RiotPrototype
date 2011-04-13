@@ -3,7 +3,7 @@ File:           GraphicsObjects.h
 Purpose:        Interfaces for all the graphics objects in the engine
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 8:57:51 PM
+Modified:       4/12/2011 9:41:47 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICSOBJECTS_H_
@@ -11,14 +11,26 @@ Modified by:    Kyle Weicht
 #include "common.h"
 #include "IRefCounted.h"
 
+// All interfaces are method-less
+#define DEFINE_BASE_GRAPHICS_INTERFACE( Name )    \
+class IGfx##Name : public IRefCounted  \
+    {                               \
+    public:                         \
+        virtual ~IGfx##Name() { }      \
+    }
+
 namespace Riot
 {
-    class IRenderTarget : public IRefCounted
-    {
-    public:
-        virtual ~IRenderTarget() { }
-    };
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    DEFINE_BASE_GRAPHICS_INTERFACE( RenderTarget );
+    DEFINE_BASE_GRAPHICS_INTERFACE( Buffer );
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 } // namespace Riot
+
+#undef CREATE_GRAPHICS_INTERFACE
+
 
 #endif // #ifndef _GRAPHICSOBJECTS_H_

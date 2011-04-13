@@ -2,11 +2,12 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 9:12:46 PM
+Modified:       4/12/2011 9:52:36 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
 #include "Window.h"
+#include "D3DGraphicsObjects.h"
 
 namespace Riot
 {
@@ -151,6 +152,11 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CD3DDevice::Resize( uint nWidth, uint nHeight )
     {
+        /*
+        We handle the resizing and back buffer 100% natively,
+        just like OpenGL, rather than creating D3DRenderTargets, etc
+        */
+
         //////////////////////////////////////////
         // First release all the current default objects
         if( m_pContext != NULL )
@@ -277,5 +283,39 @@ namespace Riot
         // TODO: Support occluded present test
         hr = m_pSwapChain->Present( 0, 0 );
     }
+    //
+
+    //
+    IGfxBuffer* CD3DDevice::CreateConstantBuffer( uint nSize, void* pInitialData )
+    {
+        CD3DBuffer* pBuffer = new CD3DBuffer;
+
+        //////////////////////////////////////////
+        D3D11_BUFFER_DESC       bufferDesc  = { 0 };
+        D3D11_SUBRESOURCE_DATA  initData    = { 0 };
+        HRESULT                 hr          = S_OK;
+
+        //////////////////////////////////////////
+        bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
+        bufferDesc.ByteWidth        = nSize;
+        bufferDesc.BindFlags        = D3D11_BIND_CONSTANT_BUFFER;
+        bufferDesc.CPUAccessFlags   = 0;
+
+
+        D3D11_SUBRESOURCE_DATA* pData = NULL;
+
+        if( pInitialData )
+        {   
+            // If we have initial data, fill the buffer with it
+            initData.pSysMem = pInitialData;
+            pData = &initData;
+        }
+
+        hr = m_pDevice->CreateBuffer( &bufferDesc, pData, &pBuffer->m_pBuffer );
+        ASSERT( hr == S_OK );
+
+        return pBuffer;
+    }
+    //
 
 } // namespace Riot
