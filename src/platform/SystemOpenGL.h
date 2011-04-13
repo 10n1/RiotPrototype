@@ -4,7 +4,7 @@ Purpose:        An abstraction layer for the more low-level
                 platform-specific OpenGL details
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/11/2011 10:39:46 PM
+Modified:       4/12/2011 7:48:38 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEMOPENGL_H_
@@ -13,7 +13,7 @@ Modified by:    Kyle Weicht
 
 #ifdef OS_WINDOWS
 
-#define GL3_PROTOTYPES
+//#define GL3_PROTOTYPES
 #include <gl3/gl3.h>
 #include <gl/wglext.h>
 
@@ -51,14 +51,16 @@ namespace Riot
         };
 
 #ifdef OS_WINDOWS
-        //static PFNGLCLEARPROC                       glClear                     = NULL;
-        //static PFNGLCLEARCOLORPROC                  glClearColor                = NULL;
-        //static PFNGLCLEARDEPTHPROC                  glClearDepth                = NULL;
-        //static PFNGLDRAWBUFFERPROC                  glDrawBuffer                = NULL;
-        //static PFNGLVIEWPORTPROC                    glViewport                  = NULL;
-        extern PFNGLBINDFRAMEBUFFERPROC             glBindFramebuffer;
-        extern PFNWGLCREATECONTEXTATTRIBSARBPROC    wglCreateContextAttribsARB;
-        extern PFNWGLCHOOSEPIXELFORMATARBPROC       wglChoosePixelFormatARB;
+        // OpenGl functions
+        extern PFNGLCLEARPROC           glClear;
+        extern PFNGLCLEARCOLORPROC      glClearColor;
+        extern PFNGLCLEARDEPTHPROC      glClearDepth;
+        extern PFNGLDRAWBUFFERPROC      glDrawBuffer;
+        extern PFNGLVIEWPORTPROC        glViewport;
+        extern PFNGLFRONTFACEPROC       glFrontFace;
+
+        // OpenGL extensions (OpenGL 1.2+)
+        extern PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
 #endif
 
         //-----------------------------------------------------------------------------

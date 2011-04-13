@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/11/2011 11:20:01 PM
+Modified:       4/12/2011 7:12:19 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -13,7 +13,6 @@ Modified by:    Kyle Weicht
 #include "Graphics.h"
 #include "OGLGraphics.h"
 #include "SystemOpenGL.h"
-
 
 #ifdef OS_WINDOWS
 #include <Windows.h>
