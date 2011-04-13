@@ -2,7 +2,7 @@
 File:           Win32OpenGL.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/12/2011 7:56:15 PM
+Modified:       4/12/2011 8:40:56 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "platform/SystemOpenGL.h"
@@ -44,12 +44,13 @@ namespace Riot
 #define LOAD_FROM_DLL( type, ext ) ext = (type)GetProcAddress( pOpenGL32, #ext ); ASSERT( ext )
 
         // OpenGl functions
-        PFNGLCLEARPROC                       glClear           = NULL;
-        PFNGLCLEARCOLORPROC                  glClearColor      = NULL;
-        PFNGLCLEARDEPTHPROC                  glClearDepth      = NULL;
-        PFNGLDRAWBUFFERPROC                  glDrawBuffer      = NULL;
-        PFNGLVIEWPORTPROC                    glViewport        = NULL;
-        PFNGLFRONTFACEPROC                   glFrontFace       = NULL;
+        PFNGLCLEARPROC       glClear      = NULL;
+        PFNGLCLEARCOLORPROC  glClearColor = NULL;
+        PFNGLCLEARDEPTHPROC  glClearDepth = NULL;
+        PFNGLDRAWBUFFERPROC  glDrawBuffer = NULL;
+        PFNGLVIEWPORTPROC    glViewport   = NULL;
+        PFNGLFRONTFACEPROC   glFrontFace  = NULL;
+        PFNGLDEPTHRANGEPROC  glDepthRange = NULL;
 
         // OpenGL extensions (OpenGL 1.2+)
         PFNGLBINDFRAMEBUFFERPROC             glBindFramebuffer = NULL;
@@ -61,12 +62,13 @@ namespace Riot
         void LoadOpenGLExtensions( void )
         {
             // Load the basic OpenGL calls from the DLL
-            LOAD_FROM_DLL( PFNGLCLEARPROC          , glClear           );
-            LOAD_FROM_DLL( PFNGLCLEARCOLORPROC     , glClearColor      );
-            LOAD_FROM_DLL( PFNGLCLEARDEPTHPROC     , glClearDepth      );
-            LOAD_FROM_DLL( PFNGLDRAWBUFFERPROC     , glDrawBuffer      );
-            LOAD_FROM_DLL( PFNGLVIEWPORTPROC       , glViewport        );
-            LOAD_FROM_DLL( PFNGLFRONTFACEPROC      , glFrontFace       );
+            LOAD_FROM_DLL( PFNGLCLEARPROC     , glClear      );
+            LOAD_FROM_DLL( PFNGLCLEARCOLORPROC, glClearColor );
+            LOAD_FROM_DLL( PFNGLCLEARDEPTHPROC, glClearDepth );
+            LOAD_FROM_DLL( PFNGLDRAWBUFFERPROC, glDrawBuffer );
+            LOAD_FROM_DLL( PFNGLVIEWPORTPROC  , glViewport   );
+            LOAD_FROM_DLL( PFNGLFRONTFACEPROC , glFrontFace  );
+            LOAD_FROM_DLL( PFNGLDEPTHRANGEPROC, glDepthRange );
 
             // Load the rest from the driver
             GET_OPENGL_EXTENSION( PFNGLBINDFRAMEBUFFERPROC         , glBindFramebuffer );

@@ -3,7 +3,7 @@ File:           Graphics.h
 Purpose:        Base graphics hardware API
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/11/2011 11:04:44 PM
+Modified:       4/12/2011 8:49:17 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -13,6 +13,7 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
+    class CWindow;
 
     class CGraphicsDevice : public IRefCounted
     {
@@ -32,11 +33,20 @@ namespace Riot
         //  Initialize
         //  Performs any API specific initialization tasks (wind order, etc)
         //-----------------------------------------------------------------------------
-        virtual void Initialize( void ) = 0;
+        virtual Result Initialize( CWindow* pWindow ) = 0;
+
+        
+        //-----------------------------------------------------------------------------
+        //  Resize
+        //  Resizes the graphics device (along with the back buffer )
+        //-----------------------------------------------------------------------------
+        virtual void Resize( uint nWidth, uint nHeight ) = 0;
 
         //-----------------------------------------------------------------------------
         //  Hardware methods
         //-----------------------------------------------------------------------------
+        virtual void SetDefaultRenderDepthTarget( void ) = 0;
+
         virtual void SetViewport( uint nWidth, uint nHeight ) = 0;
         virtual void SetClearColor( float fRed, float fGreen, float fBlue, float fAlpha ) = 0;
         virtual void SetClearDepth( float fDepth ) = 0;

@@ -85,6 +85,15 @@
       <Filter>Gfx\OGL</Filter>
     </ClCompile>
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\gfx\D3D\D3DGraphics.cpp">
+      <Filter>Gfx\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gfx\D3D\D3DGraphicsObjects.cpp">
+      <Filter>Gfx\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gfx\OGL\OGLGraphicsObjects.cpp">
+      <Filter>Gfx\OGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\platform\WIN32\Win32Application.h">
@@ -163,5 +172,17 @@
       <Filter>Gfx\OGL</Filter>
     </ClInclude>
     <ClInclude Include="..\todo.h" />
+    <ClInclude Include="..\gfx\D3D\D3DGraphics.h">
+      <Filter>Gfx\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gfx\D3D\D3DGraphicsObjects.h">
+      <Filter>Gfx\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gfx\GraphicsObjects.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gfx\OGL\OGLGraphicsObjects.h">
+      <Filter>Gfx\OGL</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

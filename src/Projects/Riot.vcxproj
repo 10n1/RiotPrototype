@@ -27,8 +27,11 @@
     <ClCompile Include="..\core\Thread.cpp" />
     <ClCompile Include="..\core\timer.cpp" />
     <ClCompile Include="..\core\Window.cpp" />
+    <ClCompile Include="..\gfx\D3D\D3DGraphics.cpp" />
+    <ClCompile Include="..\gfx\D3D\D3DGraphicsObjects.cpp" />
     <ClCompile Include="..\gfx\Graphics.cpp" />
     <ClCompile Include="..\gfx\OGL\OGLGraphics.cpp" />
+    <ClCompile Include="..\gfx\OGL\OGLGraphicsObjects.cpp" />
     <ClCompile Include="..\gfx\Renderer.cpp" />
     <ClCompile Include="..\global\atomic.cpp" />
     <ClCompile Include="..\global\memory.cpp" />
@@ -51,8 +54,12 @@
     <ClInclude Include="..\core\Thread.h" />
     <ClInclude Include="..\core\timer.h" />
     <ClInclude Include="..\core\Window.h" />
+    <ClInclude Include="..\gfx\D3D\D3DGraphics.h" />
+    <ClInclude Include="..\gfx\D3D\D3DGraphicsObjects.h" />
     <ClInclude Include="..\gfx\Graphics.h" />
+    <ClInclude Include="..\gfx\GraphicsObjects.h" />
     <ClInclude Include="..\gfx\OGL\OGLGraphics.h" />
+    <ClInclude Include="..\gfx\OGL\OGLGraphicsObjects.h" />
     <ClInclude Include="..\gfx\Renderer.h" />
     <ClInclude Include="..\global\assert.h" />
     <ClInclude Include="..\global\atomic.h" />

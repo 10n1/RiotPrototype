@@ -4,7 +4,7 @@ Purpose:        An abstraction layer for the more low-level
                 platform-specific OpenGL details
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/12/2011 7:48:38 PM
+Modified:       4/12/2011 8:40:56 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEMOPENGL_H_
@@ -58,6 +58,7 @@ namespace Riot
         extern PFNGLDRAWBUFFERPROC      glDrawBuffer;
         extern PFNGLVIEWPORTPROC        glViewport;
         extern PFNGLFRONTFACEPROC       glFrontFace;
+        extern PFNGLDEPTHRANGEPROC      glDepthRange;
 
         // OpenGL extensions (OpenGL 1.2+)
         extern PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;

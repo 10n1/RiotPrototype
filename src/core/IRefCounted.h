@@ -3,7 +3,7 @@ File:           IRefCounted.h
 Purpose:        A reference counting interface
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 3:15:38 PM
+Modified:       4/12/2011 8:58:20 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _IREFCOUNTED_H_

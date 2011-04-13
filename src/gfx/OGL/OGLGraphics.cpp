@@ -2,7 +2,7 @@
 File:           OGLGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/11/2011 11:06:20 PM
+Modified:       4/12/2011 8:49:17 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "OGLGraphics.h"
@@ -30,14 +30,38 @@ namespace Riot
     //  Initialize
     //  Performs any API specific initialization tasks (wind order, etc)
     //-----------------------------------------------------------------------------
-    void COGLDevice::Initialize( void )
+    Result COGLDevice::Initialize( CWindow* pWindow )
     {
+        // Create the system specific OpenGL device
+        SystemOpenGL::CreateOpenGLDevice( &m_pDevice, pWindow );
+        
+        // Switch the cull mode
         glFrontFace( GL_CW );
+        // Make sure we're drawing to the back buffer
+        glDrawBuffer( GL_BACK );
+
+        glDepthRange( 0.0f, 1.0f );
+
+        return rResultSuccess;
+    }
+
+    //-----------------------------------------------------------------------------
+    //  Resize
+    //  Resizes the graphics device (along with the back buffer )
+    //-----------------------------------------------------------------------------
+    void COGLDevice::Resize( uint nWidth, uint nHeight )
+    {
+        SetViewport( nWidth, nHeight );
     }
 
     //-----------------------------------------------------------------------------
     //  Hardware methods
-    //-----------------------------------------------------------------------------    
+    //----------------------------------------------------------------------------- 
+    void COGLDevice::SetDefaultRenderDepthTarget( void )
+    {
+        glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+    }
+   
     void COGLDevice::SetViewport( uint nWidth, uint nHeight )
     {
         glViewport( 0, 0, nWidth, nHeight );
@@ -55,8 +79,6 @@ namespace Riot
 
     void COGLDevice::Clear( void )
     {
-        glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-        glDrawBuffer( GL_BACK );
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );   
     }
 

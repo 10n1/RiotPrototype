@@ -1,30 +1,30 @@
 /*********************************************************\
-File:           OGLGraphics.h
-Purpose:        OpenGL graphics interface
+File:           D3DGraphics.h
+Purpose:        Direct3D interface
 Author:         Kyle Weicht
-Created:        4/10/2011
-Modified:       4/12/2011 8:58:44 PM
+Created:        4/12/2011
+Modified:       4/12/2011 9:06:21 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#ifndef _OGLGRAPHICS_H_
-#define _OGLGRAPHICS_H_
+#ifndef _D3DGRAPHICS_H_
+#define _D3DGRAPHICS_H_
 #include "common.h"
 #include "Graphics.h"
-#include "SystemOpenGL.h"
 #include "GraphicsObjects.h"
+#include <D3D11.h>
 
 namespace Riot
 {
 
-    class COGLDevice : public CGraphicsDevice
+    class CD3DDevice : public CGraphicsDevice
     {
         friend class System;
     public:
-        // COGLDevice constructor
-        COGLDevice();
+        // CD3DDevice constructor
+        CD3DDevice();
 
-        // COGLDevice destructor
-        ~COGLDevice();
+        // CD3DDevice destructor
+        ~CD3DDevice();
         /***************************************\
         | class methods                         |
         \***************************************/
@@ -45,7 +45,7 @@ namespace Riot
         //  Hardware methods
         //----------------------------------------------------------------------------- 
         void SetDefaultRenderDepthTarget( void );
-       
+
         void SetViewport( uint nWidth, uint nHeight );
         void SetClearColor( float fRed, float fGreen, float fBlue, float fAlpha );
         void SetClearDepth( float fDepth );
@@ -56,9 +56,24 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        SystemOpenGL::TOpenGLDevice m_pDevice;
+        float   m_fClearColor[4];
+        float   m_fDepthClear;
+        char    m_szVSProfile[7];
+        char    m_szPSProfile[7];
+        char    _padding[2];
+
+        // The device, etc
+        ID3D11Device*           m_pDevice;
+        ID3D11DeviceContext*    m_pContext;
+        IDXGISwapChain*         m_pSwapChain;
+
+        // The default render target
+        ID3D11RenderTargetView* m_pDefaultRenderTargetView;
+        ID3D11Texture2D*        m_pDefaultDepthStencilResource;
+        ID3D11DepthStencilView* m_pDefaultDepthStencilView;
     };
 
 } // namespace Riot
 
-#endif // #ifndef _OGLGRAPHICS_H_
+
+#endif // #ifndef _D3DGRAPHICS_H_

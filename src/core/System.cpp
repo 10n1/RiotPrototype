@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/12/2011 7:12:19 PM
+Modified:       4/12/2011 8:22:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -42,13 +42,9 @@ namespace Riot
     CTimer      System::m_GlobalTimer;
     uint        System::m_nNumHardwareThreads   = 0;
     CWindow*    System::m_pMainWindow           = NULL;
-    CGraphicsDevice*  System::m_pGraphics             = NULL;
-#ifdef OS_WINDOWS
-    CWin32Application*  System::m_pApplication  = NULL;
-#elif defined( OS_OSX )
-    handle  System::m_pApplication = NULL;
-#else
-#endif
+    CGraphicsDevice*  System::m_pGraphics       = NULL;
+
+    handle      System::m_pApplication = NULL;
 
     /***************************************\
     | Public methods
@@ -298,7 +294,7 @@ namespace Riot
         ASSERT( m_pApplication == NULL );
         m_pApplication = new CWin32Application();
 
-        m_pMainWindow->m_pWindow = m_pApplication->CreateMainWindow( nWidth, nHeight );
+        m_pMainWindow->m_pWindow = ((CWin32Application*)m_pApplication)->CreateMainWindow( nWidth, nHeight );
 #else
         DECLAREPOOL;
         ///////////////////////////////////
@@ -344,7 +340,7 @@ namespace Riot
     void System::ProcessOSMessages( void )
     {
 #ifdef OS_WINDOWS
-        m_pApplication->ProcessOSMessages();
+        ((CWin32Application*)m_pApplication)->ProcessOSMessages();
 #else
         [NSApp ProcessOSMessages];
 #endif
@@ -355,21 +351,13 @@ namespace Riot
     //  CGraphicsDevice
     //  Creates and returns an OpenGL interface for the specified window
     //-----------------------------------------------------------------------------
-    CGraphicsDevice* System::CreateOpenGLDevice( CWindow* pWindow )
+    //CGraphicsDevice* System::CreateOpenGLDevice( CWindow* pWindow )
+    void System::CreateOpenGLDevice( CGraphicsDevice* pDevice, CWindow* pWindow )
     {
         ASSERT( m_pGraphics == NULL );
-
-        COGLDevice* pGraphics = new COGLDevice();
         
-        // Create the system specific OpenGL device
-        SystemOpenGL::CreateOpenGLDevice( &pGraphics->m_pDevice, pWindow );
-
-        // Let it initialize itself
-        pGraphics->Initialize();
-        
-        // Return it
-        m_pGraphics = pGraphics;
-        return m_pGraphics;
+        // Grab a reference to it
+        m_pGraphics = pDevice;
     }
 
 } // namespace Riot

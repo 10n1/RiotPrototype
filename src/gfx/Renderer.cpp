@@ -2,11 +2,17 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/11/2011 10:54:35 PM
+Modified:       4/12/2011 9:14:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Renderer.h"
 #include "System.h"
+
+#ifdef OS_WINDOWS
+#include "D3DGraphics.h"
+#endif
+
+#include "OGLGraphics.h"
 
 namespace Riot
 {
@@ -58,7 +64,20 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::CreateGraphicsDevice( CWindow* pWindow )
     {
-        m_pDevice = System::CreateOpenGLDevice( pWindow );
+        Result nResult = rResultSuccess;
+
+        // Make the new device
+#if 0 || !defined( OS_WINDOWS )
+        m_pDevice = new COGLDevice;
+#else
+        m_pDevice = new CD3DDevice;
+#endif
+
+        // Then initialize it
+        m_pDevice->Initialize( pWindow );
+        ASSERT( nResult == rResultSuccess );
+
+        // Then set some basic parameters
         m_pDevice->SetClearColor( 0.25f, 0.25f, 0.75f, 1.0f );
         m_pDevice->SetClearDepth( 1.0f );
     }
@@ -90,7 +109,7 @@ namespace Riot
                 uint nWidth = msg.nMessage >> 16;
                 uint nHeight = msg.nMessage & 0x0000FFFF;
 
-                m_pDevice->SetViewport( nWidth, nHeight );
+                m_pDevice->Resize( nWidth, nHeight );
 
                 break;
             }
