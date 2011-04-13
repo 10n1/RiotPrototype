@@ -2,7 +2,7 @@
 File:           OGLGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/12/2011 9:44:30 PM
+Modified:       4/12/2011 10:45:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "OGLGraphics.h"
@@ -90,7 +90,7 @@ namespace Riot
 
     IGfxBuffer* COGLDevice::CreateConstantBuffer( uint nSize, void* pInitialData )
     {
-
+        ASSERT( 0 );
         return NULL;
     }
 

@@ -3,7 +3,7 @@ File:           D3DGraphicsObjects.h
 Purpose:        The D3D graphics objects
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 9:46:26 PM
+Modified:       4/12/2011 10:58:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICSOBJECTS_H_
@@ -12,7 +12,7 @@ Modified by:    Kyle Weicht
 #include "GraphicsObjects.h"
 #include <D3D11.h>
 
-#define BEGIN_DEFINE_D3D_GRAPHICS_OBJECT( Name ) \
+#define BEGIN_DEFINE_GRAPHICS_OBJECT( Name ) \
 class CD3D##Name : public IGfx##Name             \
     {                                            \
         friend class CD3DDevice;                 \
@@ -21,7 +21,7 @@ class CD3D##Name : public IGfx##Name             \
         ~CD3D##Name();                           \
     private:
 
-#define END_DEFINE_D3D_GRAPHICS_OBJECT  \
+#define END_DEFINE_GRAPHICS_OBJECT  \
     }
 
 namespace Riot
@@ -43,14 +43,21 @@ namespace Riot
     private:
         ID3D11RenderTargetView* m_pRenderTargetView;
     };
-
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-
-    BEGIN_DEFINE_D3D_GRAPHICS_OBJECT( Buffer )
+    BEGIN_DEFINE_GRAPHICS_OBJECT( Buffer )
         ID3D11Buffer*   m_pBuffer;
-    END_DEFINE_D3D_GRAPHICS_OBJECT;
-
+    END_DEFINE_GRAPHICS_OBJECT;
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------    
+    BEGIN_DEFINE_GRAPHICS_OBJECT( VertexShader )
+        ID3D11VertexShader* m_pShader;
+    END_DEFINE_GRAPHICS_OBJECT;
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    BEGIN_DEFINE_GRAPHICS_OBJECT( PixelShader )
+        ID3D11PixelShader*  m_pShader;
+    END_DEFINE_GRAPHICS_OBJECT;
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 

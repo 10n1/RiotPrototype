@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/12/2011 9:48:46 PM
+Modified:       4/12/2011 11:01:43 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -16,6 +16,7 @@ Modified by:    Kyle Weicht
 namespace Riot
 {
     class CWindow;
+    class CMesh;
 
     class CRenderer : public IListener
     {
@@ -58,6 +59,17 @@ namespace Riot
         //-----------------------------------------------------------------------------
         void ProcessMessage( const TMessage& msg );        
 
+        //-----------------------------------------------------------------------------
+        //  CreateMesh
+        //  Creates a mesh from the file
+        //-----------------------------------------------------------------------------
+        CMesh* CreateMesh(  uint nVertexStride, 
+                            uint nVertexCount, 
+                            uint nIndexFormat, 
+                            uint nIndexCount, 
+                            void* pVertices, 
+                            void* pIndices ); 
+
     private:
         /***************************************\
         | class members                         |
@@ -65,9 +77,10 @@ namespace Riot
         static const MessageType    MessagesReceived[];
         static const uint           NumMessagesReceived;
 
-        CGraphicsDevice*    m_pDevice;
+        IGraphicsDevice*    m_pDevice;
 
         IGfxBuffer* m_pViewProjCB;
+        IGfxBuffer* m_pWorldCB;
     };
 
 

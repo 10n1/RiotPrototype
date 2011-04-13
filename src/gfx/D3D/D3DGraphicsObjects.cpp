@@ -2,7 +2,7 @@
 File:           D3DGraphicsObjects.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 9:33:11 PM
+Modified:       4/12/2011 10:58:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphicsObjects.h"
@@ -11,7 +11,6 @@ namespace Riot
 {    
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-
     // CD3DRenderTarget constructor
     CD3DRenderTarget::CD3DRenderTarget()
         : m_pRenderTargetView( NULL )
@@ -23,10 +22,8 @@ namespace Riot
     {
         SAFE_RELEASE( m_pRenderTargetView );
     }
-
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-
     CD3DBuffer::CD3DBuffer()
         : m_pBuffer( NULL )
     {
@@ -34,8 +31,27 @@ namespace Riot
     CD3DBuffer::~CD3DBuffer()
     {
         SAFE_RELEASE( m_pBuffer );
+    }    
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    CD3DVertexShader::CD3DVertexShader()
+        : m_pShader( NULL )
+    {
     }
-    
+    CD3DVertexShader::~CD3DVertexShader()
+    {
+        SAFE_RELEASE( m_pShader );
+    }    
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    CD3DPixelShader::CD3DPixelShader()
+        : m_pShader( NULL )
+    {
+    }
+    CD3DPixelShader::~CD3DPixelShader()
+    {
+        SAFE_RELEASE( m_pShader );
+    }    
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 

@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/12/2011 8:22:22 PM
+Modified:       4/12/2011 10:49:17 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -42,7 +42,7 @@ namespace Riot
     CTimer      System::m_GlobalTimer;
     uint        System::m_nNumHardwareThreads   = 0;
     CWindow*    System::m_pMainWindow           = NULL;
-    CGraphicsDevice*  System::m_pGraphics       = NULL;
+    IGraphicsDevice*  System::m_pGraphics       = NULL;
 
     handle      System::m_pApplication = NULL;
 
@@ -348,11 +348,11 @@ namespace Riot
 
 
     //-----------------------------------------------------------------------------
-    //  CGraphicsDevice
+    //  IGraphicsDevice
     //  Creates and returns an OpenGL interface for the specified window
     //-----------------------------------------------------------------------------
-    //CGraphicsDevice* System::CreateOpenGLDevice( CWindow* pWindow )
-    void System::CreateOpenGLDevice( CGraphicsDevice* pDevice, CWindow* pWindow )
+    //IGraphicsDevice* System::CreateOpenGLDevice( CWindow* pWindow )
+    void System::CreateOpenGLDevice( IGraphicsDevice* pDevice, CWindow* pWindow )
     {
         ASSERT( m_pGraphics == NULL );
         

@@ -3,7 +3,7 @@ File:           OGLGraphics.h
 Purpose:        OpenGL graphics interface
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/12/2011 9:41:48 PM
+Modified:       4/12/2011 10:49:18 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OGLGRAPHICS_H_
@@ -16,7 +16,7 @@ Modified by:    Kyle Weicht
 namespace Riot
 {
 
-    class COGLDevice : public CGraphicsDevice
+    class COGLDevice : public IGraphicsDevice
     {
         friend class System;
     public:

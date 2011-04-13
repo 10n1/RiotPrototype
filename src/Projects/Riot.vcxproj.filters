@@ -94,6 +94,9 @@
     <ClCompile Include="..\gfx\OGL\OGLGraphicsObjects.cpp">
       <Filter>Gfx\OGL</Filter>
     </ClCompile>
+    <ClCompile Include="..\gfx\Mesh.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\platform\WIN32\Win32Application.h">
@@ -183,6 +186,12 @@
     </ClInclude>
     <ClInclude Include="..\gfx\OGL\OGLGraphicsObjects.h">
       <Filter>Gfx\OGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gfx\Mesh.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gfx\VertexFormats.h">
+      <Filter>Gfx</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

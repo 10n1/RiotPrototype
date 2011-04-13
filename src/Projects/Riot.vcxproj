@@ -30,6 +30,7 @@
     <ClCompile Include="..\gfx\D3D\D3DGraphics.cpp" />
     <ClCompile Include="..\gfx\D3D\D3DGraphicsObjects.cpp" />
     <ClCompile Include="..\gfx\Graphics.cpp" />
+    <ClCompile Include="..\gfx\Mesh.cpp" />
     <ClCompile Include="..\gfx\OGL\OGLGraphics.cpp" />
     <ClCompile Include="..\gfx\OGL\OGLGraphicsObjects.cpp" />
     <ClCompile Include="..\gfx\Renderer.cpp" />
@@ -58,9 +59,11 @@
     <ClInclude Include="..\gfx\D3D\D3DGraphicsObjects.h" />
     <ClInclude Include="..\gfx\Graphics.h" />
     <ClInclude Include="..\gfx\GraphicsObjects.h" />
+    <ClInclude Include="..\gfx\Mesh.h" />
     <ClInclude Include="..\gfx\OGL\OGLGraphics.h" />
     <ClInclude Include="..\gfx\OGL\OGLGraphicsObjects.h" />
     <ClInclude Include="..\gfx\Renderer.h" />
+    <ClInclude Include="..\gfx\VertexFormats.h" />
     <ClInclude Include="..\global\assert.h" />
     <ClInclude Include="..\global\atomic.h" />
     <ClInclude Include="..\global\common.h" />

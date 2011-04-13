@@ -3,7 +3,7 @@ File:           OGLGraphicsObjects.h
 Purpose:        The OGL graphics objects
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 9:46:26 PM
+Modified:       4/12/2011 10:58:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OGLGRAPHICSOBJECTS_H_
@@ -13,7 +13,7 @@ Modified by:    Kyle Weicht
 #include "SystemOpenGL.h"
 
 
-#define BEGIN_DEFINE_OGL_GRAPHICS_OBJECT( Name ) \
+#define BEGIN_DEFINE_GRAPHICS_OBJECT( Name ) \
 class COGL##Name : public IGfx##Name             \
     {                                            \
         friend class COGLDevice;                 \
@@ -22,7 +22,7 @@ class COGL##Name : public IGfx##Name             \
         ~COGL##Name();                           \
     private:
 
-#define END_DEFINE_OGL_GRAPHICS_OBJECT  \
+#define END_DEFINE_GRAPHICS_OBJECT  \
     }
 
 namespace Riot
@@ -46,11 +46,19 @@ namespace Riot
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-
-    BEGIN_DEFINE_OGL_GRAPHICS_OBJECT( Buffer )
+    BEGIN_DEFINE_GRAPHICS_OBJECT( Buffer )
         GLint   m_nBuffer;
-    END_DEFINE_OGL_GRAPHICS_OBJECT;
-    
+    END_DEFINE_GRAPHICS_OBJECT;    
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------    
+    BEGIN_DEFINE_GRAPHICS_OBJECT( VertexShader )
+        GLint   m_nShader;
+    END_DEFINE_GRAPHICS_OBJECT;
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    BEGIN_DEFINE_GRAPHICS_OBJECT( PixelShader )
+        GLint   m_nShader;
+    END_DEFINE_GRAPHICS_OBJECT;
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 

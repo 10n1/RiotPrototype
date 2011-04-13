@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Direct3D interface
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 9:41:47 PM
+Modified:       4/12/2011 10:49:17 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -16,7 +16,7 @@ Modified by:    Kyle Weicht
 namespace Riot
 {
 
-    class CD3DDevice : public CGraphicsDevice
+    class CD3DDevice : public IGraphicsDevice
     {
         friend class System;
     public:

@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/11/2011 11:19:14 PM
+Modified:       4/12/2011 11:32:56 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -13,6 +13,7 @@ Modified by:    Kyle Weicht
 #include "timer.h"
 #include "InputManager.h"
 #include "Renderer.h"
+#include "Mesh.h"
 
 #define SHUTDOWN_AND_DELETE( Module ) if( Module ) { Module->Shutdown(); delete Module; Module = NULL; }
 #define NEW_AND_INITIALIZE( Module, Type ) Module = new Type; Module->Initialize();
@@ -193,12 +194,16 @@ namespace Riot
 
         //////////////////////////////////////////
         // Now perform any other initialization
-
         // Create a window
         m_pMainWindow = System::CreateMainWindow( 1024, 768 );
-
         // Load the graphics device
         m_pRenderer->CreateGraphicsDevice( m_pMainWindow );
+
+
+        // Create a mesh
+        CMesh* pMesh = m_pRenderer->CreateMesh( 0, 0, 0, 0, 0, 0 );
+
+        SAFE_RELEASE( pMesh );
 
         // Finally reset the timer
         m_MainTimer.Reset();

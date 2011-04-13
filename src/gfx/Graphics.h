@@ -3,7 +3,7 @@ File:           Graphics.h
 Purpose:        Base graphics hardware API
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/12/2011 9:41:47 PM
+Modified:       4/12/2011 10:49:18 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -16,16 +16,16 @@ namespace Riot
 {
     class CWindow;
 
-    class CGraphicsDevice : public IRefCounted
+    class IGraphicsDevice : public IRefCounted
     {
         friend class System;
         friend class Renderer;
     public:
-        // CGraphicsDevice constructor
-        CGraphicsDevice();
+        // IGraphicsDevice constructor
+        IGraphicsDevice();
 
-        // CGraphicsDevice destructor
-        virtual ~CGraphicsDevice();
+        // IGraphicsDevice destructor
+        virtual ~IGraphicsDevice();
         /***************************************\
         | class methods                         |
         \***************************************/

@@ -2,11 +2,13 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/12/2011 9:48:46 PM
+Modified:       4/12/2011 11:28:39 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Renderer.h"
 #include "System.h"
+#include "Mesh.h"
+#include "VertexFormats.h"
 
 #ifdef OS_WINDOWS
 #include "D3DGraphics.h"
@@ -47,8 +49,9 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Initialize( void )
     {        
-        m_pDevice = NULL;
-        m_pViewProjCB = NULL;
+        m_pDevice       = NULL;
+        m_pViewProjCB   = NULL;
+        m_pWorldCB      = NULL;
     }
 
     //-----------------------------------------------------------------------------
@@ -56,6 +59,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Shutdown( void )
     {
+        SAFE_RELEASE( m_pWorldCB );
         SAFE_RELEASE( m_pViewProjCB );
         SAFE_RELEASE( m_pDevice );
     }
@@ -83,8 +87,9 @@ namespace Riot
         m_pDevice->SetClearColor( 0.25f, 0.25f, 0.75f, 1.0f );
         m_pDevice->SetClearDepth( 1.0f );
 
-        // Lets create a constant buffer
+        // Create the constant buffers
         m_pViewProjCB = m_pDevice->CreateConstantBuffer( sizeof( RMatrix4 ) );
+        m_pWorldCB = m_pDevice->CreateConstantBuffer( sizeof( RMatrix4 ) );
     }
 
     //-----------------------------------------------------------------------------
@@ -96,6 +101,26 @@ namespace Riot
         m_pDevice->Clear();
         m_pDevice->Present();
     }
+
+
+    //-----------------------------------------------------------------------------
+    //  CreateMesh
+    //  Creates a mesh from the file
+    //-----------------------------------------------------------------------------
+    CMesh* CRenderer::CreateMesh(   uint nVertexStride, 
+                                    uint nVertexCount, 
+                                    uint nIndexFormat, 
+                                    uint nIndexCount, 
+                                    void* pVertices, 
+                                    void* pIndices )
+    {
+        CMesh* pMesh = new CMesh;
+
+        InputElementLayout x = VVertexPosNormal::Layout[1];
+
+        return pMesh;
+    }
+
 
     //-----------------------------------------------------------------------------
     //  ProcessMessage
