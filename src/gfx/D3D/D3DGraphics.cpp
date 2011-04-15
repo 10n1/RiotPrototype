@@ -2,22 +2,37 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/14/2011 8:10:03 PM
+Modified:       4/14/2011 10:42:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
 #include "Window.h"
 #include "D3DGraphicsObjects.h"
+#include <D3DX11.h>
+#include <D3Dcompiler.h>
 
 #if USE_DIRECTX
 
 namespace Riot
 {
     //-----------------------------------------------------------------------------
+    //  Function declarations
+    Result CompileShader( const wchar_t* szFilename, const char* szEntryPoint, const char* szProfile, ID3DBlob** ppBlob );
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
     GFX_FORMAT GFX_FORMAT_FLOAT3        = DXGI_FORMAT_R32G32B32_FLOAT;
+    GFX_FORMAT GFX_FORMAT_UINT16        = DXGI_FORMAT_R16_UINT;
+    GFX_FORMAT GFX_FORMAT_UINT32        = DXGI_FORMAT_R32_UINT;
+
+    const uint GFX_FORMAT_FLOAT3_SIZE   = sizeof( RVector3 );
+    const uint GFX_FORMAT_UINT16_SIZE   = sizeof( uint16 );
+    const uint GFX_FORMAT_UINT32_SIZE   = sizeof( uint32 );
     //-----------------------------------------------------------------------------
     GFX_SEMANTIC GFX_SEMANTIC_POSITION  = "POSITION";
     GFX_SEMANTIC GFX_SEMANTIC_NORMAL    = "NORMAL";
+    //-----------------------------------------------------------------------------
+    GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_TRIANGLELIST   = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     //-----------------------------------------------------------------------------
 
     // CD3DDevice constructor
@@ -295,6 +310,68 @@ namespace Riot
     //
 
     //
+    void CD3DDevice::CreateVertexShaderAndLayout( 
+            const wchar_t* szFilename, 
+            const char* szEntryPoint,
+            InputElementLayout Layout[],
+            uint nLayoutCount, 
+            IGfxVertexShader** pShader,
+            IGfxVertexLayout** pLayout )
+    {
+
+        //////////////////////////////////////////
+        CD3DBuffer*         pBuffer         = new CD3DBuffer;
+        ID3D11VertexShader* pVertexShader   = NULL;
+        ID3D11InputLayout*  pInputLayout    = NULL;
+        ID3DBlob*           pShaderBlob     = NULL;
+        HRESULT             hr              = S_OK;
+        Result              nResult         = rResultSuccess;
+
+        // First compile the shader
+        nResult = CompileShader( szFilename, szEntryPoint, m_szVSProfile, &pShaderBlob );
+        ASSERT( nResult == rResultSuccess );
+
+        void* pShaderCode = pShaderBlob->GetBufferPointer();
+        uint  nShaderSize = pShaderBlob->GetBufferSize();
+        
+        // Then create the shader
+        hr = m_pDevice->CreateVertexShader( pShaderCode, nShaderSize, NULL, &pVertexShader );
+        assert( hr == S_OK );
+
+        // and finally create the input layout
+        D3D11_INPUT_ELEMENT_DESC inputLayout[] =
+        {
+            { Layout[0].szSemanticName, 0, (DXGI_FORMAT)Layout[0].nFormat, 0, Layout[0].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { Layout[1].szSemanticName, 0, (DXGI_FORMAT)Layout[1].nFormat, 0, Layout[1].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        };
+
+        hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
+        assert( hr == S_OK );
+
+    }
+
+    IGfxPixelShader* CD3DDevice::CreatePixelShader( const wchar_t* szFilename, const char* szEntryPoint )
+    {
+        CD3DPixelShader* pShader = new CD3DPixelShader;
+
+        ID3DBlob*   pShaderBlob = NULL;
+        Result      nResult = rResultSuccess;
+        // First compile the shader
+        nResult = CompileShader( szFilename, szEntryPoint, m_szPSProfile, &pShaderBlob );
+        ASSERT( nResult == rResultSuccess );
+
+        // Then create the shader
+        void* pShaderCode = pShaderBlob->GetBufferPointer();
+        uint  nShaderSize = pShaderBlob->GetBufferSize();
+        HRESULT hr = m_pDevice->CreatePixelShader( pShaderCode, nShaderSize, NULL, &pShader->m_pShader );
+
+        assert( hr == S_OK );
+
+        return pShader;
+    }
+    //
+
+    //
     IGfxBuffer* CD3DDevice::CreateConstantBuffer( uint nSize, void* pInitialData )
     {
         CD3DBuffer* pBuffer = new CD3DBuffer;
@@ -325,7 +402,161 @@ namespace Riot
 
         return pBuffer;
     }
+    IGfxBuffer* CD3DDevice::CreateVertexBuffer( uint nSize, void* pInitialData )
+    {
+        CD3DBuffer* pBuffer = new CD3DBuffer;
+
+        //////////////////////////////////////////
+        D3D11_BUFFER_DESC       bufferDesc  = { 0 };
+        D3D11_SUBRESOURCE_DATA  initData    = { 0 };
+        HRESULT                 hr          = S_OK;
+
+        //////////////////////////////////////////
+        bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
+        bufferDesc.ByteWidth        = nSize;
+        bufferDesc.BindFlags        = D3D11_BIND_VERTEX_BUFFER;
+        bufferDesc.CPUAccessFlags   = 0;
+
+
+        D3D11_SUBRESOURCE_DATA* pData = NULL;
+
+        if( pInitialData )
+        {   
+            // If we have initial data, fill the buffer with it
+            initData.pSysMem = pInitialData;
+            pData = &initData;
+        }
+
+        hr = m_pDevice->CreateBuffer( &bufferDesc, pData, &pBuffer->m_pBuffer );
+        ASSERT( hr == S_OK );
+
+        return pBuffer;
+    }
+
+    IGfxBuffer* CD3DDevice::CreateIndexBuffer( uint nSize, void* pInitialData )
+    {
+        CD3DBuffer* pBuffer = new CD3DBuffer;
+
+        //////////////////////////////////////////
+        D3D11_BUFFER_DESC       bufferDesc  = { 0 };
+        D3D11_SUBRESOURCE_DATA  initData    = { 0 };
+        HRESULT                 hr          = S_OK;
+
+        //////////////////////////////////////////
+        bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
+        bufferDesc.ByteWidth        = nSize;
+        bufferDesc.BindFlags        = D3D11_BIND_INDEX_BUFFER;
+        bufferDesc.CPUAccessFlags   = 0;
+
+
+        D3D11_SUBRESOURCE_DATA* pData = NULL;
+
+        if( pInitialData )
+        {   
+            // If we have initial data, fill the buffer with it
+            initData.pSysMem = pInitialData;
+            pData = &initData;
+        }
+
+        hr = m_pDevice->CreateBuffer( &bufferDesc, pData, &pBuffer->m_pBuffer );
+        ASSERT( hr == S_OK );
+
+        return pBuffer;
+    }
     //
+
+    //
+    void CD3DDevice::UpdateBuffer( IGfxBuffer* pBuffer, void* pData )
+    {
+        m_pContext->UpdateSubresource( ((CD3DBuffer*)pBuffer)->m_pBuffer, 0, NULL, pData, 0, 0 );
+    }
+    //
+
+    //
+    void CD3DDevice::SetVertexLayout( IGfxVertexLayout* pLayout )
+    {
+        m_pContext->IASetInputLayout( ((CD3DVertexLayout*)pLayout)->m_pLayout );
+    }
+    
+    void CD3DDevice::SetVertexBuffer( IGfxBuffer* pBuffer, uint nStride )
+    {
+        uint nOffset = 0;
+        m_pContext->IASetVertexBuffers( 0, 1, &((CD3DBuffer*)pBuffer)->m_pBuffer, &nStride, &nOffset );
+    }
+    
+    void CD3DDevice::SetIndexBuffer( IGfxBuffer* pBuffer, uint nSize )
+    {
+        DXGI_FORMAT nIndexFormat = ( nSize == 2 ) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT; // TODO: Clean this up
+        m_pContext->IASetIndexBuffer( ((CD3DBuffer*)pBuffer)->m_pBuffer, nIndexFormat, 0 ); 
+    }
+    
+    void CD3DDevice::SetPrimitiveType( GFX_PRIMITIVE_TYPE nType )
+    {
+        m_pContext->IASetPrimitiveTopology( (D3D11_PRIMITIVE_TOPOLOGY)nType );
+    }
+    
+    void CD3DDevice::SetVertexShader( IGfxVertexShader* pShader )
+    {
+        m_pContext->VSSetShader( ((CD3DVertexShader*)pShader)->m_pShader, NULL, 0 );
+    }
+
+    void CD3DDevice::SetPixelShader( IGfxPixelShader* pShader )
+    {
+        m_pContext->PSSetShader( ((CD3DPixelShader*)pShader)->m_pShader, NULL, 0 );
+    }
+    void CD3DDevice::SetVSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer )
+    {
+        m_pContext->VSSetConstantBuffers( nIndex, 1, &((CD3DBuffer*)pBuffer)->m_pBuffer );
+    }
+    void CD3DDevice::SetPSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer )
+    {
+        m_pContext->PSSetConstantBuffers( nIndex, 1, &((CD3DBuffer*)pBuffer)->m_pBuffer );
+    }
+    //
+
+    //
+    void CD3DDevice::DrawIndexedPrimitive( uint nIndexCount )
+    {
+        m_pContext->DrawIndexed( nIndexCount, 0, 0 );
+    }
+    //
+
+    Result CompileShader( const wchar_t* szFilename, const char* szEntryPoint, const char* szProfile, ID3DBlob** ppBlob )
+    {
+        ID3DBlob*   pErrorBlob      = NULL;
+        ID3DBlob*   pShaderBlob     = NULL;
+        uint        nCompileFlags   = 0;
+        HRESULT     hr              = S_OK;
+        //////////////////////////////////////////
+        // Load the shader
+#ifdef DEBUG
+        nCompileFlags = D3DCOMPILE_DEBUG;
+#endif
+        hr = D3DX11CompileFromFile(  szFilename,    // Filename
+            NULL,          // Array of macro definitions
+            NULL,          // #include interface
+            szEntryPoint,  // Function name
+            szProfile, // Shader profile
+            nCompileFlags, // Compile flags
+            0,             // Not used for shaders, only effects
+            NULL,          // Thread pump
+            &pShaderBlob,  // Compiled code
+            &pErrorBlob,   // Errors
+            NULL );        // HRESULT
+
+        if( FAILED( hr ) )
+        {
+            // TODO: Handle error gracefully
+            ASSERT( 0 );
+            MessageBox( 0, (wchar_t*)pErrorBlob->GetBufferPointer(), L"Error", 0 );
+            SAFE_RELEASE( pErrorBlob );
+            return rResultFailure;
+        }
+        SAFE_RELEASE( pErrorBlob );
+
+        *ppBlob = pShaderBlob;
+        return rResultSuccess;
+    }
 
 } // namespace Riot
 

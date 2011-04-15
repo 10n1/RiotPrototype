@@ -3,7 +3,7 @@ File:           OGLGraphics.h
 Purpose:        OpenGL graphics interface
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/14/2011 8:10:03 PM
+Modified:       4/14/2011 10:42:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OGLGRAPHICS_H_
@@ -57,7 +57,39 @@ namespace Riot
         //
 
         //
-        IGfxBuffer* CreateConstantBuffer( uint nSize, void* pInitialData = NULL );
+        void CreateVertexShaderAndLayout( 
+            const wchar_t* szFilename, 
+            const char* szEntryPoint, 
+            InputElementLayout Layout[],
+            uint nLayoutCount,
+            IGfxVertexShader** pShader,
+            IGfxVertexLayout** pLayout );
+        IGfxPixelShader* CreatePixelShader( const wchar_t* szFilename, const char* szEntryPoint );
+        //
+
+        //
+        IGfxBuffer* CreateConstantBuffer( uint nSize, void* pInitialData );
+        IGfxBuffer* CreateVertexBuffer( uint nSize, void* pInitialData );
+        IGfxBuffer* CreateIndexBuffer( uint nSize, void* pInitialData );
+        //
+        
+        //
+        void UpdateBuffer( IGfxBuffer* pBuffer, void* pData );
+        //
+
+        //
+        void SetVertexLayout( IGfxVertexLayout* pLayout );
+        void SetVertexBuffer( IGfxBuffer* pBuffer, uint nStride );
+        void SetIndexBuffer( IGfxBuffer* pBuffer, uint nSize );
+        void SetPrimitiveType( GFX_PRIMITIVE_TYPE nType );
+        void SetVertexShader( IGfxVertexShader* pShader );
+        void SetPixelShader( IGfxPixelShader* pShader );
+        void SetVSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer );
+        void SetPSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer );
+        //
+
+        //
+        void DrawIndexedPrimitive( uint nIndexCount );
         //
 
     private:

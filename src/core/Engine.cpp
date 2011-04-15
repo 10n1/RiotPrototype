@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/12/2011 11:32:56 PM
+Modified:       4/14/2011 8:46:21 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -201,8 +201,7 @@ namespace Riot
 
 
         // Create a mesh
-        CMesh* pMesh = m_pRenderer->CreateMesh( 0, 0, 0, 0, 0, 0 );
-
+        CMesh* pMesh = m_pRenderer->CreateMesh();
         SAFE_RELEASE( pMesh );
 
         // Finally reset the timer

@@ -2,12 +2,23 @@
 File:           D3DGraphicsObjects.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/14/2011 8:07:06 PM
+Modified:       4/14/2011 8:54:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphicsObjects.h"
 
 #if USE_DIRECTX
+
+#define DECLARE_SIMPLE_GRAPHICS_OBJECT( Name, Object )   \
+    CD3D##Name::CD3D##Name()                    \
+        : Object( NULL )                        \
+    {                                           \
+    }                                           \
+    CD3D##Name::~CD3D##Name()                   \
+    {                                           \
+        SAFE_RELEASE( Object );                 \
+    }    
+
 
 namespace Riot
 {    
@@ -26,34 +37,16 @@ namespace Riot
     }
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-    CD3DBuffer::CD3DBuffer()
-        : m_pBuffer( NULL )
-    {
-    }
-    CD3DBuffer::~CD3DBuffer()
-    {
-        SAFE_RELEASE( m_pBuffer );
-    }    
+    DECLARE_SIMPLE_GRAPHICS_OBJECT( Buffer, m_pBuffer );
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-    CD3DVertexShader::CD3DVertexShader()
-        : m_pShader( NULL )
-    {
-    }
-    CD3DVertexShader::~CD3DVertexShader()
-    {
-        SAFE_RELEASE( m_pShader );
-    }    
+    DECLARE_SIMPLE_GRAPHICS_OBJECT( VertexShader, m_pShader );
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-    CD3DPixelShader::CD3DPixelShader()
-        : m_pShader( NULL )
-    {
-    }
-    CD3DPixelShader::~CD3DPixelShader()
-    {
-        SAFE_RELEASE( m_pShader );
-    }    
+    DECLARE_SIMPLE_GRAPHICS_OBJECT( PixelShader, m_pShader );
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    DECLARE_SIMPLE_GRAPHICS_OBJECT( VertexLayout, m_pLayout );
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 

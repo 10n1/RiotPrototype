@@ -2,7 +2,7 @@
 File:           OGLGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/14/2011 8:10:02 PM
+Modified:       4/14/2011 10:29:35 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "OGLGraphics.h"
@@ -65,6 +65,7 @@ namespace Riot
         glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
     }
    
+    //
     void COGLDevice::SetViewport( uint nWidth, uint nHeight )
     {
         glViewport( 0, 0, nWidth, nHeight );
@@ -89,12 +90,70 @@ namespace Riot
     {
         SystemOpenGL::Present( &m_pDevice );
     }
+    //
 
+    //
+    void COGLDevice::CreateVertexShaderAndLayout( 
+            const wchar_t* szFilename, 
+            const char* szEntryPoint, 
+            InputElementLayout Layout[],
+            uint nLayoutCount,
+            IGfxVertexShader** pShader,
+            IGfxVertexLayout** pLayout )
+    {
+    }
+    IGfxPixelShader* COGLDevice::CreatePixelShader( const wchar_t* szFilename, const char* szEntryPoint )
+    {
+    }
+    //
+
+    //
     IGfxBuffer* COGLDevice::CreateConstantBuffer( uint nSize, void* pInitialData )
     {
         ASSERT( 0 );
         return NULL;
     }
+    IGfxBuffer* COGLDevice::CreateVertexBuffer( uint nSize, void* pInitialData )
+    {
+    }
+
+    IGfxBuffer* COGLDevice::CreateIndexBuffer( uint nSize, void* pInitialData )
+    {
+    }
+    //
+
+    //
+    void COGLDevice::SetVertexLayout( IGfxVertexLayout* pLayout )
+    {
+    }
+    
+    void COGLDevice::SetVertexBuffer( IGfxBuffer* pBuffer, uint nStride )
+    {
+    }
+    
+    void COGLDevice::SetIndexBuffer( IGfxBuffer* pBuffer, uint nSize )
+    {
+    }
+    
+    void COGLDevice::SetPrimitiveType( GFX_PRIMITIVE_TYPE nType )
+    {
+    }
+    
+    void COGLDevice::SetVertexShader( IGfxVertexShader* pShader )
+    {
+    }
+    
+    void COGLDevice::SetPixelShader( IGfxPixelShader* pShader )
+    {
+    }
+    
+    //
+
+    //
+    void COGLDevice::DrawIndexedPrimitive( uint nIndexCount )
+    {
+    }
+    //
 
 } // namespace Riot
 

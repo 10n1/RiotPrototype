@@ -2,7 +2,7 @@
 File:           vectormath.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 3:15:36 PM
+Modified:       4/14/2011 10:56:54 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "vectormath.h"
@@ -481,6 +481,23 @@ RMatrix4 RMatrix4Translation( float x, float y, float z )
         0.0f, 1.0f, 0.0f, 0.0f, 
         0.0f, 0.0f, 1.0f, 0.0f, 
         x,    y,    z, 1.0f );
+}
+
+
+RMatrix4 RMatrix4PerspectiveLH( float fFOV, float fAspect, float fZNear, float fZFar)
+{
+    RMatrix4 m = RMatrix4Identity();
+
+    float y = 1/(tanf(fFOV/2));
+    float diff = fZFar-fZNear;
+    float div = fZFar / diff;
+    m(0,0) =  y / fAspect;
+    m(1,1) = y;
+    m(2,2) = div;
+    m(2,3) = 1;
+    m(3,2) = -fZNear * div;
+    m(3,3) = 0;
+    return m;
 }
 
 RVector3 RMatrix4GetXAxis( const RMatrix4& m  )

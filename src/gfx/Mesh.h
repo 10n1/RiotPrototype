@@ -3,7 +3,7 @@ File:           Mesh.h
 Purpose:        Holds geometry data
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 10:56:45 PM
+Modified:       4/14/2011 9:24:00 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MESH_H_
@@ -39,10 +39,13 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        IGfxBuffer* m_pVertexBuffer;
-        IGfxBuffer* m_pIndexBuffer;
-
         IGraphicsDevice*    m_pDevice;
+
+        IGfxBuffer*         m_pVertexBuffer;
+        IGfxBuffer*         m_pIndexBuffer;
+        uint                m_nIndexSize;
+        uint                m_nVertexStride;
+        uint                m_nIndexCount;
     };
 
 

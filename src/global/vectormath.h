@@ -3,7 +3,7 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 3:15:36 PM
+Modified:       4/14/2011 10:56:54 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
@@ -355,6 +355,7 @@ RMatrix4 RMatrix4Scale( float fScale );
 RMatrix4 RMatrix4Translation( const RVector3& t );
 RMatrix4 RMatrix4Translation( const RVector4& t );
 RMatrix4 RMatrix4Translation( float x, float y, float z );
+RMatrix4 RMatrix4PerspectiveLH( float fFOV, float fAspect, float fZNear, float fZFar);
 
 RVector3 RMatrix4GetXAxis( const RMatrix4& m );
 RVector3 RMatrix4GetYAxis( const RMatrix4& m );

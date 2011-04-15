@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/12/2011 11:01:43 PM
+Modified:       4/14/2011 10:44:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -46,6 +46,12 @@ namespace Riot
         //  Creates the device
         //-----------------------------------------------------------------------------
         void CreateGraphicsDevice( CWindow* pWindow );
+        
+        //-----------------------------------------------------------------------------
+        //  CreateDefaultObjects
+        //  Creates the default objects
+        //-----------------------------------------------------------------------------
+        void CreateDefaultObjects( void );
 
         //-----------------------------------------------------------------------------
         //  Render
@@ -61,14 +67,28 @@ namespace Riot
 
         //-----------------------------------------------------------------------------
         //  CreateMesh
-        //  Creates a mesh from the file
+        //  Creates a mesh from the data
+        //  No parameters indicates default mesh
         //-----------------------------------------------------------------------------
         CMesh* CreateMesh(  uint nVertexStride, 
                             uint nVertexCount, 
-                            uint nIndexFormat, 
+                            uint nIndexSize, 
                             uint nIndexCount, 
                             void* pVertices, 
-                            void* pIndices ); 
+                            void* pIndices );
+        CMesh* CreateMesh( void ); 
+
+        //-----------------------------------------------------------------------------
+        //  SetViewProj
+        //  Sets the view projection constant buffer
+        //-----------------------------------------------------------------------------
+        void SetViewProj( const void* pView, const void* pProj );
+
+        //-----------------------------------------------------------------------------
+        //  SetWorldMatrix
+        //  Applies the world matrix to the pipeline
+        //-----------------------------------------------------------------------------
+        void SetWorldMatrix( RMatrix4* pMatrix );
 
     private:
         /***************************************\
@@ -81,6 +101,11 @@ namespace Riot
 
         IGfxBuffer* m_pViewProjCB;
         IGfxBuffer* m_pWorldCB;
+
+        IGfxVertexShader*   m_pDefaultVShader;
+        IGfxVertexLayout*   m_pDefaultVLayout;
+        IGfxPixelShader*    m_pDefaultPShader;
+        CMesh*              m_pDefaultMesh;
     };
 
 

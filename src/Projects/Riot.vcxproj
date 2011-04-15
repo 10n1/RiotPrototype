@@ -35,6 +35,7 @@
     <ClCompile Include="..\gfx\OGL\OGLGraphicsObjects.cpp" />
     <ClCompile Include="..\gfx\Renderer.cpp" />
     <ClCompile Include="..\gfx\VertexFormats.cpp" />
+    <ClCompile Include="..\gfx\View.cpp" />
     <ClCompile Include="..\global\atomic.cpp" />
     <ClCompile Include="..\global\memory.cpp" />
     <ClCompile Include="..\global\Rand.cpp" />
@@ -65,6 +66,7 @@
     <ClInclude Include="..\gfx\OGL\OGLGraphicsObjects.h" />
     <ClInclude Include="..\gfx\Renderer.h" />
     <ClInclude Include="..\gfx\VertexFormats.h" />
+    <ClInclude Include="..\gfx\View.h" />
     <ClInclude Include="..\global\assert.h" />
     <ClInclude Include="..\global\atomic.h" />
     <ClInclude Include="..\global\common.h" />
