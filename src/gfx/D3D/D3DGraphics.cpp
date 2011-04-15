@@ -2,15 +2,24 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 9:52:36 PM
+Modified:       4/14/2011 8:10:03 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
 #include "Window.h"
 #include "D3DGraphicsObjects.h"
 
+#if USE_DIRECTX
+
 namespace Riot
 {
+    //-----------------------------------------------------------------------------
+    GFX_FORMAT GFX_FORMAT_FLOAT3        = DXGI_FORMAT_R32G32B32_FLOAT;
+    //-----------------------------------------------------------------------------
+    GFX_SEMANTIC GFX_SEMANTIC_POSITION  = "POSITION";
+    GFX_SEMANTIC GFX_SEMANTIC_NORMAL    = "NORMAL";
+    //-----------------------------------------------------------------------------
+
     // CD3DDevice constructor
     CD3DDevice::CD3DDevice()
         : m_pDevice( NULL )
@@ -319,3 +328,5 @@ namespace Riot
     //
 
 } // namespace Riot
+
+#endif // #if USE_DIRECTX

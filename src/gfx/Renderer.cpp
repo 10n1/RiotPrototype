@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/12/2011 11:28:39 PM
+Modified:       4/14/2011 8:07:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Renderer.h"
@@ -10,11 +10,11 @@ Modified by:    Kyle Weicht
 #include "Mesh.h"
 #include "VertexFormats.h"
 
-#ifdef OS_WINDOWS
+#if USE_OPENGL
 #include "D3DGraphics.h"
-#endif
-
+#else
 #include "OGLGraphics.h"
+#endif
 
 namespace Riot
 {
@@ -73,7 +73,7 @@ namespace Riot
         Result nResult = rResultSuccess;
 
         // Make the new device
-#if 0 || !defined( OS_WINDOWS )
+#if USE_OPENGL
         m_pDevice = new COGLDevice;
 #else
         m_pDevice = new CD3DDevice;

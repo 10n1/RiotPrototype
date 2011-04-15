@@ -4,12 +4,14 @@ Purpose:        An abstraction layer for the more low-level
                 platform-specific OpenGL details
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/12/2011 8:40:56 PM
+Modified:       4/14/2011 8:10:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEMOPENGL_H_
 #define _SYSTEMOPENGL_H_
 #include "common.h"
+
+#if USE_OPENGL
 
 #ifdef OS_WINDOWS
 
@@ -95,5 +97,6 @@ namespace Riot
 
 } // namespace Riot
 
+#endif // #if USE_OPENGL
 
 #endif // #ifndef _SYSTEMOPENGL_H_

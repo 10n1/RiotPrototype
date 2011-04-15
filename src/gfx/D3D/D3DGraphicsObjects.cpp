@@ -2,10 +2,12 @@
 File:           D3DGraphicsObjects.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 10:58:49 PM
+Modified:       4/14/2011 8:07:06 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphicsObjects.h"
+
+#if USE_DIRECTX
 
 namespace Riot
 {    
@@ -56,3 +58,5 @@ namespace Riot
 //-----------------------------------------------------------------------------
 
 } // namespace Riot
+
+#endif //#if USE_DIRECTX

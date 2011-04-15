@@ -2,13 +2,15 @@
 File:           Win32OpenGL.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/12/2011 8:40:56 PM
+Modified:       4/14/2011 8:10:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "platform/SystemOpenGL.h"
 #include "Window.h"
 #include <gl3/gl3.h>
 #include <gl/wglext.h>
+
+#if USE_OPENGL
 
 namespace Riot
 {
@@ -190,3 +192,5 @@ namespace Riot
 
 
 } // namespace Riot
+
+#endif // #if USE_OPENGL

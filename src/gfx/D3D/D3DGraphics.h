@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Direct3D interface
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 10:49:17 PM
+Modified:       4/14/2011 8:10:03 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -11,7 +11,10 @@ Modified by:    Kyle Weicht
 #include "common.h"
 #include "Graphics.h"
 #include "GraphicsObjects.h"
+#include "VertexFormats.h"
 #include <D3D11.h>
+
+#if USE_DIRECTX
 
 namespace Riot
 {
@@ -85,6 +88,8 @@ namespace Riot
     };
 
 } // namespace Riot
+
+#endif // #if USE_DIRECTX
 
 
 #endif // #ifndef _D3DGRAPHICS_H_

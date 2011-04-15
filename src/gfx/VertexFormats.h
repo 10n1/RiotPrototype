@@ -1,9 +1,9 @@
 /*********************************************************\
 File:           VertexFormats.h
-Purpose:        
+Purpose:        Stores the basic vertex format information
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 11:32:19 PM
+Modified:       4/14/2011 8:00:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VERTEXFORMATS_H_
@@ -14,16 +14,35 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
-    enum GFXFORMAT
-    {
-        FLOAT3 = DXGI_FORMAT_R32G32B32_FLOAT,
-    };
+
+    //-----------------------------------------------------------------------------
+    /*
+    These are all typedef'ed and externed so they can be defined dynamicaly for
+    each API (DX & OpenGL )
+    */
+    //////////////////////////////////////////
+    //  GFX_FORMAT
+    //  Synonomous to DXGI_FORMAT_*
+    typedef const uint GFX_FORMAT;
+
+    extern GFX_FORMAT GFX_FORMAT_FLOAT3;
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    //  GFX_SEMANTIC
+    //  DX defines semantics statcially (the position is always POSITION), while
+    //  OpenGL uses however its written in the shader
+    typedef const char* GFX_SEMANTIC;
+
+    extern GFX_SEMANTIC GFX_SEMANTIC_POSITION;
+    extern GFX_SEMANTIC GFX_SEMANTIC_NORMAL;
+    //-----------------------------------------------------------------------------
 
     struct InputElementLayout
     {
-        char*       szSemanticName;
-        GFXFORMAT   nFormat;
-        uint        nOffset;
+        GFX_SEMANTIC    szSemanticName;
+        GFX_FORMAT      nFormat;
+        uint            nOffset;
     };
 
     /*
@@ -35,11 +54,6 @@ namespace Riot
         RVector3 Normal;
 
         static InputElementLayout Layout[];
-    };
-    InputElementLayout VVertexPosNormal::Layout[2] = 
-    { 
-        { "POSITION", FLOAT3, 0 },
-        { "NORMAL", FLOAT3, 12 },
     };
 
 } // namespace Riot

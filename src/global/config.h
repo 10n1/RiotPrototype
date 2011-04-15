@@ -3,7 +3,7 @@ File:           config.h
 Purpose:        Includes platform and build configurations
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/10/2011 12:25:10 PM
+Modified:       4/14/2011 8:08:00 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CONFIG_H_
@@ -99,6 +99,25 @@ Modified by:    Kyle Weicht
 //-----------------------------------------------------------------------------
 //  Build configuration
 //-----------------------------------------------------------------------------
+
+#define USE_OPENGL                      0
+
+//////////////////////////////////////////
+// Graphics API selection
+#ifndef OS_WINDOWS
+// If we're not in Windows, OpenGL is the
+//  only option
+#undef  USE_OPENGL
+#define USE_OPENGL                      1
+#else
+#if USE_OPENGL
+#define USE_DIRECTX                     0
+#else
+#define USE_DIRECTX                     1
+#endif
+#endif
+//////////////////////////////////////////
+
 #define MULTITHREADED                   1
 #define MAX_THREADS                     32
 #define MAX_TASKS_PER_THREAD            2048

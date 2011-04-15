@@ -2,11 +2,13 @@
 File:           OGLGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/12/2011 10:45:33 PM
+Modified:       4/14/2011 8:10:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "OGLGraphics.h"
 #include "OGLGraphicsObjects.h"
+
+#if USE_OPENGL
 
 namespace Riot
 {
@@ -95,3 +97,6 @@ namespace Riot
     }
 
 } // namespace Riot
+
+#endif // #if USE_OPENGL
+

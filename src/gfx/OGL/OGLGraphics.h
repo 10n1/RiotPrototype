@@ -3,7 +3,7 @@ File:           OGLGraphics.h
 Purpose:        OpenGL graphics interface
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/12/2011 10:49:18 PM
+Modified:       4/14/2011 8:10:03 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OGLGRAPHICS_H_
@@ -12,6 +12,8 @@ Modified by:    Kyle Weicht
 #include "Graphics.h"
 #include "SystemOpenGL.h"
 #include "GraphicsObjects.h"
+
+#if USE_OPENGL
 
 namespace Riot
 {
@@ -66,5 +68,8 @@ namespace Riot
     };
 
 } // namespace Riot
+
+#endif // #if USE_OPENGL
+
 
 #endif // #ifndef _OGLGRAPHICS_H_

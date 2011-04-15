@@ -3,7 +3,7 @@ File:           D3DGraphicsObjects.h
 Purpose:        The D3D graphics objects
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 10:58:50 PM
+Modified:       4/14/2011 8:10:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICSOBJECTS_H_
@@ -11,6 +11,8 @@ Modified by:    Kyle Weicht
 #include "common.h"
 #include "GraphicsObjects.h"
 #include <D3D11.h>
+
+#if USE_DIRECTX
 
 #define BEGIN_DEFINE_GRAPHICS_OBJECT( Name ) \
 class CD3D##Name : public IGfx##Name             \
@@ -65,5 +67,7 @@ namespace Riot
 
 #undef BEGIN_DEFINE_D3D_GRAPHICS_OBJECT
 #undef END_DEFINE_D3D_GRAPHICS_OBJECT
+
+#endif // #if USE_DIRECTX
 
 #endif // #ifndef _D3DGRAPHICSOBJECTS_H_

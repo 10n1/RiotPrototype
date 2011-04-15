@@ -3,7 +3,7 @@ File:           OGLGraphicsObjects.h
 Purpose:        The OGL graphics objects
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/12/2011 10:58:50 PM
+Modified:       4/14/2011 8:10:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OGLGRAPHICSOBJECTS_H_
@@ -11,6 +11,8 @@ Modified by:    Kyle Weicht
 #include "common.h"
 #include "GraphicsObjects.h"
 #include "SystemOpenGL.h"
+
+#if USE_OPENGL
 
 
 #define BEGIN_DEFINE_GRAPHICS_OBJECT( Name ) \
@@ -67,5 +69,8 @@ namespace Riot
 
 #undef BEGIN_DEFINE_OGL_GRAPHICS_OBJECT
 #undef END_DEFINE_OGL_GRAPHICS_OBJECT
+
+#endif // #if USE_OPENGL
+
 
 #endif // #ifndef _OGLGRAPHICSOBJECTS_H_

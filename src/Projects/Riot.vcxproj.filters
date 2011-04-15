@@ -97,6 +97,9 @@
     <ClCompile Include="..\gfx\Mesh.cpp">
       <Filter>Gfx</Filter>
     </ClCompile>
+    <ClCompile Include="..\gfx\VertexFormats.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\platform\WIN32\Win32Application.h">
