@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/14/2011 8:46:21 PM
+Modified:       4/16/2011 8:37:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -14,6 +14,7 @@ Modified by:    Kyle Weicht
 #include "InputManager.h"
 #include "Renderer.h"
 #include "Mesh.h"
+#include "View.h"
 
 #define SHUTDOWN_AND_DELETE( Module ) if( Module ) { Module->Shutdown(); delete Module; Module = NULL; }
 #define NEW_AND_INITIALIZE( Module, Type ) Module = new Type; Module->Initialize();
@@ -31,6 +32,7 @@ namespace Riot
     CWindow*            Engine::m_pMainWindow           = NULL;
     CInputManager*      Engine::m_pInputManager         = NULL;
     CRenderer*          Engine::m_pRenderer             = NULL;
+    CView*              Engine::m_pMainView             = NULL;
 
     float               Engine::m_fElapsedTime          = 0.0f;
     uint                Engine::m_nFrame                = 0;
@@ -77,9 +79,17 @@ namespace Riot
         // Run the engine
         while( m_bRunning )
         {
+            
+            // Create a mesh
+            CMesh* pMesh = m_pRenderer->CreateMesh();
+
+            RTransform t = RTransform(RQuaternionZero(), RVector3( 0.0f, 0.0f, 0.0f ) ); 
+            m_pRenderer->AddCommand( pMesh, t );
             //////////////////////////////////////////
             // Render
             m_pRenderer->Render();
+
+            SAFE_RELEASE( pMesh );
 
             //////////////////////////////////////////
             //  Process OS messages
@@ -141,6 +151,8 @@ namespace Riot
                 uint nWidth = msg.nMessage >> 16;
                 uint nHeight = msg.nMessage & 0x0000FFFF;
 
+                m_pMainView->SetPerspective( 60.0f, ((float)nWidth)/nHeight, 0.1f, 10000.0f );                
+
                 break;
             }
         default:
@@ -198,11 +210,11 @@ namespace Riot
         m_pMainWindow = System::CreateMainWindow( 1024, 768 );
         // Load the graphics device
         m_pRenderer->CreateGraphicsDevice( m_pMainWindow );
-
-
-        // Create a mesh
-        CMesh* pMesh = m_pRenderer->CreateMesh();
-        SAFE_RELEASE( pMesh );
+    
+        // Create the main view
+        m_pMainView = new CView;
+        m_pRenderer->SetCurrentView( m_pMainView );
+        m_pMainView->Update( 0.0f );
 
         // Finally reset the timer
         m_MainTimer.Reset();
@@ -217,6 +229,7 @@ namespace Riot
         //////////////////////////////////////////
         // Now perform any shutdown needed
         SAFE_RELEASE( m_pMainWindow );
+        SAFE_RELEASE( m_pMainView );
 
         //////////////////////////////////////////
         // ...then shutdown and delete all modules
@@ -226,6 +239,9 @@ namespace Riot
         SHUTDOWN_AND_DELETE( m_pMessageDispatcher );
         SHUTDOWN_AND_DELETE( m_pTaskManager );
         System::Shutdown();
+
+        // Finally delete the instance
+        SAFE_DELETE( m_pInstance );
     }
 
 

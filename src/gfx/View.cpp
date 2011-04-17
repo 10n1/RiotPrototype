@@ -2,7 +2,7 @@
 File:           View.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/14/2011 10:57:25 PM
+Modified:       4/16/2011 7:50:57 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "View.h"
@@ -16,7 +16,7 @@ namespace Riot
     {
         SetPerspective( 60.0f, 1024.0f/768.0f, 0.1f, 10000.0f );
 
-        m_vNewPosition = RVector4( 0.0f, 2.0f, -5.0f, 0.0f );
+        m_vNewPosition = RVector4( 0.0f, 0.0f, -5.0f, 0.0f );
         m_vNewLook =     RVector4( 0.0f, 0.0f, 1.0f, 0.0f );
         m_vNewUp =       RVector4( 0.0f, 1.0f, 0.0f, 0.0f );
     }
@@ -52,7 +52,7 @@ namespace Riot
     void CView::RotateX( float fRad )
     {
         //RMatrix4 newRot = RotationAxisMatrix( -fRad, m_vNewRight );
-        RMatrix4 newRot = RMatrix4( RQuatGetMatrix( RQuatFromAxisAngle( m_vNewRight, -fRad ) ) );
+        RMatrix4 newRot = RMatrix4( RQuatGetMatrix( RQuatFromAxisAngle( m_vNewRight.xyz(), -fRad ) ) );
         //RVector4 newNewLook = m_vLook * newRot;
         RVector4 newNewLook = m_vNewLook * newRot ;
 
@@ -88,17 +88,17 @@ namespace Riot
         //m_mNewView.m13 = z.x;  m_mNewView.m23 = z.y;  m_mNewView.m33 = z.z;  m_mNewView.m43 = -DotProduct( z, m_vNewPosition);
         //m_mNewView.m14 = 0.0f; m_mNewView.m24 = 0.0f; m_mNewView.m34 = 0.0f; m_mNewView.m44 = 1.0f;
 
-        m_mNewView = RMatrix4Identity();
         m_mNewView.r0 = x;
         m_mNewView.r1 = y;
         m_mNewView.r2 = z;
+        m_mNewView.r3 = RVector4Zero();
         Transpose( m_mNewView );
 
         //m_mNewView.r0 = RVector4( x.x, y.x, z.x, 0.0f );
-        //m_mNewView.r0 = RVector4( x.y, y.y, z.y, 0.0f );
-        //m_mNewView.r0 = RVector4( x.z, y.z, z.z, 0.0f );
+        //m_mNewView.r1 = RVector4( x.y, y.y, z.y, 0.0f );
+        //m_mNewView.r2 = RVector4( x.z, y.z, z.z, 0.0f );
 
-        m_mNewView.r4 = RVector4( -DotProduct( x, m_vNewPosition), -DotProduct( x, m_vNewPosition), -DotProduct( x, m_vNewPosition), 1.0f );
+        m_mNewView.r3 = RVector4( -DotProduct( x, m_vNewPosition), -DotProduct( y, m_vNewPosition), -DotProduct( z, m_vNewPosition), 1.0f );
     }
 
     //-----------------------------------------------------------------------------
@@ -107,9 +107,9 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CView::SetPerspective( float fFoV, float fAspectRatio, float fNear, float fFar )
     {
-        fFoV = (fFoV/180.0f) * XM_PI;
+        fFoV = fFoV * gs_DEGTORAD; // (fFoV/180.0f) * gs_PI;
         m_mNewProj = RMatrix4PerspectiveLH( fFoV, fAspectRatio, fNear, fFar );
-        rmatrix4p
+        //RMatrix4PerspectiveLH
     }
 
 

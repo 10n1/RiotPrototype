@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/12/2011 10:49:17 PM
+Modified:       4/16/2011 8:37:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -97,6 +97,9 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void System::Shutdown( void )
     {
+#ifdef OS_WINDOWS
+        SAFE_DELETE( m_pApplication );
+#endif // #ifdef OS_WINDOWS
     }
 
     //-----------------------------------------------------------------------------

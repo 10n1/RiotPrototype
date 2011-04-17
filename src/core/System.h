@@ -4,7 +4,7 @@ Purpose:        Interface to the base system. All platform
 specific functions will be called here.
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/12/2011 10:49:17 PM
+Modified:       4/16/2011 2:23:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEM_H_
@@ -22,9 +22,6 @@ namespace Riot
 {
     class CWindow;
     class IGraphicsDevice;
-#ifdef OS_WINDOWS
-    class CWin32Application;
-#endif
 
     class System
     {

@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/14/2011 10:42:02 PM
+Modified:       4/16/2011 8:37:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -258,6 +258,9 @@ namespace Riot
 
         // Set up the view port
         SetViewport( nWidth, nHeight );
+
+        // Finally restore the default render/depth targets
+        m_pContext->OMSetRenderTargets( 1, &m_pDefaultRenderTargetView, m_pDefaultDepthStencilView );
     }
 
     //-----------------------------------------------------------------------------
@@ -320,7 +323,6 @@ namespace Riot
     {
 
         //////////////////////////////////////////
-        CD3DBuffer*         pBuffer         = new CD3DBuffer;
         ID3D11VertexShader* pVertexShader   = NULL;
         ID3D11InputLayout*  pInputLayout    = NULL;
         ID3DBlob*           pShaderBlob     = NULL;
@@ -348,6 +350,14 @@ namespace Riot
         hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
         assert( hr == S_OK );
 
+        // Now return them
+        CD3DVertexShader* pNewShader = new CD3DVertexShader;
+        CD3DVertexLayout* pNewLayout = new CD3DVertexLayout;
+        pNewShader->m_pShader = pVertexShader;
+        pNewLayout->m_pLayout = pInputLayout;
+
+        *pShader = pNewShader;
+        *pLayout = pNewLayout;
     }
 
     IGfxPixelShader* CD3DDevice::CreatePixelShader( const wchar_t* szFilename, const char* szEntryPoint )
@@ -548,6 +558,7 @@ namespace Riot
         {
             // TODO: Handle error gracefully
             ASSERT( 0 );
+            const char* szWarnings = (const char*)pErrorBlob->GetBufferPointer();
             MessageBox( 0, (wchar_t*)pErrorBlob->GetBufferPointer(), L"Error", 0 );
             SAFE_RELEASE( pErrorBlob );
             return rResultFailure;

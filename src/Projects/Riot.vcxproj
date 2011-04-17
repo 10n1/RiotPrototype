@@ -79,6 +79,9 @@
     <ClInclude Include="..\platform\WIN32\Win32Application.h" />
     <ClInclude Include="..\todo.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\assets\shaders\StandardVertexShader.hlsl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B5535174-0753-4265-9B6E-D9BB0806AB0D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

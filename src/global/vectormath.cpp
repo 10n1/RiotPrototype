@@ -2,7 +2,7 @@
 File:           vectormath.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/14/2011 10:56:54 PM
+Modified:       4/16/2011 3:24:45 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "vectormath.h"
@@ -393,10 +393,12 @@ RMatrix4    Transpose( const RMatrix4& a )
 
     Swap(m.r0.y,m.r1.x);
     Swap(m.r0.z,m.r2.x);
-    Swap(m.r0.w,m.r2.x);
+    Swap(m.r0.w,m.r3.x);
+
     Swap(m.r1.z,m.r2.y);
-    Swap(m.r1.w,m.r2.y);
-    Swap(m.r2.w,m.r2.z);
+    Swap(m.r1.w,m.r3.y);
+
+    Swap(m.r2.w,m.r3.z);
 
     return m;
 }

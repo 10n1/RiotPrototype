@@ -2,13 +2,14 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/14/2011 10:44:54 PM
+Modified:       4/16/2011 8:25:54 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Renderer.h"
 #include "System.h"
 #include "Mesh.h"
 #include "VertexFormats.h"
+#include "View.h"
 
 #if USE_OPENGL
 #include "OGLGraphics.h"
@@ -57,6 +58,11 @@ namespace Riot
         m_pDefaultVShader   = NULL;
         m_pDefaultVLayout   = NULL;
         m_pDefaultPShader   = NULL;
+
+        m_pCurrentView  = NULL;
+
+        m_nNumCommands  = 0;
+        Memset( m_ppRenderCommands, 0, sizeof( m_ppRenderCommands ) );
     }
 
     //-----------------------------------------------------------------------------
@@ -138,7 +144,30 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Render( void )
     {
+        // Clear
         m_pDevice->Clear();
+
+        // Render
+        ASSERT( m_pCurrentView );
+        RMatrix4 mView = m_pCurrentView->GetViewMatrix();
+        RMatrix4 mProj = m_pCurrentView->GetProjMatrix();
+        SetViewProj( mView, mProj );
+
+        for( uint i = 0; i < m_nNumCommands; ++i )
+        {
+        m_pDevice->SetVertexLayout( m_pDefaultVLayout );
+        m_pDevice->SetVertexShader( m_pDefaultVShader );
+        m_pDevice->SetPixelShader( m_pDefaultPShader );
+        m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
+
+            RMatrix4 mWorld = m_pTransforms[i].GetTransformMatrix();
+            SetWorldMatrix( mWorld );
+
+            m_ppRenderCommands[i]->DrawMesh();
+        }
+        m_nNumCommands = 0;
+
+        // Present
         m_pDevice->Present();
     }
 
@@ -251,14 +280,14 @@ namespace Riot
     //  SetViewProj
     //  Sets the view projection constant buffer
     //-----------------------------------------------------------------------------
-    void CRenderer::SetViewProj( const void* pView, const void* pProj )
+    void CRenderer::SetViewProj( const RMatrix4& pView, const RMatrix4& pProj )
     {
         RMatrix4 mMatrices[1] = 
         {
-            ( *((RMatrix4*)pView) * *((RMatrix4*)pProj)), 
+            ( pView * pProj ), 
         };
 
-        Transpose( mMatrices[0] );
+        mMatrices[0] = Transpose( mMatrices[0] );
 
         m_pDevice->UpdateBuffer( m_pViewProjCB, mMatrices );
         m_pDevice->SetVSConstantBuffer( 0, m_pViewProjCB );
@@ -268,10 +297,32 @@ namespace Riot
     //  SetWorldMatrix
     //  Applies the world matrix to the pipeline
     //-----------------------------------------------------------------------------
-    void CRenderer::SetWorldMatrix( RMatrix4* pMatrix )
+    void CRenderer::SetWorldMatrix( const RMatrix4& pMatrix )
     {
-        m_pDevice->UpdateBuffer( m_pWorldCB, pMatrix );
-        m_pDevice->SetVSConstantBuffer( 1, m_pViewProjCB );
+        m_pDevice->UpdateBuffer( m_pWorldCB, (void*)&pMatrix );
+        m_pDevice->SetVSConstantBuffer( 1, m_pWorldCB );
+    }
+
+    //-----------------------------------------------------------------------------
+    //  SetCurrentView
+    //  Sets the current camera view
+    //-----------------------------------------------------------------------------
+    void CRenderer::SetCurrentView( CView* pView )
+    {
+        m_pCurrentView = pView;
+    }
+
+
+    //-----------------------------------------------------------------------------
+    //  AddCommand
+    //  Adds a renderable object to the command buffer
+    //-----------------------------------------------------------------------------
+    void CRenderer::AddCommand( CMesh* pCommand, RTransform& transform )
+    {
+        uint nIndex = AtomicIncrement( &m_nNumCommands ) - 1;
+        m_ppRenderCommands[nIndex] = pCommand;
+
+        m_pTransforms[nIndex] = transform;
     }
 
 

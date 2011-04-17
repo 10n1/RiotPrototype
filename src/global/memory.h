@@ -4,7 +4,7 @@ Purpose:        Overloading new/delete. They now allocate
 out of a pre-allocated buffer.
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/10/2011 3:15:38 PM
+Modified:       4/16/2011 8:30:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MEMORY_H_
@@ -15,8 +15,17 @@ Modified by:    Kyle Weicht
 //-----------------------------------------------------------------------------
 //  Overloaded new/delete, to use the custom allocation pool
 #if RIOT_USE_CUSTOM_ALLOCATOR
+
+#ifdef DEBUG
+void* __cdecl operator new(size_t nSize, const char* szFile, uint nLine);
+void* __cdecl operator new[](size_t nSize, const char* szFile, uint nLine);
+#define DEBUG_NEW new( __FILE__, __LINE__ )
+#else
 void* __cdecl operator new(size_t nSize);
 void* __cdecl operator new[](size_t nSize);
+#define DEBUG_NEW new
+#endif // #ifdef DEBUG
+
 void __cdecl operator delete(void* pVoid);
 void __cdecl operator delete[](void* pVoid);
 #endif // #ifdef RIOT_USE_CUSTOM_ALLOCATOR

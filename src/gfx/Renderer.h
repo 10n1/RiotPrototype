@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/14/2011 10:44:33 PM
+Modified:       4/16/2011 8:23:01 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -17,6 +17,7 @@ namespace Riot
 {
     class CWindow;
     class CMesh;
+    class CView;
 
     class CRenderer : public IListener
     {
@@ -82,13 +83,25 @@ namespace Riot
         //  SetViewProj
         //  Sets the view projection constant buffer
         //-----------------------------------------------------------------------------
-        void SetViewProj( const void* pView, const void* pProj );
+        void SetViewProj( const RMatrix4& pView, const RMatrix4& pProj );
 
         //-----------------------------------------------------------------------------
         //  SetWorldMatrix
         //  Applies the world matrix to the pipeline
         //-----------------------------------------------------------------------------
-        void SetWorldMatrix( RMatrix4* pMatrix );
+        void SetWorldMatrix( const RMatrix4& pMatrix );
+
+        //-----------------------------------------------------------------------------
+        //  SetCurrentView
+        //  Sets the current camera view
+        //-----------------------------------------------------------------------------
+        void SetCurrentView( CView* pView );
+
+        //-----------------------------------------------------------------------------
+        //  AddCommand
+        //  Adds a renderable object to the command buffer
+        //-----------------------------------------------------------------------------
+        void AddCommand( CMesh* pCommand, RTransform& transform );
 
     private:
         /***************************************\
@@ -96,6 +109,9 @@ namespace Riot
         \***************************************/
         static const MessageType    MessagesReceived[];
         static const uint           NumMessagesReceived;
+
+        RTransform  m_pTransforms[2048];
+        CMesh*      m_ppRenderCommands[2048];
 
         IGraphicsDevice*    m_pDevice;
 
@@ -106,6 +122,10 @@ namespace Riot
         IGfxVertexLayout*   m_pDefaultVLayout;
         IGfxPixelShader*    m_pDefaultPShader;
         CMesh*              m_pDefaultMesh;
+
+        CView*  m_pCurrentView;
+
+        atomic_t    m_nNumCommands;
     };
 
 

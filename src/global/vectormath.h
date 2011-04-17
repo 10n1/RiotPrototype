@@ -3,7 +3,7 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/14/2011 10:56:54 PM
+Modified:       4/16/2011 7:46:57 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
@@ -16,8 +16,8 @@ Modified by:    Kyle Weicht
 //////////////////////////////////////////
 // Math constants
 const float gs_EPSILON  = 0.0001f;
-const float gs_PI       = (float)(4.0 * atan(1.0));
-const float gs_2PI      = (float)(8.0 * atan(1.0));
+const float gs_PI       = (float)(4.0 * atan(1.0)); //  By calculating PI, we can ensure 
+const float gs_2PI      = (float)(8.0 * atan(1.0)); //  the most accuracy on each platform
 const float gs_HALFPI   = (float)(2.0 * atan(1.0));
 const float gs_HINVPI   = (float)(1.0/(4.0 * atan(1.0)));
 const float gs_DEGTORAD = (gs_PI/180.0f);
@@ -185,11 +185,12 @@ inline uint operator==( const RVector4& l, const RVector4& r ) { return l.x == r
 inline uint operator!=( const RVector4& l, const RVector4& r ) { return !(l == r); }
 
 // 3D math functions
+inline RVector4 CrossProduct( const RVector4& l, const RVector4& r ) { return RVector4(l.y*r.z-l.z*r.y,l.z*r.x-l.x*r.z,l.x*r.y-l.y*r.x,0.0f); }
 inline float DotProduct( const RVector4& l, const RVector4& r ) { return l.x * r.x + l.y * r.y + l.z * r.z + l.w * r.w; } 
 inline float MagnitudeSq( const RVector4& a ) { return DotProduct(a,a); }
 inline float Magnitude( const RVector4& a ) { return sqrtf(DotProduct(a,a)); }
 inline RVector4 Normalize( const RVector4&a ) { float recip = 1.0f/Magnitude(a); return a * recip; }
-inline RVector4 Vector4Zero( void ) { return RVector4( 0.0f, 0.0f, 0.0f, 0.0f ); }
+inline RVector4 RVector4Zero( void ) { return RVector4( 0.0f, 0.0f, 0.0f, 0.0f ); }
 
 
 //-----------------------------------------------------------------------------

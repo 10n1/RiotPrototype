@@ -203,4 +203,9 @@
       <Filter>Gfx</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\assets\shaders\StandardVertexShader.hlsl">
+      <Filter>assets\shaders</Filter>
+    </None>
+  </ItemGroup>
 </Project>
