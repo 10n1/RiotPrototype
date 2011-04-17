@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/16/2011 8:25:54 PM
+Modified:       4/17/2011 3:52:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Renderer.h"
@@ -63,6 +63,9 @@ namespace Riot
 
         m_nNumCommands  = 0;
         Memset( m_ppRenderCommands, 0, sizeof( m_ppRenderCommands ) );
+
+        m_nNumActiveLights  = 0;
+        m_bUpdateLighting   = false;
     }
 
     //-----------------------------------------------------------------------------
@@ -108,6 +111,7 @@ namespace Riot
         // Create the constant buffers
         m_pViewProjCB = m_pDevice->CreateConstantBuffer( sizeof( RMatrix4 ), NULL );
         m_pWorldCB = m_pDevice->CreateConstantBuffer( sizeof( RMatrix4 ), NULL );
+        m_pLightCB = m_pDevice->CreateConstantBuffer( sizeof( RVector4 ) * MAX_LIGHTS + 16, NULL );
         
         // Load the defaults
         CreateDefaultObjects();
@@ -120,15 +124,15 @@ namespace Riot
     void CRenderer::CreateDefaultObjects( void )
     {
         // Create the vertex shader/layout
-        m_pDevice->CreateVertexShaderAndLayout( L"Assets/Shaders/StandardVertexShader.hlsl", 
-            "VS", 
+        m_pDevice->CreateVertexShaderAndLayout( L"Assets/Shaders/BasicVertexShader.hlsl", 
+            "main", 
             VPosNormal::Layout, 
             VPosNormal::LayoutSize,
             &m_pDefaultVShader,
             &m_pDefaultVLayout );
         
         // ...then the pixel shader
-        m_pDefaultPShader = m_pDevice->CreatePixelShader( L"Assets/Shaders/StandardVertexShader.hlsl", "PS" );
+        m_pDefaultPShader = m_pDevice->CreatePixelShader( L"Assets/Shaders/BasicPixelShader.hlsl", "main" );
 
 
         // ...finally, set them
@@ -144,6 +148,13 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Render( void )
     {
+        if( m_bUpdateLighting )
+        {
+            m_pDevice->UpdateBuffer( m_pLightCB, m_vLights );
+            m_pDevice->SetPSConstantBuffer( 0, m_pLightCB );
+            m_bUpdateLighting = false;
+        }
+
         // Clear
         m_pDevice->Clear();
 
@@ -155,11 +166,6 @@ namespace Riot
 
         for( uint i = 0; i < m_nNumCommands; ++i )
         {
-        m_pDevice->SetVertexLayout( m_pDefaultVLayout );
-        m_pDevice->SetVertexShader( m_pDefaultVShader );
-        m_pDevice->SetPixelShader( m_pDefaultPShader );
-        m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
-
             RMatrix4 mWorld = m_pTransforms[i].GetTransformMatrix();
             SetWorldMatrix( mWorld );
 
@@ -299,7 +305,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::SetWorldMatrix( const RMatrix4& pMatrix )
     {
-        m_pDevice->UpdateBuffer( m_pWorldCB, (void*)&pMatrix );
+        RMatrix4 mMatrix = Transpose( pMatrix );
+        m_pDevice->UpdateBuffer( m_pWorldCB, &mMatrix );
         m_pDevice->SetVSConstantBuffer( 1, m_pWorldCB );
     }
 
@@ -319,12 +326,24 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::AddCommand( CMesh* pCommand, RTransform& transform )
     {
+        ASSERT( m_nNumCommands < MAX_RENDER_COMMANDS );
+
         uint nIndex = AtomicIncrement( &m_nNumCommands ) - 1;
         m_ppRenderCommands[nIndex] = pCommand;
 
         m_pTransforms[nIndex] = transform;
     }
 
+    //-----------------------------------------------------------------------------
+    //  SetLight
+    //  Sets the specific light
+    //-----------------------------------------------------------------------------
+    void CRenderer::SetLight( const RVector4& vPos, uint nIndex )
+    {
+        m_bUpdateLighting = true;
+        m_vLights[ nIndex ] = vPos;
+        m_nNumActiveLights = nIndex + 1;
+    }
 
     //-----------------------------------------------------------------------------
     //  ProcessMessage

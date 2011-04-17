@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/16/2011 8:23:01 PM
+Modified:       4/17/2011 3:45:19 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -102,6 +102,12 @@ namespace Riot
         //  Adds a renderable object to the command buffer
         //-----------------------------------------------------------------------------
         void AddCommand( CMesh* pCommand, RTransform& transform );
+        
+        //-----------------------------------------------------------------------------
+        //  SetLight
+        //  Sets the specific light
+        //-----------------------------------------------------------------------------
+        void SetLight( const RVector4& vDir, uint nIndex );
 
     private:
         /***************************************\
@@ -110,13 +116,14 @@ namespace Riot
         static const MessageType    MessagesReceived[];
         static const uint           NumMessagesReceived;
 
-        RTransform  m_pTransforms[2048];
-        CMesh*      m_ppRenderCommands[2048];
+        RTransform  m_pTransforms[MAX_RENDER_COMMANDS];
+        CMesh*      m_ppRenderCommands[MAX_RENDER_COMMANDS];
 
         IGraphicsDevice*    m_pDevice;
 
         IGfxBuffer* m_pViewProjCB;
         IGfxBuffer* m_pWorldCB;
+        IGfxBuffer* m_pLightCB;
 
         IGfxVertexShader*   m_pDefaultVShader;
         IGfxVertexLayout*   m_pDefaultVLayout;
@@ -125,7 +132,11 @@ namespace Riot
 
         CView*  m_pCurrentView;
 
+        RVector4    m_vLights[MAX_LIGHTS];
+        uint32      m_nNumActiveLights;
+        uint32      _padding[3];
         atomic_t    m_nNumCommands;
+        bool        m_bUpdateLighting;
     };
 
 

@@ -2,7 +2,7 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/16/2011 8:34:41 PM
+Modified:       4/17/2011 12:39:52 PM
 Modified by:    Kyle Weicht
 
 TODO:           Add alignment support? Should be ultra easy
@@ -21,7 +21,6 @@ TODO:           Add alignment support? Should be ultra easy
 
 // Included for sprintf/printf
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 enum { GLOBAL_MEMORY_ALLOCATION = 16*1024*1024 };
@@ -66,24 +65,25 @@ static const byte* AllocateGlobalMemory( void )
     return pAlloc;
 }
 
-namespace Memory
+namespace Riot
 {
-    //-----------------------------------------------------------------------------
-    //  Frees the array
-    //-----------------------------------------------------------------------------
-    void ReleasePool( void )
+    namespace Memory
     {
-        DumpMemoryLeaks();
-
-        if( gs_pGlobalPool )
+        //-----------------------------------------------------------------------------
+        //  Frees the array
+        //-----------------------------------------------------------------------------
+        void ReleasePool( void )
         {
-            _mm_free( (void*)gs_pGlobalPool );
-            gs_pGlobalPool = NULL;
-        }
-    }
-    
-}
+            DumpMemoryLeaks();
 
+            if( gs_pGlobalPool )
+            {
+                _mm_free( (void*)gs_pGlobalPool );
+                gs_pGlobalPool = NULL;
+            }
+        }    
+    } // namespace Memory
+} // namespace Riot
 
 //-----------------------------------------------------------------------------
 #ifdef RIOT_USE_CUSTOM_ALLOCATOR
@@ -221,123 +221,6 @@ void __cdecl operator delete[](void* pVoid)
 };
 #endif // #ifdef RIOT_USE_CUSTOM_ALLOCATOR
 //-----------------------------------------------------------------------------
-
-void* Memcpy( void* pDest, const void* pSource, uint nSize )
-{
-#if RIOT_USE_INTRINSICS
-    byte* a = (byte*)pDest;
-    const byte* b = (const byte*)pSource;
-
-    // First go byte by byte until we align on a 16 byte boundry
-    while( reinterpret_cast<nativeuint>(a) & 0xF )
-    {
-        *a = *b;
-        a++, b++;
-        --nSize;
-    }
-
-    // Then go 16 bytes at a time
-    const uint nWidth = sizeof( __m128 );
-    __m128 v0;
-
-    while( nSize >= nWidth )
-    {
-        v0 =  _mm_loadu_ps( (float*)b );
-        b += nWidth;
-
-        _mm_store_ps( (float*)a, v0);
-        a += nWidth;
-
-        nSize -= nWidth;
-    }
-
-    // Finally get the rest of the buffer
-    while( nSize > 0 )
-    {
-        *a = *b;
-        a++, b++;
-        --nSize;
-    }
-#else    
-    uint64* a = (uint64*)pDest;
-    const uint64* b = (const uint64*)pSource;
-
-    const uint nWidth = sizeof( uint64 );
-
-    while( nSize >= nWidth )
-    {
-        *a = *b;
-        a++, b++;
-        nSize -= nWidth;
-    }
-
-
-    while( nSize > 0 )
-    {
-        *a = *b;
-        a++, b++;
-        nSize--;
-    }
-#endif // #ifndef RIOT_USE_INTRINSICS
-
-    return pDest;
-}
-
-void* Memset( void* pDest, uint c, uint nSize )
-{
-#if RIOT_USE_INTRINSICS
-    byte* a = (byte*)pDest;
-
-    // First go byte by byte until we align on a 16 byte boundry
-    while( reinterpret_cast<nativeuint>(a) & 0xF )
-    {
-        *a = c;
-        ++a;
-        --nSize;
-    }
-
-    // Now go 16 bytes at a time
-    const uint nVectorWidth = sizeof( __m128 );
-    __m128 vFill = _mm_load1_ps( (float*)&c );
-
-    while( nSize >= nVectorWidth )
-    {
-        _mm_store_ps( (float*)a, vFill);
-        a += nVectorWidth;
-
-        nSize -= nVectorWidth;
-    }
-    
-    // Finally get the rest of the buffer
-    while( nSize > 0 )
-    {
-        *a = c;
-        a++;
-        --nSize;
-    }
-#else
-    uint64* a = (uint64*)pDest;
-    const uint nWidth = sizeof( uint64 );
-
-    while( nSize > nWidth )
-    {
-        *a = c;
-        a++;
-        nSize -= sizeof( uint64 );
-    }
-    
-    // Finally get the rest of the buffer
-    while( nSize > 0 )
-    {
-        *a = c;
-        a++;
-        --nSize;
-    }
-#endif // #ifndef RIOT_USE_INTRINSICS
-
-    return pDest;
-}
-
 
 //-----------------------------------------------------------------------------
 //    Memory allocation tracking

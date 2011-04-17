@@ -1,3 +1,10 @@
+/*********************************************************\
+File:           BasicVertexShader.hlsl
+Author:         Kyle Weicht
+Created:        4/17/2011
+Modified:       4/17/2011 3:53:58 PM
+Modified by:    Kyle Weicht
+\*********************************************************/
 //--------------------------------------------------------------------------------------
 // File: Tutorial05.fx
 //
@@ -17,13 +24,6 @@ cbuffer cbWorld : register( b1 )
 	matrix mWorld;
 };
 
-//cbuffer Lights : register( b0 )
-//{
-//    float4 vLightPos[8];
-//    int    nActiveLights;
-//}
-
-
 //--------------------------------------------------------------------------------------
 struct VS_INPUT
 {
@@ -42,7 +42,7 @@ struct PS_INPUT
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-PS_INPUT VS( VS_INPUT input )
+PS_INPUT main( VS_INPUT input )
 {
     PS_INPUT output = (PS_INPUT)0;
     output.Pos       = mul( input.Pos, mWorld );
@@ -50,27 +50,4 @@ PS_INPUT VS( VS_INPUT input )
     output.Normal    = mul( input.Normal, mWorld);
     
     return output;
-}
-
-
-//--------------------------------------------------------------------------------------
-// Pixel Shader
-//--------------------------------------------------------------------------------------
-float4 PS( PS_INPUT input) : SV_Target
-{
-    float4 finalColor = 0.0f;
-    return finalColor;
-
-    float4 vLightPos = float4( 0.0f, 100.0f, 0.0f, 0.0f );
-
-    //for( int i = 0; i < nActiveLights; ++i )
-    for( int i = 0; i < 1; ++i )
-    {
-        ////float3 vLightDir = normalize(input.Pos - vLightPos[i]);
-        //float3 vLightDir = normalize( vLightPos[i] - input.Pos );
-        float3 vLightDir = normalize( vLightPos - input.Pos );
-        finalColor += saturate( dot( vLightDir, normalize(input.Normal) ) );
-    }
-
-    return finalColor;
 }

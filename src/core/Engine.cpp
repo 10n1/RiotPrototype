@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/16/2011 8:37:44 PM
+Modified:       4/17/2011 3:52:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -79,11 +79,12 @@ namespace Riot
         // Run the engine
         while( m_bRunning )
         {
-            
             // Create a mesh
             CMesh* pMesh = m_pRenderer->CreateMesh();
 
-            RTransform t = RTransform(RQuaternionZero(), RVector3( 0.0f, 0.0f, 0.0f ) ); 
+            static RQuaternion orientation = RQuatFromAxisAngle( RVector3( RandFloat(1.0f), RandFloat(1.0f), RandFloat(1.0f) ), RandFloat( gs_2PI ) );
+            orientation = RQuaternionZero();
+            RTransform t = RTransform( orientation, RVector3( 0.0f, 0.0f, 0.0f ) ); 
             m_pRenderer->AddCommand( pMesh, t );
             //////////////////////////////////////////
             // Render

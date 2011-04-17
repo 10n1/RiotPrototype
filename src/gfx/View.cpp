@@ -2,7 +2,7 @@
 File:           View.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/16/2011 7:50:57 PM
+Modified:       4/17/2011 1:23:38 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "View.h"
@@ -82,22 +82,11 @@ namespace Riot
         x = m_vNewRight = Normalize( CrossProduct( m_vNewUp, z ) );
         y = CrossProduct( z, x );
 
-
-        //m_mNewView.m11 = x.x;  m_mNewView.m21 = x.y;  m_mNewView.m31 = x.z;  m_mNewView.m41 = -DotProduct( x, m_vNewPosition);
-        //m_mNewView.m12 = y.x;  m_mNewView.m22 = y.y;  m_mNewView.m32 = y.z;  m_mNewView.m42 = -DotProduct( y, m_vNewPosition);
-        //m_mNewView.m13 = z.x;  m_mNewView.m23 = z.y;  m_mNewView.m33 = z.z;  m_mNewView.m43 = -DotProduct( z, m_vNewPosition);
-        //m_mNewView.m14 = 0.0f; m_mNewView.m24 = 0.0f; m_mNewView.m34 = 0.0f; m_mNewView.m44 = 1.0f;
-
         m_mNewView.r0 = x;
         m_mNewView.r1 = y;
         m_mNewView.r2 = z;
         m_mNewView.r3 = RVector4Zero();
         Transpose( m_mNewView );
-
-        //m_mNewView.r0 = RVector4( x.x, y.x, z.x, 0.0f );
-        //m_mNewView.r1 = RVector4( x.y, y.y, z.y, 0.0f );
-        //m_mNewView.r2 = RVector4( x.z, y.z, z.z, 0.0f );
-
         m_mNewView.r3 = RVector4( -DotProduct( x, m_vNewPosition), -DotProduct( y, m_vNewPosition), -DotProduct( z, m_vNewPosition), 1.0f );
     }
 

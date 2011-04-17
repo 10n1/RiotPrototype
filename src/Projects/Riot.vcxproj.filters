@@ -103,6 +103,15 @@
     <ClCompile Include="..\gfx\View.cpp">
       <Filter>Gfx</Filter>
     </ClCompile>
+    <ClCompile Include="..\global\utility.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="..\scene\Object.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\scene\Component.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\platform\WIN32\Win32Application.h">
@@ -202,9 +211,21 @@
     <ClInclude Include="..\gfx\View.h">
       <Filter>Gfx</Filter>
     </ClInclude>
+    <ClInclude Include="..\global\utility.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scene\Object.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scene\Component.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\assets\shaders\StandardVertexShader.hlsl">
+    <None Include="..\..\assets\shaders\BasicPixelShader.hlsl">
+      <Filter>assets\shaders</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\BasicVertexShader.hlsl">
       <Filter>assets\shaders</Filter>
     </None>
   </ItemGroup>

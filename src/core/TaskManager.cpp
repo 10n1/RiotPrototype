@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 7:42:28 PM
+Modified:       4/17/2011 1:11:59 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -116,9 +116,9 @@ namespace Riot
         // First we need to find a new handle to use
         task_handle_t   nHandle = m_nCurrentHandle % MAX_TASKS;
 
-        while( (nHandle = (++m_nCurrentHandle %= MAX_TASKS)) && m_nTaskCompletion[nHandle] )
+        while( m_nTaskCompletion[nHandle] )
         {
-            ;
+            nHandle = (++m_nCurrentHandle %= MAX_TASKS);
         }
 
         // Create our new task

@@ -3,7 +3,7 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/16/2011 7:46:57 PM
+Modified:       4/17/2011 1:33:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
@@ -365,10 +365,10 @@ RVector3 RMatrix4GetTranslation( const RMatrix4& m  );
 
 inline RMatrix4 RMatrix4Identity( void ) 
 { 
-    return RMatrix4( 1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f, 
-        0.0f, 0.0f, 0.0f, 1.0f ); 
+    return RMatrix4(1.0f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f, 
+                    0.0f, 0.0f, 0.0f, 1.0f ); 
 }
 
 
@@ -426,9 +426,9 @@ inline RMatrix3 RQuatGetMatrix( const RQuaternion& q )
     float yz = q.y * q.z;
     float xw = q.x * q.w;
 
-    return RMatrix3( 1-2*(ysq+zsq),     2*(xy+zw),     2*(xz-yw),
-        2*(xy-zw), 1-2*(xsq-zsq),     2*(yz+xw),
-        2*(xz+yw),     2*(yz-xw), 1-2*(xsq+ysq) ); 
+    return RMatrix3(1-2*(ysq+zsq),  2*(xy+zw),      2*(xz-yw),
+                    2*(xy-zw),      1-2*(xsq-zsq),  2*(yz+xw),
+                    2*(xz+yw),      2*(yz-xw),      1-2*(xsq+ysq) ); 
 }
 inline RQuaternion RQuatFromAxisAngle( const RVector3& axis, float angle )
 {
@@ -482,11 +482,20 @@ public:
         float yz = orientation.y * orientation.z;
         float xw = orientation.x * orientation.w;
 
-        return RMatrix4( 
-            1-2*(ysq+zsq) * scale,     2*(xy+zw) * scale,     2*(xz-yw) * scale, 0.0f,
-            2*(xy-zw) * scale, 1-2*(xsq-zsq) * scale,     2*(yz+xw) * scale, 0.0f,
-            2*(xz+yw) * scale,     2*(yz-xw) * scale, 1-2*(xsq+ysq) * scale, 0.0f,
-            position.x,            position.y,            position.z, 1.0f ); 
+        if( scale != 1.0f )
+        {
+            return RMatrix4(1-2*(ysq+zsq) * scale,  2*(xy+zw) * scale,      2*(xz-yw) * scale,      0.0f,
+                            2*(xy-zw) * scale,      1-2*(xsq-zsq) * scale,  2*(yz+xw) * scale,      0.0f,
+                            2*(xz+yw) * scale,      2*(yz-xw) * scale,      1-2*(xsq+ysq) * scale,  0.0f,
+                            position.x,             position.y,             position.z,             1.0f ); 
+        }
+        else
+        {
+            return RMatrix4(1-2*(ysq+zsq),  2*(xy+zw),      2*(xz-yw),      0.0f,
+                            2*(xy-zw),      1-2*(xsq-zsq),  2*(yz+xw),      0.0f,
+                            2*(xz+yw),      2*(yz-xw),      1-2*(xsq+ysq),  0.0f,
+                            position.x,     position.y,     position.z,     1.0f ); 
+        }
     }
 
     inline void TranslateX( float f ) { position += RQuatGetXAxis( orientation ) * f; }

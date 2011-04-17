@@ -3,7 +3,7 @@ File:           config.h
 Purpose:        Includes platform and build configurations
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/14/2011 8:08:00 PM
+Modified:       4/17/2011 1:42:56 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CONFIG_H_
@@ -118,13 +118,16 @@ Modified by:    Kyle Weicht
 #endif
 //////////////////////////////////////////
 
-#define MULTITHREADED                   1
-#define MAX_THREADS                     32
-#define MAX_TASKS_PER_THREAD            2048
-#define MAX_TASKS                       256
+#define MULTITHREADED           1
+#define MAX_THREADS             32
+#define MAX_TASKS_PER_THREAD    2048
+#define MAX_TASKS               256
+#define MAX_OBJECTS             (16*1024)
+#define MAX_LIGHTS              8
+#define MAX_RENDER_COMMANDS     2048
 
-#define RIOT_ALIGN_MEMORY               1
-#define RIOT_USE_INTRINSICS             1
-#define RIOT_USE_CUSTOM_ALLOCATOR       1
+#define RIOT_ALIGN_MEMORY           1
+#define RIOT_USE_INTRINSICS         1
+#define RIOT_USE_CUSTOM_ALLOCATOR   1
 
 #endif // #ifndef _CONFIG_H_

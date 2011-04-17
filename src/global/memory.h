@@ -4,7 +4,7 @@ Purpose:        Overloading new/delete. They now allocate
 out of a pre-allocated buffer.
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/16/2011 8:30:58 PM
+Modified:       4/17/2011 12:35:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MEMORY_H_
@@ -30,20 +30,17 @@ void __cdecl operator delete(void* pVoid);
 void __cdecl operator delete[](void* pVoid);
 #endif // #ifdef RIOT_USE_CUSTOM_ALLOCATOR
 
-namespace Memory
+namespace Riot
 {
-    void ReleasePool( void );
-} // namespace Memory
+
+    namespace Memory
+    {
+        void ReleasePool( void );
+    } // namespace Memory
+
+} // namespace Riot
 //-----------------------------------------------------------------------------
 
 
-//-----------------------------------------------------------------------------
-//  C standard library replacement functions
-void* Memcpy( void* pDest, const void* pSource, uint nSize );
-void* Memset( void* pDest, uint c, uint nSize );
-
-#ifndef ZeroMemory
-#define ZeroMemory( pDest, nSize ) Memset( pDest, 0, nSize )
-#endif
 
 #endif // #ifndef _MEMORY_H_
