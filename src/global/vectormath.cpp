@@ -2,7 +2,7 @@
 File:           vectormath.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/16/2011 3:24:45 PM
+Modified:       4/17/2011 7:33:12 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "vectormath.h"
@@ -450,6 +450,33 @@ RMatrix4 RMatrix4RotationZ( float fRad )
         -s,    c, 0.0f, 0.0f, 
         0.0f, 0.0f, 1.0f, 0.0f, 
         0.0f, 0.0f, 0.0f, 1.0f );
+    return m;
+}
+
+RMatrix4 RMatrix4RotationAxis( const RVector3& axis, float fRad )
+{
+    float c = cosf(fRad);
+    float s = sinf(fRad);
+    float t = 1 - c;
+
+    float x = axis.x;
+    float y = axis.y;
+    float z = axis.z;
+
+    RMatrix4 m = RMatrix4Identity();
+
+    m(0,0) = t * x * x + c;
+    m(0,1) = (t * x * y) - s * z;
+    m(0,2) = (t * x * z) + s * y;
+
+    m(1,0) = (t * x * y) + (s * z);
+    m(1,1) = (t * y * y) + c;
+    m(1,2) = (t * y * z) - (s * x);
+
+    m(2,0) = (t * x * z) - (s * y);
+    m(2,1) = (t * y * z) + (s * x);
+    m(2,2) = (t * z * z) + c;
+
     return m;
 }
 

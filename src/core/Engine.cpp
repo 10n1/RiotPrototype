@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/17/2011 5:35:00 PM
+Modified:       4/17/2011 8:12:23 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -18,15 +18,16 @@ Modified by:    Kyle Weicht
 #include "ComponentManager.h"
 #include "ObjectManager.h"
 #include "Terrain.h"
+#include "Camera.h"
 
 #define SHUTDOWN_AND_DELETE( Module ) if( Module ) { Module->Shutdown(); delete Module; Module = NULL; }
 #define NEW_AND_INITIALIZE( Module, Type ) Module = new Type; Module->Initialize();
 
 #define NEW_AND_INITIALIZE_AND_REGISTER( Module, Type ) \
-        Module = new Type;                              \
-        ASSERT( Module );                               \
-        Module->Initialize();                           \
-        m_pMessageDispatcher->RegisterListener( Module, Type::MessagesReceived, Type::NumMessagesReceived )
+    Module = new Type;                              \
+    ASSERT( Module );                               \
+    Module->Initialize();                           \
+    m_pMessageDispatcher->RegisterListener( Module, Type::MessagesReceived, Type::NumMessagesReceived )
 
 namespace Riot
 {
@@ -41,7 +42,7 @@ namespace Riot
     CWindow*            Engine::m_pMainWindow           = NULL;
     CInputManager*      Engine::m_pInputManager         = NULL;
     CRenderer*          Engine::m_pRenderer             = NULL;
-    CView*              Engine::m_pMainView             = NULL;
+    CCamera*            Engine::m_pCamera               = NULL;
     CComponentManager*  Engine::m_pComponentManager     = NULL;
     CObjectManager*     Engine::m_pObjectManager        = NULL;
 
@@ -95,6 +96,7 @@ namespace Riot
 
             //////////////////////////////////////////
             // Update everything
+            m_pCamera->Update();
             m_pComponentManager->ProcessComponents();
 
             // Make sure terrain is the last thing drawn
@@ -119,11 +121,11 @@ namespace Riot
             //////////////////////////////////////////
             // Perform end of frame timing, etc.
             m_fElapsedTime = (float)m_MainTimer.GetElapsedTime();
+            ++m_nFrame;
             if( m_fElapsedTime > 1.0f )
             {   // Prevent huge lapses in frame rate (when debugging, etc.)
                 m_fElapsedTime = 1.0f/60.0f;
             }
-            ++m_nFrame;
         }
 
         //////////////////////////////////////////
@@ -161,11 +163,6 @@ namespace Riot
             }
         case mResize:
             {
-                uint nWidth = msg.nMessage >> 16;
-                uint nHeight = msg.nMessage & 0x0000FFFF;
-
-                m_pMainView->SetPerspective( 60.0f, ((float)nWidth)/nHeight, 0.1f, 10000.0f );                
-
                 break;
             }
         default:
@@ -188,6 +185,16 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void Engine::SendMsg( const TMessage& msg ) { m_pMessageDispatcher->SendMsg( msg ); }
     void Engine::SendMsg( MessageType nType ) { m_pMessageDispatcher->SendMsg( nType ); }
+
+
+    //-----------------------------------------------------------------------------
+    //  RegisterListener
+    //  Counts number registered for each message
+    //-----------------------------------------------------------------------------
+    void Engine::RegisterListener( IListener* pListener, const MessageType* pMessages, uint nCount )
+    {
+        m_pMessageDispatcher->RegisterListener( pListener, pMessages, nCount );
+    }
 
     //-----------------------------------------------------------------------------
     //  Accessors/Mutators
@@ -231,10 +238,14 @@ namespace Riot
         // Load the graphics device
         m_pRenderer->CreateGraphicsDevice( m_pMainWindow );
 
-        // Create the main view
-        m_pMainView = new CView;
-        m_pRenderer->SetCurrentView( m_pMainView );
-        m_pMainView->Update( 0.0f );
+        // Create the main view and camera
+        CView* pView = new CView;
+        m_pRenderer->SetCurrentView( pView );
+
+        m_pCamera = new CCamera;
+        m_pCamera->SetView( pView );
+
+        SAFE_RELEASE( pView );
 
         //////////////////////////////////////////
         // Create the terrain
@@ -262,13 +273,13 @@ namespace Riot
 
         //////////////////////////////////////////
         // Add a few lights
-        t = RTransform( orientation, RVector3( 0.0f, 5.0f, 0.0f ) );
+        t = RTransform( orientation, RVector3( 0.0f, 5.0f, 0.0f ), 0.01f );
 
         nObject = m_pObjectManager->CreateObject();
         m_pObjectManager->AddComponent( nObject, eComponentLight );
-        m_pComponentManager->SendMessage( eComponentMessageTransform, m_pObjectManager->GetObject(nObject), &t  );
         m_pObjectManager->AddComponent( nObject, eComponentRender );
         m_pComponentManager->SendMessage( eComponentMessageMesh, m_pObjectManager->GetObject(nObject), pBox );
+        m_pComponentManager->SendMessage( eComponentMessageTransform, m_pObjectManager->GetObject(nObject), &t  );
 
         SAFE_RELEASE( pBox );
 
@@ -285,7 +296,8 @@ namespace Riot
         //////////////////////////////////////////
         // Now perform any shutdown needed
         SAFE_RELEASE( m_pMainWindow );
-        SAFE_RELEASE( m_pMainView );
+        SAFE_DELETE( m_pCamera );
+        SAFE_DELETE( m_pTerrain );
 
         //////////////////////////////////////////
         // ...then shutdown and delete all modules

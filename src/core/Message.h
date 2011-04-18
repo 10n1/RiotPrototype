@@ -3,7 +3,7 @@ File:           Message.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/17/2011 4:24:34 PM
+Modified:       4/17/2011 6:45:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MESSAGE_H_
@@ -25,14 +25,16 @@ namespace Riot
         mHardwareKeyboardDown,
         mHardwareKeyboardUp,
         mHardwareMouseMove,
-        mHardwareMouseButton,
+        mHardwareMouseDown,
+        mHardwareMouseUp,
 
         // "Processed" input
         mKeyPressed,
         mKeyDown,
         mKeyUp,
-        mMouseButtonDown,
         mMouseButtonPressed,
+        mMouseButtonDown,
+        mMouseButtonUp,
         mMouseMove,
 
         mNUMMESSAGES,
@@ -47,8 +49,8 @@ namespace Riot
         MessageType nType;
         union
         {
-            pvoid       pMessage;
-            nativeuint  nMessage;
+            uint64  nMessage;
+            pvoid   pMessage;
         };
 
         TMessage() { }

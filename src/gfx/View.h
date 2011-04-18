@@ -4,7 +4,7 @@ Purpose:        Interface for anything in the engine that
                 can "view", aka, a camera
 Author:         Kyle Weicht
 Created:        4/14/2011
-Modified:       4/14/2011 10:47:38 PM
+Modified:       4/17/2011 7:41:24 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VIEW_H_
@@ -51,7 +51,7 @@ namespace Riot
         //  Updates the object
         //  TODO: Pre- and Post- updates?
         //-----------------------------------------------------------------------------
-        void Update( float fDeltaTime );
+        void Update( void );
 
         //-----------------------------------------------------------------------------
         //  SetPerspective
@@ -70,13 +70,15 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        RMatrix4    m_mNewView;
-        RMatrix4    m_mNewProj;
+        RMatrix4    m_mView;
+        RMatrix4    m_mProj;
 
-        RVector4    m_vNewPosition;
-        RVector4    m_vNewUp;
-        RVector4    m_vNewLook;
-        RVector4    m_vNewRight;
+        RVector4    m_vPosition;
+        RVector4    m_vUp;
+        RVector4    m_vLook;
+        RVector4    m_vRight;
+
+        RTransform  m_Transform;
     };
 
 } // namespace Riot

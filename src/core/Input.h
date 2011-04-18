@@ -3,14 +3,20 @@ File:           Input.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 6:53:10 PM
+Modified:       4/17/2011 7:36:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _INPUT_H_
 #define _INPUT_H_
 
 namespace Riot
-{
+{    
+    enum Mouse
+    {
+        MOUSE_L_BUTTON = 0,
+        MOUSE_R_BUTTON = 1,
+        MOUSE_M_BUTTON = 2,
+    };
 
     enum Keyboard
     {
@@ -18,6 +24,7 @@ namespace Riot
         // Utility keys
         KEY_ESCAPE  = 0x1B, // VK_ESCAPE
         KEY_ENTER   = 0x0D,
+        KEY_SHIFT   = 0x10,
 
         // Arrows
         KEY_LEFT    = 0x25, // VK_LEFT 
@@ -62,8 +69,8 @@ namespace Riot
         // Arrows
         KEY_LEFT    = 0x02, // VK_LEFT 
         KEY_RIGHT   = 0x03, // VK_RIGHT
-        KEY_UP      = 0x0,  // VK_UP   
-        KEY_DOWN    = 0x01, // VK_DOWN 
+        UP      = 0x0,  // VK_UP   
+        DOWN    = 0x01, // VK_DOWN 
         
         // Letters
         KEY_A = 'a',

@@ -2,12 +2,13 @@
 File:           InputManager.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 8:31:29 PM
+Modified:       4/17/2011 7:06:48 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "InputManager.h"
 #include "Message.h"
 #include "Engine.h"
+#include "Input.h"
 
 namespace Riot
 {
@@ -19,7 +20,8 @@ namespace Riot
         mHardwareKeyboardDown,
         mHardwareKeyboardUp,
         mHardwareMouseMove,
-        mHardwareMouseButton,
+        mHardwareMouseDown,
+        mHardwareMouseUp,
     };
     const uint           CInputManager::NumMessagesReceived = ARRAY_LENGTH(MessagesReceived);
 
@@ -43,8 +45,15 @@ namespace Riot
     {
         for( uint i = 0; i < 256; ++i )
         {
-            m_pKeys[i] = KEY_UP;
+            m_pKeys[i] = UP;
         }
+
+        for( uint i = 0; i < 8; ++i )
+        {
+            m_nMouseButtons[i] = 0;
+        }
+
+        m_nMousePosition    = 0;
     }
 
     //-----------------------------------------------------------------------------
@@ -62,9 +71,17 @@ namespace Riot
     {
         for( uint i = 0; i < 256; ++i )
         {
-            if( m_pKeys[i] == KEY_DOWN )
+            if( m_pKeys[i] == DOWN )
             {
                 Engine::PostMsg( TMessage( mKeyDown, i ) );
+            }
+        }
+
+        for( uint i = 0; i < 8; ++i )
+        {
+            if( m_nMouseButtons[i] == DOWN )
+            {
+                Engine::PostMsg( TMessage( mMouseButtonDown, i ) );
             }
         }
     }
@@ -82,9 +99,9 @@ namespace Riot
                 uint8 nKey = msg.nMessage;
                 uint8& theKey = m_pKeys[ nKey ];
 
-                if( theKey == KEY_UP )
+                if( theKey == UP )
                 {
-                    theKey = KEY_DOWN;
+                    theKey = DOWN;
 
                     Engine::SendMsg( TMessage( mKeyPressed, nKey ) );
                 }
@@ -96,21 +113,61 @@ namespace Riot
                 uint8 nKey = msg.nMessage;
                 uint8& theKey = m_pKeys[ nKey ];
 
-                if( theKey != KEY_UP )
+                if( theKey != UP )
                 {
-                    theKey = KEY_UP;
+                    theKey = UP;
 
-                    Engine::SendMsg( TMessage( mKeyUp, nKey ) );
+                    Engine::PostMsg( TMessage( mKeyUp, nKey ) );
                 }
 
                 break;
             }
-        case mHardwareMouseButton:
+        case mHardwareMouseDown:
             {
+                uint8 nButton = msg.nMessage;
+                uint8& theButton = m_nMouseButtons[ nButton ];
+
+                
+                if( theButton == UP )
+                {
+                    theButton = DOWN;
+
+                    Engine::SendMsg( TMessage( mMouseButtonPressed, nButton ) );
+                }
+
+                break;
+            }
+        case mHardwareMouseUp:
+            {
+                uint8 nButton = msg.nMessage;
+                uint8& theButton = m_nMouseButtons[ nButton ];
+
+                if( theButton != UP )
+                {
+                    theButton = UP;
+
+                    Engine::PostMsg( TMessage( mMouseButtonUp, nButton ) );
+                }
+
                 break;
             }
         case mHardwareMouseMove:
             {
+                sint nNewPos = (sint)msg.nMessage;
+                
+                sint16 nXPos = nNewPos >> 16;
+                sint16 nYPos = nNewPos & 0xFFFF;
+
+                sint nDelta = ( (nXPos - ( m_nMousePosition >> 16 )) << 16 ) | ( (nYPos - (m_nMousePosition & 0XFFFF)) & 0xFFFF);
+                sint16 nDeltaX = nXPos - (m_nMousePosition >> 16) ;
+                sint16 nDeltaY = nYPos - (m_nMousePosition & 0XFFFF);
+
+                nDelta = (nDeltaX << 16) | nDeltaY;
+
+                Engine::PostMsg( TMessage( mMouseMove, nDelta ) );
+
+                m_nMousePosition = nNewPos;
+
                 break;
             }
         default:

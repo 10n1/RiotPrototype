@@ -3,7 +3,7 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/17/2011 5:30:29 PM
+Modified:       4/17/2011 7:52:29 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
@@ -187,7 +187,13 @@ inline uint operator==( const RVector4& l, const RVector4& r ) { return l.x == r
 inline uint operator!=( const RVector4& l, const RVector4& r ) { return !(l == r); }
 
 // 3D math functions
-inline RVector4 CrossProduct( const RVector4& l, const RVector4& r ) { return RVector4(l.y*r.z-l.z*r.y,l.z*r.x-l.x*r.z,l.x*r.y-l.y*r.x,0.0f); }
+inline RVector4 CrossProduct( const RVector4& l, const RVector4& r ) 
+{ 
+    return RVector4( l.y*r.z - l.z*r.y,
+                     l.z*r.x - l.x*r.z,
+                     l.x*r.y - l.y*r.x,
+                     0.0f); 
+}
 inline float DotProduct( const RVector4& l, const RVector4& r ) { return l.x * r.x + l.y * r.y + l.z * r.z + l.w * r.w; } 
 inline float MagnitudeSq( const RVector4& a ) { return DotProduct(a,a); }
 inline float Magnitude( const RVector4& a ) { return sqrtf(DotProduct(a,a)); }
@@ -354,6 +360,7 @@ RMatrix4    Transpose( const RMatrix4& a );
 RMatrix4 RMatrix4RotationX( float fRad );
 RMatrix4 RMatrix4RotationY( float fRad );
 RMatrix4 RMatrix4RotationZ( float fRad );
+RMatrix4 RMatrix4RotationAxis( const RVector3& axis, float fRad );
 RMatrix4 RMatrix4Scale( float fScale );
 RMatrix4 RMatrix4Translation( const RVector3& t );
 RMatrix4 RMatrix4Translation( const RVector4& t );
@@ -508,12 +515,19 @@ public:
     inline void TranslateWorldY( float f ) { position.y += f; }
     inline void TranslateWorldZ( float f ) { position.z += f; }
 
-    inline void RotateWorldX( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 1.0f, 0.0f, 0.0f ), rad ); }
-    inline void RotateWorldY( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 0.0f, 1.0f, 0.0f ), rad ); }
-    inline void RotateWorldZ( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 0.0f, 0.0f, 1.0f ), rad ); } 
-    inline void RotateLocalX( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetXAxis( orientation ), rad ); }
-    inline void RotateLocalY( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetYAxis( orientation ), rad ); }
-    inline void RotateLocalZ( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetZAxis( orientation ), rad ); } 
+    //inline void RotateWorldX( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 1.0f, 0.0f, 0.0f ), rad ); }
+    //inline void RotateWorldY( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 0.0f, 1.0f, 0.0f ), rad ); }
+    //inline void RotateWorldZ( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 0.0f, 0.0f, 1.0f ), rad ); } 
+    //inline void RotateLocalX( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetXAxis( orientation ), rad ); }
+    //inline void RotateLocalY( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetYAxis( orientation ), rad ); }
+    //inline void RotateLocalZ( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetZAxis( orientation ), rad ); }
+
+    inline void RotateWorldX( float rad ) { orientation = RQuatFromAxisAngle( RVector3( 1.0f, 0.0f, 0.0f ), rad ) * orientation; }
+    inline void RotateWorldY( float rad ) { orientation = RQuatFromAxisAngle( RVector3( 0.0f, 1.0f, 0.0f ), rad ) * orientation; }
+    inline void RotateWorldZ( float rad ) { orientation = RQuatFromAxisAngle( RVector3( 0.0f, 0.0f, 1.0f ), rad ) * orientation; } 
+    inline void RotateLocalX( float rad ) { orientation = RQuatFromAxisAngle( RQuatGetXAxis( orientation ), rad ) * orientation; }
+    inline void RotateLocalY( float rad ) { orientation = RQuatFromAxisAngle( RQuatGetYAxis( orientation ), rad ) * orientation; }
+    inline void RotateLocalZ( float rad ) { orientation = RQuatFromAxisAngle( RQuatGetZAxis( orientation ), rad ) * orientation; }  
 };
 
 #pragma warning(disable:4201)

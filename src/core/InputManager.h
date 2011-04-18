@@ -3,7 +3,7 @@ File:           InputManager.h
 Purpose:        Interface between the engine and the hardware
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 8:29:49 PM
+Modified:       4/17/2011 6:45:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _INPUTMANAGER_H_
@@ -21,10 +21,10 @@ namespace Riot
 
         enum
         {
-            KEY_PRESSED = 0x1,
-            KEY_DOWN    = 0x2,
-            KEY_UP      = 0,
+            DOWN    = 0x1,
+            UP      = 0,
         };
+
     public:
         // CInputManager constructor
         CInputManager();
@@ -65,6 +65,9 @@ namespace Riot
         static const uint           NumMessagesReceived;
 
         uint8   m_pKeys[ 256 ];
+        uint8   m_nMouseButtons[ 8 ];
+
+        sint    m_nMousePosition;
     };
 
 }

@@ -2,13 +2,14 @@
 File:           Win32Application.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 11:14:34 PM
+Modified:       4/17/2011 8:11:19 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Win32Application.h"
 #include "Window.h"
 #include "Input.h"
 #include "Engine.h"
+#include <WindowsX.h>
 
 namespace Riot
 {    
@@ -95,6 +96,9 @@ namespace Riot
     LRESULT CALLBACK CWin32Application::_WndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
     {    
         static CWin32Application*     pApp = NULL;
+
+        uint nMouseButton = 0;
+
         switch(nMsg)
         {
         case WM_CREATE:
@@ -133,8 +137,36 @@ namespace Riot
             }
         case WM_MOUSEMOVE:
             {
-                uint8 nMouse = 0;
+                static uint nPrevMousePosition  = 0;
 
+                sint16 nXPos = GET_X_LPARAM( lParam );
+                sint16 nYPos = GET_Y_LPARAM( lParam );
+
+                uint nNewPos = (nXPos << 16) | (nYPos & 0xFFFF);
+
+                if( nNewPos != nPrevMousePosition )
+                {
+                    nPrevMousePosition = nNewPos;
+                    Engine::PostMsg( TMessage( mHardwareMouseMove, nNewPos ) );
+                }
+
+                return 0;
+            }
+        case WM_RBUTTONDOWN: nMouseButton = MOUSE_R_BUTTON; goto mouse_down;
+        case WM_LBUTTONDOWN: nMouseButton = MOUSE_L_BUTTON; goto mouse_down;
+        case WM_MBUTTONDOWN: nMouseButton = MOUSE_M_BUTTON; goto mouse_down;
+            mouse_down:
+            {
+                Engine::PostMsg( TMessage( mHardwareMouseDown, nMouseButton ) );
+                SetCapture( hWnd );
+                return 0;
+            };
+        case WM_RBUTTONUP: nMouseButton = MOUSE_R_BUTTON; goto mouse_up;
+        case WM_MBUTTONUP: nMouseButton = MOUSE_M_BUTTON; goto mouse_up;
+        case WM_LBUTTONUP: nMouseButton = MOUSE_L_BUTTON; goto mouse_up;
+            mouse_up:
+            {
+                Engine::PostMsg( TMessage( mHardwareMouseUp, nMouseButton ) );
                 return 0;
             }
         case WM_KEYUP:

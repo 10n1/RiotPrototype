@@ -2,7 +2,7 @@
 File:           View.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/17/2011 1:23:38 PM
+Modified:       4/17/2011 8:08:57 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "View.h"
@@ -16,9 +16,11 @@ namespace Riot
     {
         SetPerspective( 60.0f, 1024.0f/768.0f, 0.1f, 10000.0f );
 
-        m_vNewPosition = RVector4( 0.0f, 0.0f, -5.0f, 0.0f );
-        m_vNewLook =     RVector4( 0.0f, 0.0f, 1.0f, 0.0f );
-        m_vNewUp =       RVector4( 0.0f, 1.0f, 0.0f, 0.0f );
+        m_vPosition = RVector4( 0.0f, 0.0f, -5.0f, 0.0f );
+        m_vLook =     RVector4( 0.0f, 0.0f, 1.0f, 0.0f );
+        m_vUp =       RVector4( 0.0f, 1.0f, 0.0f, 0.0f );
+
+        m_Transform = RTransform( RQuaternionZero(), RVector3( 0.0f, 0.0f, -5.0f ) );
     }
 
     // CView destructor
@@ -32,17 +34,23 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CView::TranslateX( float fTrans )
     {
-        m_vNewPosition += (m_vNewRight * fTrans);
+        m_vPosition += (m_vRight * fTrans);
+
+        m_Transform.TranslateLocalZ( fTrans );
     }
 
     void CView::TranslateY( float fTrans )
     {
-        m_vNewPosition += (m_vNewUp * fTrans);
+        m_vPosition += (m_vUp * fTrans);
+
+        m_Transform.TranslateWorldY( fTrans );
     }
 
     void CView::TranslateZ( float fTrans )
     {
-        m_vNewPosition += (m_vNewLook * fTrans);
+        m_vPosition += (m_vLook * fTrans);
+
+        m_Transform.TranslateLocalZ( fTrans );
     }
 
     //-----------------------------------------------------------------------------
@@ -51,21 +59,27 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CView::RotateX( float fRad )
     {
-        //RMatrix4 newRot = RotationAxisMatrix( -fRad, m_vNewRight );
-        RMatrix4 newRot = RMatrix4( RQuatGetMatrix( RQuatFromAxisAngle( m_vNewRight.xyz(), -fRad ) ) );
+        //RMatrix4 newRot = RotationAxisMatrix( -fRad, m_vRight );
+        RMatrix4 newRot = RMatrix4( RQuatGetMatrix( RQuatFromAxisAngle( m_vRight.xyz(), -fRad ) ) );
         //RVector4 newNewLook = m_vLook * newRot;
-        RVector4 newNewLook = m_vNewLook * newRot ;
+        //newRot = Transpose( newRot );
+        RVector4 newLook = m_vLook * RMatrix4RotationAxis( m_vRight.xyz(), -fRad ) ;
 
-        float newY = newNewLook.y;
+        float newY = newLook.y;
         if( newY < 0.99f && newY > -0.99f )
         {
-            m_vNewLook = newNewLook;
+            m_vLook = newLook;
         }
+
+        m_Transform.RotateLocalX( fRad );
     }
 
     void CView::RotateY( float fRad )
     {
-        m_vNewLook = m_vNewLook * RMatrix4RotationY( fRad );
+        m_vLook = m_vLook * RMatrix4RotationY( fRad );
+        //m_vLook = RMatrix4RotationY( fRad ) * m_vLook;
+
+        m_Transform.RotateWorldY( fRad );
     }
 
 
@@ -74,20 +88,21 @@ namespace Riot
     //  Updates the object
     //  TODO: Pre- and Post- updates?
     //-----------------------------------------------------------------------------
-    void CView::Update( float fDeltaTime )
+    void CView::Update( void )
     {
         RVector4 x, y, z;
 
-        z = m_vNewLook = Normalize( m_vNewLook );
-        x = m_vNewRight = Normalize( CrossProduct( m_vNewUp, z ) );
+        z = m_vLook = Normalize( m_vLook );
+        x = m_vRight = Normalize( CrossProduct( m_vUp, z ) );
         y = CrossProduct( z, x );
 
-        m_mNewView.r0 = x;
-        m_mNewView.r1 = y;
-        m_mNewView.r2 = z;
-        m_mNewView.r3 = RVector4Zero();
-        Transpose( m_mNewView );
-        m_mNewView.r3 = RVector4( -DotProduct( x, m_vNewPosition), -DotProduct( y, m_vNewPosition), -DotProduct( z, m_vNewPosition), 1.0f );
+        m_mView.r0 = x;
+        m_mView.r1 = y;
+        m_mView.r2 = z;
+        m_mView.r3 = RVector4Zero();
+        m_mView = Transpose( m_mView );
+
+        m_mView.r3 = RVector4( -DotProduct( x, m_vPosition), -DotProduct( y, m_vPosition), -DotProduct( z, m_vPosition), 1.0f );
     }
 
     //-----------------------------------------------------------------------------
@@ -97,7 +112,7 @@ namespace Riot
     void CView::SetPerspective( float fFoV, float fAspectRatio, float fNear, float fFar )
     {
         fFoV = fFoV * gs_DEGTORAD; // (fFoV/180.0f) * gs_PI;
-        m_mNewProj = RMatrix4PerspectiveLH( fFoV, fAspectRatio, fNear, fFar );
+        m_mProj = RMatrix4PerspectiveLH( fFoV, fAspectRatio, fNear, fFar );
         //RMatrix4PerspectiveLH
     }
 
@@ -108,12 +123,12 @@ namespace Riot
     //-----------------------------------------------------------------------------
     const RMatrix4& CView::GetViewMatrix( void )
     {
-        return m_mNewView;
+        return m_mView;
     }
 
     const RMatrix4& CView::GetProjMatrix( void )
     {
-        return m_mNewProj;
+        return m_mProj;
     }
 
 } // namespace Riot
