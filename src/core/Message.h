@@ -3,7 +3,7 @@ File:           Message.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/10/2011 8:22:22 PM
+Modified:       4/17/2011 4:24:34 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _MESSAGE_H_
@@ -35,7 +35,8 @@ namespace Riot
         mMouseButtonPressed,
         mMouseMove,
 
-        mNUMMESSAGES
+        mNUMMESSAGES,
+        mNULLMESSAGE = -1
     };
 
     class IListener;

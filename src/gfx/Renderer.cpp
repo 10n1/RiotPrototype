@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/17/2011 3:52:41 PM
+Modified:       4/17/2011 4:54:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Renderer.h"
@@ -82,6 +82,7 @@ namespace Riot
 
         SAFE_RELEASE( m_pWorldCB );
         SAFE_RELEASE( m_pViewProjCB );
+        SAFE_RELEASE( m_pLightCB );
         SAFE_RELEASE( m_pDevice );
     }
 

@@ -3,7 +3,7 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/17/2011 1:33:33 PM
+Modified:       4/17/2011 5:30:29 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
@@ -22,6 +22,8 @@ const float gs_HALFPI   = (float)(2.0 * atan(1.0));
 const float gs_HINVPI   = (float)(1.0/(4.0 * atan(1.0)));
 const float gs_DEGTORAD = (gs_PI/180.0f);
 const float gs_RADTODEG = (180.0f/gs_PI);
+inline float DegToRad( float fDeg ) { return fDeg * gs_DEGTORAD; }
+inline float RadToDeg( float fRad ) { return fRad * gs_RADTODEG; }
 
 template<class T> inline T Max( const T& a, const T& b ) { return (a>b) ? a : b; }
 template<class T> inline T Min( const T& a, const T& b ) { return (a<b) ? a : b; }
@@ -191,7 +193,7 @@ inline float MagnitudeSq( const RVector4& a ) { return DotProduct(a,a); }
 inline float Magnitude( const RVector4& a ) { return sqrtf(DotProduct(a,a)); }
 inline RVector4 Normalize( const RVector4&a ) { float recip = 1.0f/Magnitude(a); return a * recip; }
 inline RVector4 RVector4Zero( void ) { return RVector4( 0.0f, 0.0f, 0.0f, 0.0f ); }
-
+inline RVector4 Homogonize( const RVector3& a ) { return RVector4( a.x, a.y, a.z, 0.0f ); }
 
 //-----------------------------------------------------------------------------
 //  Matrix3
@@ -498,9 +500,13 @@ public:
         }
     }
 
-    inline void TranslateX( float f ) { position += RQuatGetXAxis( orientation ) * f; }
-    inline void TranslateY( float f ) { position += RQuatGetYAxis( orientation ) * f; }
-    inline void TranslateZ( float f ) { position += RQuatGetZAxis( orientation ) * f; }
+    inline void TranslateLocalX( float f ) { position += RQuatGetXAxis( orientation ) * f; }
+    inline void TranslateLocalY( float f ) { position += RQuatGetYAxis( orientation ) * f; }
+    inline void TranslateLocalZ( float f ) { position += RQuatGetZAxis( orientation ) * f; }
+
+    inline void TranslateWorldX( float f ) { position.x += f; }
+    inline void TranslateWorldY( float f ) { position.y += f; }
+    inline void TranslateWorldZ( float f ) { position.z += f; }
 
     inline void RotateWorldX( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 1.0f, 0.0f, 0.0f ), rad ); }
     inline void RotateWorldY( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 0.0f, 1.0f, 0.0f ), rad ); }

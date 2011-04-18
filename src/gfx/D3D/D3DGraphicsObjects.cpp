@@ -2,7 +2,7 @@
 File:           D3DGraphicsObjects.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/14/2011 8:54:13 PM
+Modified:       4/17/2011 5:08:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphicsObjects.h"
@@ -37,7 +37,15 @@ namespace Riot
     }
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-    DECLARE_SIMPLE_GRAPHICS_OBJECT( Buffer, m_pBuffer );
+    //DECLARE_SIMPLE_GRAPHICS_OBJECT( Buffer, m_pBuffer );
+    CD3DBuffer::CD3DBuffer()      
+        : m_pBuffer( NULL )       
+    {                             
+    }                             
+    CD3DBuffer::~CD3DBuffer()     
+    {                             
+        SAFE_RELEASE( m_pBuffer );
+    }    
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
     DECLARE_SIMPLE_GRAPHICS_OBJECT( VertexShader, m_pShader );

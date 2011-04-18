@@ -112,6 +112,15 @@
     <ClCompile Include="..\scene\Component.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\scene\ComponentManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\scene\ObjectManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\scene\Terrain.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\platform\WIN32\Win32Application.h">
@@ -219,6 +228,15 @@
     </ClInclude>
     <ClInclude Include="..\scene\Component.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scene\ComponentManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scene\ObjectManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scene\Terrain.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -45,7 +45,10 @@
     <ClCompile Include="..\platform\WIN32\Win32Application.cpp" />
     <ClCompile Include="..\platform\WIN32\Win32OpenGL.cpp" />
     <ClCompile Include="..\scene\Component.cpp" />
+    <ClCompile Include="..\scene\ComponentManager.cpp" />
     <ClCompile Include="..\scene\Object.cpp" />
+    <ClCompile Include="..\scene\ObjectManager.cpp" />
+    <ClCompile Include="..\scene\Terrain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\core\Engine.h" />
@@ -82,7 +85,10 @@
     <ClInclude Include="..\platform\SystemOpenGL.h" />
     <ClInclude Include="..\platform\WIN32\Win32Application.h" />
     <ClInclude Include="..\scene\Component.h" />
+    <ClInclude Include="..\scene\ComponentManager.h" />
     <ClInclude Include="..\scene\Object.h" />
+    <ClInclude Include="..\scene\ObjectManager.h" />
+    <ClInclude Include="..\scene\Terrain.h" />
     <ClInclude Include="..\todo.h" />
   </ItemGroup>
   <ItemGroup>
@@ -172,7 +178,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\;..\global;..\core;..\gfx;..\platform\win32;..\platform;..\gfx\ogl;..\gfx\d3d</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\global;..\core;..\gfx;..\platform\win32;..\platform;..\gfx\ogl;..\gfx\d3d;..\scene</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -191,7 +197,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\;..\global;..\core;..\gfx;..\platform\win32;..\platform;..\gfx\ogl;..\gfx\d3d</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\global;..\core;..\gfx;..\platform\win32;..\platform;..\gfx\ogl;..\gfx\d3d;..\scene</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -212,7 +218,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\;..\global;..\core;..\gfx;..\platform\win32;..\platform;..\gfx\ogl;..\gfx\d3d</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\global;..\core;..\gfx;..\platform\win32;..\platform;..\gfx\ogl;..\gfx\d3d;..\scene</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -235,7 +241,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>..\;..\global;..\core;..\gfx;..\platform\win32;..\platform;..\gfx\ogl;..\gfx\d3d</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\global;..\core;..\gfx;..\platform\win32;..\platform;..\gfx\ogl;..\gfx\d3d;..\scene</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
