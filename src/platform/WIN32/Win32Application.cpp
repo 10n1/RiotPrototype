@@ -2,7 +2,7 @@
 File:           Win32Application.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/17/2011 8:11:19 PM
+Modified:       4/17/2011 9:42:32 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Win32Application.h"
@@ -137,12 +137,12 @@ namespace Riot
             }
         case WM_MOUSEMOVE:
             {
-                static uint nPrevMousePosition  = 0;
+                static sint nPrevMousePosition  = 0;
 
                 sint16 nXPos = GET_X_LPARAM( lParam );
                 sint16 nYPos = GET_Y_LPARAM( lParam );
 
-                uint nNewPos = (nXPos << 16) | (nYPos & 0xFFFF);
+                sint nNewPos = (nXPos << 16) | (nYPos & 0xFFFF);
 
                 if( nNewPos != nPrevMousePosition )
                 {

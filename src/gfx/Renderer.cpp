@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/17/2011 4:54:44 PM
+Modified:       4/17/2011 11:42:51 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Renderer.h"
@@ -124,8 +124,16 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::CreateDefaultObjects( void )
     {
+#if USE_OPENGL
+        const wchar_t szVertexShader[] =  L"Assets/Shaders/BasicVertexShader.glsl";
+        const wchar_t szPixelShader[] =  L"Assets/Shaders/BasicPixelShader.glsl";
+#else
+        const wchar_t szVertexShader[] =  L"Assets/Shaders/BasicVertexShader.hlsl";
+        const wchar_t szPixelShader[] =  L"Assets/Shaders/BasicPixelShader.hlsl";
+#endif
+
         // Create the vertex shader/layout
-        m_pDevice->CreateVertexShaderAndLayout( L"Assets/Shaders/BasicVertexShader.hlsl", 
+        m_pDevice->CreateVertexShaderAndLayout( szVertexShader, 
             "main", 
             VPosNormal::Layout, 
             VPosNormal::LayoutSize,
@@ -133,7 +141,7 @@ namespace Riot
             &m_pDefaultVLayout );
         
         // ...then the pixel shader
-        m_pDefaultPShader = m_pDevice->CreatePixelShader( L"Assets/Shaders/BasicPixelShader.hlsl", "main" );
+        m_pDefaultPShader = m_pDevice->CreatePixelShader( szPixelShader, "main" );
 
 
         // ...finally, set them

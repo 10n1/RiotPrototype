@@ -2,7 +2,7 @@
 File:           OGLGraphicsObjects.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/14/2011 8:10:02 PM
+Modified:       4/17/2011 10:40:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "OGLGraphicsObjects.h"
@@ -51,6 +51,15 @@ namespace Riot
     {
     }
     COGLPixelShader::~COGLPixelShader()
+    {
+    }    
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    COGLVertexLayout::COGLVertexLayout()
+        : m_nLayout( -1 )
+    {
+    }
+    COGLVertexLayout::~COGLVertexLayout()
     {
     }    
 //-----------------------------------------------------------------------------

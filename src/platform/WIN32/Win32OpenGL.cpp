@@ -2,7 +2,7 @@
 File:           Win32OpenGL.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/14/2011 8:10:49 PM
+Modified:       4/17/2011 11:32:38 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "platform/SystemOpenGL.h"
@@ -46,16 +46,28 @@ namespace Riot
 #define LOAD_FROM_DLL( type, ext ) ext = (type)GetProcAddress( pOpenGL32, #ext ); ASSERT( ext )
 
         // OpenGl functions
-        PFNGLCLEARPROC       glClear      = NULL;
-        PFNGLCLEARCOLORPROC  glClearColor = NULL;
-        PFNGLCLEARDEPTHPROC  glClearDepth = NULL;
-        PFNGLDRAWBUFFERPROC  glDrawBuffer = NULL;
-        PFNGLVIEWPORTPROC    glViewport   = NULL;
-        PFNGLFRONTFACEPROC   glFrontFace  = NULL;
-        PFNGLDEPTHRANGEPROC  glDepthRange = NULL;
+        PFNGLCLEARPROC      glClear      = NULL;
+        PFNGLCLEARCOLORPROC glClearColor = NULL;
+        PFNGLCLEARDEPTHPROC glClearDepth = NULL;
+        PFNGLDRAWBUFFERPROC glDrawBuffer = NULL;
+        PFNGLVIEWPORTPROC   glViewport   = NULL;
+        PFNGLFRONTFACEPROC  glFrontFace  = NULL;
+        PFNGLDEPTHRANGEPROC glDepthRange = NULL;
+        PFNGLGETERRORPROC   glGetError   = NULL;
 
         // OpenGL extensions (OpenGL 1.2+)
-        PFNGLBINDFRAMEBUFFERPROC             glBindFramebuffer = NULL;
+        PFNGLBINDFRAMEBUFFERPROC    glBindFramebuffer = NULL;
+        PFNGLCREATESHADERPROC       glCreateShader = NULL;
+        PFNGLDELETESHADERPROC       glDeleteShader = NULL;
+        PFNGLCOMPILESHADERPROC      glCompileShader = NULL;
+        PFNGLGETSHADERIVPROC        glGetShaderiv = NULL;
+        PFNGLCREATEPROGRAMPROC      glCreateProgram = NULL;
+        PFNGLATTACHSHADERPROC       glAttachShader = NULL;
+        PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation = NULL;
+        PFNGLLINKPROGRAMPROC        glLinkProgram = NULL;
+        PFNGLGETSHADERINFOLOGPROC   glGetShaderInfoLog = NULL;
+        PFNGLGETPROGRAMINFOLOGPROC  glGetProgramInfoLog = NULL;
+        PFNGLSHADERSOURCEPROC       glShaderSource = NULL;
 
         //-----------------------------------------------------------------------------
         //  LoadOpenGLExtensions
@@ -71,11 +83,24 @@ namespace Riot
             LOAD_FROM_DLL( PFNGLVIEWPORTPROC  , glViewport   );
             LOAD_FROM_DLL( PFNGLFRONTFACEPROC , glFrontFace  );
             LOAD_FROM_DLL( PFNGLDEPTHRANGEPROC, glDepthRange );
+            LOAD_FROM_DLL( PFNGLGETERRORPROC  , glGetError   );
 
             // Load the rest from the driver
-            GET_OPENGL_EXTENSION( PFNGLBINDFRAMEBUFFERPROC         , glBindFramebuffer );
             GET_OPENGL_EXTENSION( PFNWGLCREATECONTEXTATTRIBSARBPROC, wglCreateContextAttribsARB );
             GET_OPENGL_EXTENSION( PFNWGLCHOOSEPIXELFORMATARBPROC   , wglChoosePixelFormatARB    );
+            GET_OPENGL_EXTENSION( PFNGLBINDFRAMEBUFFERPROC         , glBindFramebuffer );
+
+            GET_OPENGL_EXTENSION( PFNGLCREATESHADERPROC      , glCreateShader );
+            GET_OPENGL_EXTENSION( PFNGLDELETESHADERPROC      , glDeleteShader );
+            GET_OPENGL_EXTENSION( PFNGLCOMPILESHADERPROC     , glCompileShader );
+            GET_OPENGL_EXTENSION( PFNGLGETSHADERIVPROC       , glGetShaderiv );
+            GET_OPENGL_EXTENSION( PFNGLCREATEPROGRAMPROC     , glCreateProgram );
+            GET_OPENGL_EXTENSION( PFNGLATTACHSHADERPROC      , glAttachShader );
+            GET_OPENGL_EXTENSION( PFNGLBINDATTRIBLOCATIONPROC, glBindAttribLocation );
+            GET_OPENGL_EXTENSION( PFNGLLINKPROGRAMPROC       , glLinkProgram );
+            GET_OPENGL_EXTENSION( PFNGLGETSHADERINFOLOGPROC  , glGetShaderInfoLog );
+            GET_OPENGL_EXTENSION( PFNGLGETPROGRAMINFOLOGPROC , glGetProgramInfoLog );
+            GET_OPENGL_EXTENSION( PFNGLSHADERSOURCEPROC      , glShaderSource );
         }
 
         //-----------------------------------------------------------------------------
@@ -131,8 +156,8 @@ namespace Riot
                 WGL_COLOR_BITS_ARB,     32,
                 WGL_DEPTH_BITS_ARB,     24,
                 WGL_DOUBLE_BUFFER_ARB,  GL_TRUE,
-                WGL_SAMPLE_BUFFERS_ARB, GL_TRUE,
-                WGL_SAMPLES_ARB,        8,
+                //WGL_SAMPLE_BUFFERS_ARB, GL_TRUE,
+                //WGL_SAMPLES_ARB,        8,
                 WGL_PIXEL_TYPE_ARB,     WGL_TYPE_RGBA_ARB,
                 0
             };

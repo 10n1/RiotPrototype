@@ -3,7 +3,7 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/17/2011 7:52:29 PM
+Modified:       4/18/2011 7:04:24 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
@@ -435,16 +435,61 @@ inline RMatrix3 RQuatGetMatrix( const RQuaternion& q )
     float yz = q.y * q.z;
     float xw = q.x * q.w;
 
-    return RMatrix3(1-2*(ysq+zsq),  2*(xy+zw),      2*(xz-yw),
-                    2*(xy-zw),      1-2*(xsq-zsq),  2*(yz+xw),
-                    2*(xz+yw),      2*(yz-xw),      1-2*(xsq+ysq) ); 
+    return RMatrix3( 1-2*(ysq+zsq),  2*(xy+zw),      2*(xz-yw),
+                     2*(xy-zw),      1-2*(xsq-zsq),  2*(yz+xw),
+                     2*(xz+yw),      2*(yz-xw),      1-2*(xsq+ysq) ); 
 }
+
+inline RVector4 operator*( const RVector4& v, const RQuaternion& q )
+{
+    float xsq = q.x * q.x;
+    float ysq = q.y * q.y;
+    float zsq = q.z * q.z;
+
+    float xy = q.x * q.y;
+    float zw = q.z * q.w;
+    float xz = q.x * q.z;
+    float yw = q.y * q.w;
+    float yz = q.y * q.z;
+    float xw = q.x * q.w;
+
+    RVector4 a;
+
+    a.x = (1-2*(ysq+zsq))*v.x + 2*(xy-zw)*v.y + 2*(xz+yw)*v.z;
+    a.y = 2*(xy+zw)*v.x + (1-2*(xsq-zsq))*v.y + 2*(yz-xw)*v.z;
+    a.z = 2*(xz-yw)*v.x + 2*(yz+xw)*v.y + (1-2*(xsq+ysq))*v.z;
+    a.w = 0.0f;
+
+    return a;
+}
+
 inline RQuaternion RQuatFromAxisAngle( const RVector3& axis, float angle )
 {
     angle /= 2.0f;
     RVector3 v = Normalize( axis ) * sinf( angle );
     return RQuaternion( v.x, v.y, v.z, cosf( angle ) );
 }
+
+
+inline RQuaternion RQuatRotationX( float angle )
+{
+    angle /= 2.0f;
+    RVector3 v = RVector3( 1.0f, 0.0f, 0.0f ) * sinf( angle );
+    return RQuaternion( v.x, v.y, v.z, cosf( angle ) );
+}
+inline RQuaternion RQuatRotationY( float angle )
+{
+    angle /= 2.0f;
+    RVector3 v = RVector3( 0.0f, 1.0f, 0.0f ) * sinf( angle );
+    return RQuaternion( v.x, v.y, v.z, cosf( angle ) );
+}
+inline RQuaternion RQuatRotationZ( float angle )
+{
+    angle /= 2.0f;
+    RVector3 v = RVector3( 0.0f, 0.0f, 1.0f ) * sinf( angle );
+    return RQuaternion( v.x, v.y, v.z, cosf( angle ) );
+}
+
 
 RQuaternion operator*( const RQuaternion& l, const RQuaternion& r );
 
@@ -493,10 +538,10 @@ public:
 
         if( scale != 1.0f )
         {
-            return RMatrix4(1-2*(ysq+zsq) * scale,  2*(xy+zw) * scale,      2*(xz-yw) * scale,      0.0f,
-                            2*(xy-zw) * scale,      1-2*(xsq-zsq) * scale,  2*(yz+xw) * scale,      0.0f,
-                            2*(xz+yw) * scale,      2*(yz-xw) * scale,      1-2*(xsq+ysq) * scale,  0.0f,
-                            position.x,             position.y,             position.z,             1.0f ); 
+            return RMatrix4((1-2*(ysq+zsq)) * scale, 2*(xy+zw) * scale,       2*(xz-yw) * scale,       0.0f,
+                            2*(xy-zw) * scale,       (1-2*(xsq-zsq)) * scale, 2*(yz+xw) * scale,       0.0f,
+                            2*(xz+yw) * scale,       2*(yz-xw) * scale,       (1-2*(xsq+ysq)) * scale, 0.0f,
+                            position.x,              position.y,              position.z,              1.0f );
         }
         else
         {

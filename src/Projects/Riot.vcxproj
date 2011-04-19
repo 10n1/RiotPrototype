@@ -94,7 +94,9 @@
     <ClInclude Include="..\todo.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\assets\shaders\BasicPixelShader.glsl" />
     <None Include="..\..\assets\shaders\BasicPixelShader.hlsl" />
+    <None Include="..\..\assets\shaders\BasicVertexShader.glsl" />
     <None Include="..\..\assets\shaders\BasicVertexShader.hlsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

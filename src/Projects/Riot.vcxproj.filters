@@ -252,5 +252,11 @@
     <None Include="..\..\assets\shaders\BasicVertexShader.hlsl">
       <Filter>assets\shaders</Filter>
     </None>
+    <None Include="..\..\assets\shaders\BasicPixelShader.glsl">
+      <Filter>assets\shaders</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\BasicVertexShader.glsl">
+      <Filter>assets\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -3,7 +3,7 @@ File:           OGLGraphicsObjects.h
 Purpose:        The OGL graphics objects
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/14/2011 8:10:02 PM
+Modified:       4/17/2011 10:40:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OGLGRAPHICSOBJECTS_H_
@@ -60,6 +60,11 @@ namespace Riot
 //-----------------------------------------------------------------------------
     BEGIN_DEFINE_GRAPHICS_OBJECT( PixelShader )
         GLint   m_nShader;
+    END_DEFINE_GRAPHICS_OBJECT;
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    BEGIN_DEFINE_GRAPHICS_OBJECT( VertexLayout )
+        GLint   m_nLayout;
     END_DEFINE_GRAPHICS_OBJECT;
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

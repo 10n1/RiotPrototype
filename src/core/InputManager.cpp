@@ -2,7 +2,7 @@
 File:           InputManager.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/17/2011 7:06:48 PM
+Modified:       4/17/2011 9:44:23 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "InputManager.h"
@@ -158,11 +158,10 @@ namespace Riot
                 sint16 nXPos = nNewPos >> 16;
                 sint16 nYPos = nNewPos & 0xFFFF;
 
-                sint nDelta = ( (nXPos - ( m_nMousePosition >> 16 )) << 16 ) | ( (nYPos - (m_nMousePosition & 0XFFFF)) & 0xFFFF);
                 sint16 nDeltaX = nXPos - (m_nMousePosition >> 16) ;
                 sint16 nDeltaY = nYPos - (m_nMousePosition & 0XFFFF);
 
-                nDelta = (nDeltaX << 16) | nDeltaY;
+                sint nDelta = (nDeltaX << 16) | (nDeltaY & 0xFFFF);
 
                 Engine::PostMsg( TMessage( mMouseMove, nDelta ) );
 

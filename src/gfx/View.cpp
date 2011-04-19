@@ -2,7 +2,7 @@
 File:           View.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/17/2011 8:08:57 PM
+Modified:       4/17/2011 9:48:35 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "View.h"
@@ -19,8 +19,6 @@ namespace Riot
         m_vPosition = RVector4( 0.0f, 0.0f, -5.0f, 0.0f );
         m_vLook =     RVector4( 0.0f, 0.0f, 1.0f, 0.0f );
         m_vUp =       RVector4( 0.0f, 1.0f, 0.0f, 0.0f );
-
-        m_Transform = RTransform( RQuaternionZero(), RVector3( 0.0f, 0.0f, -5.0f ) );
     }
 
     // CView destructor
@@ -35,22 +33,16 @@ namespace Riot
     void CView::TranslateX( float fTrans )
     {
         m_vPosition += (m_vRight * fTrans);
-
-        m_Transform.TranslateLocalZ( fTrans );
     }
 
     void CView::TranslateY( float fTrans )
     {
         m_vPosition += (m_vUp * fTrans);
-
-        m_Transform.TranslateWorldY( fTrans );
     }
 
     void CView::TranslateZ( float fTrans )
     {
         m_vPosition += (m_vLook * fTrans);
-
-        m_Transform.TranslateLocalZ( fTrans );
     }
 
     //-----------------------------------------------------------------------------
@@ -59,27 +51,18 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CView::RotateX( float fRad )
     {
-        //RMatrix4 newRot = RotationAxisMatrix( -fRad, m_vRight );
-        RMatrix4 newRot = RMatrix4( RQuatGetMatrix( RQuatFromAxisAngle( m_vRight.xyz(), -fRad ) ) );
-        //RVector4 newNewLook = m_vLook * newRot;
-        //newRot = Transpose( newRot );
-        RVector4 newLook = m_vLook * RMatrix4RotationAxis( m_vRight.xyz(), -fRad ) ;
+        RVector4 newLook = m_vLook * RQuatFromAxisAngle( m_vRight.xyz(), fRad ) ;
 
         float newY = newLook.y;
         if( newY < 0.99f && newY > -0.99f )
         {
             m_vLook = newLook;
         }
-
-        m_Transform.RotateLocalX( fRad );
     }
 
     void CView::RotateY( float fRad )
     {
-        m_vLook = m_vLook * RMatrix4RotationY( fRad );
-        //m_vLook = RMatrix4RotationY( fRad ) * m_vLook;
-
-        m_Transform.RotateWorldY( fRad );
+        m_vLook = m_vLook * RQuatRotationY( fRad );
     }
 
 
