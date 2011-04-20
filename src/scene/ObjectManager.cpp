@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/19/2011 11:01:40 PM
+Modified:       4/19/2011 11:06:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -93,12 +93,7 @@ namespace Riot
     //  Adds a component to the specified object
     //-----------------------------------------------------------------------------
     void CObjectManager::AddComponent( uint nObject, eComponentType nType )
-    {
-        //if( m_pObjects[nIndex].m_pComponentIndices[ nType ] == -1 )
-        //{    
-        //    m_pObjects[nIndex].m_pComponentIndices[ nType ] = Engine::GetComponentManager()->AddComponent( nType, &m_pObjects[nIndex] );
-        //}
-        
+    {        
         if( m_pComponentIndices[nObject][ nType ] == -1 )
         {    
             m_pComponentIndices[nObject][ nType ] = Engine::GetComponentManager()->AddComponent( nType, nObject );
@@ -146,10 +141,11 @@ namespace Riot
         for( eComponentType i = (eComponentType)0; i < eNUMCOMPONENTS; i = (eComponentType)(i + 1) )
         {
             // Make sure we have a component to detach
-            if( m_pComponentIndices[nObject][i] != -1 )
+            sint& nComponentIndex = m_pComponentIndices[nObject][i];
+            if( nComponentIndex != -1 )
             {
-                Engine::GetComponentManager()->RemoveComponent( i, m_pComponentIndices[nObject][i] );
-                m_pComponentIndices[nObject][i] = -1;
+                Engine::GetComponentManager()->RemoveComponent( i, nComponentIndex );
+                nComponentIndex = -1;
             }
         }
     }

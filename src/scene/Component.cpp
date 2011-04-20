@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/19/2011 11:03:31 PM
+Modified:       4/19/2011 11:11:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -36,7 +36,7 @@ namespace Riot
     //
 
     //
-    #define COMPONENT_REORDER_DATA( Data ) Data[nIndex] = Data[ m_nNumComponents - 1  ]
+    #define COMPONENT_REORDER_DATA( Data ) Data[nIndex] = Data[ m_nNumComponents ]
     //
 
     /*****************************************************************************\
@@ -90,7 +90,7 @@ namespace Riot
         }
 
         // Calculate the free spot for this component
-        uint nIndex = m_nNumComponents++;
+        uint nIndex = AtomicIncrement( &m_nNumComponents ) - 1;
         m_pObjects[ nIndex ] = nObject;
 
         // ...then attach to it
@@ -105,11 +105,14 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponent::RemoveComponent( uint nIndex )
     {
+        // Decremnt the counter first
+        AtomicDecrement( &m_nNumComponents );
+
         // First detach...
         Detach( nIndex );
 
         // ...then clean up the list
-        m_pObjects[ nIndex ] = m_pObjects[ --m_nNumComponents ];
+        m_pObjects[ nIndex ] = m_pObjects[ m_nNumComponents ];
     }
 
     //-----------------------------------------------------------------------------

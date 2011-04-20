@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/19/2011 11:00:03 PM
+Modified:       4/19/2011 11:10:06 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -112,9 +112,9 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        uint*   m_pObjects;
-        uint    m_nNumComponents;
-        uint    m_nMaxComponents;
+        uint*       m_pObjects;
+        atomic_t    m_nNumComponents;
+        uint        m_nMaxComponents;
     };
 
     /*****************************************************************************\
