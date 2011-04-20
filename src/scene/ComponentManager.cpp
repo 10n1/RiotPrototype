@@ -2,11 +2,12 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/17/2011 4:56:36 PM
+Modified:       4/19/2011 10:56:47 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
-#include "Object.h"
+#include "Engine.h"
+#include "ObjectManager.h"
 
 namespace Riot
 {
@@ -90,9 +91,9 @@ namespace Riot
     //  AddComponent
     //  Adds a component of the specified type
     //-----------------------------------------------------------------------------
-    sint CComponentManager::AddComponent( eComponentType nType, CObject* pObject )
+    sint CComponentManager::AddComponent( eComponentType nType, uint nObject )
     {
-        return m_ppComponents[ nType ]->AddComponent( pObject );
+        return m_ppComponents[ nType ]->AddComponent( nObject );
     }
 
 
@@ -140,12 +141,12 @@ namespace Riot
         m_pMessages[ nIndex ] = msg;
     }
 
-    void CComponentManager::PostMessage( eComponentMessageType nType, CObject* pObject, pvoid pData, eComponentType nOrigin )
+    void CComponentManager::PostMessage( eComponentMessageType nType, uint nObject, pvoid pData, eComponentType nOrigin )
     {
-        PostMessage( nType, pObject, (nativeuint)pData, nOrigin );
+        PostMessage( nType, nObject, (nativeuint)pData, nOrigin );
     }
 
-    void CComponentManager::PostMessage( eComponentMessageType nType, CObject* pObject, nativeuint nData, eComponentType nOrigin )
+    void CComponentManager::PostMessage( eComponentMessageType nType, uint nObject, nativeuint nData, eComponentType nOrigin )
     {
         ASSERT( m_nNumMessages < MAX_COMPONENT_MESSAGES );
 
@@ -153,7 +154,7 @@ namespace Riot
 
         m_pMessages[ nIndex ].m_nData = nData;
         m_pMessages[ nIndex ].m_nMessageType = nType;
-        m_pMessages[ nIndex ].m_pTargetObject = pObject;
+        m_pMessages[ nIndex ].m_nTargetObject = nObject;
         m_pMessages[ nIndex ].m_nOrigin = nOrigin;
     }
 
@@ -175,7 +176,7 @@ namespace Riot
                 continue;
             }
 
-            sint nIndex = msg.m_pTargetObject->GetComponentIndex( (eComponentType)nComponent );
+            sint nIndex = Engine::GetObjectManager()->GetComponentIndex( msg.m_nTargetObject, (eComponentType)nComponent );
 
             if( nIndex != -1 )
             {
@@ -184,15 +185,15 @@ namespace Riot
         }
     }
 
-    void CComponentManager::SendMessage( eComponentMessageType nType, CObject* pObject, pvoid pData, eComponentType nOrigin )
+    void CComponentManager::SendMessage( eComponentMessageType nType, uint nObject, pvoid pData, eComponentType nOrigin )
     {
-        CComponentMessage msg = { nType, pObject, nOrigin, (nativeuint)pData };
+        CComponentMessage msg = { nType, nObject, nOrigin, (nativeuint)pData };
         SendMessage( msg );
     }
 
-    void CComponentManager::SendMessage( eComponentMessageType nType, CObject* pObject, nativeuint nData, eComponentType nOrigin )
+    void CComponentManager::SendMessage( eComponentMessageType nType, uint nObject, nativeuint nData, eComponentType nOrigin )
     {
-        CComponentMessage msg = { nType, pObject, nOrigin, nData };
+        CComponentMessage msg = { nType, nObject, nOrigin, nData };
         SendMessage( msg );
     }
 

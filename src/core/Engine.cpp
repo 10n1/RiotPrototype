@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/18/2011 7:03:39 PM
+Modified:       4/19/2011 10:57:36 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -211,6 +211,10 @@ namespace Riot
     {
         return m_pComponentManager;
     }
+    CObjectManager*      Engine::GetObjectManager( void )
+    {
+        return m_pObjectManager;
+    }
 
 
     //-----------------------------------------------------------------------------
@@ -262,13 +266,12 @@ namespace Riot
         RTransform t = RTransform( orientation, RVector3( 0.0f, 0.0f, 0.0f ) );
 
         uint nObject = m_pObjectManager->CreateObject();
-        CObject* pObject = m_pObjectManager->GetObject( nObject );
 
         m_pObjectManager->AddComponent( nObject, eComponentUpdate );
         m_pObjectManager->AddComponent( nObject, eComponentRender );
 
-        m_pComponentManager->SendMessage( eComponentMessageTransform, pObject, &t );
-        m_pComponentManager->SendMessage( eComponentMessageMesh, pObject, pBox );
+        m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t );
+        m_pComponentManager->SendMessage( eComponentMessageMesh, nObject, pBox );
 
 
         //////////////////////////////////////////
@@ -278,8 +281,8 @@ namespace Riot
         nObject = m_pObjectManager->CreateObject();
         m_pObjectManager->AddComponent( nObject, eComponentLight );
         m_pObjectManager->AddComponent( nObject, eComponentRender );
-        m_pComponentManager->SendMessage( eComponentMessageMesh, m_pObjectManager->GetObject(nObject), pBox );
-        m_pComponentManager->SendMessage( eComponentMessageTransform, m_pObjectManager->GetObject(nObject), &t  );
+        m_pComponentManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+        m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t  );
 
         SAFE_RELEASE( pBox );
 

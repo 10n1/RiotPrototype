@@ -47,7 +47,6 @@
     <ClCompile Include="..\platform\WIN32\Win32OpenGL.cpp" />
     <ClCompile Include="..\scene\Component.cpp" />
     <ClCompile Include="..\scene\ComponentManager.cpp" />
-    <ClCompile Include="..\scene\Object.cpp" />
     <ClCompile Include="..\scene\ObjectManager.cpp" />
     <ClCompile Include="..\scene\Terrain.cpp" />
   </ItemGroup>
@@ -88,7 +87,6 @@
     <ClInclude Include="..\platform\WIN32\Win32Application.h" />
     <ClInclude Include="..\scene\Component.h" />
     <ClInclude Include="..\scene\ComponentManager.h" />
-    <ClInclude Include="..\scene\Object.h" />
     <ClInclude Include="..\scene\ObjectManager.h" />
     <ClInclude Include="..\scene\Terrain.h" />
     <ClInclude Include="..\todo.h" />

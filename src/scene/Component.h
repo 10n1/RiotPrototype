@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/17/2011 5:21:39 PM
+Modified:       4/19/2011 11:00:03 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -33,13 +33,12 @@ namespace Riot
         eNULLCOMPONENT = -1
     };
 
-    class CObject;
     class CComponent;
 
     struct CComponentMessage
     {
         eComponentMessageType   m_nMessageType;
-        CObject*                m_pTargetObject;
+        uint                    m_nTargetObject;
         eComponentType          m_nOrigin;
         union
         {
@@ -65,7 +64,7 @@ namespace Riot
         //  AddComponent
         //  "Adds" a component to an object
         //-----------------------------------------------------------------------------
-        sint AddComponent( CObject* pObject );
+        sint AddComponent( uint nObject );
 
         //-----------------------------------------------------------------------------
         //  RemoveComponent
@@ -113,9 +112,9 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        CObject**   m_ppObjects;
-        uint        m_nNumComponents;
-        uint        m_nMaxComponents;
+        uint*   m_pObjects;
+        uint    m_nNumComponents;
+        uint    m_nMaxComponents;
     };
 
     /*****************************************************************************\
@@ -123,9 +122,9 @@ namespace Riot
 
     //
 #define BEGIN_DECLARE_COMPONENT( Name, MaxCount )               \
-    class C##Name##Component : public CComponent                    \
-    {                                                               \
-    public:                                                         \
+    class C##Name##Component : public CComponent                \
+    {                                                           \
+    public:                                                     \
     C##Name##Component();                                       \
     ~C##Name##Component();                                      \
     void Attach( uint nIndex );                                 \

@@ -2,13 +2,12 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/17/2011 5:22:29 PM
+Modified:       4/19/2011 11:03:31 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
 #include "Renderer.h"
 #include "Engine.h"
-#include "Object.h"
 #include "ComponentManager.h"
 #include "Mesh.h"
 
@@ -22,8 +21,8 @@ namespace Riot
     C##Name##Component::C##Name##Component()            \
     {                                                   \
         m_nMaxComponents = MaxComponents;               \
-        m_ppObjects = new CObject*[MaxComponents];      \
-        Memset( m_ppObjects, 0, sizeof(CObject*) * MaxComponents ); \
+        m_pObjects = new uint[MaxComponents];           \
+        Memset( m_pObjects, 0, sizeof(uint) * MaxComponents ); \
     }                                                   \
     C##Name##Component::~C##Name##Component() { }       \
     const eComponentMessageType C##Name##Component::MessagesReceived[] =    \
@@ -47,13 +46,14 @@ namespace Riot
     CComponent::CComponent()
         : m_nNumComponents( 0 )
         , m_nMaxComponents( 0 )
+        , m_pObjects( NULL )
     {
     }
 
     // CComponent destructor
     CComponent::~CComponent()
     {
-        SAFE_DELETE_ARRAY( m_ppObjects );
+        SAFE_DELETE_ARRAY( m_pObjects );
     }
 
     //-----------------------------------------------------------------------------
@@ -81,7 +81,7 @@ namespace Riot
     //  AddComponent
     //  "Adds" a component to an object
     //-----------------------------------------------------------------------------
-    sint CComponent::AddComponent( CObject* pObject )
+    sint CComponent::AddComponent( uint nObject )
     {
         if( m_nNumComponents >= m_nMaxComponents )
         {
@@ -91,7 +91,7 @@ namespace Riot
 
         // Calculate the free spot for this component
         uint nIndex = m_nNumComponents++;
-        m_ppObjects[ nIndex ] = pObject;
+        m_pObjects[ nIndex ] = nObject;
 
         // ...then attach to it
         Attach( nIndex );
@@ -109,7 +109,7 @@ namespace Riot
         Detach( nIndex );
 
         // ...then clean up the list
-        m_ppObjects[ nIndex ] = m_ppObjects[ --m_nNumComponents ];
+        m_pObjects[ nIndex ] = m_pObjects[ --m_nNumComponents ];
     }
 
     //-----------------------------------------------------------------------------
@@ -259,7 +259,7 @@ namespace Riot
         {
             m_Transform[ i ].TranslateLocalY( Engine::m_fElapsedTime * 0.05f );
 
-            pManager->PostMessage( eComponentMessageTransform, m_ppObjects[ i ], &m_Transform[i], ComponentType );
+            pManager->PostMessage( eComponentMessageTransform, m_pObjects[ i ], &m_Transform[i], ComponentType );
         }
     }
 
@@ -308,7 +308,6 @@ namespace Riot
     void CLightComponent::Attach( uint nIndex )
     {
         // Now initialize this component
-        CObject* pObject = m_ppObjects[ nIndex ];
         m_Transform[nIndex] = RTransform();
         m_bUpdated[nIndex] = true;
     }
@@ -346,7 +345,7 @@ namespace Riot
             {
                 pRender->SetLight( Homogonize(m_Transform[i].position), i );
                 m_bUpdated[i] = false;
-                pManager->PostMessage( eComponentMessageTransform, m_ppObjects[ i ], &m_Transform[i], ComponentType );
+                pManager->PostMessage( eComponentMessageTransform, m_pObjects[ i ], &m_Transform[i], ComponentType );
             }
         }
     }

@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/17/2011 5:15:11 PM
+Modified:       4/19/2011 11:01:40 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -48,6 +48,14 @@ namespace Riot
         {
             m_pFreeSlots[j] = i;
         }
+        
+        for( uint i = 0; i < eNUMCOMPONENTS; ++i )
+        {
+            for( uint j = 0; j < MAX_OBJECTS; ++j )
+            {
+                m_pComponentIndices[j][i] = -1; // -1 means the object doesn't have that component
+            }
+        }
     }
 
     //-----------------------------------------------------------------------------
@@ -58,7 +66,7 @@ namespace Riot
         for( uint i = 0; i < m_nNumObjects; ++i )
         {
             // Reset them all so the active components can free themselves
-            m_pObjects[i].Reset();
+            ResetObject( i );
         }
     }
 
@@ -79,25 +87,21 @@ namespace Riot
 
         return nObjectIndex;
     }
-
-    //-----------------------------------------------------------------------------
-    //  GetObject
-    //  Returns the object at the specified index
-    //-----------------------------------------------------------------------------
-    CObject* CObjectManager::GetObject( uint nIndex )
-    {
-        return &m_pObjects[nIndex];
-    }
-
+    
     //-----------------------------------------------------------------------------
     //  AddComponent
     //  Adds a component to the specified object
     //-----------------------------------------------------------------------------
-    void CObjectManager::AddComponent( uint nIndex, eComponentType nType )
+    void CObjectManager::AddComponent( uint nObject, eComponentType nType )
     {
-        if( m_pObjects[nIndex].m_pComponentIndices[ nType ] == -1 )
+        //if( m_pObjects[nIndex].m_pComponentIndices[ nType ] == -1 )
+        //{    
+        //    m_pObjects[nIndex].m_pComponentIndices[ nType ] = Engine::GetComponentManager()->AddComponent( nType, &m_pObjects[nIndex] );
+        //}
+        
+        if( m_pComponentIndices[nObject][ nType ] == -1 )
         {    
-            m_pObjects[nIndex].m_pComponentIndices[ nType ] = Engine::GetComponentManager()->AddComponent( nType, &m_pObjects[nIndex] );
+            m_pComponentIndices[nObject][ nType ] = Engine::GetComponentManager()->AddComponent( nType, nObject );
         }
         // TODO: Handle case if it already exists
     }
@@ -106,14 +110,14 @@ namespace Riot
     //  RemoveComponent
     //  Removes a component from the specified object
     //-----------------------------------------------------------------------------
-    void CObjectManager::RemoveComponent( uint nIndex, eComponentType nType )
+    void CObjectManager::RemoveComponent( uint nObject, eComponentType nType )
     {
         // Make sure we have a component to detach
-        sint nComponentIndex = m_pObjects[nIndex].m_pComponentIndices[ nType ];
+        sint nComponentIndex = m_pComponentIndices[nObject][nType];
         if( nComponentIndex != -1 )
         {
             Engine::GetComponentManager()->RemoveComponent( nType, nComponentIndex );
-            m_pObjects[nIndex].m_pComponentIndices[ nType ] = -1;
+            m_pComponentIndices[nObject][nType] = -1;
         }
 
         // TODO: Handle case if it doesnt exist
@@ -123,14 +127,40 @@ namespace Riot
     //  DeleteObject
     //  "Deletes" the object, freeing that slot
     //-----------------------------------------------------------------------------
-    void CObjectManager::DeleteObject( uint nIndex )
+    void CObjectManager::DeleteObject( uint nObject )
     {
         assert( m_nNumFreeSlots < MAX_OBJECTS );
 
-        m_pObjects[nIndex].Reset();
+        ResetObject( nObject );
 
-        m_pFreeSlots[ m_nNumFreeSlots++ ] = nIndex;
+        m_pFreeSlots[ m_nNumFreeSlots++ ] = nObject;
         --m_nNumObjects;
+    }
+
+    //-----------------------------------------------------------------------------
+    //  ResetObject
+    //  Removes all components and resets the object
+    //-----------------------------------------------------------------------------
+    void CObjectManager::ResetObject( uint nObject )
+    {
+        for( eComponentType i = (eComponentType)0; i < eNUMCOMPONENTS; i = (eComponentType)(i + 1) )
+        {
+            // Make sure we have a component to detach
+            if( m_pComponentIndices[nObject][i] != -1 )
+            {
+                Engine::GetComponentManager()->RemoveComponent( i, m_pComponentIndices[nObject][i] );
+                m_pComponentIndices[nObject][i] = -1;
+            }
+        }
+    }
+
+    //-----------------------------------------------------------------------------
+    //  GetComponentIndex
+    //  Returns which slot in the component this object owns
+    //-----------------------------------------------------------------------------
+    sint CObjectManager::GetComponentIndex( uint nObject, eComponentType nComponent )
+    {
+        return m_pComponentIndices[nObject][nComponent];
     }
 
     //-----------------------------------------------------------------------------

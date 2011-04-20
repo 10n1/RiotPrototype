@@ -3,7 +3,7 @@ File:           Engine.h
 Purpose:        The main engine
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/17/2011 6:00:07 PM
+Modified:       4/19/2011 10:56:46 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ENGINE_H_
@@ -84,6 +84,7 @@ namespace Riot
         static CTaskManager*        GetTaskManager( void );
         static CRenderer*           GetRenderer( void );
         static CComponentManager*   GetComponentManager( void );
+        static CObjectManager*      GetObjectManager( void );
 
     private:    
         //-----------------------------------------------------------------------------

@@ -106,9 +106,6 @@
     <ClCompile Include="..\global\utility.cpp">
       <Filter>global</Filter>
     </ClCompile>
-    <ClCompile Include="..\scene\Object.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="..\scene\Component.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -225,9 +222,6 @@
     </ClInclude>
     <ClInclude Include="..\global\utility.h">
       <Filter>global</Filter>
-    </ClInclude>
-    <ClInclude Include="..\scene\Object.h">
-      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\scene\Component.h">
       <Filter>Scene</Filter>

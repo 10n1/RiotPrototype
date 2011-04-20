@@ -3,7 +3,7 @@ File:           ComponentManager.h
 Purpose:        Manages all the components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/17/2011 4:56:36 PM
+Modified:       4/19/2011 10:53:40 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTMANAGER_H_
@@ -44,7 +44,7 @@ namespace Riot
         //  AddComponent
         //  Adds a component of the specified type
         //-----------------------------------------------------------------------------
-        sint AddComponent( eComponentType nType, CObject* pObject );
+        sint AddComponent( eComponentType nType, uint nObject );
 
 
         //-----------------------------------------------------------------------------
@@ -66,8 +66,8 @@ namespace Riot
         //  Posts a message to be processed
         //-----------------------------------------------------------------------------
         void PostMessage( CComponentMessage& msg );
-        void PostMessage( eComponentMessageType nType, CObject* pObject, pvoid pData, eComponentType nOrigin = eNULLCOMPONENT);
-        void PostMessage( eComponentMessageType nType, CObject* pObject, nativeuint nData, eComponentType nOrigin = eNULLCOMPONENT );
+        void PostMessage( eComponentMessageType nType, uint nObject, pvoid pData, eComponentType nOrigin = eNULLCOMPONENT);
+        void PostMessage( eComponentMessageType nType, uint nObject, nativeuint nData, eComponentType nOrigin = eNULLCOMPONENT );
 
 
         //-----------------------------------------------------------------------------
@@ -75,8 +75,8 @@ namespace Riot
         //  Sends the message
         //-----------------------------------------------------------------------------
         void SendMessage( CComponentMessage& msg );
-        void SendMessage( eComponentMessageType nType, CObject* pObject, pvoid pData, eComponentType nOrigin = eNULLCOMPONENT );
-        void SendMessage( eComponentMessageType nType, CObject* pObject, nativeuint nData, eComponentType nOrigin = eNULLCOMPONENT );
+        void SendMessage( eComponentMessageType nType, uint nObject, pvoid pData, eComponentType nOrigin = eNULLCOMPONENT );
+        void SendMessage( eComponentMessageType nType, uint nObject, nativeuint nData, eComponentType nOrigin = eNULLCOMPONENT );
 
 #ifdef DEBUG    
         //-----------------------------------------------------------------------------

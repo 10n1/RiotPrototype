@@ -3,13 +3,12 @@ File:           ObjectManager.h
 Purpose:        Handles allocation of objects
 Author:         Kyle Weicht
 Created:        3/31/2011
-Modified:       4/17/2011 5:15:02 PM
+Modified:       4/19/2011 10:53:40 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECTMANAGER_H_
 #define _OBJECTMANAGER_H_
 #include "common.h"
-#include "Object.h"
 #include "Component.h"
 #include "IListener.h"
 
@@ -46,28 +45,34 @@ namespace Riot
         uint CreateObject( void );
 
         //-----------------------------------------------------------------------------
-        //  GetObject
-        //  Returns the object at the specified index
-        //-----------------------------------------------------------------------------
-        CObject* GetObject( uint nIndex );
-
-        //-----------------------------------------------------------------------------
         //  AddComponent
         //  Adds a component to the specified object
         //-----------------------------------------------------------------------------
-        void AddComponent( uint nIndex, eComponentType nType );
+        void AddComponent( uint nObject, eComponentType nType );
 
         //-----------------------------------------------------------------------------
         //  RemoveComponent
         //  Removes a component from the specified object
         //-----------------------------------------------------------------------------
-        void RemoveComponent( uint nIndex, eComponentType nType );
+        void RemoveComponent( uint nObject, eComponentType nType );
 
         //-----------------------------------------------------------------------------
         //  DeleteObject
         //  "Deletes" the object, freeing that slot
         //-----------------------------------------------------------------------------
-        void DeleteObject( uint nIndex );
+        void DeleteObject( uint nObject );
+
+        //-----------------------------------------------------------------------------
+        //  ResetObject
+        //  Removes all components and resets the object
+        //-----------------------------------------------------------------------------
+        void ResetObject( uint nObject );
+
+        //-----------------------------------------------------------------------------
+        //  GetComponentIndex
+        //  Returns which slot in the component this object owns
+        //-----------------------------------------------------------------------------
+        sint GetComponentIndex( uint nObject, eComponentType nComponent );
 
         //-----------------------------------------------------------------------------
         //  Accessors/mutators
@@ -87,7 +92,8 @@ namespace Riot
         static const MessageType    MessagesReceived[];
         static const uint           NumMessagesReceived;
 
-        CObject     m_pObjects[MAX_OBJECTS];
+        //CObject     m_pObjects[MAX_OBJECTS];
+        sint        m_pComponentIndices[MAX_OBJECTS][eNUMCOMPONENTS];
 
         uint        m_pFreeSlots[MAX_OBJECTS];
         atomic_t    m_nNumFreeSlots;
