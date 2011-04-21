@@ -2,7 +2,7 @@
 File:           BasicVertexShader.hlsl
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/17/2011 10:56:50 PM
+Modified:       4/20/2011 8:59:17 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 //--------------------------------------------------------------------------------------
@@ -21,8 +21,9 @@ cbuffer cbWorld : register( b1 )
 //--------------------------------------------------------------------------------------
 struct VS_INPUT
 {
-    float4 Pos      : POSITION;
-    float3 Normal   : NORMAL;
+    float4 Pos          : POSITION;
+    float3 Normal       : NORMAL;
+    float2 TexCoords    : TEXCOORD0;
 };
 
 struct PS_INPUT
@@ -30,6 +31,7 @@ struct PS_INPUT
     float4 ScreenPos    : SV_POSITION;
     float4 Pos          : TEXCOORD0;
     float3 Normal       : TEXCOORD1;
+    float2 TexCoords    : TEXCOORD2;
 };
 
 
@@ -42,6 +44,7 @@ PS_INPUT main( VS_INPUT input )
     output.Pos       = mul( input.Pos, mWorld );
     output.ScreenPos = mul( output.Pos, mViewProj );
     output.Normal    = mul( input.Normal, mWorld);
+    output.TexCoords = input.TexCoords;
     
     return output;
 }

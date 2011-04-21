@@ -3,7 +3,7 @@ File:           VertexFormats.h
 Purpose:        Stores the basic vertex format information
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/14/2011 10:23:12 PM
+Modified:       4/20/2011 9:20:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VERTEXFORMATS_H_
@@ -25,6 +25,7 @@ namespace Riot
     typedef const uint GFX_FORMAT;
 
     extern GFX_FORMAT GFX_FORMAT_FLOAT3;
+    extern GFX_FORMAT GFX_FORMAT_FLOAT2;
     extern GFX_FORMAT GFX_FORMAT_UINT16;
     extern GFX_FORMAT GFX_FORMAT_UINT32;
     
@@ -42,6 +43,7 @@ namespace Riot
 
     extern GFX_SEMANTIC GFX_SEMANTIC_POSITION;
     extern GFX_SEMANTIC GFX_SEMANTIC_NORMAL;
+    extern GFX_SEMANTIC GFX_SEMANTIC_TEXCOORD;
     //-----------------------------------------------------------------------------
         
     //-----------------------------------------------------------------------------
@@ -51,6 +53,16 @@ namespace Riot
 
     extern GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_TRIANGLELIST;
     //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    //  GFX_TEXTURE_SAMPLE
+    //  Defines the texture sampling type (linear, nearest, etc.)
+    typedef const uint GFX_TEXTURE_SAMPLE;
+
+    extern GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_NEAREST;
+    extern GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_LINEAR;
+    //-----------------------------------------------------------------------------
+
 
     struct InputElementLayout
     {
@@ -62,10 +74,11 @@ namespace Riot
     /*
     Standard vertex format
     */
-    struct VPosNormal
+    struct VPosNormalTex
     {
         RVector3 Pos;
         RVector3 Normal;
+        RVector2 TexCoord;
 
         static InputElementLayout Layout[];
         static IGfxVertexLayout*  VertexLayoutObject;

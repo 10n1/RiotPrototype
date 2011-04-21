@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/17/2011 3:45:19 PM
+Modified:       4/20/2011 9:23:12 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -80,6 +80,12 @@ namespace Riot
         CMesh* CreateMesh( void ); 
 
         //-----------------------------------------------------------------------------
+        //  LoadTextureXD
+        //  Loads a texture
+        //-----------------------------------------------------------------------------
+        IGfxTexture2D* LoadTexture2D( const wchar_t* szFilename );
+
+        //-----------------------------------------------------------------------------
         //  SetViewProj
         //  Sets the view projection constant buffer
         //-----------------------------------------------------------------------------
@@ -101,13 +107,13 @@ namespace Riot
         //  AddCommand
         //  Adds a renderable object to the command buffer
         //-----------------------------------------------------------------------------
-        void AddCommand( CMesh* pCommand, RTransform& transform );
+        void AddCommand( const TRenderCommand& cmd, RTransform& transform );
         
         //-----------------------------------------------------------------------------
         //  SetLight
         //  Sets the specific light
         //-----------------------------------------------------------------------------
-        void SetLight( const RVector4& vDir, uint nIndex );
+        void SetLight( const RVector3& vDir, uint nIndex );
 
     private:
         /***************************************\
@@ -116,8 +122,8 @@ namespace Riot
         static const MessageType    MessagesReceived[];
         static const uint           NumMessagesReceived;
 
-        RTransform  m_pTransforms[MAX_RENDER_COMMANDS];
-        CMesh*      m_ppRenderCommands[MAX_RENDER_COMMANDS];
+        RTransform      m_pTransforms[MAX_RENDER_COMMANDS];
+        TRenderCommand  m_pRenderCommands[MAX_RENDER_COMMANDS];
 
         IGraphicsDevice*    m_pDevice;
 
@@ -129,6 +135,9 @@ namespace Riot
         IGfxVertexLayout*   m_pDefaultVLayout;
         IGfxPixelShader*    m_pDefaultPShader;
         CMesh*              m_pDefaultMesh;
+        IGfxTexture2D*      m_pDefaultTexture;
+        IGfxSamplerState*   m_pLinearSamplerState;
+        IGfxSamplerState*   m_pNearestSamplerState;
 
         CView*  m_pCurrentView;
 

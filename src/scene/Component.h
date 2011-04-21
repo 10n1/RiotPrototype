@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/19/2011 11:10:06 PM
+Modified:       4/20/2011 8:29:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -28,6 +28,7 @@ namespace Riot
         eComponentRender,
         eComponentUpdate,
         eComponentLight,
+        eComponentNewtonPhysics,
 
         eNUMCOMPONENTS,
         eNULLCOMPONENT = -1
@@ -189,6 +190,18 @@ namespace Riot
     END_DECLARE_COMPONENT;
     //
 
+    //-----------------------------------------------------------------------------
+    //  NewtonPhysics component
+    //  Makes an object behave with standard NewtonPhysicsian physics
+    //-----------------------------------------------------------------------------
+    BEGIN_DECLARE_COMPONENT( NewtonPhysics, MAX_OBJECTS );
+    //
+    DECLARE_COMPONENT_DATA( RTransform, m_Transform );
+    DECLARE_COMPONENT_DATA( RVector3,   m_vVelocity );
+    DECLARE_COMPONENT_DATA( bool,       m_bGravity );
+    //
+    END_DECLARE_COMPONENT;
+    //
 
 } // namespace Riot
 

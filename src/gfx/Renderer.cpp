@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/17/2011 11:42:51 PM
+Modified:       4/20/2011 9:23:12 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Renderer.h"
@@ -58,11 +58,14 @@ namespace Riot
         m_pDefaultVShader   = NULL;
         m_pDefaultVLayout   = NULL;
         m_pDefaultPShader   = NULL;
+        m_pDefaultTexture   = NULL;
+        m_pLinearSamplerState   = NULL;
+        m_pNearestSamplerState  = NULL;
 
         m_pCurrentView  = NULL;
 
         m_nNumCommands  = 0;
-        Memset( m_ppRenderCommands, 0, sizeof( m_ppRenderCommands ) );
+        Memset( m_pRenderCommands, 0, sizeof( m_pRenderCommands ) );
 
         m_nNumActiveLights  = 0;
         m_bUpdateLighting   = false;
@@ -73,8 +76,11 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Shutdown( void )
     {
-        SAFE_RELEASE( VPosNormal::VertexLayoutObject );
+        SAFE_RELEASE( VPosNormalTex::VertexLayoutObject );
 
+        SAFE_RELEASE( m_pNearestSamplerState );
+        SAFE_RELEASE( m_pDefaultTexture );
+        SAFE_RELEASE( m_pLinearSamplerState );
         SAFE_RELEASE( m_pDefaultMesh );
         SAFE_RELEASE( m_pDefaultVShader );
         SAFE_RELEASE( m_pDefaultVLayout );
@@ -135,20 +141,27 @@ namespace Riot
         // Create the vertex shader/layout
         m_pDevice->CreateVertexShaderAndLayout( szVertexShader, 
             "main", 
-            VPosNormal::Layout, 
-            VPosNormal::LayoutSize,
+            VPosNormalTex::Layout, 
+            VPosNormalTex::LayoutSize,
             &m_pDefaultVShader,
             &m_pDefaultVLayout );
         
-        // ...then the pixel shader
+        // pixel shader
         m_pDefaultPShader = m_pDevice->CreatePixelShader( szPixelShader, "main" );
 
+        // sampler state
+        m_pLinearSamplerState = m_pDevice->CreateSamplerState( GFX_TEXTURE_SAMPLE_LINEAR );
+        m_pNearestSamplerState = m_pDevice->CreateSamplerState( GFX_TEXTURE_SAMPLE_NEAREST );
+
+        // Texture
+        m_pDefaultTexture = m_pDevice->LoadTexture( L"Assets/Textures/DefaultTexture.png" );
 
         // ...finally, set them
         m_pDevice->SetVertexLayout( m_pDefaultVLayout );
         m_pDevice->SetVertexShader( m_pDefaultVShader );
         m_pDevice->SetPixelShader( m_pDefaultPShader );
         m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
+        m_pDevice->SetPSSamplerState( m_pLinearSamplerState );
     }
 
     //-----------------------------------------------------------------------------
@@ -178,7 +191,20 @@ namespace Riot
             RMatrix4 mWorld = m_pTransforms[i].GetTransformMatrix();
             SetWorldMatrix( mWorld );
 
-            m_ppRenderCommands[i]->DrawMesh();
+            IGfxTexture2D* pTexture = m_pRenderCommands[i].pTexture;
+
+            if( pTexture == NULL )
+            {
+                m_pDevice->SetPSSamplerState( m_pNearestSamplerState );
+                pTexture = m_pDefaultTexture;
+            }
+            else
+            {
+                m_pDevice->SetPSSamplerState( m_pLinearSamplerState );
+            }
+
+            m_pDevice->SetPSTexture( 0, pTexture );
+            m_pRenderCommands[i].pMesh->DrawMesh();
         }
         m_nNumCommands = 0;
 
@@ -228,37 +254,37 @@ namespace Riot
         
         //////////////////////////////////////////
         // Define vertex buffer
-        VPosNormal vertices[] =
+        VPosNormalTex vertices[] =
         {
-            { RVector3( -1.0f, 1.0f, -1.0f ), RVector3( 0.0f, 1.0f, 0.0f ) },
-            { RVector3( 1.0f, 1.0f, -1.0f ), RVector3( 0.0f, 1.0f, 0.0f ) },
-            { RVector3( 1.0f, 1.0f, 1.0f ), RVector3( 0.0f, 1.0f, 0.0f ) },
-            { RVector3( -1.0f, 1.0f, 1.0f ), RVector3( 0.0f, 1.0f, 0.0f ) },
+            { RVector3( -1.0f, 1.0f, -1.0f ), RVector3( 0.0f, 1.0f, 0.0f )  , RVector2( 0.0f, 0.0f ) },
+            { RVector3( 1.0f, 1.0f, -1.0f ), RVector3( 0.0f, 1.0f, 0.0f )   , RVector2( 1.0f, 0.0f ) },
+            { RVector3( 1.0f, 1.0f, 1.0f ), RVector3( 0.0f, 1.0f, 0.0f )    , RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f, 1.0f, 1.0f ), RVector3( 0.0f, 1.0f, 0.0f )   , RVector2( 0.0f, 1.0f ) },
 
-            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3( 0.0f, -1.0f, 0.0f ) },
-            { RVector3( 1.0f, -1.0f, -1.0f ), RVector3( 0.0f, -1.0f, 0.0f ) },
-            { RVector3( 1.0f, -1.0f, 1.0f ), RVector3( 0.0f, -1.0f, 0.0f ) },
-            { RVector3( -1.0f, -1.0f, 1.0f ), RVector3( 0.0f, -1.0f, 0.0f ) },
+            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3( 0.0f, -1.0f, 0.0f ),  RVector2( 0.0f, 0.0f ) },
+            { RVector3( 1.0f, -1.0f, -1.0f ), RVector3( 0.0f, -1.0f, 0.0f ) ,  RVector2( 1.0f, 0.0f ) },
+            { RVector3( 1.0f, -1.0f, 1.0f ), RVector3( 0.0f, -1.0f, 0.0f )  ,  RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f, -1.0f, 1.0f ), RVector3( 0.0f, -1.0f, 0.0f ) ,  RVector2( 0.0f, 1.0f ) },
 
-            { RVector3( -1.0f, -1.0f, 1.0f ), RVector3( -1.0f, 0.0f, 0.0f ) },
-            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3( -1.0f, 0.0f, 0.0f ) },
-            { RVector3( -1.0f, 1.0f, -1.0f ), RVector3( -1.0f, 0.0f, 0.0f ) },
-            { RVector3( -1.0f, 1.0f, 1.0f ), RVector3( -1.0f, 0.0f, 0.0f ) },
+            { RVector3( -1.0f, -1.0f, 1.0f ), RVector3( -1.0f, 0.0f, 0.0f ) ,  RVector2( 0.0f, 0.0f ) },
+            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3( -1.0f, 0.0f, 0.0f ),  RVector2( 1.0f, 0.0f ) },
+            { RVector3( -1.0f, 1.0f, -1.0f ), RVector3( -1.0f, 0.0f, 0.0f ) ,  RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f, 1.0f, 1.0f ), RVector3( -1.0f, 0.0f, 0.0f )  ,  RVector2( 0.0f, 1.0f ) },
 
-            { RVector3( 1.0f, -1.0f, 1.0f ), RVector3( 1.0f, 0.0f, 0.0f ) },
-            { RVector3( 1.0f, -1.0f, -1.0f ), RVector3( 1.0f, 0.0f, 0.0f ) },
-            { RVector3( 1.0f, 1.0f, -1.0f ), RVector3( 1.0f, 0.0f, 0.0f ) },
-            { RVector3( 1.0f, 1.0f, 1.0f ), RVector3( 1.0f, 0.0f, 0.0f ) },
+            { RVector3( 1.0f, -1.0f, 1.0f ), RVector3( 1.0f, 0.0f, 0.0f )   , RVector2( 0.0f, 0.0f ) },
+            { RVector3( 1.0f, -1.0f, -1.0f ), RVector3( 1.0f, 0.0f, 0.0f )  , RVector2( 1.0f, 0.0f ) },
+            { RVector3( 1.0f, 1.0f, -1.0f ), RVector3( 1.0f, 0.0f, 0.0f )   , RVector2( 1.0f, 1.0f ) },
+            { RVector3( 1.0f, 1.0f, 1.0f ), RVector3( 1.0f, 0.0f, 0.0f )    , RVector2( 0.0f, 1.0f ) },
 
-            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3( 0.0f, 0.0f, -1.0f ) },
-            { RVector3( 1.0f, -1.0f, -1.0f ), RVector3( 0.0f, 0.0f, -1.0f ) },
-            { RVector3( 1.0f, 1.0f, -1.0f ), RVector3( 0.0f, 0.0f, -1.0f ) },
-            { RVector3( -1.0f, 1.0f, -1.0f ), RVector3( 0.0f, 0.0f, -1.0f ) },
+            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3( 0.0f, 0.0f, -1.0f ),  RVector2( 0.0f, 0.0f ) },
+            { RVector3( 1.0f, -1.0f, -1.0f ), RVector3( 0.0f, 0.0f, -1.0f ) ,  RVector2( 1.0f, 0.0f ) },
+            { RVector3( 1.0f, 1.0f, -1.0f ), RVector3( 0.0f, 0.0f, -1.0f )  ,  RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f, 1.0f, -1.0f ), RVector3( 0.0f, 0.0f, -1.0f ) ,  RVector2( 0.0f, 1.0f ) },
 
-            { RVector3( -1.0f, -1.0f, 1.0f ), RVector3( 0.0f, 0.0f, 1.0f ) },
-            { RVector3( 1.0f, -1.0f, 1.0f ), RVector3( 0.0f, 0.0f, 1.0f ) },
-            { RVector3( 1.0f, 1.0f, 1.0f ), RVector3( 0.0f, 0.0f, 1.0f ) },
-            { RVector3( -1.0f, 1.0f, 1.0f ), RVector3( 0.0f, 0.0f, 1.0f ) },
+            { RVector3( -1.0f, -1.0f, 1.0f ), RVector3( 0.0f, 0.0f, 1.0f )  , RVector2( 0.0f, 0.0f ) },
+            { RVector3( 1.0f, -1.0f, 1.0f ), RVector3( 0.0f, 0.0f, 1.0f )   , RVector2( 1.0f, 0.0f ) },
+            { RVector3( 1.0f, 1.0f, 1.0f ), RVector3( 0.0f, 0.0f, 1.0f )    , RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f, 1.0f, 1.0f ), RVector3( 0.0f, 0.0f, 1.0f )   , RVector2( 0.0f, 1.0f ) },
         };
 
         //////////////////////////////////////////
@@ -284,12 +310,21 @@ namespace Riot
             23,20,22
         };
 
-        m_pDefaultMesh = CreateMesh( VPosNormal::VertexStride, ARRAY_LENGTH( vertices ), sizeof(uint16), ARRAY_LENGTH( indices ), vertices, indices );
+        m_pDefaultMesh = CreateMesh( VPosNormalTex::VertexStride, ARRAY_LENGTH( vertices ), sizeof(uint16), ARRAY_LENGTH( indices ), vertices, indices );
 
         m_pDefaultMesh->AddRef();
         return m_pDefaultMesh;
     }
 
+
+    //-----------------------------------------------------------------------------
+    //  LoadTextureXD
+    //  Loads a texture
+    //-----------------------------------------------------------------------------
+    IGfxTexture2D* CRenderer::LoadTexture2D( const wchar_t* szFilename )
+    {
+        return m_pDevice->LoadTexture( szFilename );
+    }
 
     //-----------------------------------------------------------------------------
     //  SetViewProj
@@ -333,12 +368,12 @@ namespace Riot
     //  AddCommand
     //  Adds a renderable object to the command buffer
     //-----------------------------------------------------------------------------
-    void CRenderer::AddCommand( CMesh* pCommand, RTransform& transform )
+    void CRenderer::AddCommand( const TRenderCommand& cmd, RTransform& transform )
     {
         ASSERT( m_nNumCommands < MAX_RENDER_COMMANDS );
 
         uint nIndex = AtomicIncrement( &m_nNumCommands ) - 1;
-        m_ppRenderCommands[nIndex] = pCommand;
+        m_pRenderCommands[nIndex] = cmd;
 
         m_pTransforms[nIndex] = transform;
     }
@@ -347,10 +382,10 @@ namespace Riot
     //  SetLight
     //  Sets the specific light
     //-----------------------------------------------------------------------------
-    void CRenderer::SetLight( const RVector4& vPos, uint nIndex )
+    void CRenderer::SetLight( const RVector3& vPos, uint nIndex )
     {
         m_bUpdateLighting = true;
-        m_vLights[ nIndex ] = vPos;
+        m_vLights[ nIndex ] = Homogonize(vPos);
         m_nNumActiveLights = nIndex + 1;
     }
 

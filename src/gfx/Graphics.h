@@ -3,7 +3,7 @@ File:           Graphics.h
 Purpose:        Base graphics hardware API
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/14/2011 10:42:02 PM
+Modified:       4/20/2011 9:20:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -69,6 +69,11 @@ namespace Riot
         //
 
         //
+        virtual IGfxTexture2D* LoadTexture( const wchar_t* szFilename ) = 0;
+        virtual IGfxSamplerState* CreateSamplerState( GFX_TEXTURE_SAMPLE nType ) = 0;
+        //
+
+        //
         //virtual IGfxVertexLayout* CreateVertexLayout( InputElementLayout Layout[], uint nLength ) = 0;
         virtual IGfxBuffer* CreateConstantBuffer( uint nSize, void* pInitialData ) = 0;
         virtual IGfxBuffer* CreateVertexBuffer( uint nSize, void* pInitialData ) = 0;
@@ -88,6 +93,8 @@ namespace Riot
         virtual void SetPixelShader( IGfxPixelShader* pShader ) = 0;
         virtual void SetVSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer ) = 0;
         virtual void SetPSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer ) = 0;
+        virtual void SetPSSamplerState( IGfxSamplerState* pState ) = 0;
+        virtual void SetPSTexture( uint nIndex, IGfxTexture2D* pTexture ) = 0;
         //
 
         //

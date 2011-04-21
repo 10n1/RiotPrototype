@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/19/2011 10:56:47 PM
+Modified:       4/20/2011 8:30:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -72,7 +72,7 @@ namespace Riot
         LOAD_COMPONENT( Update );
         LOAD_COMPONENT( Render );
         LOAD_COMPONENT( Light );
-
+        LOAD_COMPONENT( NewtonPhysics );
     }
 
     //-----------------------------------------------------------------------------
@@ -93,6 +93,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     sint CComponentManager::AddComponent( eComponentType nType, uint nObject )
     {
+        ASSERT( m_ppComponents[nType] );
+
         return m_ppComponents[ nType ]->AddComponent( nObject );
     }
 

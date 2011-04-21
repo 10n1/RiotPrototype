@@ -3,7 +3,7 @@ File:           D3DGraphicsObjects.h
 Purpose:        The D3D graphics objects
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/14/2011 8:52:20 PM
+Modified:       4/20/2011 8:47:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICSOBJECTS_H_
@@ -64,6 +64,16 @@ namespace Riot
 //-----------------------------------------------------------------------------
     BEGIN_DEFINE_GRAPHICS_OBJECT( VertexLayout )
         ID3D11InputLayout*  m_pLayout;
+    END_DEFINE_GRAPHICS_OBJECT;
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    BEGIN_DEFINE_GRAPHICS_OBJECT( Texture2D )
+        ID3D11ShaderResourceView*  m_pResourceView;
+    END_DEFINE_GRAPHICS_OBJECT;
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    BEGIN_DEFINE_GRAPHICS_OBJECT( SamplerState )
+        ID3D11SamplerState*  m_pState;
     END_DEFINE_GRAPHICS_OBJECT;
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

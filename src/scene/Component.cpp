@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/19/2011 11:11:27 PM
+Modified:       4/20/2011 9:23:12 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -182,7 +182,8 @@ namespace Riot
         for( uint i = 0; i < m_nNumComponents; ++i )
         {          
             // Pass to the render engine
-            pRender->AddCommand( m_pMesh[i], m_Transform[i] );
+            TRenderCommand cmd = { m_pMesh[i], NULL };
+            pRender->AddCommand( cmd, m_Transform[i] );
         }
     }
 
@@ -257,13 +258,13 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CUpdateComponent::ProcessComponent( void )
     {
-        CComponentManager* pManager = Engine::GetComponentManager();
-        for( uint i = 0; i < m_nNumComponents; ++i )
-        {
-            m_Transform[ i ].TranslateLocalY( Engine::m_fElapsedTime * 0.05f );
-
-            pManager->PostMessage( eComponentMessageTransform, m_pObjects[ i ], &m_Transform[i], ComponentType );
-        }
+        //CComponentManager* pManager = Engine::GetComponentManager();
+        //for( uint i = 0; i < m_nNumComponents; ++i )
+        //{
+        //    m_Transform[ i ].TranslateLocalY( Engine::m_fElapsedTime * 0.05f );
+        //
+        //    pManager->PostMessage( eComponentMessageTransform, m_pObjects[ i ], &m_Transform[i], ComponentType );
+        //}
     }
 
 
@@ -346,7 +347,7 @@ namespace Riot
 
             if( m_bUpdated[i] == true )
             {
-                pRender->SetLight( Homogonize(m_Transform[i].position), i );
+                pRender->SetLight( m_Transform[i].position, i );
                 m_bUpdated[i] = false;
                 pManager->PostMessage( eComponentMessageTransform, m_pObjects[ i ], &m_Transform[i], ComponentType );
             }
@@ -369,6 +370,89 @@ namespace Riot
 
                 m_Transform[nSlot]      = transform;
                 m_bUpdated[nSlot]       = true;
+            }
+            break;
+
+        default:
+            {
+            }
+        }
+    }
+
+    
+    /*********************************************************************************\
+    |*********************************************************************************|
+    |*********************************************************************************|
+    |*********************************************************************************|
+    \*********************************************************************************/
+
+    //-----------------------------------------------------------------------------
+    //  NewtonPhysics component
+    //  Makes an object behave with standard NewtonPhysicsian physics
+    //-----------------------------------------------------------------------------
+    BEGIN_DEFINE_COMPONENT( NewtonPhysics )
+        eComponentMessageTransform
+    END_DEFINE_COMPONENT( NewtonPhysics );
+    
+    //-----------------------------------------------------------------------------
+    //  Attach
+    //  Attaches a component to an object
+    //-----------------------------------------------------------------------------
+    void CNewtonPhysicsComponent::Attach( uint nIndex )
+    {
+        // Now initialize this component
+        m_Transform[nIndex] = RTransform();
+        m_vVelocity[nIndex] = RVector3Zero();
+        m_bGravity[nIndex]  = true;
+    }
+
+    //-----------------------------------------------------------------------------
+    //  Detach
+    //  Detaches a component to an object
+    //-----------------------------------------------------------------------------
+    void CNewtonPhysicsComponent::Detach( uint nIndex )
+    {
+        // Now initialize this component
+        COMPONENT_REORDER_DATA( m_Transform );
+        COMPONENT_REORDER_DATA( m_vVelocity );
+        COMPONENT_REORDER_DATA( m_bGravity );
+    }
+
+    //-----------------------------------------------------------------------------
+    //  ProcessComponent
+    //  Processes the component as necessary
+    //-----------------------------------------------------------------------------
+    void CNewtonPhysicsComponent::ProcessComponent( void )
+    {
+        static const RVector3 vGravity = RVector3( 0.0f, -9.8f, 0.0f );
+
+        CRenderer* pRender = Engine::GetRenderer();
+        CComponentManager* pManager = Engine::GetComponentManager();
+
+        for( uint i = 0; i < m_nNumComponents; ++i )
+        {
+            if( m_bGravity[i] )
+            {
+                m_vVelocity[i] += vGravity * Engine::m_fElapsedTime;
+            }
+
+            m_Transform[i].position += m_vVelocity[i] * Engine::m_fElapsedTime;
+
+            pManager->PostMessage( eComponentMessageTransform, m_pObjects[ i ], &m_Transform[i], ComponentType );
+        }
+    }
+
+
+    void CNewtonPhysicsComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
+    {
+        switch( msg.m_nMessageType )
+        {
+        //case MessagesReceived[0]: <-- // TODO: is there a way to do that?
+        case eComponentMessageTransform:
+            {
+                RTransform& transform = *((RTransform*)msg.m_pData);
+
+                m_Transform[nSlot] = transform;
             }
             break;
 

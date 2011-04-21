@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       4/18/2011 7:28:23 PM
+Modified:       4/20/2011 9:09:24 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -15,12 +15,14 @@ namespace Riot
     // CTerrain constructor
     CTerrain::CTerrain()
         : m_pMesh( NULL )
+        , m_pTexture( NULL )
     {
     }
 
     // CTerrain destructor
     CTerrain::~CTerrain()
     {
+        SAFE_RELEASE( m_pTexture );
         SAFE_RELEASE( m_pMesh );
     }
 
@@ -34,7 +36,8 @@ namespace Riot
         static CRenderer* pRender = Engine::GetRenderer();
 
         // Pass to the render engine
-        pRender->AddCommand( m_pMesh, RTransform() );
+        TRenderCommand cmd = { m_pMesh, m_pTexture };
+        pRender->AddCommand( cmd, RTransform() );
     }
 
     //-----------------------------------------------------------------------------
@@ -53,6 +56,11 @@ namespace Riot
                 //m_fHeight[x][y] = rand()/(float)RAND_MAX * 0.5f;
             }
         }
+
+        CreateMesh();
+
+        SAFE_RELEASE( m_pTexture );
+        m_pTexture = Engine::GetRenderer()->LoadTexture2D( L"Assets/Textures/grass.png" );
     }
 
     //-----------------------------------------------------------------------------
@@ -65,16 +73,6 @@ namespace Riot
 
         static CRenderer* pRender = Engine::GetRenderer();
 
-        uint nPolysWidth = TERRAIN_WIDTH;
-        uint nPolysHeight = TERRAIN_HEIGHT;
-        uint nPolysTotal = nPolysWidth * nPolysHeight;
-
-        // Initalize the buffers
-        uint nVertsTotal = (nPolysWidth+1) * (nPolysHeight+1);
-        VPosNormal* vertices = new VPosNormal[ nVertsTotal ];
-        uint nIndices = nPolysTotal * 6;
-        uint16* indices = new uint16[ nIndices ];
-
         // Create the vertices
         sint nVertex = 0;
         sint nIndex = 0;
@@ -86,8 +84,8 @@ namespace Riot
         {
             for( fY = -(nPolysHeight/2.0f), nY = 0; fY <= (nPolysHeight/2.0f); fY += 1.0f, ++nY )
             {
-                VPosNormal vert = { RVector3( fX, m_fHeight[nX][nY], fY ), RVector3( 0.0f, 1.0f, 0.0f ) };
-                vertices[ nVertex++ ] = vert;
+                VPosNormalTex vert = { RVector3( fX, m_fHeight[nX][nY], fY ), RVector3( 0.0f, 1.0f, 0.0f ) };
+                m_pVertices[ nVertex++ ] = vert;
             }
         }
 
@@ -116,7 +114,7 @@ namespace Riot
                 RVector3 avgNorm = norm0 + norm1 + norm2 + norm3;
                 avgNorm = Normalize( avgNorm );
 
-                vertices[ nVertex++ ].Normal = avgNorm;
+                m_pVertices[ nVertex++ ].Normal = avgNorm;
             }
         }
 
@@ -126,23 +124,19 @@ namespace Riot
             for( nY = 0; nY < nPolysHeight; ++nY )
             {
                 uint nStart = nX * nPolysWidth;
-                indices[ nIndex++ ] = nX + nY + nStart + 0;
-                indices[ nIndex++ ] = nX + nY + nStart + 1;
-                indices[ nIndex++ ] = nX + nY + nStart + 1 + nPolysWidth;
+                m_pIndices[ nIndex++ ] = nX + nY + nStart + 0;
+                m_pIndices[ nIndex++ ] = nX + nY + nStart + 1;
+                m_pIndices[ nIndex++ ] = nX + nY + nStart + 1 + nPolysWidth;
 
-                indices[ nIndex++ ] = nX + nY + nStart + 1 + nPolysWidth;
-                indices[ nIndex++ ] = nX + nY + nStart + 1;
-                indices[ nIndex++ ] = nX + nY + nStart + 1 + nPolysWidth + 1;
+                m_pIndices[ nIndex++ ] = nX + nY + nStart + 1 + nPolysWidth;
+                m_pIndices[ nIndex++ ] = nX + nY + nStart + 1;
+                m_pIndices[ nIndex++ ] = nX + nY + nStart + 1 + nPolysWidth + 1;
             }
         }
 
         // Create our mesh
         //m_pMesh = pRender->CreateMesh( sizeof( SimpleVertex ), nVertsTotal, 16, nIndices, vertices, indices );
-        m_pMesh = pRender->CreateMesh( VPosNormal::VertexStride, nVertsTotal, 2, nIndices, vertices, indices );
-
-        // Release the memory
-        SAFE_DELETE_ARRAY( vertices );
-        SAFE_DELETE_ARRAY( indices );
+        m_pMesh = pRender->CreateMesh( VPosNormalTex::VertexStride, nVertsTotal, 2, nIndices, m_pVertices, m_pIndices );
     }
 
 } // namespace Riot

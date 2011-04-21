@@ -3,17 +3,18 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       4/17/2011 5:24:31 PM
+Modified:       4/20/2011 9:09:40 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
 #define _TERRAIN_H_
 #include "IRefCounted.h"
+#include "VertexFormats.h"
 
 namespace Riot
 {
     class CMesh;
-
+    class IGfxTexture2D;
 
     class CTerrain : public IRefCounted
     {
@@ -58,10 +59,19 @@ namespace Riot
 
         /***************************************\
         | class members                         |
-        \***************************************/
-        float       m_fHeight[TERRAIN_WIDTH+1][TERRAIN_HEIGHT+1];
+        \***************************************/        
+        static const uint nPolysWidth = TERRAIN_WIDTH;
+        static const uint nPolysHeight = TERRAIN_HEIGHT;
+        static const uint nPolysTotal = nPolysWidth * nPolysHeight;
+        static const uint nVertsTotal = (nPolysWidth+1) * (nPolysHeight+1);
+        static const uint nIndices = nPolysTotal * 6;
 
-        CMesh*      m_pMesh;
+        float       m_fHeight[TERRAIN_WIDTH+1][TERRAIN_HEIGHT+1];
+        VPosNormalTex  m_pVertices[ nVertsTotal ];
+        uint16      m_pIndices[nIndices];
+
+        CMesh*          m_pMesh;
+        IGfxTexture2D*  m_pTexture;
     };
 
 

@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/19/2011 10:57:36 PM
+Modified:       4/20/2011 9:16:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -267,7 +267,7 @@ namespace Riot
 
         uint nObject = m_pObjectManager->CreateObject();
 
-        m_pObjectManager->AddComponent( nObject, eComponentUpdate );
+        //m_pObjectManager->AddComponent( nObject, eComponentNewtonPhysics );
         m_pObjectManager->AddComponent( nObject, eComponentRender );
 
         m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t );

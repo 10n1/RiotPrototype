@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Direct3D interface
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/14/2011 10:42:02 PM
+Modified:       4/20/2011 9:20:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -69,6 +69,11 @@ namespace Riot
         //
 
         //
+        IGfxTexture2D* LoadTexture( const wchar_t* szFilename );
+        IGfxSamplerState* CreateSamplerState( GFX_TEXTURE_SAMPLE nType );
+        //
+
+        //
         IGfxBuffer* CreateConstantBuffer( uint nSize, void* pInitialData );
         IGfxBuffer* CreateVertexBuffer( uint nSize, void* pInitialData );
         IGfxBuffer* CreateIndexBuffer( uint nSize, void* pInitialData );
@@ -87,6 +92,8 @@ namespace Riot
         void SetPixelShader( IGfxPixelShader* pShader );
         void SetVSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer );
         void SetPSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer );
+        void SetPSSamplerState( IGfxSamplerState* pState );
+        void SetPSTexture( uint nIndex, IGfxTexture2D* pTexture );
         //
 
         //

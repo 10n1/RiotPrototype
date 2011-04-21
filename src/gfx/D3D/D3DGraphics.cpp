@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/16/2011 8:37:44 PM
+Modified:       4/20/2011 9:21:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -24,6 +24,7 @@ namespace Riot
     GFX_FORMAT GFX_FORMAT_FLOAT3        = DXGI_FORMAT_R32G32B32_FLOAT;
     GFX_FORMAT GFX_FORMAT_UINT16        = DXGI_FORMAT_R16_UINT;
     GFX_FORMAT GFX_FORMAT_UINT32        = DXGI_FORMAT_R32_UINT;
+    GFX_FORMAT GFX_FORMAT_FLOAT2        = DXGI_FORMAT_R32G32_FLOAT;
 
     const uint GFX_FORMAT_FLOAT3_SIZE   = sizeof( RVector3 );
     const uint GFX_FORMAT_UINT16_SIZE   = sizeof( uint16 );
@@ -31,8 +32,12 @@ namespace Riot
     //-----------------------------------------------------------------------------
     GFX_SEMANTIC GFX_SEMANTIC_POSITION  = "POSITION";
     GFX_SEMANTIC GFX_SEMANTIC_NORMAL    = "NORMAL";
+    GFX_SEMANTIC GFX_SEMANTIC_TEXCOORD  = "TEXCOORD";
     //-----------------------------------------------------------------------------
     GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_TRIANGLELIST   = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+    //-----------------------------------------------------------------------------
+    GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_NEAREST   = D3D11_FILTER_MIN_MAG_MIP_POINT;
+    GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_LINEAR    = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
     //-----------------------------------------------------------------------------
 
     // CD3DDevice constructor
@@ -345,6 +350,7 @@ namespace Riot
         {
             { Layout[0].szSemanticName, 0, (DXGI_FORMAT)Layout[0].nFormat, 0, Layout[0].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
             { Layout[1].szSemanticName, 0, (DXGI_FORMAT)Layout[1].nFormat, 0, Layout[1].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { Layout[2].szSemanticName, 0, (DXGI_FORMAT)Layout[2].nFormat, 0, Layout[2].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
         };
 
         hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
@@ -378,6 +384,37 @@ namespace Riot
         assert( hr == S_OK );
 
         return pShader;
+    }
+    //
+
+    //
+    IGfxTexture2D* CD3DDevice::LoadTexture( const wchar_t* szFilename )
+    {
+        CD3DTexture2D* pTexture = new CD3DTexture2D;
+
+        HRESULT hr = D3DX11CreateShaderResourceViewFromFile( m_pDevice, szFilename, NULL, NULL, &pTexture->m_pResourceView, NULL );
+        ASSERT( hr == S_OK );
+
+        return pTexture;
+    }
+    IGfxSamplerState* CD3DDevice::CreateSamplerState( GFX_TEXTURE_SAMPLE nType )
+    {
+        CD3DSamplerState* pState = new CD3DSamplerState;
+
+        D3D11_SAMPLER_DESC sampDesc;
+        ZeroMemory( &sampDesc, sizeof(sampDesc) );
+        sampDesc.Filter = (D3D11_FILTER)nType;
+        sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+        sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+        sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+        sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+        sampDesc.MinLOD = 0;
+        sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+        HRESULT hr = m_pDevice->CreateSamplerState( &sampDesc, &pState->m_pState );
+        
+        ASSERT( hr == S_OK );
+
+        return pState;
     }
     //
 
@@ -521,6 +558,14 @@ namespace Riot
     void CD3DDevice::SetPSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer )
     {
         m_pContext->PSSetConstantBuffers( nIndex, 1, &((CD3DBuffer*)pBuffer)->m_pBuffer );
+    }
+    void CD3DDevice::SetPSSamplerState( IGfxSamplerState* pState )
+    {
+        m_pContext->PSSetSamplers( 0, 1, &((CD3DSamplerState*)pState)->m_pState );
+    }
+    void CD3DDevice::SetPSTexture( uint nIndex, IGfxTexture2D* pTexture )
+    {
+        m_pContext->PSSetShaderResources( nIndex, 1, &((CD3DTexture2D*)pTexture)->m_pResourceView );
     }
     //
 
