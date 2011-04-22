@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/20/2011 9:23:12 PM
+Modified:       4/21/2011 10:39:40 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -114,6 +114,12 @@ namespace Riot
         //  Sets the specific light
         //-----------------------------------------------------------------------------
         void SetLight( const RVector3& vDir, uint nIndex );
+        
+        //-----------------------------------------------------------------------------
+        //  GetDefaultMeshData
+        //  Returns the default mesh data
+        //-----------------------------------------------------------------------------
+        VPosNormalTex* GetDefaultMeshData( void );
 
     private:
         /***************************************\

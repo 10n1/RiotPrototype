@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/21/2011 10:32:02 PM
+Modified:       4/21/2011 10:36:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -21,6 +21,7 @@ namespace Riot
         eComponentMessageMesh,
         eComponentMessageBoundingVolumeType,
         eComponentMessageCollision,
+        eComponentMessageCalculateCollidable,
 
         eNUMCOMPONENTMESSAGES,
         eNULLCOMPONENTMESSAGE = -1
@@ -221,7 +222,11 @@ namespace Riot
     DECLARE_COMPONENT_DATA( BoundingVolume, m_Volume );
     DECLARE_COMPONENT_DATA( VolumeType,     m_nType );
     public:
-        void ComputeBoundingSphere( const VPosNormalTex* pVerts, uint nVerts, uint nObject );
+        struct MeshData
+        {
+            VPosNormalTex*  pVerts;
+            uint            nVerts;
+        };
     //
     END_DECLARE_COMPONENT;
     //

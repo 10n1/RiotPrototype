@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/21/2011 10:32:50 PM
+Modified:       4/21/2011 10:44:18 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -392,6 +392,7 @@ namespace Riot
         eComponentMessageTransform,
         eComponentMessageBoundingVolumeType,
         eComponentMessageCollision,
+        eComponentMessageCalculateCollidable,
     END_DEFINE_COMPONENT( Collidable );
     
     //-----------------------------------------------------------------------------
@@ -476,28 +477,31 @@ namespace Riot
                 };
             }
             break;
+        case eComponentMessageCalculateCollidable:
+            {
+                MeshData* pData = (MeshData*)msg.m_pData;
+
+
+                float fExtents[3] = {  0 };
+
+                for( uint i = 0; i < pData->nVerts; ++i )
+                {
+                    for( uint j = 0; j < 3; ++j )
+                    {
+                        if( Abs(pData->pVerts[i].Pos[j]) > fExtents[j] )
+                        {
+                            fExtents[j] = Abs(pData->pVerts[i].Pos[j]);
+                        }
+                    }
+                }
+
+                m_Volume[nSlot].sphere.radius = MagnitudeSq( RVector3(fExtents) );
+            }
+            break;
         default:
             {
             }
         }
-    }
-
-    void CCollidableComponent::ComputeBoundingSphere( const VPosNormalTex* pVerts, uint nVerts, uint nObject )
-    {
-        float fExtents[3] = {  0 };
-
-        for( uint i = 0; i < nVerts; ++i )
-        {
-            for( uint j = 0; j < 3; ++j )
-            {
-                if( Abs(pVerts[i].Pos[j]) > fExtents[j] )
-                {
-                    fExtents[j] = Abs(pVerts[i].Pos[j]);
-                }
-            }
-        }
-
-        m_Volume[nObject].sphere.radius = MagnitudeSq( RVector3(fExtents) );
     }
 
     /*********************************************************************************\
@@ -554,6 +558,10 @@ namespace Riot
             if( m_bGravity[i] )
             {
                 m_vVelocity[i] += vGravity * Engine::m_fElapsedTime;
+            }
+            else
+            {
+                m_vVelocity[i] = RVector3( 0.0f, 0.0f, 0.0f );
             }
 
             m_Transform[i].position += m_vVelocity[i] * Engine::m_fElapsedTime;

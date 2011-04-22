@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/20/2011 9:16:44 PM
+Modified:       4/21/2011 10:43:08 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -265,13 +265,31 @@ namespace Riot
         orientation = RQuaternionZero();
         RTransform t = RTransform( orientation, RVector3( 0.0f, 0.0f, 0.0f ) );
 
+        // Add box 1
         uint nObject = m_pObjectManager->CreateObject();
 
         //m_pObjectManager->AddComponent( nObject, eComponentNewtonPhysics );
         m_pObjectManager->AddComponent( nObject, eComponentRender );
+        m_pObjectManager->AddComponent( nObject, eComponentCollidable );
 
         m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t );
         m_pComponentManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+
+        CCollidableComponent::MeshData data = { m_pRenderer->GetDefaultMeshData(), 24 };
+
+        m_pComponentManager->SendMessage( eComponentMessageCalculateCollidable, nObject, &data );
+
+        // Add box 2
+        t.position = RVector3( 0.0f, 10.0f, 0.0f );
+        nObject = m_pObjectManager->CreateObject();
+
+        m_pObjectManager->AddComponent( nObject, eComponentNewtonPhysics );
+        m_pObjectManager->AddComponent( nObject, eComponentRender );
+        m_pObjectManager->AddComponent( nObject, eComponentCollidable );
+
+        m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t );
+        m_pComponentManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+        m_pComponentManager->SendMessage( eComponentMessageCalculateCollidable, nObject, &data );
 
 
         //////////////////////////////////////////
