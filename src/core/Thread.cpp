@@ -249,10 +249,11 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CThread::Idle( void )
     {
+        m_bAwake = false;
+
         // Zzzzzzz.....
         System::SemaphoreRelease( &m_pTaskManager->m_pSleep );
 
-        m_bAwake = false;
         // Wait until you're woken up
         System::WaitForCondition(&m_pWakeCondition, &m_pSystemMutex);
     }
