@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/21/2011 11:59:01 PM
+Modified:       4/22/2011 1:32:24 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -66,6 +66,7 @@ namespace Riot
     {
         Memset( m_bRegistered, 0, sizeof( m_bRegistered ) );
         Memset( m_ppComponents, 0, sizeof( CComponent* ) * eNUMCOMPONENTS );
+        Memset( m_pMessages, 0, sizeof( m_pMessages ) );
 
         m_nNumMessages = 0;
 
@@ -116,22 +117,26 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentManager::ProcessComponents( void )
     {
-        // First update the components...
 #if PARALLEL_UPDATE
         static CTaskManager* pTaskManager = CTaskManager::GetInstance();
 
-        task_handle_t nProcessTask = pTaskManager->PushTask( ParallelProcessComponents, this, eNUMCOMPONENTS );
+        // First update the components...
+        task_handle_t nProcessTask = pTaskManager->PushTask( ParallelProcessComponents, this, eNUMCOMPONENTS, 16 );
         pTaskManager->WaitForCompletion( nProcessTask );
+        //ParallelProcessComponents( this, 0, 0, eNUMCOMPONENTS );
+
+        //uint x = 0;
+        //while( x < 1024*256 )
+        //    ++x;
+        
+        // ...then resolve any discrepencies and handle messages
+        //ParallelProcessComponentMessages( this, 0, 0, m_nNumMessages );
+        task_handle_t nMessageTask = pTaskManager->PushTask( ParallelProcessComponentMessages, this, m_nNumMessages, 16 );
+        pTaskManager->WaitForCompletion( nMessageTask );
 #else
         ParallelProcessComponents( this, 0, 0, eNUMCOMPONENTS );
+        ParallelProcessComponentMessages( this, 0, 0, m_nNumMessages );
 #endif
-
-        // ...then resolve any discrepencies and handle messages
-        for( uint nMessage = 0; nMessage < m_nNumMessages; ++nMessage )
-        {   // Loop through the messages        
-            SendMessage( m_pMessages[ nMessage ] );
-        }
-
         m_nNumMessages = 0;
     }
     void CComponentManager::ParallelProcessComponents( void* pData, uint nThreadId, uint nStart, uint nCount )
@@ -139,14 +144,22 @@ namespace Riot
         CComponentManager* pManager = (CComponentManager*)pData;
 
         uint nEnd = nStart + nCount;
-
         for( uint i = nStart; i < nEnd; ++i )
         {
-            uint x = 0;
             pManager->m_ppComponents[i]->ProcessComponent();
         }
     }
 
+    void CComponentManager::ParallelProcessComponentMessages( void* pData, uint nThreadId, uint nStart, uint nCount )
+    {
+        CComponentManager* pManager = (CComponentManager*)pData;
+
+        uint nEnd = nStart + nCount;
+        for( uint nMessage = nStart; nMessage < nEnd; ++nMessage )
+        {   // Loop through the messages        
+            pManager->SendMessage( pManager->m_pMessages[ nMessage ] );
+        }
+    }
 
     //-----------------------------------------------------------------------------
     //  PostMessage

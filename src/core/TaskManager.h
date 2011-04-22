@@ -3,7 +3,7 @@ File:           TaskManager.h
 Purpose:        Task manager
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/21/2011 11:17:09 PM
+Modified:       4/22/2011 1:15:16 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TASKMANAGER_H_
@@ -79,7 +79,9 @@ namespace Riot
 
         task_completion_t   m_nTaskCompletion[ MAX_TASKS ];
         CThread             m_Thread[ MAX_THREADS ];
-        uint                m_nCurrentHandle;
+        CMutex              m_HandleMutex;
+
+        atomic_t            m_nCurrentHandle;
         atomic_t            m_nActiveTasks;
         System::semaphore_t m_pSleep;
 

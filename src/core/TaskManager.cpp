@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/21/2011 11:15:37 PM
+Modified:       4/22/2011 1:36:45 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -118,12 +118,16 @@ namespace Riot
             nChunkSize = 1;
 
         // First we need to find a new handle to use
-        task_handle_t   nHandle = m_nCurrentHandle % MAX_TASKS;
+        m_HandleMutex.Lock();
+        task_handle_t   nHandle = ++m_nCurrentHandle % MAX_TASKS;
+
+        assert( nHandle < MAX_TASKS );
 
         while( m_nTaskCompletion[nHandle] )
         {
             nHandle = (++m_nCurrentHandle %= MAX_TASKS);
         }
+        m_HandleMutex.Unlock();
 
         // Create our new task
         TTask   newTask = 
@@ -136,7 +140,7 @@ namespace Riot
         };
 
         // Distribute the tasks to the threads
-        static uint nThread = 0;
+        uint nThread = 0;
         uint nStart = 0;
         while( nStart < nCount )
         {
@@ -146,11 +150,9 @@ namespace Riot
             }
             newTask.nStart = nStart;
 
-            if( nThread % m_nNumThreads == 0 )
-            {
-                nThread++;
-            }
-            m_Thread[nThread++ % m_nNumThreads].PushTask( newTask );
+            uint nWorkerThread = ( nThread++ % (m_nNumThreads-1) ) + 1; // Make sure not to add to thread 0
+
+            m_Thread[nWorkerThread].PushTask( newTask );
 
             nStart += nChunkSize;
         }

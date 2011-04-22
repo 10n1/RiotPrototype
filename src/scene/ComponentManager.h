@@ -3,7 +3,7 @@ File:           ComponentManager.h
 Purpose:        Manages all the components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/21/2011 11:15:37 PM
+Modified:       4/22/2011 1:08:27 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTMANAGER_H_
@@ -59,7 +59,6 @@ namespace Riot
         //  Updates all the components, then resolves issues
         //-----------------------------------------------------------------------------
         void ProcessComponents( void );
-        static void ParallelProcessComponents( void* pData, uint nThreadId, uint nStart, uint nCount );
 
 
         //-----------------------------------------------------------------------------
@@ -94,6 +93,14 @@ namespace Riot
         //  Processes the input message
         //-----------------------------------------------------------------------------
         void ProcessMessage( const TMessage& msg );
+
+    private:
+        //-----------------------------------------------------------------------------
+        //  Parallel functions
+        //  The task functions
+        //-----------------------------------------------------------------------------
+        static void ParallelProcessComponents( void* pData, uint nThreadId, uint nStart, uint nCount );
+        static void ParallelProcessComponentMessages( void* pData, uint nThreadId, uint nStart, uint nCount );
 
     private:
         /***************************************\
