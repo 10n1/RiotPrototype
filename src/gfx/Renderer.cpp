@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/20/2011 9:23:12 PM
+Modified:       4/21/2011 9:45:56 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Renderer.h"
@@ -256,35 +256,35 @@ namespace Riot
         // Define vertex buffer
         VPosNormalTex vertices[] =
         {
-            { RVector3( -1.0f, 1.0f, -1.0f ), RVector3( 0.0f, 1.0f, 0.0f )  , RVector2( 0.0f, 0.0f ) },
-            { RVector3( 1.0f, 1.0f, -1.0f ), RVector3( 0.0f, 1.0f, 0.0f )   , RVector2( 1.0f, 0.0f ) },
-            { RVector3( 1.0f, 1.0f, 1.0f ), RVector3( 0.0f, 1.0f, 0.0f )    , RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f, 1.0f, 1.0f ), RVector3( 0.0f, 1.0f, 0.0f )   , RVector2( 0.0f, 1.0f ) },
-
-            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3( 0.0f, -1.0f, 0.0f ),  RVector2( 0.0f, 0.0f ) },
-            { RVector3( 1.0f, -1.0f, -1.0f ), RVector3( 0.0f, -1.0f, 0.0f ) ,  RVector2( 1.0f, 0.0f ) },
-            { RVector3( 1.0f, -1.0f, 1.0f ), RVector3( 0.0f, -1.0f, 0.0f )  ,  RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f, -1.0f, 1.0f ), RVector3( 0.0f, -1.0f, 0.0f ) ,  RVector2( 0.0f, 1.0f ) },
-
-            { RVector3( -1.0f, -1.0f, 1.0f ), RVector3( -1.0f, 0.0f, 0.0f ) ,  RVector2( 0.0f, 0.0f ) },
-            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3( -1.0f, 0.0f, 0.0f ),  RVector2( 1.0f, 0.0f ) },
-            { RVector3( -1.0f, 1.0f, -1.0f ), RVector3( -1.0f, 0.0f, 0.0f ) ,  RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f, 1.0f, 1.0f ), RVector3( -1.0f, 0.0f, 0.0f )  ,  RVector2( 0.0f, 1.0f ) },
-
-            { RVector3( 1.0f, -1.0f, 1.0f ), RVector3( 1.0f, 0.0f, 0.0f )   , RVector2( 0.0f, 0.0f ) },
-            { RVector3( 1.0f, -1.0f, -1.0f ), RVector3( 1.0f, 0.0f, 0.0f )  , RVector2( 1.0f, 0.0f ) },
-            { RVector3( 1.0f, 1.0f, -1.0f ), RVector3( 1.0f, 0.0f, 0.0f )   , RVector2( 1.0f, 1.0f ) },
-            { RVector3( 1.0f, 1.0f, 1.0f ), RVector3( 1.0f, 0.0f, 0.0f )    , RVector2( 0.0f, 1.0f ) },
-
-            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3( 0.0f, 0.0f, -1.0f ),  RVector2( 0.0f, 0.0f ) },
-            { RVector3( 1.0f, -1.0f, -1.0f ), RVector3( 0.0f, 0.0f, -1.0f ) ,  RVector2( 1.0f, 0.0f ) },
-            { RVector3( 1.0f, 1.0f, -1.0f ), RVector3( 0.0f, 0.0f, -1.0f )  ,  RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f, 1.0f, -1.0f ), RVector3( 0.0f, 0.0f, -1.0f ) ,  RVector2( 0.0f, 1.0f ) },
-
-            { RVector3( -1.0f, -1.0f, 1.0f ), RVector3( 0.0f, 0.0f, 1.0f )  , RVector2( 0.0f, 0.0f ) },
-            { RVector3( 1.0f, -1.0f, 1.0f ), RVector3( 0.0f, 0.0f, 1.0f )   , RVector2( 1.0f, 0.0f ) },
-            { RVector3( 1.0f, 1.0f, 1.0f ), RVector3( 0.0f, 0.0f, 1.0f )    , RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f, 1.0f, 1.0f ), RVector3( 0.0f, 0.0f, 1.0f )   , RVector2( 0.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
+            { RVector3(  1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
+            { RVector3(  1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+                                                                        
+            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
+            { RVector3(  1.0f, -1.0f, -1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
+            { RVector3(  1.0f, -1.0f,  1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f, -1.0f,  1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+                                                                        
+            { RVector3( -1.0f, -1.0f,  1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
+            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
+            { RVector3( -1.0f,  1.0f, -1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f,  1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+                                                                        
+            { RVector3(  1.0f, -1.0f,  1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
+            { RVector3(  1.0f, -1.0f, -1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
+            { RVector3(  1.0f,  1.0f, -1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
+            { RVector3(  1.0f,  1.0f,  1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+                                                                 
+            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 0.0f, 0.0f ) },
+            { RVector3(  1.0f, -1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 1.0f, 0.0f ) },
+            { RVector3(  1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 0.0f, 1.0f ) },
+                                                                 
+            { RVector3( -1.0f, -1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 0.0f, 0.0f ) },
+            { RVector3(  1.0f, -1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 1.0f, 0.0f ) },
+            { RVector3(  1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 0.0f, 1.0f ) },
         };
 
         //////////////////////////////////////////
