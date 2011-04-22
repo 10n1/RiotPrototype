@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/20/2011 9:23:12 PM
+Modified:       4/21/2011 10:32:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -195,8 +195,7 @@ namespace Riot
     void CRenderComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
     {
         switch( msg.m_nMessageType )
-        {
-        //case MessagesReceived[0]: <-- // TODO: is there a way to do that?
+        {        
         case eComponentMessageTransform:
             {
                 RTransform& transform = *((RTransform*)msg.m_pData);
@@ -276,8 +275,7 @@ namespace Riot
     void CUpdateComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
     {
         switch( msg.m_nMessageType )
-        {
-        //case MessagesReceived[0]: <-- // TODO: is there a way to do that?
+        {        
         case eComponentMessageTransform:
             {
                 RTransform& transform = *((RTransform*)msg.m_pData);
@@ -362,8 +360,7 @@ namespace Riot
     void CLightComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
     {
         switch( msg.m_nMessageType )
-        {
-        //case MessagesReceived[0]: <-- // TODO: is there a way to do that?
+        {        
         case eComponentMessageTransform:
             {
                 RTransform& transform = *((RTransform*)msg.m_pData);
@@ -380,6 +377,129 @@ namespace Riot
     }
 
     
+    
+    /*********************************************************************************\
+    |*********************************************************************************|
+    |*********************************************************************************|
+    |*********************************************************************************|
+    \*********************************************************************************/
+
+    //-----------------------------------------------------------------------------
+    //  Collidable component
+    //  Makes an object behave with standard Collidableian physics
+    //-----------------------------------------------------------------------------
+    BEGIN_DEFINE_COMPONENT( Collidable )
+        eComponentMessageTransform,
+        eComponentMessageBoundingVolumeType,
+        eComponentMessageCollision,
+    END_DEFINE_COMPONENT( Collidable );
+    
+    //-----------------------------------------------------------------------------
+    //  Attach
+    //  Attaches a component to an object
+    //-----------------------------------------------------------------------------
+    void CCollidableComponent::Attach( uint nIndex )
+    {
+        // Now initialize this component
+        ZeroMemory( &m_Volume[nIndex], sizeof(BoundingVolume) );
+        m_nType[nIndex] = BoundingSphere;
+    }
+
+    //-----------------------------------------------------------------------------
+    //  Detach
+    //  Detaches a component to an object
+    //-----------------------------------------------------------------------------
+    void CCollidableComponent::Detach( uint nIndex )
+    {
+        // Now initialize this component
+        COMPONENT_REORDER_DATA( m_Volume );
+        COMPONENT_REORDER_DATA( m_nType );
+    }
+
+    //-----------------------------------------------------------------------------
+    //  ProcessComponent
+    //  Processes the component as necessary
+    //-----------------------------------------------------------------------------
+    void CCollidableComponent::ProcessComponent( void )
+    {
+        CComponentManager* pManager = Engine::GetComponentManager();
+
+        bool bCollision = false;
+        for( uint i = 0; i < m_nNumComponents; ++i )
+        {
+            for( uint j = 0; j < m_nNumComponents; ++j )
+            {
+                if( i == j ) continue;
+
+                float fRadSq = m_Volume[i].sphere.radius + m_Volume[j].sphere.radius;
+
+                RVector3 pos1( m_Volume[i].sphere.position );
+                RVector3 pos2( m_Volume[j].sphere.position );
+
+                RVector3 diff = pos2-pos1;
+
+                float fDistance = Abs( MagnitudeSq( diff ) );
+
+                if( fDistance <= fRadSq )
+                {
+                    pManager->PostMessage( eComponentMessageCollision, m_pObjects[ i ], j, ComponentType );
+                }
+            }
+        }
+    }
+
+
+    void CCollidableComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
+    {
+        switch( msg.m_nMessageType )
+        {        
+        case eComponentMessageTransform:
+            {
+                RTransform& transform = *((RTransform*)msg.m_pData);
+
+                switch( m_nType[nSlot] )
+                {
+                case BoundingSphere:
+                    {
+                        m_Volume[nSlot].sphere.position[0] = transform.position[0];
+                        m_Volume[nSlot].sphere.position[1] = transform.position[1];
+                        m_Volume[nSlot].sphere.position[2] = transform.position[2];
+                    }
+                    break;
+                case AABB:
+                    {
+                    }
+                    break;
+                default:
+                    {
+                    }
+                };
+            }
+            break;
+        default:
+            {
+            }
+        }
+    }
+
+    void CCollidableComponent::ComputeBoundingSphere( const VPosNormalTex* pVerts, uint nVerts, uint nObject )
+    {
+        float fExtents[3] = {  0 };
+
+        for( uint i = 0; i < nVerts; ++i )
+        {
+            for( uint j = 0; j < 3; ++j )
+            {
+                if( Abs(pVerts[i].Pos[j]) > fExtents[j] )
+                {
+                    fExtents[j] = Abs(pVerts[i].Pos[j]);
+                }
+            }
+        }
+
+        m_Volume[nObject].sphere.radius = MagnitudeSq( RVector3(fExtents) );
+    }
+
     /*********************************************************************************\
     |*********************************************************************************|
     |*********************************************************************************|
@@ -391,7 +511,8 @@ namespace Riot
     //  Makes an object behave with standard NewtonPhysicsian physics
     //-----------------------------------------------------------------------------
     BEGIN_DEFINE_COMPONENT( NewtonPhysics )
-        eComponentMessageTransform
+        eComponentMessageTransform,
+        eComponentMessageCollision,
     END_DEFINE_COMPONENT( NewtonPhysics );
     
     //-----------------------------------------------------------------------------
@@ -426,7 +547,6 @@ namespace Riot
     {
         static const RVector3 vGravity = RVector3( 0.0f, -9.8f, 0.0f );
 
-        CRenderer* pRender = Engine::GetRenderer();
         CComponentManager* pManager = Engine::GetComponentManager();
 
         for( uint i = 0; i < m_nNumComponents; ++i )
@@ -446,8 +566,7 @@ namespace Riot
     void CNewtonPhysicsComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
     {
         switch( msg.m_nMessageType )
-        {
-        //case MessagesReceived[0]: <-- // TODO: is there a way to do that?
+        {        
         case eComponentMessageTransform:
             {
                 RTransform& transform = *((RTransform*)msg.m_pData);
@@ -455,7 +574,11 @@ namespace Riot
                 m_Transform[nSlot] = transform;
             }
             break;
-
+        case eComponentMessageCollision:
+            {
+                m_bGravity[nSlot] = false;
+            }
+            break;
         default:
             {
             }

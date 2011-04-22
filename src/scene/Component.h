@@ -3,12 +3,13 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/20/2011 8:29:13 PM
+Modified:       4/21/2011 10:32:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
 #define _COMPONENT_H_
 #include "common.h"
+#include "VertexFormats.h"
 
 namespace Riot
 {
@@ -18,6 +19,8 @@ namespace Riot
         eComponentMessageTransform,
         eComponentMessageUpdate,
         eComponentMessageMesh,
+        eComponentMessageBoundingVolumeType,
+        eComponentMessageCollision,
 
         eNUMCOMPONENTMESSAGES,
         eNULLCOMPONENTMESSAGE = -1
@@ -29,6 +32,7 @@ namespace Riot
         eComponentUpdate,
         eComponentLight,
         eComponentNewtonPhysics,
+        eComponentCollidable,
 
         eNUMCOMPONENTS,
         eNULLCOMPONENT = -1
@@ -186,6 +190,38 @@ namespace Riot
     //
     DECLARE_COMPONENT_DATA( RTransform, m_Transform );
     DECLARE_COMPONENT_DATA( bool,       m_bUpdated );
+    //
+    END_DECLARE_COMPONENT;
+    //
+    
+    //-----------------------------------------------------------------------------
+    //  Collidable component
+    //  Allows an object to collide with others
+    //-----------------------------------------------------------------------------
+    BEGIN_DECLARE_COMPONENT( Collidable, MAX_OBJECTS );
+    //
+    enum VolumeType
+    {
+        BoundingSphere,
+        AABB,
+    };
+    union BoundingVolume
+    {
+        struct _sphere
+        {
+            float   position[3];
+            float   radius; // Radius is stored pre-squared
+        } sphere;
+        struct _AABB
+        {
+            float   min[3];
+            float   max[3];
+        } aabb;
+    };
+    DECLARE_COMPONENT_DATA( BoundingVolume, m_Volume );
+    DECLARE_COMPONENT_DATA( VolumeType,     m_nType );
+    public:
+        void ComputeBoundingSphere( const VPosNormalTex* pVerts, uint nVerts, uint nObject );
     //
     END_DECLARE_COMPONENT;
     //

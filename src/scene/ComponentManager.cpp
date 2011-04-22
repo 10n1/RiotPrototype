@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/20/2011 8:30:58 PM
+Modified:       4/21/2011 9:53:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -73,6 +73,7 @@ namespace Riot
         LOAD_COMPONENT( Render );
         LOAD_COMPONENT( Light );
         LOAD_COMPONENT( NewtonPhysics );
+        LOAD_COMPONENT( Collidable );
     }
 
     //-----------------------------------------------------------------------------
