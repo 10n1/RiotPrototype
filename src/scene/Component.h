@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/21/2011 10:36:49 PM
+Modified:       4/21/2011 11:30:54 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -30,7 +30,6 @@ namespace Riot
     enum eComponentType
     {
         eComponentRender,
-        eComponentUpdate,
         eComponentLight,
         eComponentNewtonPhysics,
         eComponentCollidable,
@@ -167,17 +166,6 @@ namespace Riot
     BEGIN_DECLARE_COMPONENT( Render, MAX_OBJECTS );
     //
     DECLARE_COMPONENT_DATA( CMesh*,     m_pMesh );
-    DECLARE_COMPONENT_DATA( RTransform, m_Transform );
-    //
-    END_DECLARE_COMPONENT;
-    //
-
-    //-----------------------------------------------------------------------------
-    //  Update component
-    //  Handles basic updating of objects
-    //-----------------------------------------------------------------------------
-    BEGIN_DECLARE_COMPONENT( Update, MAX_OBJECTS );
-    //
     DECLARE_COMPONENT_DATA( RTransform, m_Transform );
     //
     END_DECLARE_COMPONENT;

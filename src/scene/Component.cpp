@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/21/2011 10:44:18 PM
+Modified:       4/21/2011 11:30:55 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -209,81 +209,6 @@ namespace Riot
                 m_pMesh[nSlot]->AddRef();
             }
             break;
-        default:
-            {
-            }
-        }
-    }
-
-
-
-    /*********************************************************************************\
-    |*********************************************************************************|
-    |*********************************************************************************|
-    |*********************************************************************************|
-    \*********************************************************************************/
-
-    //-----------------------------------------------------------------------------
-    BEGIN_DEFINE_COMPONENT( Update )
-        eComponentMessageTransform,
-    END_DEFINE_COMPONENT( Update );
-    //-----------------------------------------------------------------------------
-
-
-    //-----------------------------------------------------------------------------
-    //  Attach
-    //  Attaches a component to an object
-    //-----------------------------------------------------------------------------
-    void CUpdateComponent::Attach( uint nIndex )
-    {
-        // Now initialize this component
-        m_Transform[nIndex] = RTransform();
-    }
-
-
-    //-----------------------------------------------------------------------------
-    //  Detach
-    //  Detaches a component to an object
-    //-----------------------------------------------------------------------------
-    void CUpdateComponent::Detach( uint nIndex )
-    {
-        // Now initialize this component
-        COMPONENT_REORDER_DATA( m_Transform );
-    }
-
-    //-----------------------------------------------------------------------------
-    //  ProcessComponent
-    //  Processes the component as necessary
-    //-----------------------------------------------------------------------------
-    void CUpdateComponent::ProcessComponent( void )
-    {
-        //CComponentManager* pManager = Engine::GetComponentManager();
-        //for( uint i = 0; i < m_nNumComponents; ++i )
-        //{
-        //    m_Transform[ i ].TranslateLocalY( Engine::m_fElapsedTime * 0.05f );
-        //
-        //    pManager->PostMessage( eComponentMessageTransform, m_pObjects[ i ], &m_Transform[i], ComponentType );
-        //}
-    }
-
-
-    //-----------------------------------------------------------------------------
-    //  ReceiveMessage
-
-    //  Receives and processes a message
-    //-----------------------------------------------------------------------------
-    void CUpdateComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
-    {
-        switch( msg.m_nMessageType )
-        {        
-        case eComponentMessageTransform:
-            {
-                RTransform& transform = *((RTransform*)msg.m_pData);
-
-                m_Transform[nSlot] = transform;
-            }
-            break;
-
         default:
             {
             }

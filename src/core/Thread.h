@@ -3,7 +3,7 @@ File:           Thread.h
 Purpose:        Interface for hardware threads
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 3:46:36 PM
+Modified:       4/21/2011 11:45:52 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _THREAD_H_
@@ -207,7 +207,7 @@ namespace Riot
 
         CMutex          m_TaskMutex;
         uint            m_nThreadId;
-        uint            m_nNumTasks;
+        atomic_t        m_nNumTasks;
         bool            m_bAwake;
         volatile bool   m_bFinished;
     };

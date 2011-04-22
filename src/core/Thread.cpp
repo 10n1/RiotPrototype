@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 7:42:28 PM
+Modified:       4/21/2011 11:54:57 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -101,7 +101,8 @@ namespace Riot
     {
         // Lock the mutex and add the task
         m_TaskMutex.Lock();
-        m_pTasks[m_nNumTasks++] = task;
+        uint nIndex = AtomicIncrement( &m_nNumTasks ) - 1;
+        m_pTasks[nIndex] = task;
         AtomicIncrement( task.pCompletion );
         m_TaskMutex.Unlock();
     }
@@ -120,7 +121,7 @@ namespace Riot
             return false;
         }
 
-        uint nTask = --m_nNumTasks;
+        uint nTask = AtomicDecrement( &m_nNumTasks );
 
         *pTask = m_pTasks[nTask];
         //task->pFunc     = m_pTasks[nTask].pFunc;
@@ -150,8 +151,8 @@ namespace Riot
                 uint nCount     = task.nCount;
 
                 pFunc( pData, m_nThreadId, nStart, nCount );
-                AtomicDecrement( task.pCompletion );
-                if( task.pCompletion == 0 )
+
+                if( AtomicDecrement( task.pCompletion ) == 0 )
                 {
                     AtomicDecrement( &m_pTaskManager->m_nActiveTasks );
                 }
@@ -201,7 +202,9 @@ namespace Riot
             *pTasks = m_pTasks[i];
             pTasks++;
         }
-        m_nNumTasks -= nCount;
+
+        AtomicAdd( &m_nNumTasks, -nCount );
+        //m_nNumTasks -= nCount;
         pIdleThread->m_nNumTasks = nCount;
 
         return true;
@@ -261,10 +264,10 @@ namespace Riot
     void CThread::MakeMainThread( CTaskManager* pTaskManager )
     {
         m_pTaskManager  = pTaskManager;
-        m_pThread           = System::GetCurrentThreadHandle();
-        m_bFinished         = false;
-        m_bAwake            = true;
-        m_nNumTasks         = 0;
+        m_pThread       = System::GetCurrentThreadHandle();
+        m_bFinished     = false;
+        m_bAwake        = true;
+        m_nNumTasks     = 0;
     }
 
     //-----------------------------------------------------------------------------

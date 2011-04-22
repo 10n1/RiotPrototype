@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/21/2011 10:39:40 PM
+Modified:       4/21/2011 11:32:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Renderer.h"
@@ -10,6 +10,7 @@ Modified by:    Kyle Weicht
 #include "Mesh.h"
 #include "VertexFormats.h"
 #include "View.h"
+#include "TaskManager.h"
 
 #if USE_OPENGL
 #include "OGLGraphics.h"
@@ -384,9 +385,13 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::SetLight( const RVector3& vPos, uint nIndex )
     {
+        static CMutex mutex;
+
+        mutex.Lock();
         m_bUpdateLighting = true;
         m_vLights[ nIndex ] = Homogonize(vPos);
         m_nNumActiveLights = nIndex + 1;
+        mutex.Unlock();
     }
 
     //-----------------------------------------------------------------------------

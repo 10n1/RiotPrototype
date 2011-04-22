@@ -3,7 +3,7 @@ File:           config.h
 Purpose:        Includes platform and build configurations
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/18/2011 6:55:17 PM
+Modified:       4/21/2011 11:47:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CONFIG_H_
@@ -125,6 +125,9 @@ Modified by:    Kyle Weicht
 #define MAX_OBJECTS             (16*1024)
 #define MAX_LIGHTS              8
 #define MAX_RENDER_COMMANDS     2048
+
+#define PARALLEL_UPDATE         (1 && MULTITHREADED)
+#define PIPELINED_RENDER        (1 && MULTITHREADED)
 
 #define RIOT_ALIGN_MEMORY           1
 #define RIOT_USE_INTRINSICS         1

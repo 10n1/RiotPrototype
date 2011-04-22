@@ -2,12 +2,13 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/21/2011 9:53:37 PM
+Modified:       4/21/2011 11:59:01 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
 #include "Engine.h"
 #include "ObjectManager.h"
+#include "TaskManager.h"
 
 namespace Riot
 {
@@ -69,7 +70,6 @@ namespace Riot
         m_nNumMessages = 0;
 
         // Do this for each component
-        LOAD_COMPONENT( Update );
         LOAD_COMPONENT( Render );
         LOAD_COMPONENT( Light );
         LOAD_COMPONENT( NewtonPhysics );
@@ -117,10 +117,14 @@ namespace Riot
     void CComponentManager::ProcessComponents( void )
     {
         // First update the components...
-        for( uint i = 0; i < eNUMCOMPONENTS; ++i )
-        {
-            m_ppComponents[i]->ProcessComponent();
-        }
+#if PARALLEL_UPDATE
+        static CTaskManager* pTaskManager = CTaskManager::GetInstance();
+
+        task_handle_t nProcessTask = pTaskManager->PushTask( ParallelProcessComponents, this, eNUMCOMPONENTS );
+        pTaskManager->WaitForCompletion( nProcessTask );
+#else
+        ParallelProcessComponents( this, 0, 0, eNUMCOMPONENTS );
+#endif
 
         // ...then resolve any discrepencies and handle messages
         for( uint nMessage = 0; nMessage < m_nNumMessages; ++nMessage )
@@ -129,6 +133,18 @@ namespace Riot
         }
 
         m_nNumMessages = 0;
+    }
+    void CComponentManager::ParallelProcessComponents( void* pData, uint nThreadId, uint nStart, uint nCount )
+    {
+        CComponentManager* pManager = (CComponentManager*)pData;
+
+        uint nEnd = nStart + nCount;
+
+        for( uint i = nStart; i < nEnd; ++i )
+        {
+            uint x = 0;
+            pManager->m_ppComponents[i]->ProcessComponent();
+        }
     }
 
 

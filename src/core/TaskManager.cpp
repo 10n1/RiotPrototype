@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/17/2011 1:11:59 PM
+Modified:       4/21/2011 11:15:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -10,6 +10,10 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
+    /***************************************\
+    | class members                         |
+    \***************************************/
+    CTaskManager* CTaskManager::m_pInstance = NULL;
 
     /***************************************\
     | class methods                         |

@@ -3,7 +3,7 @@ File:           TaskManager.h
 Purpose:        Task manager
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 7:28:00 PM
+Modified:       4/21/2011 11:17:09 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TASKMANAGER_H_
@@ -40,6 +40,11 @@ namespace Riot
         //  Shutdown
         //-----------------------------------------------------------------------------
         void Shutdown( void );
+        
+        //-----------------------------------------------------------------------------
+        //  GetInstance
+        //-----------------------------------------------------------------------------
+        inline static CTaskManager* GetInstance( void );
 
         //-----------------------------------------------------------------------------
         //  PushTask
@@ -70,16 +75,25 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
+        static CTaskManager*    m_pInstance;
+
         task_completion_t   m_nTaskCompletion[ MAX_TASKS ];
         CThread             m_Thread[ MAX_THREADS ];
         uint                m_nCurrentHandle;
         atomic_t            m_nActiveTasks;
         System::semaphore_t m_pSleep;
 
+
         uint    m_nNumThreads;
         bool    m_bShutdown;
         bool    m_bThreadsIdle;
     };
+
+
+    //-----------------------------------------------------------------------------
+    //  GetInstance
+    //-----------------------------------------------------------------------------
+    inline CTaskManager* CTaskManager::GetInstance( void ) { return m_pInstance; }
 
 } // namespace Riot
 

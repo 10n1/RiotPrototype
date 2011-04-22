@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/21/2011 10:43:08 PM
+Modified:       4/21/2011 11:41:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -227,6 +227,7 @@ namespace Riot
         // Initialize all modules
         System::Initialize();
         NEW_AND_INITIALIZE( m_pTaskManager, CTaskManager );
+        CTaskManager::m_pInstance = m_pTaskManager;
         NEW_AND_INITIALIZE( m_pMessageDispatcher, CMessageDispatcher );
         m_pMessageDispatcher->RegisterListener( Engine::GetInstance(), Engine::MessagesReceived, Engine::NumMessagesReceived );
         NEW_AND_INITIALIZE_AND_REGISTER( m_pInputManager, CInputManager );
@@ -263,7 +264,7 @@ namespace Riot
 
         static RQuaternion orientation = RQuatFromAxisAngle( RVector3( RandFloat(1.0f), RandFloat(1.0f), RandFloat(1.0f) ), RandFloat( gs_2PI ) );
         orientation = RQuaternionZero();
-        RTransform t = RTransform( orientation, RVector3( 0.0f, 0.0f, 0.0f ) );
+        RTransform t = RTransform( orientation, RVector3( 0.0f, 10.0f, 0.0f ) );
 
         // Add box 1
         uint nObject = m_pObjectManager->CreateObject();
@@ -280,7 +281,7 @@ namespace Riot
         m_pComponentManager->SendMessage( eComponentMessageCalculateCollidable, nObject, &data );
 
         // Add box 2
-        t.position = RVector3( 0.0f, 10.0f, 0.0f );
+        t.position = RVector3( 0.0f, 100.0f, 0.0f );
         nObject = m_pObjectManager->CreateObject();
 
         m_pObjectManager->AddComponent( nObject, eComponentNewtonPhysics );
@@ -294,7 +295,18 @@ namespace Riot
 
         //////////////////////////////////////////
         // Add a light
-        t = RTransform( orientation, RVector3( 0.0f, 5.0f, 0.0f ), 0.1f );
+        t = RTransform( orientation, RVector3( 0.0f, 15.0f, 0.0f ), 0.1f );
+
+        nObject = m_pObjectManager->CreateObject();
+        m_pObjectManager->AddComponent( nObject, eComponentLight );
+        m_pObjectManager->AddComponent( nObject, eComponentRender );
+        m_pComponentManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+        m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t  );
+
+        
+        //////////////////////////////////////////
+        // Add a light
+        t = RTransform( orientation, RVector3( 10.0f, 5.0f, 0.0f ), 0.1f );
 
         nObject = m_pObjectManager->CreateObject();
         m_pObjectManager->AddComponent( nObject, eComponentLight );
