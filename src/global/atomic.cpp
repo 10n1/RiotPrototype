@@ -2,7 +2,7 @@
 File:           atomic.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 3:15:39 PM
+Modified:       4/23/2011 12:57:41 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "atomic.h"
@@ -38,7 +38,7 @@ namespace Riot
     sint AtomicAdd( volatile sint* pValue, sint nValue )
     {
 #ifdef OS_WINDOWS
-        return _InterlockedExchangeAdd( (volatile long*)pValue, nValue );
+        return _InterlockedExchangeAdd( (volatile long*)pValue, nValue ) + nValue;
 #else
         return OSAtomicAdd32( nValue, pValue );
 #endif // #ifdef OS_WINDOWS
@@ -65,7 +65,7 @@ namespace Riot
     sint64 AtomicAdd64( volatile sint64* pValue, sint64 nValue )
     {
 #ifdef OS_WINDOWS
-        return _InterlockedExchangeAdd64( (volatile __int64*)pValue, nValue );
+        return _InterlockedExchangeAdd64( (volatile __int64*)pValue, nValue ) + nValue;
 #else
         return OSAtomicAdd64( nValue, pValue );
 #endif // #ifdef OS_WINDOWS

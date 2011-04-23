@@ -3,7 +3,7 @@ File:           Thread.h
 Purpose:        Interface for hardware threads
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/22/2011 1:38:09 AM
+Modified:       4/23/2011 1:10:12 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _THREAD_H_
@@ -19,16 +19,17 @@ namespace Riot
     typedef void (TaskFunc)( void* pData, uint nThreadId, uint nStart, uint nCount );
     typedef uint        task_handle_t;
     typedef atomic_t    task_completion_t;
-    static const        task_handle_t INVALID_HANDLE = 0xFFFFFFFF;
+    static const        task_handle_t TASK_INVALID_HANDLE = 0xFFFFFFFF;
 
     // Task definition
     struct TTask
     {
-        TaskFunc*           pFunc;
-        void*               pData;
-        uint                nStart;
-        uint                nCount;
-        task_completion_t*  pCompletion;
+        TaskFunc*   pFunc;
+        void*       pData;
+        atomic_t    nStart;
+        uint        nCount;
+        uint        nChunkSize;
+        atomic_t    nCompletion;
     };
 
     class CMutex
@@ -72,7 +73,11 @@ namespace Riot
     public:
         // CScopedMutex constructor
         CScopedMutex( ) : m_pMutex( NULL ) { }
-        CScopedMutex( CMutex* pMutex, bool bLock = true ) : m_pMutex( pMutex ) { if( bLock ) m_pMutex->Lock(); }
+        CScopedMutex( CMutex* pMutex, bool bLock = true ) : m_pMutex( pMutex ) 
+        { 
+            if( bLock ) 
+                m_pMutex->Lock(); 
+        }
 
         // CScopedMutex destructor
         ~CScopedMutex() { if( m_pMutex ) m_pMutex->Unlock(); }
@@ -164,7 +169,7 @@ namespace Riot
         //  PushTask
         //  Pushes a task onto the top of the task queue
         //-----------------------------------------------------------------------------
-        void PushTask( TTask& task );
+        void PushTask( const TTask& task );
 
         //-----------------------------------------------------------------------------
         //  PopTask
@@ -176,7 +181,7 @@ namespace Riot
         //  DoWork
         //  The thread starts doing work. It'll steal more if it has to
         //-----------------------------------------------------------------------------
-        void DoWork( task_completion_t* pCompletion );
+        void DoWork( void );
 
         //-----------------------------------------------------------------------------
         //  GiveUpWork
@@ -206,9 +211,7 @@ namespace Riot
         System::mutex_t             m_pSystemMutex;
         CTaskManager*               m_pTaskManager;
 
-        CMutex          m_TaskMutex;
         uint            m_nThreadId;
-        uint            m_nNumTasks;
         volatile bool   m_bFinished;
     };
 

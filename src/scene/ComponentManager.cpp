@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/22/2011 6:16:17 PM
+Modified:       4/22/2011 8:36:09 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -26,7 +26,7 @@ namespace Riot
         }
     }
 
-#define LOAD_COMPONENT( Name ) LoadComponent<C##Name##Component>()
+#define LOAD_COMPONENT( Component ) LoadComponent<Component>()
 #else
 #define LOAD_COMPONENT( Component )                                  \
     m_ppComponents[ Component::ComponentType ] = new Component;   \
@@ -120,6 +120,8 @@ namespace Riot
         static CTaskManager* pTaskManager = CTaskManager::GetInstance();
 
         // First update the components...
+        //ParallelProcessComponents( this, 0, 0, eNUMCOMPONENTS );
+
         task_handle_t nProcessTask = pTaskManager->PushTask( ParallelProcessComponents, this, eNUMCOMPONENTS );
         pTaskManager->WaitForCompletion( nProcessTask );
 
@@ -127,7 +129,7 @@ namespace Riot
         ParallelProcessComponentMessages( this, 0, 0, m_nNumMessages );
 #else
         // ...then resolve any discrepencies and handle messages
-        task_handle_t nMessageTask = pTaskManager->PushTask( ParallelProcessComponentMessages, this, m_nNumMessages, 16 );
+        task_handle_t nMessageTask = pTaskManager->PushTask( ParallelProcessComponentMessages, this, m_nNumMessages, 1 );
         pTaskManager->WaitForCompletion( nMessageTask );
 #endif
 

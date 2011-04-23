@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/22/2011 5:57:36 PM
+Modified:       4/23/2011 1:10:12 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -50,7 +50,6 @@ namespace Riot
         m_bFinished         = false;
         m_pSystemMutex      = System::CreateRiotMutex();
         m_pWakeCondition    = System::CreateWaitCondition();
-        m_nNumTasks         = 0;
 
         Memset( m_pTasks, 0, sizeof(m_pTasks) );
 
@@ -72,24 +71,6 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CThread::ThreadProc( void )
     {
-#if 0
-        do
-        {
-            //while( m_pTaskManager->m_nActiveTasks )
-            {
-                // Do all your work
-                DoWork( NULL );
-
-                // Make sure we're not shutting down
-                if( m_pTaskManager->m_bShutdown )
-                    break;
-            }
-
-            // Idle the thread
-            Idle();
-
-        } while( !m_pTaskManager->m_bShutdown );
-#else
         for(;;)
         {
             // Idle the thread
@@ -100,13 +81,8 @@ namespace Riot
                 break;
 
             // Do all the work you can
-            DoWork( NULL );
-
-            // Make sure we're not shutting down
-            if( m_pTaskManager->m_bShutdown )
-                break;
+            DoWork( );
         }
-#endif
 
         m_bFinished = true;
     }
@@ -115,13 +91,16 @@ namespace Riot
     //  PushTask
     //  Pushes a task onto the top of the task queue
     //-----------------------------------------------------------------------------
-    void CThread::PushTask( TTask& task )
+    void CThread::PushTask( const TTask& task )
     {
-        // Lock the mutex and add the task
-        CScopedMutex lock( &m_TaskMutex );
-
-        m_pTasks[m_nNumTasks++] = task;
-        AtomicIncrement( task.pCompletion );
+        //// Lock the mutex and add the task
+        //CScopedMutex lock( &m_TaskMutex );
+        //
+        //m_pTasks[m_nNumTasks++] = task;
+        //AtomicIncrement( task.pCompletion );
+        //
+        //// Wake up and start working
+        //Wake();
     }
 
     //-----------------------------------------------------------------------------
@@ -130,52 +109,41 @@ namespace Riot
     //-----------------------------------------------------------------------------
     bool CThread::PopTask( TTask* pTask )
     {
-        // Lock the mutex and pop the task off
-        CScopedMutex lock( &m_TaskMutex );
+        //// Lock the mutex and pop the task off
+        //CScopedMutex lock( &m_TaskMutex );
 
-        if( m_nNumTasks == 0 )
-        {
-            return false;
-        }
+        //if( m_nNumTasks == 0 )
+        //{
+        //    return false;
+        //}
 
-        *pTask = m_pTasks[--m_nNumTasks];
+        //*pTask = m_pTasks[--m_nNumTasks];
 
-        return true;
+        //return true;
+
+        return false;
     }
  
     //-----------------------------------------------------------------------------
     //  DoWork
     //  The thread starts doing work. It'll steal more if it has to
     //-----------------------------------------------------------------------------
-    void CThread::DoWork( task_completion_t* pCompletion )
+    void CThread::DoWork( void )
     {
-        do
+        TTask*  pTask = NULL;
+        sint    nStart = 0;
+        sint    nCount = 0;
+
+        while( m_pTaskManager->GetWork( &pTask, &nStart, &nCount ) )
         {
-            TTask task;
-            while( PopTask( &task ) )
-            {
-                // Grab some work and do it
-                TaskFunc* pFunc  = task.pFunc;  
-                void*     pData  = task.pData;
-                uint      nStart = task.nStart;
-                uint      nCount = task.nCount;
+            TaskFunc* pFunc  = pTask->pFunc;  
+            void*     pData  = pTask->pData;
 
-                pFunc( pData, m_nThreadId, nStart, nCount );
+            pFunc( pData, m_nThreadId, nStart, nCount );
 
-                if( AtomicDecrement( task.pCompletion ) == 0 )
-                {   
-                    // We just finished a task, tell the task manager
-                    AtomicDecrement( &m_pTaskManager->m_nActiveTasks );
-                }
-
-                if( pCompletion && (*pCompletion == 0) )
-                {
-                    // What we're waiting for is done
-                    return;
-                }
-            }
-
-        } while( StealTasks() );
+            // Let the task know it's done being worked on
+            AtomicDecrement( &pTask->nCompletion );
+        }
     }
 
     //-----------------------------------------------------------------------------
@@ -184,40 +152,41 @@ namespace Riot
     //-----------------------------------------------------------------------------
     bool CThread::GiveUpWork( CThread* pIdleThread )
     {
-        CScopedMutex lock;
-        if( lock.TryLock( &m_TaskMutex ) == false )
-        {
-            // This thread is locked, leave
-            return false;
-        }
-
-        if( m_nNumTasks == 0 || m_nNumTasks == 1 )
-        {
-            // We've just finished our work, leave
-            return false;
-        }
-
-        // We now own the thread and theres work. Let's take it!
-        CScopedMutex idleLock( &pIdleThread->m_TaskMutex );
-
-        if( pIdleThread->m_nNumTasks )
-        {
-            // In this short period, we've been given work. Leave
-            return false;
-        }
-
-        uint nCount = (m_nNumTasks+1) >> 1;
-        TTask* pTasks = pIdleThread->m_pTasks;
-        for( uint i = m_nNumTasks-nCount; i < m_nNumTasks; ++i )
-        {
-            *pTasks = m_pTasks[i];
-            pTasks++;
-        }
-
-        m_nNumTasks -= nCount;
-        pIdleThread->m_nNumTasks = nCount;
-
-        return true;
+        //CScopedMutex lock;
+        //if( lock.TryLock( &m_TaskMutex ) == false )
+        //{
+        //    // This thread is locked, leave
+        //    return false;
+        //}
+        //
+        //if( m_nNumTasks == 0 || m_nNumTasks == 1 )
+        //{
+        //    // We've just finished our work, leave
+        //    return false;
+        //}
+        //
+        //// We now own the thread and theres work. Let's take it!
+        //CScopedMutex idleLock( &pIdleThread->m_TaskMutex );
+        //
+        //if( pIdleThread->m_nNumTasks )
+        //{
+        //    // In this short period, we've been given work. Leave
+        //    return false;
+        //}
+        //
+        //uint nCount = (m_nNumTasks+1) >> 1;
+        //TTask* pTasks = pIdleThread->m_pTasks;
+        //for( uint i = m_nNumTasks-nCount; i < m_nNumTasks; ++i )
+        //{
+        //    *pTasks = m_pTasks[i];
+        //    pTasks++;
+        //}
+        //
+        //m_nNumTasks -= nCount;
+        //pIdleThread->m_nNumTasks = nCount;
+        //
+        //return true;
+        return false;
     }
 
     //-----------------------------------------------------------------------------
@@ -226,27 +195,27 @@ namespace Riot
     //-----------------------------------------------------------------------------
     bool CThread::StealTasks( void )
     {
-        uint nStart = m_nThreadId+1;
-        uint nEnd   = m_pTaskManager->m_nNumThreads + m_nThreadId;
-        for( uint i = nStart; i < nEnd; ++i )
-        {
-            uint nIndex = i % m_pTaskManager->m_nNumThreads;
-            CThread* pThread = &m_pTaskManager->m_Thread[ nIndex ];
-
-            //if( pThread == this ) continue; // Don't steal from yourself, that's silly
-
-            if( pThread->GiveUpWork( this ) )
-            {
-                // We sucessfully stole work!
-                return true;
-            }
-
-            if( m_nNumTasks )
-            {
-                // We've been given work!
-                return true;
-            }
-        }
+        //uint nStart = m_nThreadId+1;
+        //uint nEnd   = m_pTaskManager->m_nNumThreads + m_nThreadId;
+        //for( uint i = nStart; i < nEnd; ++i )
+        //{
+        //    uint nIndex = i % m_pTaskManager->m_nNumThreads;
+        //    CThread* pThread = &m_pTaskManager->m_Thread[ nIndex ];
+        //
+        //    //if( pThread == this ) continue; // Don't steal from yourself, that's silly
+        //
+        //    if( pThread->GiveUpWork( this ) )
+        //    {
+        //        // We sucessfully stole work!
+        //        return true;
+        //    }
+        //
+        //    if( m_nNumTasks )
+        //    {
+        //        // We've been given work!
+        //        return true;
+        //    }
+        //}
 
 
         return false;
@@ -274,7 +243,6 @@ namespace Riot
         m_pTaskManager  = pTaskManager;
         m_pThread       = System::GetCurrentThreadHandle();
         m_bFinished     = false;
-        m_nNumTasks     = 0;
     }
 
     //-----------------------------------------------------------------------------

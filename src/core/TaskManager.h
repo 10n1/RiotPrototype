@@ -3,7 +3,7 @@ File:           TaskManager.h
 Purpose:        Task manager
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/22/2011 1:15:16 AM
+Modified:       4/23/2011 12:55:00 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TASKMANAGER_H_
@@ -16,7 +16,7 @@ namespace Riot
 
     class CTaskManager
     {
-    private:
+    public:
 
         friend class CThread;
         friend class Engine;
@@ -70,6 +70,12 @@ namespace Riot
         //  Waits for all threads to be idle
         //-----------------------------------------------------------------------------
         void WaitForThreads( void );
+        
+        //-----------------------------------------------------------------------------
+        //  GetWork
+        //  Retrieves work for the thread to do
+        //-----------------------------------------------------------------------------
+        bool GetWork( TTask** ppTask, sint* pStart, sint* pCount );
 
     private:
         /***************************************\
@@ -77,14 +83,16 @@ namespace Riot
         \***************************************/
         static CTaskManager*    m_pInstance;
 
-        task_completion_t   m_nTaskCompletion[ MAX_TASKS ];
+        TTask               m_pTasks[ MAX_TASKS ];
+
+        atomic_t            m_nStartTask;
+        atomic_t            m_nEndTask;
+
         CThread             m_Thread[ MAX_THREADS ];
-        CMutex              m_HandleMutex;
 
         atomic_t            m_nCurrentHandle;
         atomic_t            m_nActiveTasks;
         System::semaphore_t m_pSleep;
-
 
         uint    m_nNumThreads;
         bool    m_bShutdown;

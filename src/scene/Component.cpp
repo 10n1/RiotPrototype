@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/22/2011 6:17:04 PM
+Modified:       4/22/2011 8:36:10 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -10,6 +10,7 @@ Modified by:    Kyle Weicht
 #include "Engine.h"
 #include "ComponentManager.h"
 #include "Mesh.h"
+#include "TaskManager.h"
 
 namespace Riot
 {
@@ -349,17 +350,32 @@ namespace Riot
     void CCollidableComponent::ProcessComponent( void )
     {
         CComponentManager* pManager = Engine::GetComponentManager();
+        CTaskManager*      pTaskManager = CTaskManager::GetInstance();
 
-        for( sint i = 0; i < m_nNumComponents; ++i )
+#if PARALLEL_UPDATE
+        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumComponents, 1 );
+        pTaskManager->WaitForCompletion( nHandle );
+#else
+        ProcessBatch( this, 0, 0, m_nNumComponents );
+#endif
+    }
+    void CCollidableComponent::ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount )
+    {
+        CCollidableComponent* pComponent = (CCollidableComponent*)pData;
+        CComponentManager*    pManager = Engine::GetComponentManager();
+
+        uint nEnd = nStart + nCount;
+        
+        for( sint i = nStart; i < nEnd; ++i )
         {
-            for( sint j = 0; j < m_nNumComponents; ++j )
+            for( sint j = 0; j < pComponent->m_nNumComponents; ++j )
             {
                 if( i == j ) continue;
 
-                float fRadSq = m_Volume[i].sphere.radius + m_Volume[j].sphere.radius;
+                float fRadSq = pComponent->m_Volume[i].sphere.radius + pComponent->m_Volume[j].sphere.radius;
 
-                RVector3 pos1( m_Volume[i].sphere.position );
-                RVector3 pos2( m_Volume[j].sphere.position );
+                RVector3 pos1( pComponent->m_Volume[i].sphere.position );
+                RVector3 pos2( pComponent->m_Volume[j].sphere.position );
 
                 RVector3 diff = pos2-pos1;
 
@@ -367,7 +383,7 @@ namespace Riot
 
                 if( fDistance <= fRadSq )
                 {
-                    pManager->PostMessage( eComponentMessageCollision, m_pObjects[ i ], j, ComponentType );
+                    pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjects[ i ], j, pComponent->ComponentType );
                 }
             }
         }
