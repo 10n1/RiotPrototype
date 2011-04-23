@@ -4,7 +4,7 @@ Purpose:        Interface to the base system. All platform
 specific functions will be called here.
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/16/2011 2:23:33 PM
+Modified:       4/23/2011 12:31:24 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEM_H_
@@ -30,8 +30,13 @@ namespace Riot
         typedef unsigned long   thread_return_t;
         typedef handle          thread_handle_t;
         typedef handle          semaphore_t;
-        typedef handle          wait_condition_t;
+        //typedef handle          wait_condition_t;
         typedef handle          mutex_t;
+
+        typedef struct _wait_condition_t
+        {
+            atomic_t    nCount;
+        } wait_condition_t;
 #else
         typedef void*           thread_return_t;
         typedef pthread_t       thread_handle_t;

@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 2:29:58 AM
+Modified:       4/23/2011 12:40:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -123,6 +123,9 @@ namespace Riot
 
         if( nChunkSize == 0 )
             nChunkSize = 1;
+        
+        // Increment the task counter so threads know work is coming
+        AtomicIncrement( &m_nActiveTasks );
 
         // First we need to find a new handle to use
         task_handle_t nHandle = (AtomicIncrement( &m_nEndTask ) - 1) % MAX_TASKS;
@@ -146,7 +149,6 @@ namespace Riot
                         //  all the work has been completed
         };
 
-        AtomicIncrement( &m_nActiveTasks );
 
         // Distribute the tasks to the threads
         m_pTasks[nHandle] = newTask;
@@ -212,7 +214,8 @@ namespace Riot
 
         if( nStart >= nCount )
         {
-            if( AtomicCompareAndSwap( &m_nStartTask, nStartTask + 1, nStartTask ) == nStartTask )
+            uint nCurrentStart = AtomicCompareAndSwap( &m_nStartTask, nStartTask + 1, nStartTask );
+            if( nCurrentStart == nStartTask )
             {
                 // we're currently starting past the end,
                 //  this task is clearly done.
@@ -226,7 +229,9 @@ namespace Riot
             *ppTask = NULL;
             return true;
         }
-
+        
+        // Let the task know its being worked on
+        AtomicIncrement( &m_pTasks[nTaskIndex].nCompletion );
 
         if( nEnd > nCount )
         {
@@ -234,8 +239,6 @@ namespace Riot
             nNewCount = nCount - nStart;
         }
         
-        // Let the task know its being worked on
-        AtomicIncrement( &m_pTasks[nTaskIndex].nCompletion );
 
         *ppTask = &m_pTasks[nTaskIndex];
         *pStart = nStart;
