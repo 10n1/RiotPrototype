@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/22/2011 1:36:45 AM
+Modified:       4/22/2011 5:48:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -120,9 +120,7 @@ namespace Riot
         // First we need to find a new handle to use
         m_HandleMutex.Lock();
         task_handle_t   nHandle = ++m_nCurrentHandle % MAX_TASKS;
-
         assert( nHandle < MAX_TASKS );
-
         while( m_nTaskCompletion[nHandle] )
         {
             nHandle = (++m_nCurrentHandle %= MAX_TASKS);
@@ -159,7 +157,7 @@ namespace Riot
 
             nStart += nChunkSize;
         }
-
+        
         // Make sure the threads are awake
         WakeThreads();
 

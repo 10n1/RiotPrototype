@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/21/2011 11:54:57 PM
+Modified:       4/22/2011 5:57:36 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -52,7 +52,9 @@ namespace Riot
         m_pWakeCondition    = System::CreateWaitCondition();
         m_nNumTasks         = 0;
 
-        m_pThread = System::SpawnThread( &_ThreadProc, this );
+        Memset( m_pTasks, 0, sizeof(m_pTasks) );
+
+        m_pThread           = System::SpawnThread( &_ThreadProc, this );
     }
 
     //-----------------------------------------------------------------------------
@@ -73,7 +75,7 @@ namespace Riot
 #if 0
         do
         {
-            while( m_pTaskManager->m_nActiveTasks )
+            //while( m_pTaskManager->m_nActiveTasks )
             {
                 // Do all your work
                 DoWork( NULL );
@@ -97,15 +99,12 @@ namespace Riot
             if( m_pTaskManager->m_bShutdown )
                 break;
 
-            while( m_pTaskManager->m_nActiveTasks )
-            {
-                // Do all your work
-                DoWork( NULL );
+            // Do all the work you can
+            DoWork( NULL );
 
-                // Make sure we're not shutting down
-                if( m_pTaskManager->m_bShutdown )
-                    break;
-            }
+            // Make sure we're not shutting down
+            if( m_pTaskManager->m_bShutdown )
+                break;
         }
 #endif
 
@@ -227,13 +226,14 @@ namespace Riot
     //-----------------------------------------------------------------------------
     bool CThread::StealTasks( void )
     {
-        // Using this thread counter so we're not always trying to grab from the same thread
-
-        for( uint i = 0; i < m_pTaskManager->m_nNumThreads; ++i )
+        uint nStart = m_nThreadId+1;
+        uint nEnd   = m_pTaskManager->m_nNumThreads + m_nThreadId;
+        for( uint i = nStart; i < nEnd; ++i )
         {
-            CThread* pThread = &m_pTaskManager->m_Thread[ i ];
+            uint nIndex = i % m_pTaskManager->m_nNumThreads;
+            CThread* pThread = &m_pTaskManager->m_Thread[ nIndex ];
 
-            if( pThread == this ) continue; // Don't steal from yourself, that's silly
+            //if( pThread == this ) continue; // Don't steal from yourself, that's silly
 
             if( pThread->GiveUpWork( this ) )
             {

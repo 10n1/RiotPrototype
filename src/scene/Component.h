@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/21/2011 11:30:54 PM
+Modified:       4/22/2011 6:18:26 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -126,18 +126,17 @@ namespace Riot
     \*****************************************************************************/
 
     //
-#define BEGIN_DECLARE_COMPONENT( Name, MaxCount )               \
-    class C##Name##Component : public CComponent                \
+#define BEGIN_DECLARE_COMPONENT( Component, Type, MaxCount )    \
+    class Component : public CComponent                         \
     {                                                           \
     public:                                                     \
-    C##Name##Component();                                       \
-    ~C##Name##Component();                                      \
+    Component();                                                \
+    ~Component();                                               \
     void Attach( uint nIndex );                                 \
     void Detach( uint nIndex );                                 \
     void ProcessComponent( void );                              \
     void ReceiveMessage( uint nSlot, CComponentMessage& msg );  \
-    \
-    static const eComponentType ComponentType=eComponent##Name; \
+    static const eComponentType ComponentType=Type;             \
     static const uint MaxComponents = MaxCount;                 \
     static const eComponentMessageType MessagesReceived[];      \
     static const uint NumMessagesReceived;                      \
@@ -163,7 +162,7 @@ namespace Riot
     //  Render component
     //  Component used for rendering all basic objects
     //-----------------------------------------------------------------------------
-    BEGIN_DECLARE_COMPONENT( Render, MAX_OBJECTS );
+    BEGIN_DECLARE_COMPONENT( CRenderComponent, eComponentRender, MAX_OBJECTS );
     //
     DECLARE_COMPONENT_DATA( CMesh*,     m_pMesh );
     DECLARE_COMPONENT_DATA( RTransform, m_Transform );
@@ -175,7 +174,7 @@ namespace Riot
     //  Light component
     //  Turns an object into a light!
     //-----------------------------------------------------------------------------
-    BEGIN_DECLARE_COMPONENT( Light, MAX_LIGHTS );
+    BEGIN_DECLARE_COMPONENT( CLightComponent, eComponentLight, MAX_LIGHTS );
     //
     DECLARE_COMPONENT_DATA( RTransform, m_Transform );
     DECLARE_COMPONENT_DATA( bool,       m_bUpdated );
@@ -187,7 +186,7 @@ namespace Riot
     //  Collidable component
     //  Allows an object to collide with others
     //-----------------------------------------------------------------------------
-    BEGIN_DECLARE_COMPONENT( Collidable, MAX_OBJECTS );
+    BEGIN_DECLARE_COMPONENT( CCollidableComponent, eComponentCollidable, MAX_OBJECTS );
     //
     enum VolumeType
     {
@@ -209,6 +208,8 @@ namespace Riot
     };
     DECLARE_COMPONENT_DATA( BoundingVolume, m_Volume );
     DECLARE_COMPONENT_DATA( VolumeType,     m_nType );
+
+    static void ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount );
     public:
         struct MeshData
         {
@@ -223,7 +224,7 @@ namespace Riot
     //  NewtonPhysics component
     //  Makes an object behave with standard NewtonPhysicsian physics
     //-----------------------------------------------------------------------------
-    BEGIN_DECLARE_COMPONENT( NewtonPhysics, MAX_OBJECTS );
+    BEGIN_DECLARE_COMPONENT( CNewtonPhysicsComponent, eComponentNewtonPhysics, MAX_OBJECTS );
     //
     DECLARE_COMPONENT_DATA( RTransform, m_Transform );
     DECLARE_COMPONENT_DATA( RVector3,   m_vVelocity );

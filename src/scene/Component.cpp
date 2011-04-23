@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/21/2011 11:30:55 PM
+Modified:       4/22/2011 6:17:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -17,22 +17,22 @@ namespace Riot
     /*****************************************************************************\
     \*****************************************************************************/
     //
-    #define BEGIN_DEFINE_COMPONENT( Name )  \
-    C##Name##Component::C##Name##Component()            \
+    #define BEGIN_DEFINE_COMPONENT( Component )  \
+    Component::Component()            \
     {                                                   \
         m_nMaxComponents = MaxComponents;               \
         m_pObjects = new uint[MaxComponents];           \
         Memset( m_pObjects, 0, sizeof(uint) * MaxComponents ); \
     }                                                   \
-    C##Name##Component::~C##Name##Component() { }       \
-    const eComponentMessageType C##Name##Component::MessagesReceived[] =    \
+    Component::~Component() { }       \
+    const eComponentMessageType Component::MessagesReceived[] =    \
     {
     //
 
     //
-    #define END_DEFINE_COMPONENT( Name ) \
+    #define END_DEFINE_COMPONENT( Component ) \
     };                                            \
-    const uint C##Name##Component::NumMessagesReceived   =  (MessagesReceived[0] == eNULLCOMPONENTMESSAGE) ? 0 : sizeof( MessagesReceived ) / sizeof( eComponentMessageType )
+    const uint Component::NumMessagesReceived   =  (MessagesReceived[0] == eNULLCOMPONENTMESSAGE) ? 0 : sizeof( MessagesReceived ) / sizeof( eComponentMessageType )
     //
 
     //
@@ -140,11 +140,11 @@ namespace Riot
     \*********************************************************************************/
 
     //-----------------------------------------------------------------------------
-    BEGIN_DEFINE_COMPONENT( Render )
+    BEGIN_DEFINE_COMPONENT( CRenderComponent )
         eComponentMessageUpdate, 
         eComponentMessageTransform,
         eComponentMessageMesh
-    END_DEFINE_COMPONENT( Render );
+    END_DEFINE_COMPONENT( CRenderComponent );
     //-----------------------------------------------------------------------------
 
 
@@ -223,9 +223,9 @@ namespace Riot
     \*********************************************************************************/
 
     //-----------------------------------------------------------------------------
-    BEGIN_DEFINE_COMPONENT( Light )
+    BEGIN_DEFINE_COMPONENT( CLightComponent )
         eComponentMessageTransform
-    END_DEFINE_COMPONENT( Light );
+    END_DEFINE_COMPONENT( CLightComponent );
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -313,12 +313,12 @@ namespace Riot
     //  Collidable component
     //  Makes an object behave with standard Collidableian physics
     //-----------------------------------------------------------------------------
-    BEGIN_DEFINE_COMPONENT( Collidable )
+    BEGIN_DEFINE_COMPONENT( CCollidableComponent )
         eComponentMessageTransform,
         eComponentMessageBoundingVolumeType,
         eComponentMessageCollision,
         eComponentMessageCalculateCollidable,
-    END_DEFINE_COMPONENT( Collidable );
+    END_DEFINE_COMPONENT( CCollidableComponent );
     
     //-----------------------------------------------------------------------------
     //  Attach
@@ -438,10 +438,10 @@ namespace Riot
     //  NewtonPhysics component
     //  Makes an object behave with standard NewtonPhysicsian physics
     //-----------------------------------------------------------------------------
-    BEGIN_DEFINE_COMPONENT( NewtonPhysics )
+    BEGIN_DEFINE_COMPONENT( CNewtonPhysicsComponent )
         eComponentMessageTransform,
         eComponentMessageCollision,
-    END_DEFINE_COMPONENT( NewtonPhysics );
+    END_DEFINE_COMPONENT( CNewtonPhysicsComponent );
     
     //-----------------------------------------------------------------------------
     //  Attach

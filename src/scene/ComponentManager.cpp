@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/22/2011 5:33:16 PM
+Modified:       4/22/2011 6:16:17 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -28,11 +28,11 @@ namespace Riot
 
 #define LOAD_COMPONENT( Name ) LoadComponent<C##Name##Component>()
 #else
-#define LOAD_COMPONENT( Name )                                  \
-    m_ppComponents[ C##Name##Component::ComponentType ] = new C##Name##Component;   \
-    for( uint i = 0; i < C##Name##Component::NumMessagesReceived; ++i )       \
+#define LOAD_COMPONENT( Component )                                  \
+    m_ppComponents[ Component::ComponentType ] = new Component;   \
+    for( uint i = 0; i < Component::NumMessagesReceived; ++i )       \
     {                                                                   \
-    m_bRegistered[ C##Name##Component::MessagesReceived[i] ][ C##Name##Component::ComponentType ] = true; \
+    m_bRegistered[ Component::MessagesReceived[i] ][ Component::ComponentType ] = true; \
 }
 #endif    
     /*****************************************************************************\
@@ -71,10 +71,10 @@ namespace Riot
         m_nNumMessages = 0;
 
         // Do this for each component
-        LOAD_COMPONENT( Render );
-        LOAD_COMPONENT( Light );
-        LOAD_COMPONENT( NewtonPhysics );
-        LOAD_COMPONENT( Collidable );
+        LOAD_COMPONENT( CRenderComponent );
+        LOAD_COMPONENT( CLightComponent );
+        LOAD_COMPONENT( CNewtonPhysicsComponent );
+        LOAD_COMPONENT( CCollidableComponent );
     }
 
     //-----------------------------------------------------------------------------

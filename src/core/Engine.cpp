@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/21/2011 11:41:44 PM
+Modified:       4/22/2011 6:08:45 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -19,6 +19,8 @@ Modified by:    Kyle Weicht
 #include "ObjectManager.h"
 #include "Terrain.h"
 #include "Camera.h"
+
+#include <stdio.h>
 
 #define SHUTDOWN_AND_DELETE( Module ) if( Module ) { Module->Shutdown(); delete Module; Module = NULL; }
 #define NEW_AND_INITIALIZE( Module, Type ) Module = new Type; Module->Initialize();
@@ -125,6 +127,19 @@ namespace Riot
             if( m_fElapsedTime > 1.0f )
             {   // Prevent huge lapses in frame rate (when debugging, etc.)
                 m_fElapsedTime = 1.0f/60.0f;
+            }
+
+            static float fFPSTime = 0.0f;
+            static uint  nFPSFrames = 0;
+
+            fFPSTime += m_fElapsedTime;
+            nFPSFrames++;
+
+            if( fFPSTime > 1.0f )
+            {
+                printf( "FPS: %d\n", nFPSFrames );
+                fFPSTime = 0.0f;
+                nFPSFrames = 0;
             }
         }
 
@@ -280,17 +295,20 @@ namespace Riot
 
         m_pComponentManager->SendMessage( eComponentMessageCalculateCollidable, nObject, &data );
 
-        // Add box 2
-        t.position = RVector3( 0.0f, 100.0f, 0.0f );
-        nObject = m_pObjectManager->CreateObject();
+        // Add more boxes
+        for( uint i = 0; i < 1024; ++i )
+        {
+            t.position = RVector3( 0.0f, i * 10.0f + 20.0f, 0.0f );
+            nObject = m_pObjectManager->CreateObject();
 
-        m_pObjectManager->AddComponent( nObject, eComponentNewtonPhysics );
-        m_pObjectManager->AddComponent( nObject, eComponentRender );
-        m_pObjectManager->AddComponent( nObject, eComponentCollidable );
+            m_pObjectManager->AddComponent( nObject, eComponentNewtonPhysics );
+            m_pObjectManager->AddComponent( nObject, eComponentRender );
+            m_pObjectManager->AddComponent( nObject, eComponentCollidable );
 
-        m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t );
-        m_pComponentManager->SendMessage( eComponentMessageMesh, nObject, pBox );
-        m_pComponentManager->SendMessage( eComponentMessageCalculateCollidable, nObject, &data );
+            m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t );
+            m_pComponentManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+            m_pComponentManager->SendMessage( eComponentMessageCalculateCollidable, nObject, &data );
+        }
 
 
         //////////////////////////////////////////
