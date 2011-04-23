@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/22/2011 7:04:03 PM
+Modified:       4/23/2011 1:36:19 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -296,7 +296,7 @@ namespace Riot
         m_pComponentManager->SendMessage( eComponentMessageCalculateCollidable, nObject, &data );
 
         // Add more boxes
-        for( uint i = 0; i < 1024; ++i )
+        for( uint i = 1; i < 1024; ++i )
         {
             t.position = RVector3( 0.0f, i * 10.0f + 20.0f, 0.0f );
             nObject = m_pObjectManager->CreateObject();

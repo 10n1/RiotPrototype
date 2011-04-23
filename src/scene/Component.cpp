@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/22/2011 8:36:10 PM
+Modified:       4/23/2011 1:38:15 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"

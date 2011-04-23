@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 1:21:18 AM
+Modified:       4/23/2011 1:41:19 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -117,6 +117,11 @@ namespace Riot
     //-----------------------------------------------------------------------------
     task_handle_t CTaskManager::PushTask( TaskFunc* pFunc, void* pData, uint nCount, uint nChunkSize )
     {
+        CScopedMutex lock( &m_PushMutex );
+
+        ASSERT( m_nStartTask < MAX_TASKS );
+        ASSERT( m_nEndTask < MAX_TASKS );
+
         if( nChunkSize == 0 )
             nChunkSize = 1;
 
@@ -129,6 +134,9 @@ namespace Riot
             ; // Our task buffer is somehow filled, spin while waiting
             //  TODO: Use this time to do some work, but this is very unlikely to ever be hit
         }
+        
+        ASSERT( m_nStartTask < MAX_TASKS );
+        ASSERT( m_nEndTask < MAX_TASKS );
 
         // Create our new task
         TTask   newTask = 
@@ -143,10 +151,14 @@ namespace Riot
                         //  all the work has been completed
         };
 
+        AtomicIncrement( &m_nActiveTasks );
+
         // Distribute the tasks to the threads
         m_pTasks[nHandle] = newTask;
 
         WakeThreads();
+        ASSERT( m_nStartTask < MAX_TASKS );
+        ASSERT( m_nEndTask < MAX_TASKS );
 
         return nHandle;
     }
@@ -164,7 +176,7 @@ namespace Riot
         }
 
         // While we're waiting, work
-        while( m_pTasks[nHandle].nCompletion > 0 )
+        //while( m_pTasks[nHandle].nCompletion > 0 )
         {
             m_Thread[0].DoWork();
         }
@@ -179,7 +191,15 @@ namespace Riot
     //-----------------------------------------------------------------------------
     bool CTaskManager::GetWork( TTask** ppTask, sint* pStart, sint* pCount )
     {
-        if( m_nStartTask == m_nEndTask )
+        CScopedMutex lock( &m_PopMutex );
+
+        ASSERT( m_nStartTask < MAX_TASKS );
+        ASSERT( m_nEndTask < MAX_TASKS );
+
+        uint nStartTask = AtomicCompareAndSwap( &m_nStartTask, m_nStartTask, -1 );
+        uint nEndTask = AtomicCompareAndSwap( &m_nEndTask, m_nEndTask, -1 );
+
+        if( nStartTask == nEndTask )
         {
             return false;
         }
@@ -202,9 +222,13 @@ namespace Riot
             // we're currently starting past the end,
             //  this task is clearly done.
             // If it hasn't been incremented, increment the start, then try again
+            AtomicDecrement( &m_nActiveTasks );
             AtomicDecrement( &m_pTasks[nTaskIndex].nCompletion );
             AtomicCompareAndSwap( &m_nStartTask, nTaskIndex + 1, nTaskIndex );
             AtomicCompareAndSwap( &m_nStartTask, 0, MAX_TASKS );
+        ASSERT( m_nStartTask < MAX_TASKS );
+        ASSERT( m_nEndTask < MAX_TASKS );
+        lock.Unlock();
             return GetWork( ppTask, pStart, pCount );
         }
 

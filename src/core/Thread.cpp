@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 1:10:12 AM
+Modified:       4/23/2011 1:41:19 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -81,7 +81,10 @@ namespace Riot
                 break;
 
             // Do all the work you can
-            DoWork( );
+            while( m_pTaskManager->m_nActiveTasks )
+            {
+                DoWork( );
+            }
         }
 
         m_bFinished = true;
@@ -143,6 +146,7 @@ namespace Riot
 
             // Let the task know it's done being worked on
             AtomicDecrement( &pTask->nCompletion );
+            AtomicDecrement( &m_pTaskManager->m_nActiveTasks );
         }
     }
 

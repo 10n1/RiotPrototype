@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/22/2011 8:36:09 PM
+Modified:       4/23/2011 1:38:36 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -120,10 +120,10 @@ namespace Riot
         static CTaskManager* pTaskManager = CTaskManager::GetInstance();
 
         // First update the components...
-        //ParallelProcessComponents( this, 0, 0, eNUMCOMPONENTS );
+        ParallelProcessComponents( this, 0, 0, eNUMCOMPONENTS );
 
-        task_handle_t nProcessTask = pTaskManager->PushTask( ParallelProcessComponents, this, eNUMCOMPONENTS );
-        pTaskManager->WaitForCompletion( nProcessTask );
+        //task_handle_t nProcessTask = pTaskManager->PushTask( ParallelProcessComponents, this, eNUMCOMPONENTS );
+        //pTaskManager->WaitForCompletion( nProcessTask );
 
 #if 0
         ParallelProcessComponentMessages( this, 0, 0, m_nNumMessages );
