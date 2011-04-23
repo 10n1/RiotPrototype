@@ -48,7 +48,6 @@ namespace Riot
     {
         m_pTaskManager      = pTaskManager;
         m_bFinished         = false;
-        m_bAwake            = false;
         m_pSystemMutex      = System::CreateRiotMutex();
         m_pWakeCondition    = System::CreateWaitCondition();
         m_nNumTasks         = 0;
@@ -71,10 +70,9 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CThread::ThreadProc( void )
     {
+#if 0
         do
         {
-            m_bAwake = true;
-
             while( m_pTaskManager->m_nActiveTasks )
             {
                 // Do all your work
@@ -89,6 +87,27 @@ namespace Riot
             Idle();
 
         } while( !m_pTaskManager->m_bShutdown );
+#else
+        for(;;)
+        {
+            // Idle the thread
+            Idle();
+
+            // Make sure we're not shutting down
+            if( m_pTaskManager->m_bShutdown )
+                break;
+
+            while( m_pTaskManager->m_nActiveTasks )
+            {
+                // Do all your work
+                DoWork( NULL );
+
+                // Make sure we're not shutting down
+                if( m_pTaskManager->m_bShutdown )
+                    break;
+            }
+        }
+#endif
 
         m_bFinished = true;
     }
@@ -100,11 +119,10 @@ namespace Riot
     void CThread::PushTask( TTask& task )
     {
         // Lock the mutex and add the task
-        m_TaskMutex.Lock();
-        uint nIndex = AtomicIncrement( &m_nNumTasks ) - 1;
-        m_pTasks[nIndex] = task;
+        CScopedMutex lock( &m_TaskMutex );
+
+        m_pTasks[m_nNumTasks++] = task;
         AtomicIncrement( task.pCompletion );
-        m_TaskMutex.Unlock();
     }
 
     //-----------------------------------------------------------------------------
@@ -121,14 +139,7 @@ namespace Riot
             return false;
         }
 
-        uint nTask = AtomicDecrement( &m_nNumTasks );
-
-        *pTask = m_pTasks[nTask];
-        //task->pFunc     = m_pTasks[nTask].pFunc;
-        //task->pData     = m_pTasks[nTask].pData;
-        //task->nStart    = m_pTasks[nTask].nStart;
-        //task->nCount    = m_pTasks[nTask].nCount;
-        //task->pCompletion   = m_pTasks[nTask].pCompletion;
+        *pTask = m_pTasks[--m_nNumTasks];
 
         return true;
     }
@@ -145,15 +156,16 @@ namespace Riot
             while( PopTask( &task ) )
             {
                 // Grab some work and do it
-                TaskFunc* pFunc = task.pFunc;  
-                void* pData     = task.pData;
-                uint nStart     = task.nStart;
-                uint nCount     = task.nCount;
+                TaskFunc* pFunc  = task.pFunc;  
+                void*     pData  = task.pData;
+                uint      nStart = task.nStart;
+                uint      nCount = task.nCount;
 
                 pFunc( pData, m_nThreadId, nStart, nCount );
 
                 if( AtomicDecrement( task.pCompletion ) == 0 )
-                {
+                {   
+                    // We just finished a task, tell the task manager
                     AtomicDecrement( &m_pTaskManager->m_nActiveTasks );
                 }
 
@@ -203,8 +215,7 @@ namespace Riot
             pTasks++;
         }
 
-        AtomicAdd( &m_nNumTasks, -nCount );
-        //m_nNumTasks -= nCount;
+        m_nNumTasks -= nCount;
         pIdleThread->m_nNumTasks = nCount;
 
         return true;
@@ -217,12 +228,10 @@ namespace Riot
     bool CThread::StealTasks( void )
     {
         // Using this thread counter so we're not always trying to grab from the same thread
-        static uint nThread = 0;
-        nThread++;
 
         for( uint i = 0; i < m_pTaskManager->m_nNumThreads; ++i )
         {
-            CThread* pThread = &m_pTaskManager->m_Thread[ (i + nThread) % m_pTaskManager->m_nNumThreads];
+            CThread* pThread = &m_pTaskManager->m_Thread[ i ];
 
             if( pThread == this ) continue; // Don't steal from yourself, that's silly
 
@@ -249,8 +258,6 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CThread::Idle( void )
     {
-        m_bAwake = false;
-
         // Zzzzzzz.....
         System::SemaphoreRelease( &m_pTaskManager->m_pSleep );
 
@@ -267,7 +274,6 @@ namespace Riot
         m_pTaskManager  = pTaskManager;
         m_pThread       = System::GetCurrentThreadHandle();
         m_bFinished     = false;
-        m_bAwake        = true;
         m_nNumTasks     = 0;
     }
 
@@ -277,11 +283,6 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CThread::Wake( void )
     {
-        if( m_bAwake == true )
-        {
-            // We're already awake
-            return;
-        }
         // Tell yourself to wake up
         System::SignalCondition( &m_pWakeCondition );
     }

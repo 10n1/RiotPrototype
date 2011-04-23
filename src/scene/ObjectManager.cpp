@@ -63,7 +63,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CObjectManager::Shutdown( void )
     {
-        for( uint i = 0; i < m_nNumObjects; ++i )
+        for( sint i = 0; i < m_nNumObjects; ++i )
         {
             // Reset them all so the active components can free themselves
             ResetObject( i );

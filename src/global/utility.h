@@ -16,8 +16,4 @@ Modified by:    Kyle Weicht
 void* Memcpy( void* pDest, const void* pSource, uint nSize );
 void* Memset( void* pDest, uint c, uint nSize );
 
-#ifndef ZeroMemory
-#define ZeroMemory( pDest, nSize ) Memset( pDest, 0, nSize )
-#endif
-
 #endif // #ifndef _UTILITY_H_

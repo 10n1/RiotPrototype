@@ -30,7 +30,9 @@ Modified by:    Kyle Weicht
 
 #define ARCH_IA32
 
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN // Make sure <Windows.h> is lightweight when its included
+#endif // #ifndef WIN32_LEAN_AND_MEAN
 
 #define SYSTEM_API_CONVENTION __stdcall
 
@@ -39,6 +41,9 @@ Modified by:    Kyle Weicht
 #else
 #define _32BIT
 #endif // #ifdef _M_X64
+
+#pragma warning( disable:4291 ) // no matching operator delete found
+#pragma warning( disable:4996 ) // deprecated "unsafe" C stdlib functions
 
 #endif // #if defined( WIN32 ) || defined( WIN64 )
 //-----------------------------------------------------------------------------

@@ -128,6 +128,9 @@ namespace Riot
             nHandle = (++m_nCurrentHandle %= MAX_TASKS);
         }
         m_HandleMutex.Unlock();
+        
+        // Let the threads know theres another active task
+        AtomicIncrement( &m_nActiveTasks );
 
         // Create our new task
         TTask   newTask = 
@@ -156,9 +159,6 @@ namespace Riot
 
             nStart += nChunkSize;
         }
-
-        // Let the threads know theres another active task
-        AtomicIncrement( &m_nActiveTasks );
 
         // Make sure the threads are awake
         WakeThreads();

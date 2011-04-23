@@ -37,7 +37,8 @@ namespace Riot
 
         // Pass to the render engine
         TRenderCommand cmd = { m_pMesh, m_pTexture };
-        pRender->AddCommand( cmd, RTransform() );
+        RTransform t = RTransform();
+        pRender->AddCommand( cmd, t );
     }
 
     //-----------------------------------------------------------------------------
@@ -128,13 +129,13 @@ namespace Riot
             for( nY = 0; nY < nPolysHeight; ++nY )
             {
                 uint nStart = nX * nPolysWidth;
-                m_pIndices[ nIndex++ ] = nX + nY + nStart + 0;
-                m_pIndices[ nIndex++ ] = nX + nY + nStart + 1;
-                m_pIndices[ nIndex++ ] = nX + nY + nStart + 1 + nPolysWidth;
+                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 0 );
+                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 );
+                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth );
 
-                m_pIndices[ nIndex++ ] = nX + nY + nStart + 1 + nPolysWidth;
-                m_pIndices[ nIndex++ ] = nX + nY + nStart + 1;
-                m_pIndices[ nIndex++ ] = nX + nY + nStart + 1 + nPolysWidth + 1;
+                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth );
+                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 );
+                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth + 1 );
             }
         }
 

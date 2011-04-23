@@ -114,7 +114,7 @@ void* Memset( void* pDest, uint c, uint nSize )
     // First go byte by byte until we align on a 16 byte boundry
     while( reinterpret_cast<nativeuint>(a) & 0xF )
     {
-        *a = c;
+        *a = (byte)c;
         ++a;
         --nSize;
     }
@@ -134,7 +134,7 @@ void* Memset( void* pDest, uint c, uint nSize )
     // Finally get the rest of the buffer
     while( nSize > 0 )
     {
-        *a = c;
+        *a = (byte)c;
         a++;
         --nSize;
     }

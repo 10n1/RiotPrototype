@@ -132,7 +132,7 @@ namespace Riot
             {
                 // TODO: Use this or the GetKeyboardState method?
                 //       This should be faster, no extra overhead from GetKeyboardState
-                Engine::PostMsg( TMessage( mHardwareKeyboardDown, wParam ) );
+                Engine::PostMsg( TMessage( mHardwareKeyboardDown, (uint)wParam ) );
                 return 0;
             }
         case WM_MOUSEMOVE:
@@ -172,7 +172,7 @@ namespace Riot
         case WM_KEYUP:
         case WM_SYSKEYUP:
             {
-                Engine::PostMsg( TMessage( mHardwareKeyboardUp, wParam ) );
+                Engine::PostMsg( TMessage( mHardwareKeyboardUp, (uint)wParam ) );
                 return 0;
             }
         case WM_PAINT:
@@ -182,8 +182,6 @@ namespace Riot
         default:
             return DefWindowProc(hWnd, nMsg, wParam, lParam);
         }
-
-        return DefWindowProc(hWnd, nMsg, wParam, lParam);
     }
 
 } // namespace Riot

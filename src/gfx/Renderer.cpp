@@ -187,7 +187,7 @@ namespace Riot
         RMatrix4 mProj = m_pCurrentView->GetProjMatrix();
         SetViewProj( mView, mProj );
 
-        for( uint i = 0; i < m_nNumCommands; ++i )
+        for( sint i = 0; i < m_nNumCommands; ++i )
         {
             RMatrix4 mWorld = m_pTransforms[i].GetTransformMatrix();
             SetWorldMatrix( mWorld );
@@ -450,7 +450,7 @@ namespace Riot
             }
         case mResize:
             {
-                uint nWidth = msg.nMessage >> 16;
+                uint nWidth = (uint)(msg.nMessage >> 16);
                 uint nHeight = msg.nMessage & 0x0000FFFF;
 
                 m_pDevice->Resize( nWidth, nHeight );

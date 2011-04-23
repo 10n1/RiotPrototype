@@ -96,7 +96,7 @@ namespace Riot
         {
         case mHardwareKeyboardDown:
             {
-                uint8 nKey = msg.nMessage;
+                uint8 nKey = (uint8)msg.nMessage;
                 uint8& theKey = m_pKeys[ nKey ];
 
                 if( theKey == UP )
@@ -110,7 +110,7 @@ namespace Riot
             }
         case mHardwareKeyboardUp:
             {
-                uint8 nKey = msg.nMessage;
+                uint8 nKey = (uint8)msg.nMessage;
                 uint8& theKey = m_pKeys[ nKey ];
 
                 if( theKey != UP )
@@ -124,7 +124,7 @@ namespace Riot
             }
         case mHardwareMouseDown:
             {
-                uint8 nButton = msg.nMessage;
+                uint8 nButton = (uint8)msg.nMessage;
                 uint8& theButton = m_nMouseButtons[ nButton ];
 
                 
@@ -139,7 +139,7 @@ namespace Riot
             }
         case mHardwareMouseUp:
             {
-                uint8 nButton = msg.nMessage;
+                uint8 nButton = (uint8)msg.nMessage;
                 uint8& theButton = m_nMouseButtons[ nButton ];
 
                 if( theButton != UP )

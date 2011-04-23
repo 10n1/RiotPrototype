@@ -179,7 +179,7 @@ namespace Riot
     void CRenderComponent::ProcessComponent( void )
     {
         CRenderer* pRender = Engine::GetRenderer();
-        for( uint i = 0; i < m_nNumComponents; ++i )
+        for( sint i = 0; i < m_nNumComponents; ++i )
         {          
             // Pass to the render engine
             TRenderCommand cmd = { m_pMesh[i], NULL };
@@ -262,7 +262,7 @@ namespace Riot
         CRenderer* pRender = Engine::GetRenderer();
         CComponentManager* pManager = Engine::GetComponentManager();
 
-        for( uint i = 0; i < m_nNumComponents; ++i )
+        for( sint i = 0; i < m_nNumComponents; ++i )
         {
             m_Transform[i].position.x = sin( fAngle ) * 10.0f;
             m_Transform[i].position.z = cos( fAngle ) * 10.0f;
@@ -327,7 +327,7 @@ namespace Riot
     void CCollidableComponent::Attach( uint nIndex )
     {
         // Now initialize this component
-        ZeroMemory( &m_Volume[nIndex], sizeof(BoundingVolume) );
+        Memset( &m_Volume[nIndex], 0, sizeof(BoundingVolume) );
         m_nType[nIndex] = BoundingSphere;
     }
 
@@ -350,10 +350,9 @@ namespace Riot
     {
         CComponentManager* pManager = Engine::GetComponentManager();
 
-        bool bCollision = false;
-        for( uint i = 0; i < m_nNumComponents; ++i )
+        for( sint i = 0; i < m_nNumComponents; ++i )
         {
-            for( uint j = 0; j < m_nNumComponents; ++j )
+            for( sint j = 0; j < m_nNumComponents; ++j )
             {
                 if( i == j ) continue;
 
@@ -478,7 +477,7 @@ namespace Riot
 
         CComponentManager* pManager = Engine::GetComponentManager();
 
-        for( uint i = 0; i < m_nNumComponents; ++i )
+        for( sint i = 0; i < m_nNumComponents; ++i )
         {
             if( m_bGravity[i] )
             {

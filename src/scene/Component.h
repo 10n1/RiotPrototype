@@ -119,7 +119,7 @@ namespace Riot
         \***************************************/
         uint*       m_pObjects;
         atomic_t    m_nNumComponents;
-        uint        m_nMaxComponents;
+        sint        m_nMaxComponents;
     };
 
     /*****************************************************************************\

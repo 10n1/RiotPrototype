@@ -13,6 +13,7 @@ Modified by:    Kyle Weicht
 #include "Graphics.h"
 #include "OGLGraphics.h"
 #include "SystemOpenGL.h"
+#include "atomic.h"
 
 #ifdef OS_WINDOWS
 #include <Windows.h>
@@ -215,7 +216,7 @@ namespace Riot
     {
         sint nValue;
 #ifdef OS_WINDOWS
-        ::WaitForSingleObject( *pSem, INFINITE );
+        nValue = 0xFFFFFFFF;
 #else
         ::sem_getvalue( pSem, &nValue );
 #endif

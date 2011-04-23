@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/22/2011 1:32:24 AM
+Modified:       4/22/2011 5:33:16 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -110,7 +110,6 @@ namespace Riot
         m_ppComponents[ nType ]->RemoveComponent( nIndex );
     }
 
-
     //-----------------------------------------------------------------------------
     //  ProcessComponents
     //  Updates all the components, then resolves issues
@@ -121,18 +120,18 @@ namespace Riot
         static CTaskManager* pTaskManager = CTaskManager::GetInstance();
 
         // First update the components...
-        task_handle_t nProcessTask = pTaskManager->PushTask( ParallelProcessComponents, this, eNUMCOMPONENTS, 16 );
+        task_handle_t nProcessTask = pTaskManager->PushTask( ParallelProcessComponents, this, eNUMCOMPONENTS );
         pTaskManager->WaitForCompletion( nProcessTask );
-        //ParallelProcessComponents( this, 0, 0, eNUMCOMPONENTS );
 
-        //uint x = 0;
-        //while( x < 1024*256 )
-        //    ++x;
-        
+#if 0
+        ParallelProcessComponentMessages( this, 0, 0, m_nNumMessages );
+#else
         // ...then resolve any discrepencies and handle messages
-        //ParallelProcessComponentMessages( this, 0, 0, m_nNumMessages );
         task_handle_t nMessageTask = pTaskManager->PushTask( ParallelProcessComponentMessages, this, m_nNumMessages, 16 );
         pTaskManager->WaitForCompletion( nMessageTask );
+#endif
+
+
 #else
         ParallelProcessComponents( this, 0, 0, eNUMCOMPONENTS );
         ParallelProcessComponentMessages( this, 0, 0, m_nNumMessages );
@@ -197,7 +196,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentManager::SendMessage( CComponentMessage& msg )
     {
-        for( uint nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent )
+        for( sint nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent )
             //for( eComponentType nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent ) <-- this would be ideal
         {
             if(     m_bRegistered[ msg.m_nMessageType ][ nComponent ] == false

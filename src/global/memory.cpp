@@ -109,7 +109,7 @@ void* __cdecl operator new(size_t nSize, const char* szFile, unsigned int nLine)
     gs_pPrevAlloc       = pNewAlloc;
     gs_nPrevAllocSize   = (uint)nSize;
 
-    AddAllocation( pNewAlloc, nSize, szFile, nLine );
+    AddAllocation( pNewAlloc, (uint)nSize, szFile, nLine );
 
     // Return it
     return pNewAlloc;
@@ -134,7 +134,7 @@ void* __cdecl operator new[](size_t nSize, const char* szFile, unsigned int nLin
     gs_pPrevAlloc       = pNewAlloc;
     gs_nPrevAllocSize   = (uint)nSize;
 
-    AddAllocation( pNewAlloc, nSize, szFile, nLine );
+    AddAllocation( pNewAlloc, (uint)nSize, szFile, nLine );
 
     // Return it
     return pNewAlloc;

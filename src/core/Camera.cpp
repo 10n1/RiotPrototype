@@ -147,7 +147,7 @@ namespace Riot
             }
         case mResize:
             {
-                uint nWidth = msg.nMessage >> 16;
+                uint nWidth = (uint)(msg.nMessage >> 16);
                 uint nHeight = msg.nMessage & 0x0000FFFF;
 
                 m_pView->SetPerspective( 60.0f, ((float)nWidth)/nHeight, 0.1f, 10000.0f );                
@@ -182,7 +182,7 @@ namespace Riot
                 if( !m_bMouseControlled )
                     break;
 
-                sint16 nDeltaX = msg.nMessage >> 16;
+                sint16 nDeltaX = (sint16)(msg.nMessage >> 16);
                 sint16 nDeltaY = msg.nMessage & 0xFFFF;
                 float fLookSpeed = 25.0f;
 

@@ -44,6 +44,7 @@ namespace Riot
         {
             while( !TryLock() )
             {
+                ;
             }
         }
 
@@ -53,7 +54,7 @@ namespace Riot
             return AtomicExchange( &m_nLock, 1 ) == 0;
         }
 
-        void Unlock( void )
+        inline void Unlock( void )
         {
             AtomicExchange( &m_nLock, 0 );
         }
@@ -207,8 +208,7 @@ namespace Riot
 
         CMutex          m_TaskMutex;
         uint            m_nThreadId;
-        atomic_t        m_nNumTasks;
-        volatile bool   m_bAwake;
+        uint            m_nNumTasks;
         volatile bool   m_bFinished;
     };
 

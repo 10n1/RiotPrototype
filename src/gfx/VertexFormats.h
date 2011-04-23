@@ -63,13 +63,21 @@ namespace Riot
     extern GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_LINEAR;
     //-----------------------------------------------------------------------------
 
-
+#ifdef OS_WINDOWS
+#pragma warning(push)
+#pragma warning( disable:4510 ) // Default constructor cannot be implicitly created
+#pragma warning( disable:4512 ) // Copy constructor cannot be implicitly created
+#pragma warning( disable:4610 ) // User defined constructor required
+#endif // #ifdef OS_WINDOWS
     struct InputElementLayout
     {
         GFX_SEMANTIC    szSemanticName;
         GFX_FORMAT      nFormat;
         uint            nOffset;
     };
+#ifdef OS_WINDOWS
+#pragma warning( pop )
+#endif // #ifdef OS_WINDOWS
 
     /*
     Standard vertex format

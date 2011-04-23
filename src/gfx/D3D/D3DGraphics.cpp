@@ -130,7 +130,7 @@ namespace Riot
         if( FAILED( hr ) )
         {
             // TODO: Handle gracefully
-            ASSERT( 0 );
+            ASSERT( FALSE );
             MessageBox( 0, L"Could not create DX device/swap chain", L"Error", 0 );
             return rResultFailure;
         }
@@ -339,7 +339,7 @@ namespace Riot
         ASSERT( nResult == rResultSuccess );
 
         void* pShaderCode = pShaderBlob->GetBufferPointer();
-        uint  nShaderSize = pShaderBlob->GetBufferSize();
+        uint  nShaderSize = (uint)pShaderBlob->GetBufferSize();
         
         // Then create the shader
         hr = m_pDevice->CreateVertexShader( pShaderCode, nShaderSize, NULL, &pVertexShader );
@@ -378,7 +378,7 @@ namespace Riot
 
         // Then create the shader
         void* pShaderCode = pShaderBlob->GetBufferPointer();
-        uint  nShaderSize = pShaderBlob->GetBufferSize();
+        uint  nShaderSize = (uint)pShaderBlob->GetBufferSize();
         HRESULT hr = m_pDevice->CreatePixelShader( pShaderCode, nShaderSize, NULL, &pShader->m_pShader );
 
         assert( hr == S_OK );
@@ -402,7 +402,7 @@ namespace Riot
         CD3DSamplerState* pState = new CD3DSamplerState;
 
         D3D11_SAMPLER_DESC sampDesc;
-        ZeroMemory( &sampDesc, sizeof(sampDesc) );
+        Memset( &sampDesc, 0, sizeof(sampDesc) );
         sampDesc.Filter = (D3D11_FILTER)nType;
         sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
         sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -602,7 +602,7 @@ namespace Riot
         if( FAILED( hr ) )
         {
             // TODO: Handle error gracefully
-            ASSERT( 0 );
+            ASSERT( FALSE );
             const char* szWarnings = (const char*)pErrorBlob->GetBufferPointer();
             MessageBox( 0, (wchar_t*)pErrorBlob->GetBufferPointer(), L"Error", 0 );
             SAFE_RELEASE( pErrorBlob );
