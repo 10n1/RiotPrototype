@@ -2,7 +2,7 @@
 File:           atomic.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 12:57:41 AM
+Modified:       4/23/2011 2:15:09 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "atomic.h"
@@ -16,7 +16,7 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
-
+#ifndef USE_MACROS
     //-----------------------------------------------------------------------------
     sint AtomicIncrement( volatile sint* pValue )
     {
@@ -113,7 +113,6 @@ namespace Riot
         OSAtomicCompareAndSwap32( nComparison, nNewValue, pValue );
         return nOrigValue;
 #endif // #ifdef OS_WINDOWS
-
     }
-
+#endif
 } // namespace Riot

@@ -2,11 +2,13 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 1:41:19 AM
+Modified:       4/23/2011 2:29:58 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
 #include "System.h"
+
+#include <intrin.h>
 
 namespace Riot
 {
@@ -119,24 +121,17 @@ namespace Riot
     {
         CScopedMutex lock( &m_PushMutex );
 
-        ASSERT( m_nStartTask < MAX_TASKS );
-        ASSERT( m_nEndTask < MAX_TASKS );
-
         if( nChunkSize == 0 )
             nChunkSize = 1;
 
         // First we need to find a new handle to use
-        task_handle_t nHandle = AtomicIncrement( &m_nEndTask ) - 1;
-        AtomicCompareAndSwap( &m_nEndTask, 0, MAX_TASKS );
+        task_handle_t nHandle = (AtomicIncrement( &m_nEndTask ) - 1) % MAX_TASKS;
 
         while( m_pTasks[nHandle].nStart < (sint)m_pTasks[nHandle].nCount )
         {
             ; // Our task buffer is somehow filled, spin while waiting
             //  TODO: Use this time to do some work, but this is very unlikely to ever be hit
         }
-        
-        ASSERT( m_nStartTask < MAX_TASKS );
-        ASSERT( m_nEndTask < MAX_TASKS );
 
         // Create our new task
         TTask   newTask = 
@@ -157,8 +152,6 @@ namespace Riot
         m_pTasks[nHandle] = newTask;
 
         WakeThreads();
-        ASSERT( m_nStartTask < MAX_TASKS );
-        ASSERT( m_nEndTask < MAX_TASKS );
 
         return nHandle;
     }
@@ -176,7 +169,7 @@ namespace Riot
         }
 
         // While we're waiting, work
-        //while( m_pTasks[nHandle].nCompletion > 0 )
+        while( m_pTasks[nHandle].nCompletion > 0 )
         {
             m_Thread[0].DoWork();
         }
@@ -184,6 +177,10 @@ namespace Riot
         int x = 0;
     }
 
+//#define AtomicCompareAndSwapMacro( pValue, nNewValue, nComparison ) _InterlockedCompareExchange( (volatile long*)pValue, nNewValue, nComparison )
+//#define AtomicAddMacro( pValue, nValue ) _InterlockedExchangeAdd( (volatile long*)pValue, nValue ) + nValue
+//#define AtomicIncrementMacro( pValue ) _InterlockedIncrement( (volatile long*)pValue )
+//#define AtomicDecrementMacro( pValue ) _InterlockedDecrement( (volatile long*)pValue )
 
     //-----------------------------------------------------------------------------
     //  GetWork
@@ -191,13 +188,9 @@ namespace Riot
     //-----------------------------------------------------------------------------
     bool CTaskManager::GetWork( TTask** ppTask, sint* pStart, sint* pCount )
     {
-        CScopedMutex lock( &m_PopMutex );
-
-        ASSERT( m_nStartTask < MAX_TASKS );
-        ASSERT( m_nEndTask < MAX_TASKS );
-
+        // Atomically read the start and end, ensuring they're up to date
         uint nStartTask = AtomicCompareAndSwap( &m_nStartTask, m_nStartTask, -1 );
-        uint nEndTask = AtomicCompareAndSwap( &m_nEndTask, m_nEndTask, -1 );
+        uint nEndTask   = AtomicCompareAndSwap( &m_nEndTask, m_nEndTask, -1 );
 
         if( nStartTask == nEndTask )
         {
@@ -207,7 +200,7 @@ namespace Riot
         // Get the current task we're looking at
         // We use CompareAndSwap with -1 because it will never pass.
         // This way we get an atomic lock-free read
-        sint nTaskIndex = AtomicCompareAndSwap( &m_nStartTask, m_nStartTask, -1 );
+        sint nTaskIndex = nStartTask % MAX_TASKS;
 
         uint nChunkSize = m_pTasks[nTaskIndex].nChunkSize;
         uint nCount     = m_pTasks[nTaskIndex].nCount;
@@ -219,27 +212,30 @@ namespace Riot
 
         if( nStart >= nCount )
         {
-            // we're currently starting past the end,
-            //  this task is clearly done.
-            // If it hasn't been incremented, increment the start, then try again
-            AtomicDecrement( &m_nActiveTasks );
-            AtomicDecrement( &m_pTasks[nTaskIndex].nCompletion );
-            AtomicCompareAndSwap( &m_nStartTask, nTaskIndex + 1, nTaskIndex );
-            AtomicCompareAndSwap( &m_nStartTask, 0, MAX_TASKS );
-        ASSERT( m_nStartTask < MAX_TASKS );
-        ASSERT( m_nEndTask < MAX_TASKS );
-        lock.Unlock();
-            return GetWork( ppTask, pStart, pCount );
+            if( AtomicCompareAndSwap( &m_nStartTask, nStartTask + 1, nStartTask ) == nStartTask )
+            {
+                // we're currently starting past the end,
+                //  this task is clearly done.
+                // If it hasn't been incremented, increment the start, then try again
+                AtomicDecrement( &m_nActiveTasks );
+                AtomicDecrement( &m_pTasks[nTaskIndex].nCompletion );
+            }
+
+            // Don't return false because theres still work to do,
+            //  but let the thread know it didn't get it
+            *ppTask = NULL;
+            return true;
         }
 
-        // Let the task know its being worked on
-        AtomicIncrement( &m_pTasks[nTaskIndex].nCompletion );
 
         if( nEnd > nCount )
         {
             // This is the last task, we can't do a full chunk
             nNewCount = nCount - nStart;
         }
+        
+        // Let the task know its being worked on
+        AtomicIncrement( &m_pTasks[nTaskIndex].nCompletion );
 
         *ppTask = &m_pTasks[nTaskIndex];
         *pStart = nStart;

@@ -4,7 +4,7 @@ Purpose:        Platform independent atomic operations
 (InterlockedIncrement, etc)
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/10/2011 3:15:38 PM
+Modified:       4/23/2011 2:15:14 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ATOMIC_H_
@@ -12,10 +12,15 @@ Modified by:    Kyle Weicht
 #include "types.h"
 #include "config.h"
 
+#include <intrin.h>
+
+#define USE_MACROS
+
 namespace Riot
 {
 
     //-----------------------------------------------------------------------------
+#ifndef USE_MACROS
     sint AtomicIncrement( volatile sint* pValue );
     sint AtomicDecrement( volatile sint* pValue );
     sint AtomicAdd( volatile sint* pValue, sint nValue );
@@ -34,6 +39,27 @@ namespace Riot
     //-----------------------------------------------------------------------------
     sint AtomicExchange( volatile sint* pValue, sint nNewValue );
     sint AtomicCompareAndSwap( volatile sint* pValue, sint nNewValue, sint nComparison );
+
+#else    
+    #define AtomicIncrement( pValue )   _InterlockedIncrement( (volatile long*)pValue )
+    #define AtomicDecrement( pValue )   _InterlockedDecrement( (volatile long*)pValue )
+    #define AtomicAdd( pValue, nValue ) _InterlockedExchangeAdd( (volatile long*)pValue, nValue ) + nValue
+    //-----------------------------------------------------------------------------
+
+#ifdef _64BIT
+    #define AtomicIncrement64( pValue ) _InterlockedIncrement64( (volatile __int64*)pValue )
+    #define AtomicDecrement64( pValue ) _InterlockedDecrement64( (volatile __int64*)pValue )
+    #define AtomicAdd64( pValue, nValue ) _InterlockedExchangeAdd64( (volatile __int64*)pValue, nValue ) + nValue
+#endif // #ifdef _64BIT
+
+    //-----------------------------------------------------------------------------
+    #define AtomicOr( pValue, nMask )_InterlockedOr( (volatile long*)pValue, nMask )
+    #define AtomicAnd( pValue, nMask )_InterlockedAnd( (volatile long*)pValue, nMask )
+
+    //-----------------------------------------------------------------------------
+#define AtomicExchange( pValue, nNewValue ) _InterlockedExchange( (volatile long*)pValue, nNewValue )
+#define AtomicCompareAndSwap( pValue, nNewValue, nComparison ) _InterlockedCompareExchange( (volatile long*)pValue, nNewValue, nComparison )
+#endif
 
     typedef volatile sint   atomic_t;
 

@@ -3,7 +3,7 @@ File:           Thread.h
 Purpose:        Interface for hardware threads
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 1:10:12 AM
+Modified:       4/23/2011 2:05:37 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _THREAD_H_
@@ -166,34 +166,10 @@ namespace Riot
         void Wake( void );
 
         //-----------------------------------------------------------------------------
-        //  PushTask
-        //  Pushes a task onto the top of the task queue
-        //-----------------------------------------------------------------------------
-        void PushTask( const TTask& task );
-
-        //-----------------------------------------------------------------------------
-        //  PopTask
-        //  Pops a task off the queue
-        //-----------------------------------------------------------------------------
-        bool PopTask( TTask* pTask );
-
-        //-----------------------------------------------------------------------------
         //  DoWork
         //  The thread starts doing work. It'll steal more if it has to
         //-----------------------------------------------------------------------------
         void DoWork( void );
-
-        //-----------------------------------------------------------------------------
-        //  GiveUpWork
-        //  Gives up work to the idle thread
-        //-----------------------------------------------------------------------------
-        bool GiveUpWork( CThread* pIdleThread );
-
-        //-----------------------------------------------------------------------------
-        //  StealTasks
-        //  Steals tasks from the other threads
-        //-----------------------------------------------------------------------------
-        bool StealTasks( void );
 
         //-----------------------------------------------------------------------------
         //  GetThreadId
