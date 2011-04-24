@@ -3,7 +3,7 @@ File:           TaskManager.h
 Purpose:        Task manager
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 5:59:12 PM
+Modified:       4/23/2011 8:08:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TASKMANAGER_H_
@@ -75,7 +75,7 @@ namespace Riot
         //  GetWork
         //  Retrieves work for the thread to do
         //-----------------------------------------------------------------------------
-        bool GetWork( TTask* pTask );
+        bool GetWork( TTask** ppTask );
 
     private:
         /***************************************\
@@ -83,10 +83,9 @@ namespace Riot
         \***************************************/
         static CTaskManager*    m_pInstance;
 
-        TTask               m_pTasks[ MAX_TASKS ];
+        TTask               m_pTasks[ MAX_SUB_TASKS ];
 
-        CMutex              m_PushMutex;
-        CMutex              m_PopMutex;
+        atomic_t            m_pCompletion[ MAX_TASKS ];
 
         atomic_t            m_nStartTask;
         atomic_t            m_nEndTask;
@@ -96,6 +95,8 @@ namespace Riot
         atomic_t            m_nCurrentHandle;
         atomic_t            m_nActiveTasks;
         System::semaphore_t m_pSleep;
+
+        CMutex  m_TaskMutex;
 
         uint    m_nNumThreads;
         bool    m_bShutdown;

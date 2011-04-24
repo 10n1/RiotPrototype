@@ -3,7 +3,7 @@ File:           Thread.h
 Purpose:        Interface for hardware threads
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 12:58:15 PM
+Modified:       4/23/2011 7:56:31 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _THREAD_H_
@@ -28,12 +28,9 @@ namespace Riot
     {
         TaskFunc*   pFunc;
         void*       pData;
-        atomic_t    nStart;
+        uint        nStart;
         uint        nCount;
-        uint        nChunkSize;
-        atomic_t    nCompletion;
-
-        uint        nIndex;
+        atomic_t*   pCompletion;
     };
 
     class CMutex
@@ -185,7 +182,8 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        TTask                       m_pTasks[ MAX_TASKS_PER_THREAD ];
+        TTask*                      m_pTask;
+
         System::thread_handle_t     m_pThread;
         System::wait_condition_t    m_pWakeCondition;
         System::mutex_t             m_pSystemMutex;

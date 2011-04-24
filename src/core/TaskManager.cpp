@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 6:28:18 PM
+Modified:       4/23/2011 8:46:48 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -44,6 +44,7 @@ namespace Riot
         m_nEndTask = 0;
 
         Memset( m_pTasks, 0, sizeof( m_pTasks ) );
+        Memset( (void*)m_pCompletion, 0, sizeof( m_pCompletion ) );
 
         //  Get the number of hardware threads
         m_nNumThreads = System::GetHardwareThreadCount();
@@ -113,7 +114,7 @@ namespace Riot
         m_bThreadsIdle = true;
     }
 
-    static atomic_t nTasks = 0;
+    static atomic_t nCompletion[ MAX_TASKS ] = { 0 };
 
     //-----------------------------------------------------------------------------
     //  PushTask
@@ -121,46 +122,53 @@ namespace Riot
     //-----------------------------------------------------------------------------
     task_handle_t CTaskManager::PushTask( TaskFunc* pFunc, void* pData, uint nCount, uint nChunkSize )
     {
-        CScopedMutex lock( &m_PushMutex );
+        CScopedMutex lock( &m_TaskMutex );
+
+        nChunkSize = nCount;
 
         if( nChunkSize == 0 )
             nChunkSize = 1;
 
-        //sint n = AtomicIncrement( &nTasks );
+        // First we need to find a new handle to use
+        task_handle_t   nHandle = (AtomicIncrement( &m_nCurrentHandle ) - 1) % MAX_TASKS;
+
+        // Grab a pointer to its completion
+        atomic_t* pCompletion = &m_pCompletion[nHandle];
+        *pCompletion = 0;
         
-        // Increment the task counter so threads know work is coming
+        // Let the threads know theres another active task
         AtomicIncrement( &m_nActiveTasks );
 
-        // First we need to find a new handle to use
-        task_handle_t nHandle = (AtomicIncrement( &m_nEndTask ) - 1) % MAX_TASKS;
-
-        //while( m_pTasks[nHandle].nStart < (sint)m_pTasks[nHandle].nCount )
-        //{
-        //    ; // Our task buffer is somehow filled, spin while waiting
-        //    //  TODO: Use this time to do some work, but this is very unlikely to ever be hit
-        //}
-
-        // Create our new task
-        TTask   newTask = 
-        { 
-            pFunc,      // Function
-            pData,      // Void* data
-            0,          // start index
-            nCount,     // the count
-            nChunkSize, // The chunk size
-            1,          // The current completion count
-                        //  its initialized to one and becomes zero once
-                        //  all the work has been completed
-
-            nHandle,
-        };
-
-
+        uint nTaskIndex = -1;
         // Distribute the tasks to the threads
-        m_pTasks[nHandle] = newTask;
+        uint nStart = 0;
+        uint nNewTaskCount = nChunkSize;
 
-        //printf( "Task %d push. Completion: %d\n", nHandle, m_pTasks[nHandle].nCompletion );
+        while( nStart < nCount )
+        {
+            nTaskIndex = (AtomicIncrement( &m_nEndTask ) - 1) % MAX_SUB_TASKS;
 
+            if( nCount - nStart < nChunkSize )
+            {   // We're at the end, don't do a full chunk
+                nNewTaskCount = nCount - nStart;
+            }
+
+            m_pTasks[ nTaskIndex ].pFunc        = pFunc;
+            m_pTasks[ nTaskIndex ].pData        = pData;
+            m_pTasks[ nTaskIndex ].nStart       = nStart;
+            m_pTasks[ nTaskIndex ].nCount       = nNewTaskCount;
+            m_pTasks[ nTaskIndex ].pCompletion  = pCompletion;
+
+            AtomicIncrement( &m_nActiveTasks );
+
+            nStart += nChunkSize;
+
+            AtomicIncrement( pCompletion );
+        }
+        
+        AtomicDecrement( &m_nActiveTasks );
+
+        // Make sure the threads are awake
         WakeThreads();
 
         return nHandle;
@@ -179,86 +187,41 @@ namespace Riot
         }
 
         // While we're waiting, work
-        while( m_pTasks[nHandle].nCompletion > 0 )
+        sint nCompletion = AtomicCompareAndSwap( m_pTasks[nHandle].pCompletion, -1024, -1024 );
+        while( nCompletion > 0 )
         {
             m_Thread[0].DoWork();
+
+            nCompletion = AtomicCompareAndSwap( m_pTasks[nHandle].pCompletion, -1024, -1024 );
         }
 
         int x = 0;
     }
 
-//#define AtomicCompareAndSwapMacro( pValue, nNewValue, nComparison ) _InterlockedCompareExchange( (volatile long*)pValue, nNewValue, nComparison )
-//#define AtomicAddMacro( pValue, nValue ) _InterlockedExchangeAdd( (volatile long*)pValue, nValue ) + nValue
-//#define AtomicIncrementMacro( pValue ) _InterlockedIncrement( (volatile long*)pValue )
-//#define AtomicDecrementMacro( pValue ) _InterlockedDecrement( (volatile long*)pValue )
-
     //-----------------------------------------------------------------------------
     //  GetWork
     //  Retrieves work for the thread to do
     //-----------------------------------------------------------------------------
-    bool CTaskManager::GetWork( TTask* pTask )
+    bool CTaskManager::GetWork( TTask** ppTask )
     {
-        CScopedMutex lock( &m_PushMutex );
+        CScopedMutex lock( &m_TaskMutex );
 
-        uint nStartTask = AtomicCompareAndSwap( &m_nStartTask, m_nStartTask, -1 );
-        uint nEndTask = AtomicCompareAndSwap( &m_nEndTask, m_nEndTask, -1 );
-
-        if( nStartTask == nEndTask )
+        // Grab work
+        sint nActiveTasks = AtomicDecrement( &m_nActiveTasks );
+        if( nActiveTasks < 0 )
         {
+            // You grabbed work when there was none to grab
+            AtomicIncrement( &m_nActiveTasks );
             return false;
         }
 
-        TTask newTask;
+        // Grab the back of the list
+        uint nTaskIndex = (AtomicIncrement( &m_nStartTask ) - 1) % MAX_SUB_TASKS;
 
-        // Get the current task we're looking at
-        // We use CompareAndSwap with -1 because it will never pass.
-        // This way we get an atomic lock-free read
-        sint nTaskIndex = nStartTask % MAX_TASKS;
-
-        uint nEnd = AtomicAdd( &m_pTasks[nTaskIndex].nStart, m_pTasks[nTaskIndex].nChunkSize );
-        //uint nStart = m_pTasks[nTaskIndex].nStart;
-
-        //AtomicAdd( &m_pTasks[nTaskIndex].nStart, m_pTasks[nTaskIndex].nChunkSize );
-        //AtomicAdd( &m_pTasks[nTaskIndex].nStart, m_pTasks[nTaskIndex].nChunkSize );
-
-        uint nStart = nEnd - m_pTasks[nTaskIndex].nChunkSize;
-
-        if( nEnd > m_pTasks[nTaskIndex].nCount )
-        {
-            sint nOldStart = AtomicCompareAndSwap( &m_nStartTask, nStartTask + 1, nStartTask );
-            if( nOldStart == nStartTask )
-            {
-                // This thread is the one that changed the start
-                AtomicDecrement( &m_pTasks[nTaskIndex].nCompletion );
-                AtomicDecrement( &m_nActiveTasks );
-            }
-            //AtomicIncrement( &m_nStartTask );
-            newTask.pFunc = NULL;
-            *pTask = newTask;
-            return true;
-        }
-
-        newTask = m_pTasks[nTaskIndex];
-        newTask.nStart = nStart;
-
-        uint nChunkSize = newTask.nChunkSize;
-        uint nCount     = newTask.nCount;
-        newTask.nCount  = nChunkSize;
-
-        // Calculate the start and end
-        //sint nEnd = newTask.nStart + nChunkSize ;
-        //sint nStart = nEnd - nChunkSize;
-
-        //printf( "Task %d start. Completion: %d\n", nTaskIndex, m_pTasks[nTaskIndex].nCompletion );
-
-        if( nEnd > nCount )
-        {
-            // This is the last task, we can't do a full chunk
-            newTask.nCount = nCount - nStart;
-        }
+        //ASSERT( nTaskIndex < m_nEndTask );
         
-
-        *pTask = newTask;
+        // return it
+        *ppTask = &m_pTasks[nTaskIndex];
 
         return true;
     }

@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 6:05:03 PM
+Modified:       4/23/2011 8:45:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -50,8 +50,7 @@ namespace Riot
         m_bFinished         = false;
         m_pSystemMutex      = System::CreateRiotMutex();
         m_pWakeCondition    = System::CreateWaitCondition();
-
-        Memset( m_pTasks, 0, sizeof(m_pTasks) );
+        m_pTask             = NULL;
 
         m_pThread           = System::SpawnThread( &_ThreadProc, this );
     }
@@ -100,25 +99,28 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CThread::DoWork( void )
     {
-        TTask   pTask;
+        //TTask   pTask;
 
-        while( m_pTaskManager->GetWork( &pTask ) )
+        ASSERT( m_pTaskManager != NULL );
+
+        while( m_pTaskManager->GetWork( &m_pTask ) )
         {
-            if( pTask.pFunc == NULL )
-            {
-                continue;
-            }
+            ASSERT( m_pTask );
 
-            TaskFunc* pFunc  = pTask.pFunc;  
-            void*     pData  = pTask.pData;
-            sint      nStart = pTask.nStart;
-            sint      nCount = pTask.nCount;
+            ASSERT( m_pTask->pFunc );
+
+            TaskFunc* pFunc  = m_pTask->pFunc;  
+            void*     pData  = m_pTask->pData;
+            sint      nStart = m_pTask->nStart;
+            sint      nCount = m_pTask->nCount;
 
             pFunc( pData, m_nThreadId, nStart, nCount );
 
             // Let the task know it's done being worked on
-            //AtomicDecrement( &pTask->nCompletion );
-            //printf( "Task %d finish. Completion: %d\n", pTask->nIndex, pTask->nCompletion );
+            AtomicDecrement( m_pTask->pCompletion );
+
+            // Make sure it can't get run again
+            m_pTask->pFunc = NULL;
         }
     }
 
@@ -128,6 +130,9 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CThread::Idle( void )
     {
+        if( m_pTaskManager->m_nActiveTasks )
+            return;
+
         // Zzzzzzz.....
         System::SemaphoreRelease( &m_pTaskManager->m_pSleep );
 
