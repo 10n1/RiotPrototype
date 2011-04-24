@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 11:54:32 PM
+Modified:       4/23/2011 11:56:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "System.h"
@@ -247,7 +247,6 @@ namespace Riot
         wait_condition_t pCondition;
 #ifdef OS_WINDOWS 
         pCondition = ::CreateEvent( NULL, false, false, NULL );
-        //pCondition.nCount = 0;
 #else
         ::pthread_cond_init( &pCondition, NULL);
 #endif        
@@ -261,11 +260,6 @@ namespace Riot
     void System::WaitForCondition( System::wait_condition_t* pCondition, mutex_t* pMutex )
     {
 #ifdef OS_WINDOWS
-        //while( AtomicExchange( &pCondition->nCount, 0 ) == 0 )
-        //{
-        //    ;
-        //}
-        //AtomicExchange( &pCondition->nCount, 0 );
         ::WaitForSingleObject( *pCondition, INFINITE );
         ::ResetEvent( *pCondition ); // It was just signaled, turn it back off
 #else
@@ -280,7 +274,6 @@ namespace Riot
     void System::SignalCondition( System::wait_condition_t* pCondition )
     {
 #ifdef OS_WINDOWS
-        //AtomicExchange( &pCondition->nCount, 1 );
         ::SetEvent( *pCondition );
 #else
         ::pthread_cond_signal(pCondition);

@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/23/2011 5:19:30 PM
+Modified:       4/23/2011 11:58:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -138,7 +138,7 @@ namespace Riot
             if( fFPSTime > 1.0f )
             {
                 printf( "FPS: %d\n", nFPSFrames );
-                fFPSTime = 0.0f;
+                fFPSTime -= 1.0f;
                 nFPSFrames = 0;
             }
         }

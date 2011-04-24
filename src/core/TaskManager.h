@@ -3,7 +3,7 @@ File:           TaskManager.h
 Purpose:        Task manager
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 8:08:04 PM
+Modified:       4/24/2011 12:23:23 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TASKMANAGER_H_
@@ -50,7 +50,7 @@ namespace Riot
         //  PushTask
         //  Adds the task to the queue
         //-----------------------------------------------------------------------------
-        task_handle_t PushTask( TaskFunc* pFunc, void* pData, uint nCount, uint nChunkSize = 1 );
+        task_handle_t PushTask( TaskFunc* pFunc, void* pData, uint nCount, uint nChunkSize );
 
         //-----------------------------------------------------------------------------
         //  WaitForCompletion
@@ -83,24 +83,21 @@ namespace Riot
         \***************************************/
         static CTaskManager*    m_pInstance;
 
-        TTask               m_pTasks[ MAX_SUB_TASKS ];
-
-        atomic_t            m_pCompletion[ MAX_TASKS ];
-
-        atomic_t            m_nStartTask;
-        atomic_t            m_nEndTask;
-
         CThread             m_Thread[ MAX_THREADS ];
 
-        atomic_t            m_nCurrentHandle;
-        atomic_t            m_nActiveTasks;
+        TTask               m_pTasks[ MAX_SUB_TASKS ];
+        atomic_t            m_pCompletion[ MAX_TASKS ];
+
         System::semaphore_t m_pSleep;
 
-        CMutex  m_TaskMutex;
+        atomic_t    m_nStartTask;
+        atomic_t    m_nEndTask;
+        atomic_t    m_nCurrentHandle;
+        atomic_t    m_nActiveTasks;
 
-        uint    m_nNumThreads;
-        bool    m_bShutdown;
-        bool    m_bThreadsIdle;
+        uint        m_nNumThreads;
+        bool        m_bShutdown;
+        bool        m_bThreadsIdle;
     };
 
 

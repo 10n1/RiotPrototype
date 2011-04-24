@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 11:49:07 PM
+Modified:       4/24/2011 12:18:24 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -50,7 +50,6 @@ namespace Riot
         m_bFinished         = false;
         m_pSystemMutex      = System::CreateRiotMutex();
         m_pWakeCondition    = System::CreateWaitCondition();
-        m_pTask             = NULL;
 
         m_pThread           = System::SpawnThread( &_ThreadProc, this );
     }
@@ -80,14 +79,7 @@ namespace Riot
                 break;
 
             // Do all the work you can
-            while( m_pTaskManager->m_nActiveTasks )
-            {
-                DoWork( );
-
-                // Make sure we're not shutting down
-                if( m_pTaskManager->m_bShutdown )
-                    break;
-            }
+            DoWork( NULL );
         }
 
         m_bFinished = true;
@@ -97,31 +89,63 @@ namespace Riot
     //  DoWork
     //  The thread starts doing work. It'll steal more if it has to
     //-----------------------------------------------------------------------------
-    void CThread::DoWork( void )
+    void CThread::DoWork( atomic_t* pCompletion )
     {
         TTask*   pTask = NULL;
 
         ASSERT( m_pTaskManager != NULL );
 
-        while( m_pTaskManager->GetWork( &pTask ) )
+        if( pCompletion != NULL )
         {
-            ASSERT( pTask );
+            // Break this out so when NULL is passed in, 
+            //  we can skip all the unneccesary if checks
+            //  in the other loop
+            while( m_pTaskManager->GetWork( &pTask ) )
+            {
+                ASSERT( pTask );
 
-            ASSERT( pTask->pFunc );
+                ASSERT( pTask->pFunc );
 
-            TaskFunc* pFunc  = pTask->pFunc;  
-            void*     pData  = pTask->pData;
-            sint      nStart = pTask->nStart;
-            sint      nCount = pTask->nCount;
+                TaskFunc* pFunc  = pTask->pFunc;  
+                void*     pData  = pTask->pData;
+                sint      nStart = pTask->nStart;
+                sint      nCount = pTask->nCount;
 
-            pFunc( pData, m_nThreadId, nStart, nCount );
+                pFunc( pData, m_nThreadId, nStart, nCount );
 
-            // Let the task know it's done being worked on
-            AtomicDecrement( pTask->pCompletion );
+                // Let the task know it's done being worked on
+                AtomicDecrement( pTask->pCompletion );
 
-            // Make sure it can't get run again
-            pTask->pFunc = NULL;
+                // Make sure it can't get run again
+                pTask->pFunc = NULL;
+
+                if( AtomicCompareAndSwap( pCompletion, 0, 0 ) == 0 )
+                    break;
+            }
         }
+        else
+        {
+            while( m_pTaskManager->GetWork( &pTask ) )
+            {
+                ASSERT( pTask );
+
+                ASSERT( pTask->pFunc );
+
+                TaskFunc* pFunc  = pTask->pFunc;  
+                void*     pData  = pTask->pData;
+                sint      nStart = pTask->nStart;
+                sint      nCount = pTask->nCount;
+
+                pFunc( pData, m_nThreadId, nStart, nCount );
+
+                // Let the task know it's done being worked on
+                AtomicDecrement( pTask->pCompletion );
+
+                // Make sure it can't get run again
+                pTask->pFunc = NULL;
+            }
+        }
+
     }
 
     //-----------------------------------------------------------------------------

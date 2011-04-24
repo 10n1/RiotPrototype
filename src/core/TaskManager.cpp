@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 11:51:00 PM
+Modified:       4/24/2011 12:23:23 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -122,12 +122,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     task_handle_t CTaskManager::PushTask( TaskFunc* pFunc, void* pData, uint nCount, uint nChunkSize )
     {
-        CScopedMutex lock( &m_TaskMutex );
-
-        //nChunkSize = nCount;
-
-        if( nChunkSize == 0 )
-            nChunkSize = 1;
+        ASSERT( nChunkSize );
 
         // First we need to find a new handle to use
         task_handle_t   nHandle = (AtomicIncrement( &m_nCurrentHandle ) - 1) % MAX_TASKS;
@@ -159,9 +154,6 @@ namespace Riot
             AtomicIncrement( &m_pCompletion[nHandle] );
 
             nStart += nChunkSize;
-
-            ASSERT( m_pTasks[nTaskIndex].pFunc );
-            ASSERT( m_pTasks[nTaskIndex].pCompletion );
         }
 
         // Make sure the threads are awake
@@ -185,10 +177,8 @@ namespace Riot
         // While we're waiting, work
         while( m_pCompletion[nHandle] > 0 )
         {
-            m_Thread[0].DoWork();
+            m_Thread[0].DoWork( &m_pCompletion[nHandle] );
         }
-
-        int x = 0;
     }
 
     //-----------------------------------------------------------------------------
@@ -197,8 +187,6 @@ namespace Riot
     //-----------------------------------------------------------------------------
     bool CTaskManager::GetWork( TTask** ppTask )
     {
-        //CScopedMutex lock( &m_TaskMutex );
-
         // Grab work
         sint nActiveTasks = AtomicDecrement( &m_nActiveTasks );
         if( nActiveTasks < 0 )
@@ -210,8 +198,6 @@ namespace Riot
 
         // Grab the back of the list
         uint nTaskIndex = (AtomicIncrement( &m_nStartTask ) - 1) % MAX_SUB_TASKS;
-
-        //ASSERT( nTaskIndex < m_nEndTask );
         
         // return it
         *ppTask = &m_pTasks[nTaskIndex];

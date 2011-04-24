@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/23/2011 1:38:15 AM
+Modified:       4/24/2011 12:24:24 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -353,7 +353,7 @@ namespace Riot
         CTaskManager*      pTaskManager = CTaskManager::GetInstance();
 
 #if PARALLEL_UPDATE
-        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumComponents, 1 );
+        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumComponents, 16 );
         pTaskManager->WaitForCompletion( nHandle );
 #else
         ProcessBatch( this, 0, 0, m_nNumComponents );
