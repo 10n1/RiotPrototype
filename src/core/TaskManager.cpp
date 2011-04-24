@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/24/2011 12:23:23 AM
+Modified:       4/24/2011 12:55:34 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -114,14 +114,15 @@ namespace Riot
         m_bThreadsIdle = true;
     }
 
-    static atomic_t nCompletion[ MAX_TASKS ] = { 0 };
-
     //-----------------------------------------------------------------------------
     //  PushTask
     //  Adds the task to the queue
     //-----------------------------------------------------------------------------
     task_handle_t CTaskManager::PushTask( TaskFunc* pFunc, void* pData, uint nCount, uint nChunkSize )
     {
+        CScopedMutex lock( &m_TaskMutex );
+        // TODO: Figure out why this doesn't work without a lock...
+
         ASSERT( nChunkSize );
 
         // First we need to find a new handle to use
@@ -154,6 +155,8 @@ namespace Riot
             AtomicIncrement( &m_pCompletion[nHandle] );
 
             nStart += nChunkSize;
+
+            ASSERT( m_pTasks[nTaskIndex].pFunc );
         }
 
         // Make sure the threads are awake
@@ -201,6 +204,8 @@ namespace Riot
         
         // return it
         *ppTask = &m_pTasks[nTaskIndex];
+
+        ASSERT( m_pTasks[nTaskIndex].pFunc );
 
         return true;
     }

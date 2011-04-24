@@ -3,7 +3,7 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/21/2011 10:21:48 PM
+Modified:       4/24/2011 12:26:10 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
@@ -31,6 +31,10 @@ template<class T> inline void Swap( T& a, T& b ) { T tmp = a; a = b; b = tmp; }
 
 inline float Square( float f ) { return f*f; }
 template<class T> inline T Abs( const T& a ) { if( a < 0 ) return -a; return a; }
+
+typedef float float2[2];
+typedef float float3[3];
+typedef float float4[4];
 
 //-----------------------------------------------------------------------------
 //  Vector2

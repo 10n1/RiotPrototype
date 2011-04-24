@@ -3,7 +3,7 @@ File:           assert.h
 Purpose:        Defines asserts
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/10/2011 3:15:39 PM
+Modified:       4/24/2011 1:02:12 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ASSERT_H_
@@ -27,15 +27,18 @@ Modified by:    Kyle Weicht
 
 #else
 
+#if RELEASE_ASSERTS
 #define ASSERT( expression )    \
     if( expression ) { }        \
     else                        \
     {                           \
         debugBreak();           \
     }
+#else
+#define ASSERT( expression )
+#endif // RELEASE_ASSERTS
 
-
-#endif
+#endif // #ifdef DEBUG
 
 #ifndef assert
 #define assert ASSERT

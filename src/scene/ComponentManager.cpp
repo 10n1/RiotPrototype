@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/24/2011 12:24:02 AM
+Modified:       4/24/2011 1:04:12 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -124,7 +124,7 @@ namespace Riot
         pTaskManager->WaitForCompletion( nProcessTask );
 
         // ...then resolve any discrepencies and handle messages
-        task_handle_t nMessageTask = pTaskManager->PushTask( ParallelProcessComponentMessages, this, m_nNumMessages, 4 );
+        task_handle_t nMessageTask = pTaskManager->PushTask( ParallelProcessComponentMessages, this, m_nNumMessages, 16 );
         pTaskManager->WaitForCompletion( nMessageTask );
 #else
         ParallelProcessComponents( this, 0, 0, eNUMCOMPONENTS );

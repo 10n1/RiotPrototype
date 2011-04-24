@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/24/2011 12:18:24 AM
+Modified:       4/24/2011 12:47:50 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -104,7 +104,7 @@ namespace Riot
             {
                 ASSERT( pTask );
 
-                ASSERT( pTask->pFunc );
+                //ASSERT( pTask->pFunc );
 
                 TaskFunc* pFunc  = pTask->pFunc;  
                 void*     pData  = pTask->pData;
@@ -117,7 +117,7 @@ namespace Riot
                 AtomicDecrement( pTask->pCompletion );
 
                 // Make sure it can't get run again
-                pTask->pFunc = NULL;
+                //pTask->pFunc = NULL;
 
                 if( AtomicCompareAndSwap( pCompletion, 0, 0 ) == 0 )
                     break;
@@ -129,7 +129,7 @@ namespace Riot
             {
                 ASSERT( pTask );
 
-                ASSERT( pTask->pFunc );
+                //ASSERT( pTask->pFunc );
 
                 TaskFunc* pFunc  = pTask->pFunc;  
                 void*     pData  = pTask->pData;
@@ -142,7 +142,7 @@ namespace Riot
                 AtomicDecrement( pTask->pCompletion );
 
                 // Make sure it can't get run again
-                pTask->pFunc = NULL;
+                //pTask->pFunc = NULL;
             }
         }
 

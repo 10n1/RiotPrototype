@@ -3,15 +3,13 @@ File:           Thread.h
 Purpose:        Interface for hardware threads
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/24/2011 12:09:52 AM
+Modified:       4/24/2011 12:37:03 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _THREAD_H_
 #define _THREAD_H_
 #include "common.h"
 #include "System.h"
-
-#include <stdio.h>
 
 namespace Riot
 {    
