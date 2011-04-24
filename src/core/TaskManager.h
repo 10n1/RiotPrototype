@@ -3,7 +3,7 @@ File:           TaskManager.h
 Purpose:        Task manager
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 1:32:43 AM
+Modified:       4/23/2011 5:59:12 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TASKMANAGER_H_
@@ -75,7 +75,7 @@ namespace Riot
         //  GetWork
         //  Retrieves work for the thread to do
         //-----------------------------------------------------------------------------
-        bool GetWork( TTask** ppTask, sint* pStart, sint* pCount );
+        bool GetWork( TTask* pTask );
 
     private:
         /***************************************\

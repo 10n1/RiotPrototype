@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 5:21:09 PM
+Modified:       4/23/2011 6:05:03 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -84,6 +84,10 @@ namespace Riot
             while( m_pTaskManager->m_nActiveTasks )
             {
                 DoWork( );
+
+                // Make sure we're not shutting down
+                if( m_pTaskManager->m_bShutdown )
+                    break;
             }
         }
 
@@ -96,24 +100,24 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CThread::DoWork( void )
     {
-        TTask*  pTask = NULL;
-        sint    nStart = 0;
-        sint    nCount = 0;
+        TTask   pTask;
 
-        while( m_pTaskManager->GetWork( &pTask, &nStart, &nCount ) )
+        while( m_pTaskManager->GetWork( &pTask ) )
         {
-            if( pTask == NULL )
+            if( pTask.pFunc == NULL )
             {
                 continue;
             }
 
-            TaskFunc* pFunc  = pTask->pFunc;  
-            void*     pData  = pTask->pData;
+            TaskFunc* pFunc  = pTask.pFunc;  
+            void*     pData  = pTask.pData;
+            sint      nStart = pTask.nStart;
+            sint      nCount = pTask.nCount;
 
             pFunc( pData, m_nThreadId, nStart, nCount );
 
             // Let the task know it's done being worked on
-            AtomicDecrement( &pTask->nCompletion );
+            //AtomicDecrement( &pTask->nCompletion );
             //printf( "Task %d finish. Completion: %d\n", pTask->nIndex, pTask->nCompletion );
         }
     }

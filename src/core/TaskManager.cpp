@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 5:28:27 PM
+Modified:       4/23/2011 6:01:24 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -196,66 +196,52 @@ namespace Riot
     //  GetWork
     //  Retrieves work for the thread to do
     //-----------------------------------------------------------------------------
-    bool CTaskManager::GetWork( TTask** ppTask, sint* pStart, sint* pCount )
+    bool CTaskManager::GetWork( TTask* pTask )
     {
-        //CScopedMutex lock( &m_PopMutex );
-        // Atomically read the start and end, ensuring they're up to date
-        uint nEndTask   = AtomicCompareAndSwap( &m_nEndTask, m_nEndTask, -1 );
-        uint nStartTask = AtomicCompareAndSwap( &m_nStartTask, m_nStartTask, -1 );
+        CScopedMutex lock( &m_PushMutex );
 
-        if( nStartTask == nEndTask )
+        if( m_nStartTask == m_nEndTask )
         {
             return false;
         }
 
+        TTask newTask;
+
         // Get the current task we're looking at
         // We use CompareAndSwap with -1 because it will never pass.
         // This way we get an atomic lock-free read
-        sint nTaskIndex = nStartTask % MAX_TASKS;
+        sint nTaskIndex = m_nStartTask % MAX_TASKS;
 
-        uint nChunkSize = m_pTasks[nTaskIndex].nChunkSize;
-        uint nCount     = m_pTasks[nTaskIndex].nCount;
-        uint nNewCount  = nChunkSize;
-
-        // Calculate the start and end
-        sint nEnd = AtomicAdd( &m_pTasks[nTaskIndex].nStart, nChunkSize );
-        sint nStart = nEnd - nChunkSize;
-
-        if( nStart >= nCount )
+        if( m_pTasks[nTaskIndex].nStart >= m_pTasks[nTaskIndex].nCount )
         {
-            uint nCurrentStart = AtomicCompareAndSwap( &m_nStartTask, nStartTask + 1, nStartTask );
-            if( nCurrentStart == nStartTask )
-            {
-                // we're currently starting past the end,
-                //  this task is clearly done.
-                // If it hasn't been incremented, increment the start, then try again
-                AtomicDecrement( &m_nActiveTasks );
-                AtomicDecrement( &m_pTasks[nTaskIndex].nCompletion );
-
-                //printf( "Task %d pop. Completion: %d\n", nTaskIndex, m_pTasks[nTaskIndex].nCompletion );
-            }
-
-            // Don't return false because theres still work to do,
-            //  but let the thread know it didn't get it
-            *ppTask = NULL;
+            --m_pTasks[nTaskIndex].nCompletion;
+            ++m_nStartTask;
+            newTask.pFunc = NULL;
+            *pTask = newTask;
             return true;
         }
-        
-        // Let the task know its being worked on
-        AtomicIncrement( &m_pTasks[nTaskIndex].nCompletion );
+
+        newTask = m_pTasks[nTaskIndex];
+        m_pTasks[nTaskIndex].nStart += m_pTasks[nTaskIndex].nChunkSize;
+
+        uint nChunkSize = newTask.nChunkSize;
+        uint nCount     = newTask.nCount;
+        newTask.nCount  = nChunkSize;
+
+        // Calculate the start and end
+        sint nEnd = newTask.nStart + nChunkSize ;
+        sint nStart = nEnd - nChunkSize;
 
         //printf( "Task %d start. Completion: %d\n", nTaskIndex, m_pTasks[nTaskIndex].nCompletion );
 
         if( nEnd > nCount )
         {
             // This is the last task, we can't do a full chunk
-            nNewCount = nCount - nStart;
+            newTask.nCount = nCount - nStart;
         }
         
 
-        *ppTask = &m_pTasks[nTaskIndex];
-        *pStart = nStart;
-        *pCount = nNewCount;
+        *pTask = newTask;
 
         return true;
     }
