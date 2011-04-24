@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 6:01:24 PM
+Modified:       4/23/2011 6:28:18 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -200,7 +200,10 @@ namespace Riot
     {
         CScopedMutex lock( &m_PushMutex );
 
-        if( m_nStartTask == m_nEndTask )
+        uint nStartTask = AtomicCompareAndSwap( &m_nStartTask, m_nStartTask, -1 );
+        uint nEndTask = AtomicCompareAndSwap( &m_nEndTask, m_nEndTask, -1 );
+
+        if( nStartTask == nEndTask )
         {
             return false;
         }
@@ -210,27 +213,41 @@ namespace Riot
         // Get the current task we're looking at
         // We use CompareAndSwap with -1 because it will never pass.
         // This way we get an atomic lock-free read
-        sint nTaskIndex = m_nStartTask % MAX_TASKS;
+        sint nTaskIndex = nStartTask % MAX_TASKS;
 
-        if( m_pTasks[nTaskIndex].nStart >= m_pTasks[nTaskIndex].nCount )
+        uint nEnd = AtomicAdd( &m_pTasks[nTaskIndex].nStart, m_pTasks[nTaskIndex].nChunkSize );
+        //uint nStart = m_pTasks[nTaskIndex].nStart;
+
+        //AtomicAdd( &m_pTasks[nTaskIndex].nStart, m_pTasks[nTaskIndex].nChunkSize );
+        //AtomicAdd( &m_pTasks[nTaskIndex].nStart, m_pTasks[nTaskIndex].nChunkSize );
+
+        uint nStart = nEnd - m_pTasks[nTaskIndex].nChunkSize;
+
+        if( nEnd > m_pTasks[nTaskIndex].nCount )
         {
-            --m_pTasks[nTaskIndex].nCompletion;
-            ++m_nStartTask;
+            sint nOldStart = AtomicCompareAndSwap( &m_nStartTask, nStartTask + 1, nStartTask );
+            if( nOldStart == nStartTask )
+            {
+                // This thread is the one that changed the start
+                AtomicDecrement( &m_pTasks[nTaskIndex].nCompletion );
+                AtomicDecrement( &m_nActiveTasks );
+            }
+            //AtomicIncrement( &m_nStartTask );
             newTask.pFunc = NULL;
             *pTask = newTask;
             return true;
         }
 
         newTask = m_pTasks[nTaskIndex];
-        m_pTasks[nTaskIndex].nStart += m_pTasks[nTaskIndex].nChunkSize;
+        newTask.nStart = nStart;
 
         uint nChunkSize = newTask.nChunkSize;
         uint nCount     = newTask.nCount;
         newTask.nCount  = nChunkSize;
 
         // Calculate the start and end
-        sint nEnd = newTask.nStart + nChunkSize ;
-        sint nStart = nEnd - nChunkSize;
+        //sint nEnd = newTask.nStart + nChunkSize ;
+        //sint nStart = nEnd - nChunkSize;
 
         //printf( "Task %d start. Completion: %d\n", nTaskIndex, m_pTasks[nTaskIndex].nCompletion );
 

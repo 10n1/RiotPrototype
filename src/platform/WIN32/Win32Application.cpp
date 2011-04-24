@@ -2,7 +2,7 @@
 File:           Win32Application.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/17/2011 9:42:32 PM
+Modified:       4/23/2011 6:25:20 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Win32Application.h"
@@ -166,6 +166,7 @@ namespace Riot
         case WM_LBUTTONUP: nMouseButton = MOUSE_L_BUTTON; goto mouse_up;
             mouse_up:
             {
+                ReleaseCapture();
                 Engine::PostMsg( TMessage( mHardwareMouseUp, nMouseButton ) );
                 return 0;
             }
