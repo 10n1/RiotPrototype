@@ -3,13 +3,15 @@ File:           Thread.h
 Purpose:        Interface for hardware threads
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 2:05:37 AM
+Modified:       4/23/2011 12:58:15 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _THREAD_H_
 #define _THREAD_H_
 #include "common.h"
 #include "System.h"
+
+#include <stdio.h>
 
 namespace Riot
 {    
@@ -30,6 +32,8 @@ namespace Riot
         uint        nCount;
         uint        nChunkSize;
         atomic_t    nCompletion;
+
+        uint        nIndex;
     };
 
     class CMutex

@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 12:25:47 PM
+Modified:       4/23/2011 5:21:09 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -114,6 +114,7 @@ namespace Riot
 
             // Let the task know it's done being worked on
             AtomicDecrement( &pTask->nCompletion );
+            //printf( "Task %d finish. Completion: %d\n", pTask->nIndex, pTask->nCompletion );
         }
     }
 

@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 12:40:02 PM
+Modified:       4/23/2011 5:28:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -113,6 +113,8 @@ namespace Riot
         m_bThreadsIdle = true;
     }
 
+    static atomic_t nTasks = 0;
+
     //-----------------------------------------------------------------------------
     //  PushTask
     //  Adds the task to the queue
@@ -123,6 +125,8 @@ namespace Riot
 
         if( nChunkSize == 0 )
             nChunkSize = 1;
+
+        //sint n = AtomicIncrement( &nTasks );
         
         // Increment the task counter so threads know work is coming
         AtomicIncrement( &m_nActiveTasks );
@@ -130,11 +134,11 @@ namespace Riot
         // First we need to find a new handle to use
         task_handle_t nHandle = (AtomicIncrement( &m_nEndTask ) - 1) % MAX_TASKS;
 
-        while( m_pTasks[nHandle].nStart < (sint)m_pTasks[nHandle].nCount )
-        {
-            ; // Our task buffer is somehow filled, spin while waiting
-            //  TODO: Use this time to do some work, but this is very unlikely to ever be hit
-        }
+        //while( m_pTasks[nHandle].nStart < (sint)m_pTasks[nHandle].nCount )
+        //{
+        //    ; // Our task buffer is somehow filled, spin while waiting
+        //    //  TODO: Use this time to do some work, but this is very unlikely to ever be hit
+        //}
 
         // Create our new task
         TTask   newTask = 
@@ -147,11 +151,15 @@ namespace Riot
             1,          // The current completion count
                         //  its initialized to one and becomes zero once
                         //  all the work has been completed
+
+            nHandle,
         };
 
 
         // Distribute the tasks to the threads
         m_pTasks[nHandle] = newTask;
+
+        //printf( "Task %d push. Completion: %d\n", nHandle, m_pTasks[nHandle].nCompletion );
 
         WakeThreads();
 
@@ -190,9 +198,10 @@ namespace Riot
     //-----------------------------------------------------------------------------
     bool CTaskManager::GetWork( TTask** ppTask, sint* pStart, sint* pCount )
     {
+        //CScopedMutex lock( &m_PopMutex );
         // Atomically read the start and end, ensuring they're up to date
-        uint nStartTask = AtomicCompareAndSwap( &m_nStartTask, m_nStartTask, -1 );
         uint nEndTask   = AtomicCompareAndSwap( &m_nEndTask, m_nEndTask, -1 );
+        uint nStartTask = AtomicCompareAndSwap( &m_nStartTask, m_nStartTask, -1 );
 
         if( nStartTask == nEndTask )
         {
@@ -222,6 +231,8 @@ namespace Riot
                 // If it hasn't been incremented, increment the start, then try again
                 AtomicDecrement( &m_nActiveTasks );
                 AtomicDecrement( &m_pTasks[nTaskIndex].nCompletion );
+
+                //printf( "Task %d pop. Completion: %d\n", nTaskIndex, m_pTasks[nTaskIndex].nCompletion );
             }
 
             // Don't return false because theres still work to do,
@@ -232,6 +243,8 @@ namespace Riot
         
         // Let the task know its being worked on
         AtomicIncrement( &m_pTasks[nTaskIndex].nCompletion );
+
+        //printf( "Task %d start. Completion: %d\n", nTaskIndex, m_pTasks[nTaskIndex].nCompletion );
 
         if( nEnd > nCount )
         {
