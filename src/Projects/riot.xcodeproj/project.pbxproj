@@ -18,9 +18,6 @@
 		36D8E010136412F200C6F300 /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8DFDE136412F200C6F300 /* Thread.cpp */; };
 		36D8E011136412F200C6F300 /* timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8DFE0136412F200C6F300 /* timer.cpp */; };
 		36D8E012136412F200C6F300 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8DFE2136412F200C6F300 /* Window.cpp */; };
-		36D8E013136412F200C6F300 /* D3D.txt in Resources */ = {isa = PBXBuildFile; fileRef = 36D8DFE6136412F200C6F300 /* D3D.txt */; };
-		36D8E014136412F200C6F300 /* D3DGraphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8DFE7136412F200C6F300 /* D3DGraphics.cpp */; };
-		36D8E015136412F200C6F300 /* D3DGraphicsObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8DFE9136412F200C6F300 /* D3DGraphicsObjects.cpp */; };
 		36D8E016136412F200C6F300 /* Graphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8DFEB136412F200C6F300 /* Graphics.cpp */; };
 		36D8E017136412F200C6F300 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8DFEE136412F200C6F300 /* Mesh.cpp */; };
 		36D8E018136412F200C6F300 /* OGLGraphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8DFF1136412F200C6F300 /* OGLGraphics.cpp */; };
@@ -64,7 +61,7 @@
 		36D8DFD7136412F200C6F300 /* Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
 		36D8DFD8136412F200C6F300 /* MessageDispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MessageDispatcher.cpp; sourceTree = "<group>"; };
 		36D8DFD9136412F200C6F300 /* MessageDispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageDispatcher.h; sourceTree = "<group>"; };
-		36D8DFDA136412F200C6F300 /* System.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = System.cpp; sourceTree = "<group>"; };
+		36D8DFDA136412F200C6F300 /* System.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = System.cpp; sourceTree = "<group>"; };
 		36D8DFDB136412F200C6F300 /* System.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = System.h; sourceTree = "<group>"; };
 		36D8DFDC136412F200C6F300 /* TaskManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TaskManager.cpp; sourceTree = "<group>"; };
 		36D8DFDD136412F200C6F300 /* TaskManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TaskManager.h; sourceTree = "<group>"; };
@@ -74,21 +71,16 @@
 		36D8DFE1136412F200C6F300 /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
 		36D8DFE2136412F200C6F300 /* Window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Window.cpp; sourceTree = "<group>"; };
 		36D8DFE3136412F200C6F300 /* Window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Window.h; sourceTree = "<group>"; };
-		36D8DFE6136412F200C6F300 /* D3D.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = D3D.txt; sourceTree = "<group>"; };
-		36D8DFE7136412F200C6F300 /* D3DGraphics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = D3DGraphics.cpp; sourceTree = "<group>"; };
-		36D8DFE8136412F200C6F300 /* D3DGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = D3DGraphics.h; sourceTree = "<group>"; };
-		36D8DFE9136412F200C6F300 /* D3DGraphicsObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = D3DGraphicsObjects.cpp; sourceTree = "<group>"; };
-		36D8DFEA136412F200C6F300 /* D3DGraphicsObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = D3DGraphicsObjects.h; sourceTree = "<group>"; };
 		36D8DFEB136412F200C6F300 /* Graphics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Graphics.cpp; sourceTree = "<group>"; };
 		36D8DFEC136412F200C6F300 /* Graphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Graphics.h; sourceTree = "<group>"; };
 		36D8DFED136412F200C6F300 /* GraphicsObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GraphicsObjects.h; sourceTree = "<group>"; };
 		36D8DFEE136412F200C6F300 /* Mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
 		36D8DFEF136412F200C6F300 /* Mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
-		36D8DFF1136412F200C6F300 /* OGLGraphics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OGLGraphics.cpp; sourceTree = "<group>"; };
+		36D8DFF1136412F200C6F300 /* OGLGraphics.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = OGLGraphics.cpp; sourceTree = "<group>"; };
 		36D8DFF2136412F200C6F300 /* OGLGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OGLGraphics.h; sourceTree = "<group>"; };
-		36D8DFF3136412F200C6F300 /* OGLGraphicsObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OGLGraphicsObjects.cpp; sourceTree = "<group>"; };
+		36D8DFF3136412F200C6F300 /* OGLGraphicsObjects.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = OGLGraphicsObjects.cpp; sourceTree = "<group>"; };
 		36D8DFF4136412F200C6F300 /* OGLGraphicsObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OGLGraphicsObjects.h; sourceTree = "<group>"; };
-		36D8DFF5136412F200C6F300 /* Renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Renderer.cpp; sourceTree = "<group>"; };
+		36D8DFF5136412F200C6F300 /* Renderer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Renderer.cpp; sourceTree = "<group>"; };
 		36D8DFF6136412F200C6F300 /* Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Renderer.h; sourceTree = "<group>"; };
 		36D8DFF7136412F200C6F300 /* VertexFormats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VertexFormats.cpp; sourceTree = "<group>"; };
 		36D8DFF8136412F200C6F300 /* VertexFormats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VertexFormats.h; sourceTree = "<group>"; };
@@ -111,7 +103,7 @@
 		36D8E0231364130400C6F300 /* Menu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Menu.xib; sourceTree = "<group>"; };
 		36D8E0241364130400C6F300 /* OSXApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSXApplication.h; sourceTree = "<group>"; };
 		36D8E0251364130400C6F300 /* OSXApplication.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OSXApplication.mm; sourceTree = "<group>"; };
-		36D8E0261364130400C6F300 /* OSXOpenGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OSXOpenGL.cpp; sourceTree = "<group>"; };
+		36D8E0261364130400C6F300 /* OSXOpenGL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = OSXOpenGL.cpp; sourceTree = "<group>"; };
 		36D8E0271364130400C6F300 /* SystemOpenGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemOpenGL.h; path = ../platform/SystemOpenGL.h; sourceTree = "<group>"; };
 		36D8E02D1364131E00C6F300 /* Component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Component.cpp; sourceTree = "<group>"; };
 		36D8E02E1364131E00C6F300 /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Component.h; sourceTree = "<group>"; };
@@ -210,7 +202,6 @@
 		36D8DFE4136412F200C6F300 /* gfx */ = {
 			isa = PBXGroup;
 			children = (
-				36D8DFE5136412F200C6F300 /* D3D */,
 				36D8DFEB136412F200C6F300 /* Graphics.cpp */,
 				36D8DFEC136412F200C6F300 /* Graphics.h */,
 				36D8DFED136412F200C6F300 /* GraphicsObjects.h */,
@@ -226,18 +217,6 @@
 			);
 			name = gfx;
 			path = ../gfx;
-			sourceTree = "<group>";
-		};
-		36D8DFE5136412F200C6F300 /* D3D */ = {
-			isa = PBXGroup;
-			children = (
-				36D8DFE6136412F200C6F300 /* D3D.txt */,
-				36D8DFE7136412F200C6F300 /* D3DGraphics.cpp */,
-				36D8DFE8136412F200C6F300 /* D3DGraphics.h */,
-				36D8DFE9136412F200C6F300 /* D3DGraphicsObjects.cpp */,
-				36D8DFEA136412F200C6F300 /* D3DGraphicsObjects.h */,
-			);
-			path = D3D;
 			sourceTree = "<group>";
 		};
 		36D8DFF0136412F200C6F300 /* OGL */ = {
@@ -375,7 +354,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				36D8E013136412F200C6F300 /* D3D.txt in Resources */,
 				36D8E0281364130400C6F300 /* Menu.xib in Resources */,
 				36D8E0381364131E00C6F300 /* ComponentSystem.txt in Resources */,
 			);
@@ -398,8 +376,6 @@
 				36D8E010136412F200C6F300 /* Thread.cpp in Sources */,
 				36D8E011136412F200C6F300 /* timer.cpp in Sources */,
 				36D8E012136412F200C6F300 /* Window.cpp in Sources */,
-				36D8E014136412F200C6F300 /* D3DGraphics.cpp in Sources */,
-				36D8E015136412F200C6F300 /* D3DGraphicsObjects.cpp in Sources */,
 				36D8E016136412F200C6F300 /* Graphics.cpp in Sources */,
 				36D8E017136412F200C6F300 /* Mesh.cpp in Sources */,
 				36D8E018136412F200C6F300 /* OGLGraphics.cpp in Sources */,

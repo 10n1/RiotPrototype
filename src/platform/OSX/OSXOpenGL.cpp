@@ -6,9 +6,9 @@
 //  Copyright 2011 none. All rights reserved.
 //
 
-#include "SystemOpenGL.h"
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
+#include "SystemOpenGL.h"
 #import <OpenGL/OpenGL.h>
 #if (MAC_OS_X_VERSION_MAX_ALLOWED == MAC_OS_X_VERSION_10_7)
 #include <OpenGL/gl3.h>

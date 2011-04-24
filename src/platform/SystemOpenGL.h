@@ -9,7 +9,7 @@ Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEMOPENGL_H_
 #define _SYSTEMOPENGL_H_
-#include "common.h"
+#include "config.h"
 
 #if USE_OPENGL
 
@@ -32,6 +32,8 @@ Modified by:    Kyle Weicht
 #else
 // linux
 #endif
+
+#include "common.h"
 
 
 namespace Riot
