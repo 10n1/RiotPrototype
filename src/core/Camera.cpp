@@ -2,7 +2,7 @@
 File:           Camera.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/17/2011 9:50:06 PM
+Modified:       4/24/2011 1:14:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Camera.h"
@@ -65,7 +65,7 @@ namespace Riot
         {
         case mKeyDown:
             {
-                float fLookSpeed = 25.0f;
+                float fLookSpeed = 5.0f;
                 switch( msg.nMessage )
                 {
                 case KEY_W:

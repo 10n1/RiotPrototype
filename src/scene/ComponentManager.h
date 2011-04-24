@@ -3,7 +3,7 @@ File:           ComponentManager.h
 Purpose:        Manages all the components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/22/2011 1:08:27 AM
+Modified:       4/24/2011 3:42:09 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTMANAGER_H_
@@ -59,7 +59,11 @@ namespace Riot
         //  Updates all the components, then resolves issues
         //-----------------------------------------------------------------------------
         void ProcessComponents( void );
-
+        
+        //-----------------------------------------------------------------------------
+        //  GetComponent
+        //  Returns the 
+        //-----------------------------------------------------------------------------
 
         //-----------------------------------------------------------------------------
         //  PostMessage
