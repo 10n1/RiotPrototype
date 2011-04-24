@@ -38,8 +38,8 @@ void AddAllocation(void* pData, uint nSize, const char* szFile, uint nLine);
 void RemoveAllocation(void* pData);
 void __cdecl DumpMemoryLeaks(void);
 #else
-#define AddAllocation()
-#define RemoveAllocation()
+#define AddAllocation( pData, nSize, szFile, nLine )
+#define RemoveAllocation( pData )
 #define DumpMemoryLeaks()
 #endif // #ifdef DEBUG
 

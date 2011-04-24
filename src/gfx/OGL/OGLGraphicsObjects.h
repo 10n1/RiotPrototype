@@ -8,9 +8,9 @@ Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OGLGRAPHICSOBJECTS_H_
 #define _OGLGRAPHICSOBJECTS_H_
+#include "SystemOpenGL.h"
 #include "common.h"
 #include "GraphicsObjects.h"
-#include "SystemOpenGL.h"
 
 #if USE_OPENGL
 
@@ -65,6 +65,16 @@ namespace Riot
 //-----------------------------------------------------------------------------
     BEGIN_DEFINE_GRAPHICS_OBJECT( VertexLayout )
         GLint   m_nLayout;
+    END_DEFINE_GRAPHICS_OBJECT;
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    BEGIN_DEFINE_GRAPHICS_OBJECT( Texture2D )
+    GLint   m_nTexture;
+    END_DEFINE_GRAPHICS_OBJECT;
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    BEGIN_DEFINE_GRAPHICS_OBJECT( SamplerState )
+    GLint   m_nState;
     END_DEFINE_GRAPHICS_OBJECT;
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

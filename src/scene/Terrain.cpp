@@ -67,7 +67,7 @@ namespace Riot
         CreateMesh();
 
         SAFE_RELEASE( m_pTexture );
-        m_pTexture = Engine::GetRenderer()->LoadTexture2D( L"Assets/Textures/grass.png" );
+        m_pTexture = Engine::GetRenderer()->LoadTexture2D( "Assets/Textures/grass.png" );
     }
 
     //-----------------------------------------------------------------------------

@@ -35,7 +35,8 @@
       displayScaleIsEnabled = "NO"
       displayScale = "1.00"
       launchStyle = "0"
-      useCustomWorkingDirectory = "NO"
+      useCustomWorkingDirectory = "YES"
+      customWorkingDirectory = "/Development/Riot"
       buildConfiguration = "Debug">
       <BuildableProductRunnable>
          <BuildableReference
@@ -54,7 +55,8 @@
       displayScale = "1.00"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
-      useCustomWorkingDirectory = "NO"
+      useCustomWorkingDirectory = "YES"
+      customWorkingDirectory = "/Development/Riot"
       buildConfiguration = "Release">
       <BuildableProductRunnable>
          <BuildableReference
