@@ -3,7 +3,7 @@ File:           Thread.h
 Purpose:        Interface for hardware threads
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 7:56:31 PM
+Modified:       4/23/2011 9:04:34 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _THREAD_H_
@@ -81,7 +81,11 @@ namespace Riot
         }
 
         // CScopedMutex destructor
-        ~CScopedMutex() { if( m_pMutex ) m_pMutex->Unlock(); }
+        ~CScopedMutex() 
+        { 
+            if( m_pMutex ) 
+                m_pMutex->Unlock(); 
+        }
 
         /***************************************\
         | class methods                         |

@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 8:46:48 PM
+Modified:       4/23/2011 11:51:00 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -124,7 +124,7 @@ namespace Riot
     {
         CScopedMutex lock( &m_TaskMutex );
 
-        nChunkSize = nCount;
+        //nChunkSize = nCount;
 
         if( nChunkSize == 0 )
             nChunkSize = 1;
@@ -133,11 +133,7 @@ namespace Riot
         task_handle_t   nHandle = (AtomicIncrement( &m_nCurrentHandle ) - 1) % MAX_TASKS;
 
         // Grab a pointer to its completion
-        atomic_t* pCompletion = &m_pCompletion[nHandle];
-        *pCompletion = 0;
-        
-        // Let the threads know theres another active task
-        AtomicIncrement( &m_nActiveTasks );
+        m_pCompletion[nHandle] = 0;
 
         uint nTaskIndex = -1;
         // Distribute the tasks to the threads
@@ -157,16 +153,16 @@ namespace Riot
             m_pTasks[ nTaskIndex ].pData        = pData;
             m_pTasks[ nTaskIndex ].nStart       = nStart;
             m_pTasks[ nTaskIndex ].nCount       = nNewTaskCount;
-            m_pTasks[ nTaskIndex ].pCompletion  = pCompletion;
+            m_pTasks[ nTaskIndex ].pCompletion  = &m_pCompletion[nHandle];
 
             AtomicIncrement( &m_nActiveTasks );
+            AtomicIncrement( &m_pCompletion[nHandle] );
 
             nStart += nChunkSize;
 
-            AtomicIncrement( pCompletion );
+            ASSERT( m_pTasks[nTaskIndex].pFunc );
+            ASSERT( m_pTasks[nTaskIndex].pCompletion );
         }
-        
-        AtomicDecrement( &m_nActiveTasks );
 
         // Make sure the threads are awake
         WakeThreads();
@@ -187,12 +183,9 @@ namespace Riot
         }
 
         // While we're waiting, work
-        sint nCompletion = AtomicCompareAndSwap( m_pTasks[nHandle].pCompletion, -1024, -1024 );
-        while( nCompletion > 0 )
+        while( m_pCompletion[nHandle] > 0 )
         {
             m_Thread[0].DoWork();
-
-            nCompletion = AtomicCompareAndSwap( m_pTasks[nHandle].pCompletion, -1024, -1024 );
         }
 
         int x = 0;
@@ -204,7 +197,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     bool CTaskManager::GetWork( TTask** ppTask )
     {
-        CScopedMutex lock( &m_TaskMutex );
+        //CScopedMutex lock( &m_TaskMutex );
 
         // Grab work
         sint nActiveTasks = AtomicDecrement( &m_nActiveTasks );
