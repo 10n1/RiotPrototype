@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/20/2011 9:21:27 PM
+Modified:       4/24/2011 3:50:26 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -17,7 +17,7 @@ namespace Riot
 {
     //-----------------------------------------------------------------------------
     //  Function declarations
-    Result CompileShader( const wchar_t* szFilename, const char* szEntryPoint, const char* szProfile, ID3DBlob** ppBlob );
+    Result CompileShader( const char* szFilename, const char* szEntryPoint, const char* szProfile, ID3DBlob** ppBlob );
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
@@ -319,7 +319,7 @@ namespace Riot
 
     //
     void CD3DDevice::CreateVertexShaderAndLayout( 
-            const wchar_t* szFilename, 
+            const char* szFilename, 
             const char* szEntryPoint,
             InputElementLayout Layout[],
             uint nLayoutCount, 
@@ -366,7 +366,7 @@ namespace Riot
         *pLayout = pNewLayout;
     }
 
-    IGfxPixelShader* CD3DDevice::CreatePixelShader( const wchar_t* szFilename, const char* szEntryPoint )
+    IGfxPixelShader* CD3DDevice::CreatePixelShader( const char* szFilename, const char* szEntryPoint )
     {
         CD3DPixelShader* pShader = new CD3DPixelShader;
 
@@ -388,11 +388,15 @@ namespace Riot
     //
 
     //
-    IGfxTexture2D* CD3DDevice::LoadTexture( const wchar_t* szFilename )
+    IGfxTexture2D* CD3DDevice::LoadTexture( const char* szFilename )
     {
         CD3DTexture2D* pTexture = new CD3DTexture2D;
 
-        HRESULT hr = D3DX11CreateShaderResourceViewFromFile( m_pDevice, szFilename, NULL, NULL, &pTexture->m_pResourceView, NULL );
+        size_t nConverted = 0;
+        wchar_t szWFilename[256];
+        mbstowcs_s( &nConverted, szWFilename, szFilename, strlen( szFilename ) );
+
+        HRESULT hr = D3DX11CreateShaderResourceViewFromFile( m_pDevice, szWFilename, NULL, NULL, &pTexture->m_pResourceView, NULL );
         ASSERT( hr == S_OK );
 
         return pTexture;
@@ -576,8 +580,12 @@ namespace Riot
     }
     //
 
-    Result CompileShader( const wchar_t* szFilename, const char* szEntryPoint, const char* szProfile, ID3DBlob** ppBlob )
-    {
+    Result CompileShader( const char* szFilename, const char* szEntryPoint, const char* szProfile, ID3DBlob** ppBlob )
+    {        
+        size_t nConverted = 0;
+        wchar_t szWFilename[256];
+        mbstowcs_s( &nConverted, szWFilename, szFilename, strlen( szFilename ) );
+
         ID3DBlob*   pErrorBlob      = NULL;
         ID3DBlob*   pShaderBlob     = NULL;
         uint        nCompileFlags   = 0;
@@ -587,7 +595,7 @@ namespace Riot
 #ifdef DEBUG
         nCompileFlags = D3DCOMPILE_DEBUG;
 #endif
-        hr = D3DX11CompileFromFile(  szFilename,    // Filename
+        hr = D3DX11CompileFromFile(  szWFilename,    // Filename
             NULL,          // Array of macro definitions
             NULL,          // #include interface
             szEntryPoint,  // Function name

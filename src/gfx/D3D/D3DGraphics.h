@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Direct3D interface
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/20/2011 9:20:42 PM
+Modified:       4/24/2011 3:46:59 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -59,17 +59,17 @@ namespace Riot
         
         //
         void CreateVertexShaderAndLayout( 
-            const wchar_t* szFilename, 
+            const char* szFilename, 
             const char* szEntryPoint,
             InputElementLayout Layout[],
             uint nLayoutCount,
             IGfxVertexShader** pShader,
             IGfxVertexLayout** pLayout );
-        IGfxPixelShader* CreatePixelShader( const wchar_t* szFilename, const char* szEntryPoint );
+        IGfxPixelShader* CreatePixelShader( const char* szFilename, const char* szEntryPoint );
         //
 
         //
-        IGfxTexture2D* LoadTexture( const wchar_t* szFilename );
+        IGfxTexture2D* LoadTexture( const char* szFilename );
         IGfxSamplerState* CreateSamplerState( GFX_TEXTURE_SAMPLE nType );
         //
 
