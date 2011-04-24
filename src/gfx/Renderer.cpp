@@ -5,18 +5,20 @@ Created:        4/11/2011
 Modified:       4/21/2011 11:32:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#include "Renderer.h"
-#include "System.h"
-#include "Mesh.h"
-#include "VertexFormats.h"
-#include "View.h"
-#include "TaskManager.h"
+#include "config.h"
 
 #if USE_OPENGL
 #include "OGLGraphics.h"
 #else
 #include "D3DGraphics.h"
 #endif
+
+#include "Renderer.h"
+#include "System.h"
+#include "Mesh.h"
+#include "VertexFormats.h"
+#include "View.h"
+#include "TaskManager.h"
 
 namespace Riot
 {
@@ -132,11 +134,11 @@ namespace Riot
     void CRenderer::CreateDefaultObjects( void )
     {
 #if USE_OPENGL
-        const wchar_t szVertexShader[] =  L"Assets/Shaders/BasicVertexShader.glsl";
-        const wchar_t szPixelShader[] =  L"Assets/Shaders/BasicPixelShader.glsl";
+        const char szVertexShader[] =  "Assets/Shaders/BasicVertexShader.glsl";
+        const char szPixelShader[] =  "Assets/Shaders/BasicPixelShader.glsl";
 #else
-        const wchar_t szVertexShader[] =  L"Assets/Shaders/BasicVertexShader.hlsl";
-        const wchar_t szPixelShader[] =  L"Assets/Shaders/BasicPixelShader.hlsl";
+        const char szVertexShader[] =  "Assets/Shaders/BasicVertexShader.hlsl";
+        const char szPixelShader[] =  "Assets/Shaders/BasicPixelShader.hlsl";
 #endif
 
         // Create the vertex shader/layout
@@ -155,7 +157,7 @@ namespace Riot
         m_pNearestSamplerState = m_pDevice->CreateSamplerState( GFX_TEXTURE_SAMPLE_NEAREST );
 
         // Texture
-        m_pDefaultTexture = m_pDevice->LoadTexture( L"Assets/Textures/DefaultTexture.png" );
+        m_pDefaultTexture = m_pDevice->LoadTexture( "Assets/Textures/DefaultTexture.png" );
 
         // ...finally, set them
         m_pDevice->SetVertexLayout( m_pDefaultVLayout );
@@ -322,7 +324,7 @@ namespace Riot
     //  LoadTextureXD
     //  Loads a texture
     //-----------------------------------------------------------------------------
-    IGfxTexture2D* CRenderer::LoadTexture2D( const wchar_t* szFilename )
+    IGfxTexture2D* CRenderer::LoadTexture2D( const char* szFilename )
     {
         return m_pDevice->LoadTexture( szFilename );
     }

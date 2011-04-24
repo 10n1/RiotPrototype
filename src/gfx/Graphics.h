@@ -59,17 +59,17 @@ namespace Riot
 
         //
         virtual void CreateVertexShaderAndLayout( 
-            const wchar_t* szFilename, 
+            const char* szFilename, 
             const char* szEntryPoint,
             InputElementLayout Layout[],
             uint nLayoutCount, 
             IGfxVertexShader** pShader,
             IGfxVertexLayout** pLayout ) = 0;
-        virtual IGfxPixelShader* CreatePixelShader( const wchar_t* szFilename, const char* szEntryPoint ) = 0;
+        virtual IGfxPixelShader* CreatePixelShader( const char* szFilename, const char* szEntryPoint ) = 0;
         //
 
         //
-        virtual IGfxTexture2D* LoadTexture( const wchar_t* szFilename ) = 0;
+        virtual IGfxTexture2D* LoadTexture( const char* szFilename ) = 0;
         virtual IGfxSamplerState* CreateSamplerState( GFX_TEXTURE_SAMPLE nType ) = 0;
         //
 

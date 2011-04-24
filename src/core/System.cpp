@@ -4,14 +4,14 @@ Author:         Kyle Weicht
 Created:        4/8/2011
 Modified:       4/23/2011 11:56:02 PM
 Modified by:    Kyle Weicht
-\*********************************************************/
+ \*********************************************************/
+#include "OGLGraphics.h"
 #include "System.h"
 #include "timer.h"
 #include "Thread.h"
 #include "Window.h"
 #include "Engine.h"
 #include "Graphics.h"
-#include "OGLGraphics.h"
 #include "SystemOpenGL.h"
 #include "atomic.h"
 

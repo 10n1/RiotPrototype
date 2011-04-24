@@ -4,10 +4,10 @@ Author:         Kyle Weicht
 Created:        4/10/2011
 Modified:       4/17/2011 11:40:15 PM
 Modified by:    Kyle Weicht
-\*********************************************************/
+ \*********************************************************/
+#include <fstream>
 #include "OGLGraphics.h"
 #include "OGLGraphicsObjects.h"
-#include <fstream>
 
 #if USE_OPENGL
 
@@ -15,13 +15,14 @@ namespace Riot
 {    
     //-----------------------------------------------------------------------------
     //  Function declarations
-    Result LoadShaderProgram( const wchar_t* szFilename, GLuint nShader );
+    Result LoadShaderProgram( const char* szFilename, GLuint nShader );
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
     GFX_FORMAT GFX_FORMAT_FLOAT3        = 0x1;
     GFX_FORMAT GFX_FORMAT_UINT16        = 0x2;
     GFX_FORMAT GFX_FORMAT_UINT32        = 0x3;
+    GFX_FORMAT GFX_FORMAT_FLOAT2        = 0x4;
 
     const uint GFX_FORMAT_FLOAT3_SIZE   = sizeof( RVector3 );
     const uint GFX_FORMAT_UINT16_SIZE   = sizeof( uint16 );
@@ -29,8 +30,12 @@ namespace Riot
     //-----------------------------------------------------------------------------
     GFX_SEMANTIC GFX_SEMANTIC_POSITION  = "vPosition";
     GFX_SEMANTIC GFX_SEMANTIC_NORMAL    = "vNormal";
+    GFX_SEMANTIC GFX_SEMANTIC_TEXCOORD  = "vTexCoord";
     //-----------------------------------------------------------------------------
     GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_TRIANGLELIST   = GL_TRIANGLE_STRIP;
+    //-----------------------------------------------------------------------------
+    GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_NEAREST   = 0x1;
+    GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_LINEAR    = 0x2;
     //-----------------------------------------------------------------------------
 
     using namespace SystemOpenGL;
@@ -119,7 +124,7 @@ namespace Riot
 
     //
     void COGLDevice::CreateVertexShaderAndLayout( 
-            const wchar_t* szFilename, 
+            const char* szFilename, 
             const char* szEntryPoint, 
             InputElementLayout Layout[],
             uint nLayoutCount,
@@ -132,7 +137,7 @@ namespace Riot
         *pShader = pNewShader;
         *pLayout = pNewLayout;
     }
-    IGfxPixelShader* COGLDevice::CreatePixelShader( const wchar_t* szFilename, const char* szEntryPoint )
+    IGfxPixelShader* COGLDevice::CreatePixelShader( const char* szFilename, const char* szEntryPoint )
     {
         COGLPixelShader* pShader = new COGLPixelShader;
 
@@ -154,6 +159,21 @@ namespace Riot
         }
 
         return pShader;
+    }
+    //
+    
+    //
+    IGfxTexture2D* COGLDevice::LoadTexture( const char* szFilename )
+    {
+        COGLTexture2D* pTexture = new COGLTexture2D;
+        
+        return pTexture;
+    }
+    IGfxSamplerState* COGLDevice::CreateSamplerState( GFX_TEXTURE_SAMPLE nType )
+    {
+        COGLSamplerState* pState = new COGLSamplerState;
+        
+        return pState;
     }
     //
 
@@ -218,6 +238,14 @@ namespace Riot
     void COGLDevice::SetPSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer )
     {
     }
+    void COGLDevice::SetPSSamplerState( IGfxSamplerState* pState )
+    {
+        
+    }
+    void COGLDevice::SetPSTexture( uint nIndex, IGfxTexture2D* pTexture )
+    {
+        
+    }
     //
 
     //
@@ -226,9 +254,9 @@ namespace Riot
     }
     //
 
-    Result LoadShaderProgram( const wchar_t* szFilename, GLuint nShader )
+    Result LoadShaderProgram( const char* szFilename, GLuint nShader )
     {
-        FILE* pFile = _wfopen( szFilename, L"rb" );
+        FILE* pFile = fopen( szFilename, "rb" );
         ASSERT( pFile );
         
         byte szBuffer[1024*16] = { 0 };

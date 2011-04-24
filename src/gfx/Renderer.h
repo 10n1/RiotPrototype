@@ -83,7 +83,7 @@ namespace Riot
         //  LoadTextureXD
         //  Loads a texture
         //-----------------------------------------------------------------------------
-        IGfxTexture2D* LoadTexture2D( const wchar_t* szFilename );
+        IGfxTexture2D* LoadTexture2D( const char* szFilename );
 
         //-----------------------------------------------------------------------------
         //  SetViewProj

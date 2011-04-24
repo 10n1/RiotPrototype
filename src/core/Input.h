@@ -61,16 +61,17 @@ namespace Riot
         KEY_Z = 'Z',
         KEY_SPACE = ' ',
 
-#elif defined( OS_OSX )
+#elif defined( OS_OSX ) // Defined in NSEvent.h
         // Utility keys
-        KEY_ESCAPE  = '\e', // VK_ESCAPE
+        KEY_ESCAPE  = '\e',
         KEY_ENTER   = 0x0003,
+        KEY_SHIFT   = 0xFFFF,
         
         // Arrows
-        KEY_LEFT    = 0x02, // VK_LEFT 
-        KEY_RIGHT   = 0x03, // VK_RIGHT
-        UP      = 0x0,  // VK_UP   
-        DOWN    = 0x01, // VK_DOWN 
+        KEY_LEFT    = 0x02,
+        KEY_RIGHT   = 0x03,
+        KEY_UP      = 0x0, 
+        KEY_DOWN    = 0x01,
         
         // Letters
         KEY_A = 'a',

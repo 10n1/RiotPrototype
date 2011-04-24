@@ -8,9 +8,9 @@ Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OGLGRAPHICS_H_
 #define _OGLGRAPHICS_H_
+#include "SystemOpenGL.h"
 #include "common.h"
 #include "Graphics.h"
-#include "SystemOpenGL.h"
 #include "GraphicsObjects.h"
 
 #if USE_OPENGL
@@ -58,13 +58,18 @@ namespace Riot
 
         //
         void CreateVertexShaderAndLayout( 
-            const wchar_t* szFilename, 
+            const char* szFilename, 
             const char* szEntryPoint, 
             InputElementLayout Layout[],
             uint nLayoutCount,
             IGfxVertexShader** pShader,
             IGfxVertexLayout** pLayout );
-        IGfxPixelShader* CreatePixelShader( const wchar_t* szFilename, const char* szEntryPoint );
+        IGfxPixelShader* CreatePixelShader( const char* szFilename, const char* szEntryPoint );
+        //
+        
+        //
+        IGfxTexture2D* LoadTexture( const char* szFilename );
+        IGfxSamplerState* CreateSamplerState( GFX_TEXTURE_SAMPLE nType );
         //
 
         //
@@ -86,6 +91,8 @@ namespace Riot
         void SetPixelShader( IGfxPixelShader* pShader );
         void SetVSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer );
         void SetPSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer );
+        void SetPSSamplerState( IGfxSamplerState* pState );
+        void SetPSTexture( uint nIndex, IGfxTexture2D* pTexture );
         //
 
         //

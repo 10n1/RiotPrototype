@@ -349,7 +349,6 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CCollidableComponent::ProcessComponent( void )
     {
-        CComponentManager* pManager = Engine::GetComponentManager();
         CTaskManager*      pTaskManager = CTaskManager::GetInstance();
 
 #if PARALLEL_UPDATE
@@ -489,8 +488,6 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CNewtonPhysicsComponent::ProcessComponent( void )
     {
-        CComponentManager* pManager = Engine::GetComponentManager();
-
 #if 0 //PARALLEL_UPDATE
         task_handle_t nHandle = Engine::GetTaskManager()->PushTask( ProcessBatch, this, m_nNumComponents, 16 );
         Engine::GetTaskManager()->WaitForCompletion( nHandle );
