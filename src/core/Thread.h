@@ -3,15 +3,13 @@ File:           Thread.h
 Purpose:        Interface for hardware threads
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 9:04:34 PM
+Modified:       4/24/2011 12:37:03 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _THREAD_H_
 #define _THREAD_H_
 #include "common.h"
 #include "System.h"
-
-#include <stdio.h>
 
 namespace Riot
 {    
@@ -174,7 +172,7 @@ namespace Riot
         //  DoWork
         //  The thread starts doing work. It'll steal more if it has to
         //-----------------------------------------------------------------------------
-        void DoWork( void );
+        void DoWork( atomic_t* pCompletion );
 
         //-----------------------------------------------------------------------------
         //  GetThreadId
@@ -186,11 +184,10 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        TTask*                      m_pTask;
-
         System::thread_handle_t     m_pThread;
         System::wait_condition_t    m_pWakeCondition;
         System::mutex_t             m_pSystemMutex;
+
         CTaskManager*               m_pTaskManager;
 
         uint            m_nThreadId;

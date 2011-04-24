@@ -4,7 +4,7 @@ Purpose:        Platform independent atomic operations
 (InterlockedIncrement, etc)
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 2:15:14 AM
+Modified:       4/24/2011 12:58:03 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ATOMIC_H_
@@ -12,9 +12,7 @@ Modified by:    Kyle Weicht
 #include "types.h"
 #include "config.h"
 
-#include <intrin.h>
-
-#define USE_MACROS
+//#define USE_MACROS
 
 namespace Riot
 {

@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/23/2011 1:38:15 AM
+Modified:       4/24/2011 1:03:11 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -353,7 +353,7 @@ namespace Riot
         CTaskManager*      pTaskManager = CTaskManager::GetInstance();
 
 #if PARALLEL_UPDATE
-        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumComponents, 1 );
+        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumComponents, 4 );
         pTaskManager->WaitForCompletion( nHandle );
 #else
         ProcessBatch( this, 0, 0, m_nNumComponents );
@@ -489,27 +489,40 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CNewtonPhysicsComponent::ProcessComponent( void )
     {
-        static const RVector3 vGravity = RVector3( 0.0f, -9.8f, 0.0f );
-
         CComponentManager* pManager = Engine::GetComponentManager();
 
-        for( sint i = 0; i < m_nNumComponents; ++i )
+#if 0 //PARALLEL_UPDATE
+        task_handle_t nHandle = Engine::GetTaskManager()->PushTask( ProcessBatch, this, m_nNumComponents, 16 );
+        Engine::GetTaskManager()->WaitForCompletion( nHandle );
+#else
+        ProcessBatch( this, 0, 0, m_nNumComponents );
+#endif
+    }
+
+    void CNewtonPhysicsComponent::ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount )
+    {
+        static const RVector3 vGravity = RVector3( 0.0f, -9.8f, 0.0f );
+        CNewtonPhysicsComponent* pComponent = (CNewtonPhysicsComponent*)pData;
+        CComponentManager*    pManager = Engine::GetComponentManager();
+    
+        uint nEnd = nStart + nCount;
+        
+        for( sint i = nStart; i < nEnd; ++i )
         {
-            if( m_bGravity[i] )
+            if( pComponent->m_bGravity[i] )
             {
-                m_vVelocity[i] += vGravity * Engine::m_fElapsedTime;
+                pComponent->m_vVelocity[i] += vGravity * Engine::m_fElapsedTime;
             }
             else
             {
-                m_vVelocity[i] = RVector3( 0.0f, 0.0f, 0.0f );
+                pComponent->m_vVelocity[i] = RVector3( 0.0f, 0.0f, 0.0f );
             }
 
-            m_Transform[i].position += m_vVelocity[i] * Engine::m_fElapsedTime;
+            pComponent->m_Transform[i].position += pComponent->m_vVelocity[i] * Engine::m_fElapsedTime;
 
-            pManager->PostMessage( eComponentMessageTransform, m_pObjects[ i ], &m_Transform[i], ComponentType );
+            pManager->PostMessage( eComponentMessageTransform, pComponent->m_pObjects[ i ], &pComponent->m_Transform[i], ComponentType );
         }
     }
-
 
     void CNewtonPhysicsComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
     {

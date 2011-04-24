@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/22/2011 6:18:26 PM
+Modified:       4/24/2011 12:56:24 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -197,13 +197,13 @@ namespace Riot
     {
         struct _sphere
         {
-            float   position[3];
+            float3  position;
             float   radius; // Radius is stored pre-squared
         } sphere;
         struct _AABB
         {
-            float   min[3];
-            float   max[3];
+            float3  min;
+            float3  max;
         } aabb;
     };
     DECLARE_COMPONENT_DATA( BoundingVolume, m_Volume );
@@ -229,6 +229,7 @@ namespace Riot
     DECLARE_COMPONENT_DATA( RTransform, m_Transform );
     DECLARE_COMPONENT_DATA( RVector3,   m_vVelocity );
     DECLARE_COMPONENT_DATA( bool,       m_bGravity );
+    static void ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount );
     //
     END_DECLARE_COMPONENT;
     //
