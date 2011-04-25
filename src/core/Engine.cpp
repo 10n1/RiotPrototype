@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/24/2011 8:08:56 PM
+Modified:       4/24/2011 10:54:54 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -308,7 +308,7 @@ namespace Riot
         // Add more boxes
         for( uint i = 1; i < 10; ++i )
         {
-            t.position = RVector3( 0.0f, i * 10.0f + 20.0f, 0.0f );
+            t.position = RVector3( 0.0f, i * 20.0f + 20.0f, 0.0f );
             nObject = m_pObjectManager->CreateObject();
 
             m_pObjectManager->AddComponent( nObject, eComponentNewtonPhysics );

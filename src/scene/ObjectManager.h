@@ -3,7 +3,7 @@ File:           ObjectManager.h
 Purpose:        Handles allocation of objects
 Author:         Kyle Weicht
 Created:        3/31/2011
-Modified:       4/24/2011 7:53:01 PM
+Modified:       4/24/2011 9:54:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECTMANAGER_H_
@@ -135,7 +135,7 @@ namespace Riot
         //  same data. The ObjectIndices array is solely for human
         //  readability. Every object is contiguous, wheras the
         //  ComponentIndices array is laid out for Components
-        uint        m_pObjectIndices[MAX_OBJECTS][eNUMCOMPONENTS];
+        uint        m_pObjectIndices[eNUMCOMPONENTS][MAX_OBJECTS];
         uint        m_pComponentIndices[eNUMCOMPONENTS][MAX_OBJECTS];
 
         IComponent* m_pComponents[eNUMCOMPONENTS];

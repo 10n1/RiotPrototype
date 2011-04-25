@@ -3,7 +3,7 @@ File:           config.h
 Purpose:        Includes platform and build configurations
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/24/2011 3:45:35 PM
+Modified:       4/24/2011 10:48:01 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CONFIG_H_
@@ -123,12 +123,12 @@ Modified by:    Kyle Weicht
 #endif
 //////////////////////////////////////////
 
-#define MULTITHREADED           1
+#define MULTITHREADED           0
 #define MAX_THREADS             32
 #define MAX_TASKS_PER_THREAD    2048
 #define MAX_TASKS               256
 #define MAX_SUB_TASKS           (1024*32)
-#define MAX_OBJECTS             (16*1024)
+#define MAX_OBJECTS             (16*1)
 #define MAX_LIGHTS              8
 #define MAX_RENDER_COMMANDS     2048
 

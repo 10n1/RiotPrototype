@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/24/2011 8:10:35 PM
+Modified:       4/24/2011 10:46:09 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -91,7 +91,7 @@ namespace Riot
         //  DetachAndSave
         //  Detaches a component from an object, saving the old data
         //-----------------------------------------------------------------------------
-        virtual void DetachAndSave( uint nIndex ) = 0;
+        virtual void DetachAndSave( uint nOldIndex, uint nNewIndex ) = 0;
 
         //-----------------------------------------------------------------------------
         //  RemoveInactive
@@ -100,7 +100,7 @@ namespace Riot
         virtual void RemoveInactive( uint nIndex ) = 0;
         
     protected:
-        uint        m_pObjects[MAX_OBJECTS];
+        uint*       m_pObjects;
         atomic_t    m_nNumActiveComponents;
         atomic_t    m_nNumInactiveComponents;
     };
@@ -119,7 +119,7 @@ namespace Riot
     void Attach( uint nIndex );                                 \
     void Reattach( uint nIndex, uint nPrevIndex );              \
     void Detach( uint nIndex );                                 \
-    void DetachAndSave( uint nIndex );                          \
+    void DetachAndSave( uint nOldIndex, uint nNewIndex );                          \
     void ProcessComponent( void );                              \
     void ReceiveMessage( uint nSlot, CComponentMessage& msg );  \
     void RemoveInactive( uint nIndex );                         \

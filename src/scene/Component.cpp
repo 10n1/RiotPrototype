@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/24/2011 8:10:35 PM
+Modified:       4/24/2011 10:46:08 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -44,8 +44,8 @@ namespace Riot
     
     //
     #define COMPONENT_REORDER_SAVE_DATA( Data ) \
-        Data[m_nNumInactiveComponents] = Data[nIndex];       \
-        Data[nIndex] = Data[ m_nNumActiveComponents ]
+        Data[nNewIndex] = Data[nOldIndex];       \
+        Data[nOldIndex] = Data[ m_nNumActiveComponents ]
 
     //
 
@@ -117,11 +117,18 @@ namespace Riot
     //  DetachAndSave
     //  Detaches a component from an object, saving the old data
     //-----------------------------------------------------------------------------
-    void CRenderComponent::DetachAndSave( uint nIndex )
+    void CRenderComponent::DetachAndSave( uint nOldIndex, uint nNewIndex )
     {
         // Now initialize this component
-        COMPONENT_REORDER_SAVE_DATA( m_pMesh );
-        COMPONENT_REORDER_SAVE_DATA( m_Transform );
+        //COMPONENT_REORDER_SAVE_DATA( m_pMesh );
+        //COMPONENT_REORDER_SAVE_DATA( m_Transform );
+        
+        m_pMesh[nNewIndex] = m_pMesh[nOldIndex];
+        m_pMesh[nOldIndex] = m_pMesh[ m_nNumActiveComponents ];
+
+        
+        m_Transform[nNewIndex] = m_Transform[nOldIndex];
+        m_Transform[nOldIndex] = m_Transform[ m_nNumActiveComponents ];
     }
     
     //-----------------------------------------------------------------------------
@@ -228,7 +235,7 @@ namespace Riot
     //  DetachAndSave
     //  Detaches a component from an object, saving the old data
     //-----------------------------------------------------------------------------
-    void CLightComponent::DetachAndSave( uint nIndex )
+    void CLightComponent::DetachAndSave( uint nOldIndex, uint nNewIndex )
     {
         // Now initialize this component
         COMPONENT_REORDER_SAVE_DATA( m_bUpdated );
@@ -352,7 +359,7 @@ namespace Riot
     //  DetachAndSave
     //  Detaches a component from an object, saving the old data
     //-----------------------------------------------------------------------------
-    void CCollidableComponent::DetachAndSave( uint nIndex )
+    void CCollidableComponent::DetachAndSave( uint nOldIndex, uint nNewIndex )
     {
         // Now initialize this component
         COMPONENT_REORDER_SAVE_DATA( m_nVolumeType );
@@ -523,7 +530,7 @@ namespace Riot
     //  DetachAndSave
     //  Detaches a component from an object, saving the old data
     //-----------------------------------------------------------------------------
-    void CNewtonPhysicsComponent::DetachAndSave( uint nIndex )
+    void CNewtonPhysicsComponent::DetachAndSave( uint nOldIndex, uint nNewIndex )
     {
         // Now initialize this component
         COMPONENT_REORDER_SAVE_DATA( m_bGravity );

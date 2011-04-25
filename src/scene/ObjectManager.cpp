@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/24/2011 8:13:38 PM
+Modified:       4/24/2011 10:53:24 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -17,6 +17,7 @@ namespace Riot
     #define LOAD_COMPONENT( TheComponent )                                          \
         TheComponent::m_pInstance = new TheComponent;                               \
         m_pComponents[ TheComponent::ComponentType ] = TheComponent::m_pInstance;   \
+        TheComponent::m_pInstance->m_pObjects = m_pObjectIndices[ TheComponent::ComponentType ]; \
         for( uint i = 0; i < TheComponent::NumMessagesReceived; ++i )               \
         {                                                                           \
             m_bRegistered[ TheComponent::MessagesReceived[i] ][ TheComponent::ComponentType ] = true; \
@@ -61,7 +62,7 @@ namespace Riot
         }
         
         // Reset all object indices
-        Memset( m_pObjectIndices, COMPONENT_FRESH, sizeof( m_pObjectIndices ) );
+        Memset( m_pObjectIndices, -1, sizeof( m_pObjectIndices ) );
         Memset( m_pComponentIndices, COMPONENT_FRESH, sizeof( m_pComponentIndices ) );
 
         // Zero everything out
@@ -118,43 +119,55 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CObjectManager::AddComponent( uint nObject, eComponentType nType )
     {
-        uint& nComponentIndex   = m_pComponentIndices[ nType ][ nObject ];
-        uint& nObjectIndex      = m_pObjectIndices[ nObject ][ nType ];
+        uint*       pComponentIndices   = m_pComponentIndices[ nType ];
+        uint*       pObjectIndices      = m_pComponents[nType]->m_pObjects;
+
+        uint nComponentIndex = pComponentIndices[nObject];
+
+        atomic_t*   pActiveComponents   = &m_pComponents[nType]->m_nNumActiveComponents;
+        atomic_t*   pInactiveComponents = &m_pComponents[nType]->m_nNumInactiveComponents;
 
         if( nComponentIndex == COMPONENT_FRESH )
         {   
             // This is a fresh add
             // Grab a free slot
-            uint nNewIndex = AtomicIncrement( &m_pComponents[nType]->m_nNumActiveComponents ) - 1;
+            uint nNewIndex = AtomicIncrement( pActiveComponents ) - 1;
 
             // Let the component attach itself
             m_pComponents[nType]->Attach( nNewIndex );
-            m_pComponents[nType]->m_pObjects[nNewIndex] = nObject;
 
-            nComponentIndex = nNewIndex;
-            nObjectIndex    = nNewIndex;
+            pObjectIndices[nNewIndex] = nObject;
+            pComponentIndices[nObject] = nNewIndex;
+
         }
         else if( nComponentIndex & COMPONENT_REMOVED )
         {
+            nComponentIndex &= COMPONENT_RESET_REMOVED;
+
             // The component was added and removed
             uint nOldIndex = nComponentIndex;
-            uint nNewIndex = AtomicIncrement( &m_pComponents[nType]->m_nNumActiveComponents ) - 1;
+            uint nNewIndex = AtomicIncrement( pActiveComponents ) - 1;
 
             // Let the component attach itself
             m_pComponents[nType]->Reattach( nNewIndex, nOldIndex );
-            m_pComponents[nType]->m_pObjects[nNewIndex] = nObject;
-            m_pComponents[nType]->m_pObjects[nOldIndex] = m_pComponents[nType]->m_pObjects[m_pComponents[nType]->m_nNumInactiveComponents];
+
+            pObjectIndices[nNewIndex] = nObject;
+            pObjectIndices[nOldIndex] = pObjectIndices[ *pInactiveComponents ];
 
             // Remove yourself from the inactive list
-            AtomicIncrement( &m_pComponents[nType]->m_nNumInactiveComponents );
+            AtomicIncrement( pInactiveComponents );
 
-            nComponentIndex = nNewIndex;
-            nObjectIndex    = nNewIndex;
+            pComponentIndices[nObject] = nNewIndex;
         }
         else
         {
             // The component is already attached
         }
+
+        //uint x = m_pComponentIndices[nType][nObject];
+        //uint y = m_pObjectIndices[nType][x];
+        //
+        //ASSERT( y == nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -163,8 +176,13 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CObjectManager::RemoveComponent( uint nObject, eComponentType nType, bool bSave )
     {
-        uint& nComponentIndex   = m_pComponentIndices[ nType ][ nObject ];
-        uint& nObjectIndex      = m_pObjectIndices[ nObject ][ nType ];
+        uint*       pObjectIndices      = m_pComponents[nType]->m_pObjects;
+        uint*       pComponentIndices   = m_pComponentIndices[ nType ];
+
+        uint nComponentIndex = pComponentIndices[nObject];
+
+        atomic_t*   pActiveComponents   = &m_pComponents[nType]->m_nNumActiveComponents;
+        atomic_t*   pInactiveComponents = &m_pComponents[nType]->m_nNumInactiveComponents;
 
         if( nComponentIndex == COMPONENT_FRESH )
         {
@@ -174,37 +192,45 @@ namespace Riot
 
         if( (nComponentIndex & COMPONENT_REMOVED) && bSave == false )
         {
+            pComponentIndices[nObject] &= COMPONENT_RESET_REMOVED;
+
             // The component has been removed, but we want to nuke the data
             m_pComponents[nType]->RemoveInactive( nComponentIndex );
 
-            m_pComponents[nType]->m_pObjects[nComponentIndex] = m_pComponents[nType]->m_pObjects[m_pComponents[nType]->m_nNumInactiveComponents];
+            pObjectIndices[nComponentIndex] = pObjectIndices[ *pInactiveComponents ];
 
-            AtomicIncrement( &m_pComponents[nType]->m_nNumInactiveComponents );
+            AtomicIncrement( pInactiveComponents );
+
+            pComponentIndices[nObject] = COMPONENT_FRESH;
             return;
         }
 
         // Remove the component
-        AtomicDecrement( &m_pComponents[nType]->m_nNumActiveComponents );
+        AtomicDecrement( pActiveComponents );
         if( bSave )
         {
             uint nOldIndex = nComponentIndex;
-            uint nNewIndex = AtomicDecrement( &m_pComponents[nType]->m_nNumInactiveComponents );
+            uint nNewIndex = AtomicDecrement( pInactiveComponents );
             
-            m_pComponents[nType]->DetachAndSave( nOldIndex );
+            m_pComponents[nType]->DetachAndSave( nOldIndex, nNewIndex );
 
-            m_pComponents[nType]->m_pObjects[nNewIndex] = nObject;
-            m_pComponents[nType]->m_pObjects[nOldIndex] = m_pComponents[nType]->m_pObjects[m_pComponents[nType]->m_nNumActiveComponents];
+            pObjectIndices[nNewIndex] = nObject;
+            pObjectIndices[nOldIndex] = pObjectIndices[ *pActiveComponents ];
 
-            nComponentIndex = nNewIndex | COMPONENT_REMOVED;
-            nObjectIndex    = nNewIndex | COMPONENT_REMOVED;
+            pComponentIndices[pObjectIndices[ *pActiveComponents ]] = nOldIndex;
+            pComponentIndices[nObject] = nNewIndex | COMPONENT_REMOVED;
         }
         else
         {
             m_pComponents[nType]->Detach( nComponentIndex );
 
-            nComponentIndex = COMPONENT_FRESH;
-            nObjectIndex    = COMPONENT_FRESH;
+            pComponentIndices[nObject] = COMPONENT_FRESH;
         }
+
+        //uint x = m_pComponentIndices[nType][nObject];
+        //uint y = m_pObjectIndices[nType][x];
+        //
+        //ASSERT( y == nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -301,7 +327,15 @@ namespace Riot
 
     void CObjectManager::PostMessage( eComponentMessageType nType, uint nObject, pvoid pData, eComponentType nOrigin )
     {
-        PostMessage( nType, nObject, (nativeuint)pData, nOrigin );
+        //PostMessage( nType, nObject, (nativeuint)pData, nOrigin );
+        ASSERT( m_nNumMessages < MAX_COMPONENT_MESSAGES );
+
+        sint nIndex = AtomicIncrement( &m_nNumMessages ) - 1;
+
+        m_pMessages[ nIndex ].m_pData = pData;
+        m_pMessages[ nIndex ].m_nMessageType = nType;
+        m_pMessages[ nIndex ].m_nTargetObject = nObject;
+        m_pMessages[ nIndex ].m_nOrigin = nOrigin;
     }
 
     void CObjectManager::PostMessage( eComponentMessageType nType, uint nObject, nativeuint nData, eComponentType nOrigin )
@@ -324,7 +358,6 @@ namespace Riot
     void CObjectManager::SendMessage( CComponentMessage& msg )
     {
         for( sint nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent )
-            //for( eComponentType nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent ) <-- this would be ideal
         {
             if(     m_bRegistered[ msg.m_nMessageType ][ nComponent ] == false
                 ||  msg.m_nOrigin == nComponent )
@@ -334,10 +367,16 @@ namespace Riot
                 continue;
             }
 
-            sint nIndex = m_pComponentIndices[ nComponent ][ msg.m_nTargetObject ];
+            uint*   pObjectIndices      = m_pComponents[nComponent]->m_pObjects;
+            uint*   pComponentIndices   = m_pComponentIndices[nComponent];
+
+            //uint nTargetIndex = pObjectIndices[msg.m_nTargetObject];
+            sint nIndex = pComponentIndices[ msg.m_nTargetObject ] & COMPONENT_RESET_REMOVED;
 
             if( nIndex != COMPONENT_FRESH )
             {
+                //sint nIndex = m_pComponentIndices[ nComponent ][ nTargetIndex ];
+
                 m_pComponents[ nComponent ]->ReceiveMessage( nIndex, msg );
             }
         }
@@ -345,13 +384,25 @@ namespace Riot
 
     void CObjectManager::SendMessage( eComponentMessageType nType, uint nObject, pvoid pData, eComponentType nOrigin )
     {
-        CComponentMessage msg = { nType, nObject, nOrigin, (nativeuint)pData };
+        CComponentMessage msg;
+        
+        msg.m_pData = pData;
+        msg.m_nMessageType = nType;
+        msg.m_nTargetObject = nObject;
+        msg.m_nOrigin = nOrigin;
+
         SendMessage( msg );
     }
 
     void CObjectManager::SendMessage( eComponentMessageType nType, uint nObject, nativeuint nData, eComponentType nOrigin )
     {
-        CComponentMessage msg = { nType, nObject, nOrigin, nData };
+        CComponentMessage msg;
+
+        msg.m_nData = nData;
+        msg.m_nMessageType = nType;
+        msg.m_nTargetObject = nObject;
+        msg.m_nOrigin = nOrigin;
+
         SendMessage( msg );
     }
 
