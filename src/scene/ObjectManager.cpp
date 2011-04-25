@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/24/2011 5:22:37 PM
+Modified:       4/24/2011 6:28:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -49,13 +49,7 @@ namespace Riot
             m_pFreeSlots[j] = i;
         }
         
-        for( uint i = 0; i < eNUMCOMPONENTS; ++i )
-        {
-            for( uint j = 0; j < MAX_OBJECTS; ++j )
-            {
-                m_pComponentIndices[j][i] = -1; // -1 means the object doesn't have that component
-            }
-        }
+        Memset( m_pComponentIndices, -1, sizeof( m_pComponentIndices ) );
     }
 
     //-----------------------------------------------------------------------------
@@ -134,10 +128,11 @@ namespace Riot
     void CObjectManager::DeleteObject( uint nObject )
     {
         assert( m_nNumFreeSlots < MAX_OBJECTS );
+        assert( nObject < m_nNumObjects );
 
         ResetObject( nObject );
 
-        m_pFreeSlots[ m_nNumFreeSlots++ ] = nObject;
+        m_pFreeSlots[ AtomicIncrement(&m_nNumFreeSlots) ] = nObject;
         --m_nNumObjects;
     }
 

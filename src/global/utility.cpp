@@ -2,7 +2,7 @@
 File:           utility.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/17/2011 1:03:49 PM
+Modified:       4/24/2011 6:28:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "utility.h"
@@ -114,9 +114,9 @@ void* Memset( void* pDest, uint c, uint nSize )
     // First go byte by byte until we align on a 16 byte boundry
     while( reinterpret_cast<nativeuint>(a) & 0xF )
     {
-        *a = (byte)c;
-        ++a;
-        --nSize;
+        *(uint*)a = c;
+        a += sizeof(uint);
+        nSize -= sizeof(uint);
     }
 
     // Now go 16 bytes at a time

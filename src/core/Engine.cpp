@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/24/2011 5:12:23 PM
+Modified:       4/24/2011 6:31:11 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -124,10 +124,6 @@ namespace Riot
             // Perform end of frame timing, etc.
             m_fElapsedTime = (float)m_MainTimer.GetElapsedTime();
             ++m_nFrame;
-            if( m_fElapsedTime > 1.0f )
-            {   // Prevent huge lapses in frame rate (when debugging, etc.)
-                m_fElapsedTime = 1.0f/60.0f;
-            }
 
             static float fFPSTime = 0.0f;
             static uint  nFPSFrames = 0;
@@ -140,6 +136,11 @@ namespace Riot
                 printf( "FPS: %d\n", nFPSFrames );
                 fFPSTime -= 1.0f;
                 nFPSFrames = 0;
+            }
+
+            if( m_fElapsedTime > 1.0f )
+            {   // Prevent huge lapses in frame rate (when debugging, etc.)
+                m_fElapsedTime = 1.0f/60.0f;
             }
         }
 
