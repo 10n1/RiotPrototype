@@ -138,7 +138,7 @@ namespace Riot
         case WM_MOUSEMOVE:
             {
                 static sint nPrevMousePosition  = 0;
-
+                
                 sint16 nXPos = GET_X_LPARAM( lParam );
                 sint16 nYPos = GET_Y_LPARAM( lParam );
 

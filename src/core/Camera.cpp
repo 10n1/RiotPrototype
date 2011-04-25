@@ -65,7 +65,7 @@ namespace Riot
         {
         case mKeyDown:
             {
-                float fLookSpeed = 5.0f;
+                const float fLookSpeed = gs_PI;
                 switch( msg.nMessage )
                 {
                 case KEY_W:
@@ -184,8 +184,8 @@ namespace Riot
 
                 sint16 nDeltaX = (sint16)(msg.nMessage >> 16);
                 sint16 nDeltaY = msg.nMessage & 0xFFFF;
-                float fLookSpeed = 25.0f;
-
+                const float fLookSpeed = gs_PI;
+                
                 if( nDeltaX )
                 {
                     m_pView->RotateY( fElapsedTime * fLookSpeed * nDeltaX );

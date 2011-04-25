@@ -158,8 +158,11 @@ namespace Riot
                 sint16 nXPos = nNewPos >> 16;
                 sint16 nYPos = nNewPos & 0xFFFF;
 
-                sint16 nDeltaX = nXPos - (m_nMousePosition >> 16) ;
-                sint16 nDeltaY = nYPos - (m_nMousePosition & 0XFFFF);
+                sint16 nPrevPosX = (m_nMousePosition >> 16);
+                sint16 nPrevPosY = (m_nMousePosition & 0XFFFF);
+
+                sint16 nDeltaX = nXPos - nPrevPosX;
+                sint16 nDeltaY = nYPos - nPrevPosY;
 
                 sint nDelta = (nDeltaX << 16) | (nDeltaY & 0xFFFF);
 
