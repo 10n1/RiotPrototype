@@ -2,13 +2,12 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/24/2011 5:41:55 PM
+Modified:       4/24/2011 8:10:35 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
 #include "Renderer.h"
 #include "Engine.h"
-#include "ComponentManager.h"
 #include "Mesh.h"
 #include "TaskManager.h"
 #include "ObjectManager.h"
@@ -19,163 +18,51 @@ namespace Riot
     /*****************************************************************************\
     \*****************************************************************************/
     //
-    #define BEGIN_DEFINE_COMPONENT( Component ) \
-    Component* Component::m_pInstance = NULL;   \
-    Component::Component()                      \
-    {                                           \
-        m_nFreeSlot = MaxComponents;            \
-        m_nMaxComponents = MaxComponents;       \
-        m_pObjects = new uint[MaxComponents];   \
-        Memset( m_pObjects, -1, sizeof(uint) * MaxComponents ); \
-        Memset( m_pObjectIndices, -1, sizeof(m_pObjectIndices) ); \
-        m_nType = ComponentType;     \
-    }                                           \
-    Component::~Component() { }                 \
-    const eComponentMessageType Component::MessagesReceived[] =    \
-    {
+    #define BEGIN_DEFINE_COMPONENT( Component )         \
+        Component* Component::m_pInstance = NULL;       \
+        Component::Component()                          \
+        {                                               \
+            m_nNumInactiveComponents = MaxComponents;   \
+            m_nNumActiveComponents = 0;                 \
+        }                                               \
+        Component::~Component() { }                     \
+        const eComponentMessageType Component::MessagesReceived[] =    \
+        {
     //
 
     //
-    #define END_DEFINE_COMPONENT( Component ) \
-    };                                            \
-    const uint Component::NumMessagesReceived   =  (MessagesReceived[0] == eNULLCOMPONENTMESSAGE) ? 0 : sizeof( MessagesReceived ) / sizeof( eComponentMessageType )
+    #define END_DEFINE_COMPONENT( Component )   \
+        };                                      \
+        const uint Component::NumMessagesReceived   =  (MessagesReceived[0] == eNULLCOMPONENTMESSAGE) ? 0 : sizeof( MessagesReceived ) / sizeof( eComponentMessageType )
     //
 
     //
-    #define COMPONENT_REORDER_DATA( Data )   \
-    Data[m_nFreeSlot] = Data[nIndex];        \
-    Data[nIndex] = Data[ m_nNumComponents ]
+    #define COMPONENT_REORDER_DATA( Data )  \
+        Data[nIndex] = Data[ m_nNumActiveComponents ]
+
+    //
+    
+    //
+    #define COMPONENT_REORDER_SAVE_DATA( Data ) \
+        Data[m_nNumInactiveComponents] = Data[nIndex];       \
+        Data[nIndex] = Data[ m_nNumActiveComponents ]
 
     //
 
     //
-    #define COMPONENT_USE_PREV_DATA( Data ) Data[nIndex] = Data[nOldIndex]
+    #define COMPONENT_USE_PREV_DATA( Data ) \
+        Data[nIndex] = Data[nOldIndex];     \
+        Data[nOldIndex] = Data[m_nNumInactiveComponents] 
+    //
+    
+    //
+    #define COMPONENT_REMOVE_PREV_DATA( Data ) \
+        Data[nIndex] = Data[m_nNumInactiveComponents]
     //
 
     /*****************************************************************************\
     \*****************************************************************************/
 
-    // CComponent constructor
-    CComponent::CComponent()
-        : m_nNumComponents( 0 )
-        , m_nMaxComponents( 0 )
-        , m_pObjects( NULL )
-    {
-    }
-
-    // CComponent destructor
-    CComponent::~CComponent()
-    {
-        SAFE_DELETE_ARRAY( m_pObjects );
-    }
-
-    //-----------------------------------------------------------------------------
-    const eComponentMessageType CComponent::MessagesSent[] = 
-    {
-        eNUMCOMPONENTMESSAGES, // can't make a zero-length array
-    };
-    const eComponentMessageType CComponent::MessagesReceived[] = 
-    {
-        eNUMCOMPONENTMESSAGES, // can't make a zero-length array
-    };
-    const uint CComponent::NumMessagesSent       = 0;
-    const uint CComponent::NumMessagesReceived   = 0;
-    //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    //  ProcessComponent
-    //  Processes the component as necessary
-    //-----------------------------------------------------------------------------
-    void CComponent::ProcessComponent( void )
-    {
-    }
-
-    //-----------------------------------------------------------------------------
-    //  Shutdown
-    //-----------------------------------------------------------------------------
-    void CComponent::Shutdown( void )
-    {
-    }
-
-    //-----------------------------------------------------------------------------
-    //  AddComponent
-    //  "Adds" a component to an object
-    //-----------------------------------------------------------------------------
-    sint CComponent::AddComponent( uint nObject )
-    {
-        if( m_nNumComponents >= m_nMaxComponents )
-        {
-            // TODO: Handle error more gracefully
-            return -1;
-        }
-
-        // Calculate the free spot for this component
-        uint nIndex = AtomicIncrement( &m_nNumComponents ) - 1;
-        m_pObjects[ nIndex ] = nObject;
-
-        // ...then attach to it
-        sint nPreviousIndex = m_pObjectIndices[nObject];
-        if( nPreviousIndex != -1 )
-        {
-            Reattach( nIndex, nPreviousIndex );
-            AtomicIncrement( &m_nFreeSlot );
-        }
-        else
-        {
-            Attach( nIndex );
-        }
-        m_pObjectIndices[nObject] = nIndex;
-
-
-        return nIndex;
-    }
-
-    //-----------------------------------------------------------------------------
-    //  RemoveComponent
-    //  "Removes" a component to an object
-    //-----------------------------------------------------------------------------
-    void CComponent::RemoveComponent( uint nIndex )
-    {
-        // Decremnt the counter first
-        AtomicDecrement( &m_nNumComponents );
-        AtomicDecrement( &m_nFreeSlot );
-
-        // First detach...
-        Detach( nIndex );
-
-        // ...then clean up the list
-        m_pObjectIndices[ m_pObjects[nIndex] ] = m_nFreeSlot;
-        m_pObjects[ nIndex ] = m_pObjects[ m_nNumComponents ];
-
-        Engine::GetObjectManager()->ReorderComponent( m_pObjects[nIndex], m_nType, nIndex );
-    }
-
-    //-----------------------------------------------------------------------------
-    //  Attach
-    //  Attaches a component to an object
-    //-----------------------------------------------------------------------------
-    void CComponent::Attach( uint nIndex ) { }
-    //-----------------------------------------------------------------------------
-    //  Rettach
-    //  Reattaches a component to an object, using it's last data
-    //-----------------------------------------------------------------------------
-    void CComponent::Reattach( uint nIndex, uint nOldIndex ) 
-    { 
-        // This component doesn't have a custom reattach, just do a normal attach
-        Attach( nIndex );
-    }
-
-    //-----------------------------------------------------------------------------
-    //  Detach
-    //  Detaches a component to an object
-    //-----------------------------------------------------------------------------
-    void CComponent::Detach( uint nIndex ) { }
-
-    //-----------------------------------------------------------------------------
-    //  ReceiveMessage
-    //  Receives and processes a message
-    //-----------------------------------------------------------------------------
-    void CComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg ) { }
 
     /*********************************************************************************\
     |*********************************************************************************|
@@ -190,18 +77,6 @@ namespace Riot
         eComponentMessageMesh
     END_DEFINE_COMPONENT( CRenderComponent );
     //-----------------------------------------------------------------------------
-
-    //-----------------------------------------------------------------------------
-    //  Shutdown
-    //-----------------------------------------------------------------------------
-    void CRenderComponent::Shutdown( void )
-    {
-        for( uint i = 0; i < m_nMaxComponents; ++i )
-        {
-            if( m_pObjectIndices[i] != -1 )
-                SAFE_RELEASE( m_pMesh[m_pObjectIndices[i]] );
-        }
-    }
 
     //-----------------------------------------------------------------------------
     //  Attach
@@ -223,9 +98,6 @@ namespace Riot
         // Now initialize this component
         COMPONENT_USE_PREV_DATA( m_pMesh );
         COMPONENT_USE_PREV_DATA( m_Transform );
-
-        m_pMesh[nIndex] = m_pMesh[nOldIndex];
-        m_Transform[nIndex] = m_Transform[nOldIndex];
     }
 
     //-----------------------------------------------------------------------------
@@ -234,9 +106,33 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderComponent::Detach( uint nIndex )
     {
+        SAFE_RELEASE( m_pMesh[nIndex] );
+
         // Now initialize this component
         COMPONENT_REORDER_DATA( m_pMesh );
         COMPONENT_REORDER_DATA( m_Transform );
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  DetachAndSave
+    //  Detaches a component from an object, saving the old data
+    //-----------------------------------------------------------------------------
+    void CRenderComponent::DetachAndSave( uint nIndex )
+    {
+        // Now initialize this component
+        COMPONENT_REORDER_SAVE_DATA( m_pMesh );
+        COMPONENT_REORDER_SAVE_DATA( m_Transform );
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  RemoveInactive
+    //  Removes the inactive component
+    //-----------------------------------------------------------------------------
+    void CRenderComponent::RemoveInactive( uint nIndex )
+    {
+        SAFE_RELEASE( m_pMesh[nIndex] );
+        COMPONENT_REMOVE_PREV_DATA( m_pMesh );
+        COMPONENT_REMOVE_PREV_DATA( m_Transform );
     }
 
     //-----------------------------------------------------------------------------
@@ -246,7 +142,7 @@ namespace Riot
     void CRenderComponent::ProcessComponent( void )
     {
         CRenderer* pRender = Engine::GetRenderer();
-        for( sint i = 0; i < m_nNumComponents; ++i )
+        for( sint i = 0; i < m_nNumActiveComponents; ++i )
         {          
             // Pass to the render engine
             TRenderCommand cmd = { m_pMesh[i], NULL };
@@ -294,7 +190,7 @@ namespace Riot
         eComponentMessageTransform
     END_DEFINE_COMPONENT( CLightComponent );
     //-----------------------------------------------------------------------------
-
+       
     //-----------------------------------------------------------------------------
     //  Attach
     //  Attaches a component to an object
@@ -305,15 +201,16 @@ namespace Riot
         m_Transform[nIndex] = RTransform();
         m_bUpdated[nIndex] = true;
     }
-    
+
     //-----------------------------------------------------------------------------
     //  Rettach
     //  Reattaches a component to an object, using it's last data
     //-----------------------------------------------------------------------------
-    void CLightComponent::Reattach( uint nIndex, uint nOldIndex ) 
-    {         
-        COMPONENT_USE_PREV_DATA( m_Transform );
+    void CLightComponent::Reattach( uint nIndex, uint nOldIndex )
+    {
+        // Now initialize this component
         COMPONENT_USE_PREV_DATA( m_bUpdated );
+        COMPONENT_USE_PREV_DATA( m_Transform );
     }
 
     //-----------------------------------------------------------------------------
@@ -323,8 +220,29 @@ namespace Riot
     void CLightComponent::Detach( uint nIndex )
     {
         // Now initialize this component
-        COMPONENT_REORDER_DATA( m_Transform );
         COMPONENT_REORDER_DATA( m_bUpdated );
+        COMPONENT_REORDER_DATA( m_Transform );
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  DetachAndSave
+    //  Detaches a component from an object, saving the old data
+    //-----------------------------------------------------------------------------
+    void CLightComponent::DetachAndSave( uint nIndex )
+    {
+        // Now initialize this component
+        COMPONENT_REORDER_SAVE_DATA( m_bUpdated );
+        COMPONENT_REORDER_SAVE_DATA( m_Transform );
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  RemoveInactive
+    //  Removes the inactive component
+    //-----------------------------------------------------------------------------
+    void CLightComponent::RemoveInactive( uint nIndex )
+    {
+        COMPONENT_REMOVE_PREV_DATA( m_bUpdated );
+        COMPONENT_REMOVE_PREV_DATA( m_Transform );
     }
 
     //-----------------------------------------------------------------------------
@@ -337,9 +255,9 @@ namespace Riot
         fAngle += Engine::m_fElapsedTime;
 
         CRenderer* pRender = Engine::GetRenderer();
-        CComponentManager* pManager = Engine::GetComponentManager();
+        CObjectManager* pManager = Engine::GetObjectManager();
 
-        for( sint i = 0; i < m_nNumComponents; ++i )
+        for( sint i = 0; i < m_nNumActiveComponents; ++i )
         {
             m_Transform[i].position.x = sin( fAngle ) * 10.0f;
             m_Transform[i].position.z = cos( fAngle ) * 10.0f;
@@ -395,7 +313,8 @@ namespace Riot
         eComponentMessageBoundingVolumeType,
         eComponentMessageCollision,
     END_DEFINE_COMPONENT( CCollidableComponent );
-    
+    //-----------------------------------------------------------------------------
+          
     //-----------------------------------------------------------------------------
     //  Attach
     //  Attaches a component to an object
@@ -406,15 +325,16 @@ namespace Riot
         Memset( &m_Volume[nIndex], 0, sizeof(BoundingVolume) );
         m_nVolumeType[nIndex] = BoundingSphere;
     }
-    
+
     //-----------------------------------------------------------------------------
     //  Rettach
     //  Reattaches a component to an object, using it's last data
     //-----------------------------------------------------------------------------
-    void CCollidableComponent::Reattach( uint nIndex, uint nOldIndex ) 
-    {         
-        COMPONENT_USE_PREV_DATA( m_Volume );
+    void CCollidableComponent::Reattach( uint nIndex, uint nOldIndex )
+    {
+        // Now initialize this component
         COMPONENT_USE_PREV_DATA( m_nVolumeType );
+        COMPONENT_USE_PREV_DATA( m_Volume );
     }
 
     //-----------------------------------------------------------------------------
@@ -424,8 +344,29 @@ namespace Riot
     void CCollidableComponent::Detach( uint nIndex )
     {
         // Now initialize this component
-        COMPONENT_REORDER_DATA( m_Volume );
         COMPONENT_REORDER_DATA( m_nVolumeType );
+        COMPONENT_REORDER_DATA( m_Volume );
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  DetachAndSave
+    //  Detaches a component from an object, saving the old data
+    //-----------------------------------------------------------------------------
+    void CCollidableComponent::DetachAndSave( uint nIndex )
+    {
+        // Now initialize this component
+        COMPONENT_REORDER_SAVE_DATA( m_nVolumeType );
+        COMPONENT_REORDER_SAVE_DATA( m_Volume );
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  RemoveInactive
+    //  Removes the inactive component
+    //-----------------------------------------------------------------------------
+    void CCollidableComponent::RemoveInactive( uint nIndex )
+    {
+        COMPONENT_REMOVE_PREV_DATA( m_nVolumeType );
+        COMPONENT_REMOVE_PREV_DATA( m_Volume );
     }
 
     //-----------------------------------------------------------------------------
@@ -437,22 +378,22 @@ namespace Riot
         CTaskManager*      pTaskManager = CTaskManager::GetInstance();
 
 #if PARALLEL_UPDATE
-        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumComponents, 4 );
+        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 4 );
         pTaskManager->WaitForCompletion( nHandle );
 #else
-        ProcessBatch( this, 0, 0, m_nNumComponents );
+        ProcessBatch( this, 0, 0, m_nNumActiveComponents );
 #endif
     }
     void CCollidableComponent::ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount )
     {
         CCollidableComponent* pComponent = (CCollidableComponent*)pData;
-        CComponentManager*    pManager = Engine::GetComponentManager();
+        CObjectManager*    pManager = Engine::GetObjectManager();
 
         uint nEnd = nStart + nCount;
         
         for( sint i = nStart; i < nEnd; ++i )
         {
-            for( sint j = 0; j < pComponent->m_nNumComponents; ++j )
+            for( sint j = 0; j < pComponent->m_nNumActiveComponents; ++j )
             {
                 if( i == j ) continue;
 
@@ -540,6 +481,7 @@ namespace Riot
         eComponentMessageTransform,
         eComponentMessageCollision,
     END_DEFINE_COMPONENT( CNewtonPhysicsComponent );
+    //-----------------------------------------------------------------------------
     
     //-----------------------------------------------------------------------------
     //  Attach
@@ -552,16 +494,17 @@ namespace Riot
         m_vVelocity[nIndex] = RVector3Zero();
         m_bGravity[nIndex]  = true;
     }
-    
+
     //-----------------------------------------------------------------------------
     //  Rettach
     //  Reattaches a component to an object, using it's last data
     //-----------------------------------------------------------------------------
-    void CNewtonPhysicsComponent::Reattach( uint nIndex, uint nOldIndex ) 
-    {         
-        COMPONENT_USE_PREV_DATA( m_Transform );
-        COMPONENT_USE_PREV_DATA( m_vVelocity );
+    void CNewtonPhysicsComponent::Reattach( uint nIndex, uint nOldIndex )
+    {
+        // Now initialize this component
         COMPONENT_USE_PREV_DATA( m_bGravity );
+        COMPONENT_USE_PREV_DATA( m_vVelocity );
+        COMPONENT_USE_PREV_DATA( m_Transform );
     }
 
     //-----------------------------------------------------------------------------
@@ -571,10 +514,35 @@ namespace Riot
     void CNewtonPhysicsComponent::Detach( uint nIndex )
     {
         // Now initialize this component
-        COMPONENT_REORDER_DATA( m_Transform );
-        COMPONENT_REORDER_DATA( m_vVelocity );
         COMPONENT_REORDER_DATA( m_bGravity );
+        COMPONENT_REORDER_DATA( m_vVelocity );
+        COMPONENT_REORDER_DATA( m_Transform );
     }
+    
+    //-----------------------------------------------------------------------------
+    //  DetachAndSave
+    //  Detaches a component from an object, saving the old data
+    //-----------------------------------------------------------------------------
+    void CNewtonPhysicsComponent::DetachAndSave( uint nIndex )
+    {
+        // Now initialize this component
+        COMPONENT_REORDER_SAVE_DATA( m_bGravity );
+        COMPONENT_REORDER_SAVE_DATA( m_vVelocity );
+        COMPONENT_REORDER_SAVE_DATA( m_Transform );
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  RemoveInactive
+    //  Removes the inactive component
+    //-----------------------------------------------------------------------------
+    void CNewtonPhysicsComponent::RemoveInactive( uint nIndex )
+    {
+        COMPONENT_REMOVE_PREV_DATA( m_bGravity );
+        COMPONENT_REMOVE_PREV_DATA( m_vVelocity );
+        COMPONENT_REMOVE_PREV_DATA( m_Transform );
+    }
+
+
 
     //-----------------------------------------------------------------------------
     //  ProcessComponent
@@ -583,10 +551,10 @@ namespace Riot
     void CNewtonPhysicsComponent::ProcessComponent( void )
     {
 #if 0 //PARALLEL_UPDATE
-        task_handle_t nHandle = Engine::GetTaskManager()->PushTask( ProcessBatch, this, m_nNumComponents, 16 );
+        task_handle_t nHandle = Engine::GetTaskManager()->PushTask( ProcessBatch, this, m_nNumActiveComponents, 16 );
         Engine::GetTaskManager()->WaitForCompletion( nHandle );
 #else
-        ProcessBatch( this, 0, 0, m_nNumComponents );
+        ProcessBatch( this, 0, 0, m_nNumActiveComponents );
 #endif
     }
 
@@ -594,7 +562,7 @@ namespace Riot
     {
         static const RVector3 vGravity = RVector3( 0.0f, -9.8f, 0.0f );
         CNewtonPhysicsComponent* pComponent = (CNewtonPhysicsComponent*)pData;
-        CComponentManager*    pManager = Engine::GetComponentManager();
+        CObjectManager*    pManager = Engine::GetObjectManager();
     
         uint nEnd = nStart + nCount;
         

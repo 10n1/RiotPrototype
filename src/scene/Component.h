@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/24/2011 5:35:53 PM
+Modified:       4/24/2011 8:10:35 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -50,88 +50,59 @@ namespace Riot
             pvoid       m_pData;
         };
     };
-
-
-    class CComponent
+    
+    class IComponent
     {
+        friend class CObjectManager;
     public:
-        // CComponent constructor
-        CComponent();
-
-        // CComponent destructor 
-        virtual ~CComponent() = 0;
-        /***************************************\
-        | class methods                         |
-        \***************************************/
+        virtual ~IComponent() { }
         
-        //-----------------------------------------------------------------------------
-        //  Shutdown
-        //-----------------------------------------------------------------------------
-        virtual void Shutdown( void );
-
-        //-----------------------------------------------------------------------------
-        //  AddComponent
-        //  "Adds" a component to an object
-        //-----------------------------------------------------------------------------
-        sint AddComponent( uint nObject );
-
-        //-----------------------------------------------------------------------------
-        //  RemoveComponent
-        //  "Removes" a component to an object
-        //-----------------------------------------------------------------------------
-        void RemoveComponent( uint nIndex );
-
-        //-----------------------------------------------------------------------------
-        //  Attach
-        //  Attaches a component to an object
-        //-----------------------------------------------------------------------------
-        virtual void Attach( uint nIndex );
-
-        //-----------------------------------------------------------------------------
-        //  Rettach
-        //  Reattaches a component to an object, using it's last data
-        //-----------------------------------------------------------------------------
-        virtual void Reattach( uint nIndex, uint nOldIndex );
-
-        //-----------------------------------------------------------------------------
-        //  Detach
-        //  Detaches a component from an object
-        //-----------------------------------------------------------------------------
-        virtual void Detach( uint nIndex );
-
         //-----------------------------------------------------------------------------
         //  ProcessComponent
         //  Processes the component as necessary
         //-----------------------------------------------------------------------------
-        virtual void ProcessComponent( void );
+        virtual void ProcessComponent( void ) = 0;
 
         //-----------------------------------------------------------------------------
         //  ReceiveMessage
         //  Receives and processes a message
         //-----------------------------------------------------------------------------
-        virtual void ReceiveMessage( uint nSlot, CComponentMessage& msg );
+        virtual void ReceiveMessage( uint nSlot, CComponentMessage& msg ) = 0;
+        
+        //-----------------------------------------------------------------------------
+        //  Attach
+        //  Attaches a component to an object
+        //-----------------------------------------------------------------------------
+        virtual void Attach( uint nIndex ) = 0;
 
         //-----------------------------------------------------------------------------
-        //  Messages sent and recieved by this component are defined here
-        //  THESE ARE EMPTY IN THE BASE COMPONENT, THEY'RE HERE FOR REFERENCE
-        static const eComponentMessageType MessagesSent[];
-        static const eComponentMessageType MessagesReceived[];
-        static const uint NumMessagesSent;
-        static const uint NumMessagesReceived;
-
-        static const eComponentType ComponentType = eNULLCOMPONENT;
-        static const uint MaxComponents = 0;
+        //  Rettach
+        //  Reattaches a component to an object, using it's last data
         //-----------------------------------------------------------------------------
+        virtual void Reattach( uint nIndex, uint nOldIndex ) = 0;
+
+        //-----------------------------------------------------------------------------
+        //  Detach
+        //  Detaches a component from an object, discarding the old data
+        //-----------------------------------------------------------------------------
+        virtual void Detach( uint nIndex ) = 0;
+        
+        //-----------------------------------------------------------------------------
+        //  DetachAndSave
+        //  Detaches a component from an object, saving the old data
+        //-----------------------------------------------------------------------------
+        virtual void DetachAndSave( uint nIndex ) = 0;
+
+        //-----------------------------------------------------------------------------
+        //  RemoveInactive
+        //  Removes the inactive component
+        //-----------------------------------------------------------------------------
+        virtual void RemoveInactive( uint nIndex ) = 0;
+        
     protected:
-        /***************************************\
-        | class members                         |
-        \***************************************/
-        sint            m_pObjectIndices[MAX_OBJECTS];  // Each object gets a slot
-        uint*           m_pObjects;
-        atomic_t        m_nNumComponents;
-        sint            m_nMaxComponents;
-        atomic_t        m_nFreeSlot;
-        eComponentType  m_nType;
+        uint        m_pObjects[MAX_OBJECTS];
+        atomic_t    m_nNumActiveComponents;
+        atomic_t    m_nNumInactiveComponents;
     };
 
     /*****************************************************************************\
@@ -139,19 +110,21 @@ namespace Riot
 
     //
 #define BEGIN_DECLARE_COMPONENT( Component, Type, MaxCount )    \
-    class Component : public CComponent                         \
+    class Component : public IComponent                         \
     {                                                           \
-    friend class CComponentManager;                             \
+    friend class CObjectManager;                                \
     public:                                                     \
     Component();                                                \
     ~Component();                                               \
     void Attach( uint nIndex );                                 \
     void Reattach( uint nIndex, uint nPrevIndex );              \
     void Detach( uint nIndex );                                 \
+    void DetachAndSave( uint nIndex );                          \
     void ProcessComponent( void );                              \
     void ReceiveMessage( uint nSlot, CComponentMessage& msg );  \
+    void RemoveInactive( uint nIndex );                         \
     static const eComponentType ComponentType=Type;             \
-    static const uint MaxComponents = MaxCount;                 \
+    static const uint MaxComponents = MAX_OBJECTS;              \
     static const eComponentMessageType MessagesReceived[];      \
     static const uint NumMessagesReceived;                      \
     private:                                                    \
@@ -168,10 +141,8 @@ namespace Riot
 
     /*****************************************************************************\
     \*****************************************************************************/
-
-
+    
     class CMesh;
-    class CMaterial;
 
     //-----------------------------------------------------------------------------
     //  Render component
@@ -181,7 +152,6 @@ namespace Riot
     //
     DECLARE_COMPONENT_DATA( CMesh*,     m_pMesh );
     DECLARE_COMPONENT_DATA( RTransform, m_Transform );
-    void Shutdown( void );
     //
     END_DECLARE_COMPONENT;
     //

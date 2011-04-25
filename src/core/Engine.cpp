@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/24/2011 6:31:11 PM
+Modified:       4/24/2011 8:08:56 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -15,7 +15,6 @@ Modified by:    Kyle Weicht
 #include "Renderer.h"
 #include "Mesh.h"
 #include "View.h"
-#include "ComponentManager.h"
 #include "ObjectManager.h"
 #include "Terrain.h"
 #include "Camera.h"
@@ -45,7 +44,6 @@ namespace Riot
     CInputManager*      Engine::m_pInputManager         = NULL;
     CRenderer*          Engine::m_pRenderer             = NULL;
     CCamera*            Engine::m_pCamera               = NULL;
-    CComponentManager*  Engine::m_pComponentManager     = NULL;
     CObjectManager*     Engine::m_pObjectManager        = NULL;
 
     CTerrain*           Engine::m_pTerrain              = NULL;
@@ -99,7 +97,7 @@ namespace Riot
             //////////////////////////////////////////
             // Update everything
             m_pCamera->Update();
-            m_pComponentManager->ProcessComponents();
+            m_pObjectManager->ProcessComponents();
 
             // Make sure terrain is the last thing drawn
             m_pTerrain->Render();
@@ -241,10 +239,6 @@ namespace Riot
     {
         return m_pRenderer;
     }
-    CComponentManager*   Engine::GetComponentManager( void )
-    {
-        return m_pComponentManager;
-    }
     CObjectManager*      Engine::GetObjectManager( void )
     {
         return m_pObjectManager;
@@ -266,7 +260,6 @@ namespace Riot
         m_pMessageDispatcher->RegisterListener( Engine::GetInstance(), Engine::MessagesReceived, Engine::NumMessagesReceived );
         NEW_AND_INITIALIZE_AND_REGISTER( m_pInputManager, CInputManager );
         NEW_AND_INITIALIZE_AND_REGISTER( m_pRenderer, CRenderer );
-        NEW_AND_INITIALIZE_AND_REGISTER( m_pComponentManager, CComponentManager );
         NEW_AND_INITIALIZE_AND_REGISTER( m_pObjectManager, CObjectManager );
         // New Modules here
 
@@ -307,8 +300,8 @@ namespace Riot
         m_pObjectManager->AddComponent( nObject, eComponentRender );
         m_pObjectManager->AddComponent( nObject, eComponentCollidable );
 
-        m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t );
-        m_pComponentManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+        m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
+        m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
 
         CCollidableComponent::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nObject );
 
@@ -322,8 +315,8 @@ namespace Riot
             m_pObjectManager->AddComponent( nObject, eComponentRender );
             m_pObjectManager->AddComponent( nObject, eComponentCollidable );
 
-            m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t );
-            m_pComponentManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+            m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
+            m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
             CCollidableComponent::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nObject );
         }
 
@@ -335,8 +328,8 @@ namespace Riot
         nObject = m_pObjectManager->CreateObject();
         m_pObjectManager->AddComponent( nObject, eComponentLight );
         m_pObjectManager->AddComponent( nObject, eComponentRender );
-        m_pComponentManager->SendMessage( eComponentMessageMesh, nObject, pBox );
-        m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t  );
+        m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+        m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t  );
 
         
         //////////////////////////////////////////
@@ -346,8 +339,8 @@ namespace Riot
         nObject = m_pObjectManager->CreateObject();
         m_pObjectManager->AddComponent( nObject, eComponentLight );
         m_pObjectManager->AddComponent( nObject, eComponentRender );
-        m_pComponentManager->SendMessage( eComponentMessageMesh, nObject, pBox );
-        m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t  );
+        m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+        m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t  );
 
         SAFE_RELEASE( pBox );
 
@@ -371,7 +364,6 @@ namespace Riot
         // ...then shutdown and delete all modules
         // New modules here
         SHUTDOWN_AND_DELETE( m_pObjectManager );
-        SHUTDOWN_AND_DELETE( m_pComponentManager );
         SHUTDOWN_AND_DELETE( m_pRenderer );
         SHUTDOWN_AND_DELETE( m_pInputManager );
         SHUTDOWN_AND_DELETE( m_pMessageDispatcher );

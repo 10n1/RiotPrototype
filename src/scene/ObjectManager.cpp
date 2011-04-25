@@ -2,16 +2,27 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/24/2011 6:28:44 PM
+Modified:       4/24/2011 8:13:38 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
 #include "Engine.h"
 #include "ComponentManager.h"
+#include "TaskManager.h"
 
 namespace Riot
 {
-
+    /*****************************************************************************\
+    \*****************************************************************************/
+    #define LOAD_COMPONENT( TheComponent )                                          \
+        TheComponent::m_pInstance = new TheComponent;                               \
+        m_pComponents[ TheComponent::ComponentType ] = TheComponent::m_pInstance;   \
+        for( uint i = 0; i < TheComponent::NumMessagesReceived; ++i )               \
+        {                                                                           \
+            m_bRegistered[ TheComponent::MessagesReceived[i] ][ TheComponent::ComponentType ] = true; \
+        } 
+    /*****************************************************************************\
+    \*****************************************************************************/
 
     /***************************************\
     | class members                         |
@@ -49,7 +60,22 @@ namespace Riot
             m_pFreeSlots[j] = i;
         }
         
-        Memset( m_pComponentIndices, -1, sizeof( m_pComponentIndices ) );
+        // Reset all object indices
+        Memset( m_pObjectIndices, COMPONENT_FRESH, sizeof( m_pObjectIndices ) );
+        Memset( m_pComponentIndices, COMPONENT_FRESH, sizeof( m_pComponentIndices ) );
+
+        // Zero everything out
+        Memset( m_bRegistered, 0, sizeof( m_bRegistered ) );
+        Memset( m_pComponents, 0, sizeof( m_pComponents ) );
+        Memset( m_pMessages, 0, sizeof( m_pMessages ) );
+
+        m_nNumMessages = 0;
+        
+        // Do this for each component
+        LOAD_COMPONENT( CRenderComponent );
+        LOAD_COMPONENT( CLightComponent );
+        LOAD_COMPONENT( CNewtonPhysicsComponent );
+        LOAD_COMPONENT( CCollidableComponent );
     }
 
     //-----------------------------------------------------------------------------
@@ -62,6 +88,11 @@ namespace Riot
             // Reset them all so the active components can free themselves
             ResetObject( i );
         }
+        
+        for( uint i = 0; i < eNUMCOMPONENTS; ++i )
+        {
+            SAFE_DELETE( m_pComponents[i] );
+        }
     }
 
     //-----------------------------------------------------------------------------
@@ -73,11 +104,10 @@ namespace Riot
         assert( m_nNumObjects < MAX_OBJECTS );
         assert( m_nNumFreeSlots );
 
+        AtomicIncrement( &m_nNumObjects );
         uint nFreeIndex = AtomicDecrement( &m_nNumFreeSlots );
 
         uint nObjectIndex = m_pFreeSlots[ nFreeIndex ];
-
-        AtomicIncrement( &m_nNumObjects );
 
         return nObjectIndex;
     }
@@ -87,38 +117,94 @@ namespace Riot
     //  Adds a component to the specified object
     //-----------------------------------------------------------------------------
     void CObjectManager::AddComponent( uint nObject, eComponentType nType )
-    {        
-        if( m_pComponentIndices[nObject][ nType ] == -1 )
-        {    
-            m_pComponentIndices[nObject][ nType ] = Engine::GetComponentManager()->AddComponent( nType, nObject );
+    {
+        uint& nComponentIndex   = m_pComponentIndices[ nType ][ nObject ];
+        uint& nObjectIndex      = m_pObjectIndices[ nObject ][ nType ];
+
+        if( nComponentIndex == COMPONENT_FRESH )
+        {   
+            // This is a fresh add
+            // Grab a free slot
+            uint nNewIndex = AtomicIncrement( &m_pComponents[nType]->m_nNumActiveComponents ) - 1;
+
+            // Let the component attach itself
+            m_pComponents[nType]->Attach( nNewIndex );
+            m_pComponents[nType]->m_pObjects[nNewIndex] = nObject;
+
+            nComponentIndex = nNewIndex;
+            nObjectIndex    = nNewIndex;
         }
-        // TODO: Handle case if it already exists
+        else if( nComponentIndex & COMPONENT_REMOVED )
+        {
+            // The component was added and removed
+            uint nOldIndex = nComponentIndex;
+            uint nNewIndex = AtomicIncrement( &m_pComponents[nType]->m_nNumActiveComponents ) - 1;
+
+            // Let the component attach itself
+            m_pComponents[nType]->Reattach( nNewIndex, nOldIndex );
+            m_pComponents[nType]->m_pObjects[nNewIndex] = nObject;
+            m_pComponents[nType]->m_pObjects[nOldIndex] = m_pComponents[nType]->m_pObjects[m_pComponents[nType]->m_nNumInactiveComponents];
+
+            // Remove yourself from the inactive list
+            AtomicIncrement( &m_pComponents[nType]->m_nNumInactiveComponents );
+
+            nComponentIndex = nNewIndex;
+            nObjectIndex    = nNewIndex;
+        }
+        else
+        {
+            // The component is already attached
+        }
     }
 
     //-----------------------------------------------------------------------------
     //  RemoveComponent
     //  Removes a component from the specified object
     //-----------------------------------------------------------------------------
-    void CObjectManager::RemoveComponent( uint nObject, eComponentType nType )
+    void CObjectManager::RemoveComponent( uint nObject, eComponentType nType, bool bSave )
     {
-        // Make sure we have a component to detach
-        sint nComponentIndex = m_pComponentIndices[nObject][nType];
-        if( nComponentIndex != -1 )
+        uint& nComponentIndex   = m_pComponentIndices[ nType ][ nObject ];
+        uint& nObjectIndex      = m_pObjectIndices[ nObject ][ nType ];
+
+        if( nComponentIndex == COMPONENT_FRESH )
         {
-            Engine::GetComponentManager()->RemoveComponent( nType, nComponentIndex );
-            m_pComponentIndices[nObject][nType] = -1;
+            // There is no component to remove
+            return;
         }
 
-        // TODO: Handle case if it doesnt exist
-    }
+        if( (nComponentIndex & COMPONENT_REMOVED) && bSave == false )
+        {
+            // The component has been removed, but we want to nuke the data
+            m_pComponents[nType]->RemoveInactive( nComponentIndex );
 
-    //-----------------------------------------------------------------------------
-    //  ReorderComponent
-    //  Lets the object know it has a new index
-    //-----------------------------------------------------------------------------
-    void CObjectManager::ReorderComponent( uint nObject, eComponentType nType, sint nNewIndex )
-    {
-        m_pComponentIndices[nObject][nType] = nNewIndex;
+            m_pComponents[nType]->m_pObjects[nComponentIndex] = m_pComponents[nType]->m_pObjects[m_pComponents[nType]->m_nNumInactiveComponents];
+
+            AtomicIncrement( &m_pComponents[nType]->m_nNumInactiveComponents );
+            return;
+        }
+
+        // Remove the component
+        AtomicDecrement( &m_pComponents[nType]->m_nNumActiveComponents );
+        if( bSave )
+        {
+            uint nOldIndex = nComponentIndex;
+            uint nNewIndex = AtomicDecrement( &m_pComponents[nType]->m_nNumInactiveComponents );
+            
+            m_pComponents[nType]->DetachAndSave( nOldIndex );
+
+            m_pComponents[nType]->m_pObjects[nNewIndex] = nObject;
+            m_pComponents[nType]->m_pObjects[nOldIndex] = m_pComponents[nType]->m_pObjects[m_pComponents[nType]->m_nNumActiveComponents];
+
+            nComponentIndex = nNewIndex | COMPONENT_REMOVED;
+            nObjectIndex    = nNewIndex | COMPONENT_REMOVED;
+        }
+        else
+        {
+            m_pComponents[nType]->Detach( nComponentIndex );
+
+            nComponentIndex = COMPONENT_FRESH;
+            nObjectIndex    = COMPONENT_FRESH;
+        }
     }
 
     //-----------------------------------------------------------------------------
@@ -142,25 +228,11 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CObjectManager::ResetObject( uint nObject )
     {
-        for( eComponentType i = (eComponentType)0; i < eNUMCOMPONENTS; i = (eComponentType)(i + 1) )
+        for( uint i = 0; i < eNUMCOMPONENTS; ++i )
         {
-            // Make sure we have a component to detach
-            sint& nComponentIndex = m_pComponentIndices[nObject][i];
-            if( nComponentIndex != -1 )
-            {
-                Engine::GetComponentManager()->RemoveComponent( i, nComponentIndex );
-                nComponentIndex = -1;
-            }
+            eComponentType nType = (eComponentType)i;
+            RemoveComponent( nObject, nType, false );
         }
-    }
-
-    //-----------------------------------------------------------------------------
-    //  GetComponentIndex
-    //  Returns which slot in the component this object owns
-    //-----------------------------------------------------------------------------
-    sint CObjectManager::GetComponentIndex( uint nObject, eComponentType nComponent )
-    {
-        return m_pComponentIndices[nObject][nComponent];
     }
 
     //-----------------------------------------------------------------------------
@@ -169,6 +241,118 @@ namespace Riot
     uint CObjectManager::GetNumObjects( void )
     {
         return m_nNumObjects;
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  ProcessComponents
+    //  Updates all the components, then resolves issues
+    //-----------------------------------------------------------------------------
+    void CObjectManager::ProcessComponents( void )
+    {
+#if PARALLEL_UPDATE
+        static CTaskManager* pTaskManager = CTaskManager::GetInstance();
+
+        // First update the components...
+        task_handle_t nProcessTask = pTaskManager->PushTask( ParallelProcessComponents, this, eNUMCOMPONENTS, 1 );
+        pTaskManager->WaitForCompletion( nProcessTask );
+
+        // ...then resolve any discrepencies and handle messages
+        task_handle_t nMessageTask = pTaskManager->PushTask( ParallelProcessComponentMessages, this, m_nNumMessages, 16 );
+        pTaskManager->WaitForCompletion( nMessageTask );
+#else
+        ParallelProcessComponents( this, 0, 0, eNUMCOMPONENTS );
+        ParallelProcessComponentMessages( this, 0, 0, m_nNumMessages );
+#endif
+        m_nNumMessages = 0;
+    }
+    void CObjectManager::ParallelProcessComponents( void* pData, uint nThreadId, uint nStart, uint nCount )
+    {
+        CObjectManager* pManager = (CObjectManager*)pData;
+
+        uint nEnd = nStart + nCount;
+        for( uint i = nStart; i < nEnd; ++i )
+        {
+            pManager->m_pComponents[i]->ProcessComponent();
+        }
+    }
+
+    void CObjectManager::ParallelProcessComponentMessages( void* pData, uint nThreadId, uint nStart, uint nCount )
+    {
+        CObjectManager* pManager = (CObjectManager*)pData;
+
+        uint nEnd = nStart + nCount;
+        for( uint nMessage = nStart; nMessage < nEnd; ++nMessage )
+        {   // Loop through the messages        
+            pManager->SendMessage( pManager->m_pMessages[ nMessage ] );
+        }
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  PostMessage
+    //  Posts a message to be processed
+    //-----------------------------------------------------------------------------
+    void CObjectManager::PostMessage( CComponentMessage& msg )
+    {
+        ASSERT( m_nNumMessages < MAX_COMPONENT_MESSAGES );
+
+        sint nIndex = AtomicIncrement( &m_nNumMessages ) - 1;
+        m_pMessages[ nIndex ] = msg;
+    }
+
+    void CObjectManager::PostMessage( eComponentMessageType nType, uint nObject, pvoid pData, eComponentType nOrigin )
+    {
+        PostMessage( nType, nObject, (nativeuint)pData, nOrigin );
+    }
+
+    void CObjectManager::PostMessage( eComponentMessageType nType, uint nObject, nativeuint nData, eComponentType nOrigin )
+    {
+        ASSERT( m_nNumMessages < MAX_COMPONENT_MESSAGES );
+
+        sint nIndex = AtomicIncrement( &m_nNumMessages ) - 1;
+
+        m_pMessages[ nIndex ].m_nData = nData;
+        m_pMessages[ nIndex ].m_nMessageType = nType;
+        m_pMessages[ nIndex ].m_nTargetObject = nObject;
+        m_pMessages[ nIndex ].m_nOrigin = nOrigin;
+    }
+
+
+    //-----------------------------------------------------------------------------
+    //  SendMessage
+    //  Sends the message
+    //-----------------------------------------------------------------------------
+    void CObjectManager::SendMessage( CComponentMessage& msg )
+    {
+        for( sint nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent )
+            //for( eComponentType nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent ) <-- this would be ideal
+        {
+            if(     m_bRegistered[ msg.m_nMessageType ][ nComponent ] == false
+                ||  msg.m_nOrigin == nComponent )
+            {
+                // This component hasn't registered for this message type
+                // OR this is the originating component
+                continue;
+            }
+
+            sint nIndex = m_pComponentIndices[ nComponent ][ msg.m_nTargetObject ];
+
+            if( nIndex != COMPONENT_FRESH )
+            {
+                m_pComponents[ nComponent ]->ReceiveMessage( nIndex, msg );
+            }
+        }
+    }
+
+    void CObjectManager::SendMessage( eComponentMessageType nType, uint nObject, pvoid pData, eComponentType nOrigin )
+    {
+        CComponentMessage msg = { nType, nObject, nOrigin, (nativeuint)pData };
+        SendMessage( msg );
+    }
+
+    void CObjectManager::SendMessage( eComponentMessageType nType, uint nObject, nativeuint nData, eComponentType nOrigin )
+    {
+        CComponentMessage msg = { nType, nObject, nOrigin, nData };
+        SendMessage( msg );
     }
 
     //-----------------------------------------------------------------------------
