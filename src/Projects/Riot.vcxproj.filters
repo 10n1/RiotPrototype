@@ -232,6 +232,9 @@
     <ClInclude Include="..\core\Camera.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="..\scene\IComponent.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\shaders\BasicPixelShader.hlsl">

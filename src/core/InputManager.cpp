@@ -2,7 +2,7 @@
 File:           InputManager.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/17/2011 9:44:23 PM
+Modified:       4/25/2011 4:10:00 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "InputManager.h"
@@ -15,7 +15,7 @@ namespace Riot
     /***************************************\
     | class members                         |
     \***************************************/
-    const MessageType    CInputManager::MessagesReceived[] =
+    const MessageType    CInputManager::MessagesReceived[] = 
     {
         mHardwareKeyboardDown,
         mHardwareKeyboardUp,

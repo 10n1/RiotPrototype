@@ -3,13 +3,14 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/24/2011 10:46:09 PM
+Modified:       4/25/2011 4:11:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
 #define _COMPONENT_H_
 #include "common.h"
 #include "VertexFormats.h"
+#include "IComponent.h"
 
 namespace Riot
 {
@@ -51,60 +52,6 @@ namespace Riot
         };
     };
     
-    class IComponent
-    {
-        friend class CObjectManager;
-    public:
-        virtual ~IComponent() { }
-        
-        //-----------------------------------------------------------------------------
-        //  ProcessComponent
-        //  Processes the component as necessary
-        //-----------------------------------------------------------------------------
-        virtual void ProcessComponent( void ) = 0;
-
-        //-----------------------------------------------------------------------------
-        //  ReceiveMessage
-        //  Receives and processes a message
-        //-----------------------------------------------------------------------------
-        virtual void ReceiveMessage( uint nSlot, CComponentMessage& msg ) = 0;
-        
-        //-----------------------------------------------------------------------------
-        //  Attach
-        //  Attaches a component to an object
-        //-----------------------------------------------------------------------------
-        virtual void Attach( uint nIndex ) = 0;
-
-        //-----------------------------------------------------------------------------
-        //  Rettach
-        //  Reattaches a component to an object, using it's last data
-        //-----------------------------------------------------------------------------
-        virtual void Reattach( uint nIndex, uint nOldIndex ) = 0;
-
-        //-----------------------------------------------------------------------------
-        //  Detach
-        //  Detaches a component from an object, discarding the old data
-        //-----------------------------------------------------------------------------
-        virtual void Detach( uint nIndex ) = 0;
-        
-        //-----------------------------------------------------------------------------
-        //  DetachAndSave
-        //  Detaches a component from an object, saving the old data
-        //-----------------------------------------------------------------------------
-        virtual void DetachAndSave( uint nOldIndex, uint nNewIndex ) = 0;
-
-        //-----------------------------------------------------------------------------
-        //  RemoveInactive
-        //  Removes the inactive component
-        //-----------------------------------------------------------------------------
-        virtual void RemoveInactive( uint nIndex ) = 0;
-        
-    protected:
-        uint*       m_pObjects;
-        atomic_t    m_nNumActiveComponents;
-        atomic_t    m_nNumInactiveComponents;
-    };
-
     /*****************************************************************************\
     \*****************************************************************************/
 

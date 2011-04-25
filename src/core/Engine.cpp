@@ -312,7 +312,7 @@ namespace Riot
             nObject = m_pObjectManager->CreateObject();
 
             m_pObjectManager->AddComponent( nObject, eComponentNewtonPhysics );
-            m_pObjectManager->AddComponent( nObject, eComponentRender );
+            //m_pObjectManager->AddComponent( nObject, eComponentRender );
             m_pObjectManager->AddComponent( nObject, eComponentCollidable );
 
             m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
