@@ -2,7 +2,7 @@
 File:           ComponentManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/24/2011 1:04:12 AM
+Modified:       4/24/2011 5:35:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentManager.h"
@@ -19,21 +19,24 @@ namespace Riot
     template< class TheComponent>
     void CComponentManager::LoadComponent( void )
     {
-        m_ppComponents[ TheComponent::ComponentType ] = new TheComponent;
+        TheComponent::m_pInstance = new TheComponent;
+        m_ppComponents[ TheComponent::ComponentType ] = TheComponent::m_pInstance;
         for( uint i = 0; i < TheComponent::NumMessagesReceived; ++i )
         {
             m_bRegistered[ TheComponent::MessagesReceived[i] ][ TheComponent::ComponentType ] = true;
         }
     }
 
-#define LOAD_COMPONENT( Component ) LoadComponent<Component>()
+#define LOAD_COMPONENT( TheComponent ) LoadComponent<TheComponent>()
 #else
-#define LOAD_COMPONENT( Component )                                  \
-    m_ppComponents[ Component::ComponentType ] = new Component;   \
-    for( uint i = 0; i < Component::NumMessagesReceived; ++i )       \
+#define LOAD_COMPONENT( TheComponent )              \
+    TheComponent::m_pInstance = new TheComponent;   \
+    m_ppComponents[ TheComponent::ComponentType ] = TheComponent::m_pInstance; \
+    for( uint i = 0; i < TheComponent::NumMessagesReceived; ++i )       \
     {                                                                   \
-    m_bRegistered[ Component::MessagesReceived[i] ][ Component::ComponentType ] = true; \
-}
+        m_bRegistered[ TheComponent::MessagesReceived[i] ][ TheComponent::ComponentType ] = true; \
+    } 
+    
 #endif    
     /*****************************************************************************\
     \*****************************************************************************/
@@ -84,6 +87,7 @@ namespace Riot
     {
         for( uint i = 0; i < eNUMCOMPONENTS; ++i )
         {
+            m_ppComponents[i]->Shutdown();
             SAFE_DELETE( m_ppComponents[i] );
         }
     }

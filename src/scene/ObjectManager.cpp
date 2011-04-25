@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/19/2011 11:06:13 PM
+Modified:       4/24/2011 5:22:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -116,6 +116,15 @@ namespace Riot
         }
 
         // TODO: Handle case if it doesnt exist
+    }
+
+    //-----------------------------------------------------------------------------
+    //  ReorderComponent
+    //  Lets the object know it has a new index
+    //-----------------------------------------------------------------------------
+    void CObjectManager::ReorderComponent( uint nObject, eComponentType nType, sint nNewIndex )
+    {
+        m_pComponentIndices[nObject][nType] = nNewIndex;
     }
 
     //-----------------------------------------------------------------------------

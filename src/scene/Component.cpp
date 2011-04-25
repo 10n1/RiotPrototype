@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/24/2011 1:03:11 AM
+Modified:       4/24/2011 5:41:55 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -11,6 +11,7 @@ Modified by:    Kyle Weicht
 #include "ComponentManager.h"
 #include "Mesh.h"
 #include "TaskManager.h"
+#include "ObjectManager.h"
 
 namespace Riot
 {
@@ -18,14 +19,18 @@ namespace Riot
     /*****************************************************************************\
     \*****************************************************************************/
     //
-    #define BEGIN_DEFINE_COMPONENT( Component )  \
-    Component::Component()            \
-    {                                                   \
-        m_nMaxComponents = MaxComponents;               \
-        m_pObjects = new uint[MaxComponents];           \
-        Memset( m_pObjects, 0, sizeof(uint) * MaxComponents ); \
-    }                                                   \
-    Component::~Component() { }       \
+    #define BEGIN_DEFINE_COMPONENT( Component ) \
+    Component* Component::m_pInstance = NULL;   \
+    Component::Component()                      \
+    {                                           \
+        m_nFreeSlot = MaxComponents;            \
+        m_nMaxComponents = MaxComponents;       \
+        m_pObjects = new uint[MaxComponents];   \
+        Memset( m_pObjects, -1, sizeof(uint) * MaxComponents ); \
+        Memset( m_pObjectIndices, -1, sizeof(m_pObjectIndices) ); \
+        m_nType = ComponentType;     \
+    }                                           \
+    Component::~Component() { }                 \
     const eComponentMessageType Component::MessagesReceived[] =    \
     {
     //
@@ -37,7 +42,14 @@ namespace Riot
     //
 
     //
-    #define COMPONENT_REORDER_DATA( Data ) Data[nIndex] = Data[ m_nNumComponents ]
+    #define COMPONENT_REORDER_DATA( Data )   \
+    Data[m_nFreeSlot] = Data[nIndex];        \
+    Data[nIndex] = Data[ m_nNumComponents ]
+
+    //
+
+    //
+    #define COMPONENT_USE_PREV_DATA( Data ) Data[nIndex] = Data[nOldIndex]
     //
 
     /*****************************************************************************\
@@ -79,6 +91,13 @@ namespace Riot
     }
 
     //-----------------------------------------------------------------------------
+    //  Shutdown
+    //-----------------------------------------------------------------------------
+    void CComponent::Shutdown( void )
+    {
+    }
+
+    //-----------------------------------------------------------------------------
     //  AddComponent
     //  "Adds" a component to an object
     //-----------------------------------------------------------------------------
@@ -95,7 +114,18 @@ namespace Riot
         m_pObjects[ nIndex ] = nObject;
 
         // ...then attach to it
-        Attach( nIndex );
+        sint nPreviousIndex = m_pObjectIndices[nObject];
+        if( nPreviousIndex != -1 )
+        {
+            Reattach( nIndex, nPreviousIndex );
+            AtomicIncrement( &m_nFreeSlot );
+        }
+        else
+        {
+            Attach( nIndex );
+        }
+        m_pObjectIndices[nObject] = nIndex;
+
 
         return nIndex;
     }
@@ -108,12 +138,16 @@ namespace Riot
     {
         // Decremnt the counter first
         AtomicDecrement( &m_nNumComponents );
+        AtomicDecrement( &m_nFreeSlot );
 
         // First detach...
         Detach( nIndex );
 
         // ...then clean up the list
+        m_pObjectIndices[ m_pObjects[nIndex] ] = m_nFreeSlot;
         m_pObjects[ nIndex ] = m_pObjects[ m_nNumComponents ];
+
+        Engine::GetObjectManager()->ReorderComponent( m_pObjects[nIndex], m_nType, nIndex );
     }
 
     //-----------------------------------------------------------------------------
@@ -121,7 +155,16 @@ namespace Riot
     //  Attaches a component to an object
     //-----------------------------------------------------------------------------
     void CComponent::Attach( uint nIndex ) { }
-    
+    //-----------------------------------------------------------------------------
+    //  Rettach
+    //  Reattaches a component to an object, using it's last data
+    //-----------------------------------------------------------------------------
+    void CComponent::Reattach( uint nIndex, uint nOldIndex ) 
+    { 
+        // This component doesn't have a custom reattach, just do a normal attach
+        Attach( nIndex );
+    }
+
     //-----------------------------------------------------------------------------
     //  Detach
     //  Detaches a component to an object
@@ -148,6 +191,17 @@ namespace Riot
     END_DEFINE_COMPONENT( CRenderComponent );
     //-----------------------------------------------------------------------------
 
+    //-----------------------------------------------------------------------------
+    //  Shutdown
+    //-----------------------------------------------------------------------------
+    void CRenderComponent::Shutdown( void )
+    {
+        for( uint i = 0; i < m_nMaxComponents; ++i )
+        {
+            if( m_pObjectIndices[i] != -1 )
+                SAFE_RELEASE( m_pMesh[m_pObjectIndices[i]] );
+        }
+    }
 
     //-----------------------------------------------------------------------------
     //  Attach
@@ -161,13 +215,25 @@ namespace Riot
     }
 
     //-----------------------------------------------------------------------------
+    //  Rettach
+    //  Reattaches a component to an object, using it's last data
+    //-----------------------------------------------------------------------------
+    void CRenderComponent::Reattach( uint nIndex, uint nOldIndex )
+    {
+        // Now initialize this component
+        COMPONENT_USE_PREV_DATA( m_pMesh );
+        COMPONENT_USE_PREV_DATA( m_Transform );
+
+        m_pMesh[nIndex] = m_pMesh[nOldIndex];
+        m_Transform[nIndex] = m_Transform[nOldIndex];
+    }
+
+    //-----------------------------------------------------------------------------
     //  Detach
     //  Detaches a component to an object
     //-----------------------------------------------------------------------------
     void CRenderComponent::Detach( uint nIndex )
     {
-        SAFE_RELEASE( m_pMesh[nIndex] );
-
         // Now initialize this component
         COMPONENT_REORDER_DATA( m_pMesh );
         COMPONENT_REORDER_DATA( m_Transform );
@@ -238,6 +304,16 @@ namespace Riot
         // Now initialize this component
         m_Transform[nIndex] = RTransform();
         m_bUpdated[nIndex] = true;
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  Rettach
+    //  Reattaches a component to an object, using it's last data
+    //-----------------------------------------------------------------------------
+    void CLightComponent::Reattach( uint nIndex, uint nOldIndex ) 
+    {         
+        COMPONENT_USE_PREV_DATA( m_Transform );
+        COMPONENT_USE_PREV_DATA( m_bUpdated );
     }
 
     //-----------------------------------------------------------------------------
@@ -318,7 +394,6 @@ namespace Riot
         eComponentMessageTransform,
         eComponentMessageBoundingVolumeType,
         eComponentMessageCollision,
-        eComponentMessageCalculateCollidable,
     END_DEFINE_COMPONENT( CCollidableComponent );
     
     //-----------------------------------------------------------------------------
@@ -329,7 +404,17 @@ namespace Riot
     {
         // Now initialize this component
         Memset( &m_Volume[nIndex], 0, sizeof(BoundingVolume) );
-        m_nType[nIndex] = BoundingSphere;
+        m_nVolumeType[nIndex] = BoundingSphere;
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  Rettach
+    //  Reattaches a component to an object, using it's last data
+    //-----------------------------------------------------------------------------
+    void CCollidableComponent::Reattach( uint nIndex, uint nOldIndex ) 
+    {         
+        COMPONENT_USE_PREV_DATA( m_Volume );
+        COMPONENT_USE_PREV_DATA( m_nVolumeType );
     }
 
     //-----------------------------------------------------------------------------
@@ -340,7 +425,7 @@ namespace Riot
     {
         // Now initialize this component
         COMPONENT_REORDER_DATA( m_Volume );
-        COMPONENT_REORDER_DATA( m_nType );
+        COMPONENT_REORDER_DATA( m_nVolumeType );
     }
 
     //-----------------------------------------------------------------------------
@@ -388,6 +473,25 @@ namespace Riot
         }
     }
 
+    void CCollidableComponent::CalculateBoundingSphere( const VPosNormalTex* pVerts, uint nNumVerts, uint nIndex )
+    {
+        ASSERT( m_pInstance );
+
+        float3 fExtents = {  0 };
+
+        for( uint i = 0; i < nNumVerts; ++i )
+        {
+            for( uint j = 0; j < 3; ++j )
+            {
+                if( Abs(pVerts[i].Pos[j]) > fExtents[j] )
+                {
+                    fExtents[j] = Abs(pVerts[i].Pos[j]);
+                }
+            }
+        }
+
+        m_pInstance->m_Volume[nIndex].sphere.radius = MagnitudeSq( RVector3(fExtents) );
+    }
 
     void CCollidableComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
     {
@@ -397,7 +501,7 @@ namespace Riot
             {
                 RTransform& transform = *((RTransform*)msg.m_pData);
 
-                switch( m_nType[nSlot] )
+                switch( m_nVolumeType[nSlot] )
                 {
                 case BoundingSphere:
                     {
@@ -414,27 +518,6 @@ namespace Riot
                     {
                     }
                 };
-            }
-            break;
-        case eComponentMessageCalculateCollidable:
-            {
-                MeshData* pData = (MeshData*)msg.m_pData;
-
-
-                float fExtents[3] = {  0 };
-
-                for( uint i = 0; i < pData->nVerts; ++i )
-                {
-                    for( uint j = 0; j < 3; ++j )
-                    {
-                        if( Abs(pData->pVerts[i].Pos[j]) > fExtents[j] )
-                        {
-                            fExtents[j] = Abs(pData->pVerts[i].Pos[j]);
-                        }
-                    }
-                }
-
-                m_Volume[nSlot].sphere.radius = MagnitudeSq( RVector3(fExtents) );
             }
             break;
         default:
@@ -468,6 +551,17 @@ namespace Riot
         m_Transform[nIndex] = RTransform();
         m_vVelocity[nIndex] = RVector3Zero();
         m_bGravity[nIndex]  = true;
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  Rettach
+    //  Reattaches a component to an object, using it's last data
+    //-----------------------------------------------------------------------------
+    void CNewtonPhysicsComponent::Reattach( uint nIndex, uint nOldIndex ) 
+    {         
+        COMPONENT_USE_PREV_DATA( m_Transform );
+        COMPONENT_USE_PREV_DATA( m_vVelocity );
+        COMPONENT_USE_PREV_DATA( m_bGravity );
     }
 
     //-----------------------------------------------------------------------------

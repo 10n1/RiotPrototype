@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/24/2011 3:45:35 PM
+Modified:       4/24/2011 5:12:23 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -170,6 +170,24 @@ namespace Riot
                         m_pMessageDispatcher->SendMsg( mShutdown );
                         break;
                     }
+                case KEY_E:
+                    {
+                        static bool b = false;
+                        static uint nObject = 0;
+
+                        if( b == false )
+                        {
+                            m_pObjectManager->RemoveComponent( nObject, eComponentRender );
+                            b = !b;
+                        }
+                        else
+                        {
+                            m_pObjectManager->AddComponent( nObject, eComponentRender );
+                            b = !b;
+                            nObject = Rand() % 10;
+                        }
+                        break;
+                    }
                 }
             }
         case mFullscreen:
@@ -291,12 +309,10 @@ namespace Riot
         m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t );
         m_pComponentManager->SendMessage( eComponentMessageMesh, nObject, pBox );
 
-        CCollidableComponent::MeshData data = { m_pRenderer->GetDefaultMeshData(), 24 };
-
-        m_pComponentManager->SendMessage( eComponentMessageCalculateCollidable, nObject, &data );
+        CCollidableComponent::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nObject );
 
         // Add more boxes
-        for( uint i = 1; i < 1024; ++i )
+        for( uint i = 1; i < 10; ++i )
         {
             t.position = RVector3( 0.0f, i * 10.0f + 20.0f, 0.0f );
             nObject = m_pObjectManager->CreateObject();
@@ -307,7 +323,7 @@ namespace Riot
 
             m_pComponentManager->SendMessage( eComponentMessageTransform, nObject, &t );
             m_pComponentManager->SendMessage( eComponentMessageMesh, nObject, pBox );
-            m_pComponentManager->SendMessage( eComponentMessageCalculateCollidable, nObject, &data );
+            CCollidableComponent::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nObject );
         }
 
 

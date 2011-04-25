@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/24/2011 3:42:15 PM
+Modified:       4/24/2011 5:35:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -21,7 +21,6 @@ namespace Riot
         eComponentMessageMesh,
         eComponentMessageBoundingVolumeType,
         eComponentMessageCollision,
-        eComponentMessageCalculateCollidable,
 
         eNUMCOMPONENTMESSAGES,
         eNULLCOMPONENTMESSAGE = -1
@@ -64,6 +63,11 @@ namespace Riot
         /***************************************\
         | class methods                         |
         \***************************************/
+        
+        //-----------------------------------------------------------------------------
+        //  Shutdown
+        //-----------------------------------------------------------------------------
+        virtual void Shutdown( void );
 
         //-----------------------------------------------------------------------------
         //  AddComponent
@@ -84,6 +88,12 @@ namespace Riot
         virtual void Attach( uint nIndex );
 
         //-----------------------------------------------------------------------------
+        //  Rettach
+        //  Reattaches a component to an object, using it's last data
+        //-----------------------------------------------------------------------------
+        virtual void Reattach( uint nIndex, uint nOldIndex );
+
+        //-----------------------------------------------------------------------------
         //  Detach
         //  Detaches a component from an object
         //-----------------------------------------------------------------------------
@@ -101,7 +111,6 @@ namespace Riot
         //-----------------------------------------------------------------------------
         virtual void ReceiveMessage( uint nSlot, CComponentMessage& msg );
 
-
         //-----------------------------------------------------------------------------
         //  Messages sent and recieved by this component are defined here
         //  THESE ARE EMPTY IN THE BASE COMPONENT, THEY'RE HERE FOR REFERENCE
@@ -117,9 +126,12 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        uint*       m_pObjects;
-        atomic_t    m_nNumComponents;
-        sint        m_nMaxComponents;
+        sint            m_pObjectIndices[MAX_OBJECTS];  // Each object gets a slot
+        uint*           m_pObjects;
+        atomic_t        m_nNumComponents;
+        sint            m_nMaxComponents;
+        atomic_t        m_nFreeSlot;
+        eComponentType  m_nType;
     };
 
     /*****************************************************************************\
@@ -129,10 +141,12 @@ namespace Riot
 #define BEGIN_DECLARE_COMPONENT( Component, Type, MaxCount )    \
     class Component : public CComponent                         \
     {                                                           \
+    friend class CComponentManager;                             \
     public:                                                     \
     Component();                                                \
     ~Component();                                               \
     void Attach( uint nIndex );                                 \
+    void Reattach( uint nIndex, uint nPrevIndex );              \
     void Detach( uint nIndex );                                 \
     void ProcessComponent( void );                              \
     void ReceiveMessage( uint nSlot, CComponentMessage& msg );  \
@@ -140,7 +154,8 @@ namespace Riot
     static const uint MaxComponents = MaxCount;                 \
     static const eComponentMessageType MessagesReceived[];      \
     static const uint NumMessagesReceived;                      \
-    private:
+    private:                                                    \
+    static Component*  m_pInstance;
     //
 
     //
@@ -166,6 +181,7 @@ namespace Riot
     //
     DECLARE_COMPONENT_DATA( CMesh*,     m_pMesh );
     DECLARE_COMPONENT_DATA( RTransform, m_Transform );
+    void Shutdown( void );
     //
     END_DECLARE_COMPONENT;
     //
@@ -207,15 +223,11 @@ namespace Riot
         } aabb;
     };
     DECLARE_COMPONENT_DATA( BoundingVolume, m_Volume );
-    DECLARE_COMPONENT_DATA( VolumeType,     m_nType );
+    DECLARE_COMPONENT_DATA( VolumeType,     m_nVolumeType );
 
     static void ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount );
     public:
-        struct MeshData
-        {
-            VPosNormalTex*  pVerts;
-            uint            nVerts;
-        };
+    static void CalculateBoundingSphere( const VPosNormalTex* pVerts, uint nNumVerts, uint nIndex );
     //
     END_DECLARE_COMPONENT;
     //

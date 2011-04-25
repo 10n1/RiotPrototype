@@ -3,7 +3,7 @@ File:           ObjectManager.h
 Purpose:        Handles allocation of objects
 Author:         Kyle Weicht
 Created:        3/31/2011
-Modified:       4/19/2011 10:53:40 PM
+Modified:       4/24/2011 5:22:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECTMANAGER_H_
@@ -55,6 +55,12 @@ namespace Riot
         //  Removes a component from the specified object
         //-----------------------------------------------------------------------------
         void RemoveComponent( uint nObject, eComponentType nType );
+
+        //-----------------------------------------------------------------------------
+        //  ReorderComponent
+        //  Lets the object know it has a new index
+        //-----------------------------------------------------------------------------
+        void ReorderComponent( uint nObject, eComponentType nType, sint nNewIndex );
 
         //-----------------------------------------------------------------------------
         //  DeleteObject

@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/24/2011 3:50:26 PM
+Modified:       4/24/2011 4:24:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -599,7 +599,7 @@ namespace Riot
             NULL,          // Array of macro definitions
             NULL,          // #include interface
             szEntryPoint,  // Function name
-            szProfile, // Shader profile
+            szProfile,     // Shader profile
             nCompileFlags, // Compile flags
             0,             // Not used for shaders, only effects
             NULL,          // Thread pump
