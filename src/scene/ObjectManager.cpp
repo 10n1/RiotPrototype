@@ -2,12 +2,11 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/24/2011 10:53:24 PM
+Modified:       4/24/2011 10:59:34 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
 #include "Engine.h"
-#include "ComponentManager.h"
 #include "TaskManager.h"
 
 namespace Riot
@@ -119,6 +118,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CObjectManager::AddComponent( uint nObject, eComponentType nType )
     {
+        CScopedMutex lock( &m_ObjectMutex );
+
         uint*       pComponentIndices   = m_pComponentIndices[ nType ];
         uint*       pObjectIndices      = m_pComponents[nType]->m_pObjects;
 
@@ -163,11 +164,6 @@ namespace Riot
         {
             // The component is already attached
         }
-
-        //uint x = m_pComponentIndices[nType][nObject];
-        //uint y = m_pObjectIndices[nType][x];
-        //
-        //ASSERT( y == nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -176,10 +172,12 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CObjectManager::RemoveComponent( uint nObject, eComponentType nType, bool bSave )
     {
+        CScopedMutex lock( &m_ObjectMutex );
+
         uint*       pObjectIndices      = m_pComponents[nType]->m_pObjects;
         uint*       pComponentIndices   = m_pComponentIndices[ nType ];
 
-        uint nComponentIndex = pComponentIndices[nObject];
+        uint&       nComponentIndex = pComponentIndices[nObject];
 
         atomic_t*   pActiveComponents   = &m_pComponents[nType]->m_nNumActiveComponents;
         atomic_t*   pInactiveComponents = &m_pComponents[nType]->m_nNumInactiveComponents;
@@ -226,11 +224,6 @@ namespace Riot
 
             pComponentIndices[nObject] = COMPONENT_FRESH;
         }
-
-        //uint x = m_pComponentIndices[nType][nObject];
-        //uint y = m_pObjectIndices[nType][x];
-        //
-        //ASSERT( y == nObject );
     }
 
     //-----------------------------------------------------------------------------
