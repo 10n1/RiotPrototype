@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/25/2011 9:39:11 PM
+Modified:       4/25/2011 9:43:11 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -12,6 +12,7 @@ Modified by:    Kyle Weicht
 #include "VertexFormats.h"
 #include "IComponent.h"
 #include "ComponentRender.h"
+#include "ComponentLight.h"
 
 namespace Riot
 {
@@ -66,17 +67,17 @@ namespace Riot
     //END_DECLARE_COMPONENT;
     //
 
-    //-----------------------------------------------------------------------------
-    //  Light component
-    //  Turns an object into a light!
-    //-----------------------------------------------------------------------------
-    BEGIN_DECLARE_COMPONENT( CLightComponent, eComponentLight, MAX_LIGHTS );
-    //
-    DECLARE_COMPONENT_DATA( RTransform, m_Transform );
-    DECLARE_COMPONENT_DATA( bool,       m_bUpdated );
-    //
-    END_DECLARE_COMPONENT;
-    //
+    ////-----------------------------------------------------------------------------
+    ////  Light component
+    ////  Turns an object into a light!
+    ////-----------------------------------------------------------------------------
+    //BEGIN_DECLARE_COMPONENT( CLightComponent, eComponentLight, MAX_LIGHTS );
+    ////
+    //DECLARE_COMPONENT_DATA( RTransform, m_Transform );
+    //DECLARE_COMPONENT_DATA( bool,       m_bUpdated );
+    ////
+    //END_DECLARE_COMPONENT;
+    ////
     
     //-----------------------------------------------------------------------------
     //  Collidable component

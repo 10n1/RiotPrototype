@@ -121,6 +121,9 @@
     <ClCompile Include="..\scene\ComponentRender.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\scene\ComponentLight.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\platform\WIN32\Win32Application.h">

@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/25/2011 9:33:19 PM
+Modified:       4/25/2011 9:44:20 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -152,126 +152,126 @@ namespace Riot
     |*********************************************************************************|
     \*********************************************************************************/
 
-    //-----------------------------------------------------------------------------
-    BEGIN_DEFINE_COMPONENT( CLightComponent )
-        eComponentMessageTransform
-    END_DEFINE_COMPONENT( CLightComponent );
-    //-----------------------------------------------------------------------------
-       
-    //-----------------------------------------------------------------------------
-    //  Attach
-    //  Attaches a component to an object
-    //-----------------------------------------------------------------------------
-    void CLightComponent::Attach( uint nObject )
-    {
-        COMPONENT_DEFAULT_PRE_ATTACH;
-        // Now initialize this component
-        m_Transform[nIndex] = RTransform();
-        m_bUpdated[nIndex] = true;
-        COMPONENT_DEFAULT_POST_ATTACH;
-    }
+    ////-----------------------------------------------------------------------------
+    //BEGIN_DEFINE_COMPONENT( CLightComponent )
+    //    eComponentMessageTransform
+    //END_DEFINE_COMPONENT( CLightComponent );
+    ////-----------------------------------------------------------------------------
+    //   
+    ////-----------------------------------------------------------------------------
+    ////  Attach
+    ////  Attaches a component to an object
+    ////-----------------------------------------------------------------------------
+    //void CLightComponent::Attach( uint nObject )
+    //{
+    //    COMPONENT_DEFAULT_PRE_ATTACH;
+    //    // Now initialize this component
+    //    m_Transform[nIndex] = RTransform();
+    //    m_bUpdated[nIndex] = true;
+    //    COMPONENT_DEFAULT_POST_ATTACH;
+    //}
 
-    //-----------------------------------------------------------------------------
-    //  Rettach
-    //  Reattaches a component to an object, using it's last data
-    //-----------------------------------------------------------------------------
-    void CLightComponent::Reattach( uint nObject  )
-    {
-        COMPONENT_DEFAULT_PRE_REATTACH;
-        // Now initialize this component
-        COMPONENT_USE_PREV_DATA( m_bUpdated );
-        COMPONENT_USE_PREV_DATA( m_Transform );
-        COMPONENT_DEFAULT_POST_REATTACH;
-    }
+    ////-----------------------------------------------------------------------------
+    ////  Rettach
+    ////  Reattaches a component to an object, using it's last data
+    ////-----------------------------------------------------------------------------
+    //void CLightComponent::Reattach( uint nObject  )
+    //{
+    //    COMPONENT_DEFAULT_PRE_REATTACH;
+    //    // Now initialize this component
+    //    COMPONENT_USE_PREV_DATA( m_bUpdated );
+    //    COMPONENT_USE_PREV_DATA( m_Transform );
+    //    COMPONENT_DEFAULT_POST_REATTACH;
+    //}
 
-    //-----------------------------------------------------------------------------
-    //  Detach
-    //  Detaches a component to an object
-    //-----------------------------------------------------------------------------
-    void CLightComponent::Detach( uint nObject )
-    {
-        COMPONENT_DEFAULT_PRE_DETACH;
-        // Now initialize this component
-        COMPONENT_REORDER_DATA( m_bUpdated );
-        COMPONENT_REORDER_DATA( m_Transform );
-        COMPONENT_DEFAULT_POST_DETACH;
-    }
-    
-    //-----------------------------------------------------------------------------
-    //  DetachAndSave
-    //  Detaches a component from an object, saving the old data
-    //-----------------------------------------------------------------------------
-    void CLightComponent::DetachAndSave( uint nObject )
-    {
-        COMPONENT_DEFAULT_PRE_DETACH_SAVE;
-        // Now initialize this component
-        COMPONENT_REORDER_SAVE_DATA( m_bUpdated );
-        COMPONENT_REORDER_SAVE_DATA( m_Transform );
-        COMPONENT_DEFAULT_POST_DETACH_SAVE;
-    }
-    
-    //-----------------------------------------------------------------------------
-    //  RemoveInactive
-    //  Removes the inactive component
-    //-----------------------------------------------------------------------------
-    void CLightComponent::RemoveInactive( uint nObject )
-    {
-        COMPONENT_DEFAULT_PRE_REMOVE_INACTIVE;
-        COMPONENT_REMOVE_PREV_DATA( m_bUpdated );
-        COMPONENT_REMOVE_PREV_DATA( m_Transform );
-        COMPONENT_DEFAULT_POST_REMOVE_INACTIVE;
-    }
+    ////-----------------------------------------------------------------------------
+    ////  Detach
+    ////  Detaches a component to an object
+    ////-----------------------------------------------------------------------------
+    //void CLightComponent::Detach( uint nObject )
+    //{
+    //    COMPONENT_DEFAULT_PRE_DETACH;
+    //    // Now initialize this component
+    //    COMPONENT_REORDER_DATA( m_bUpdated );
+    //    COMPONENT_REORDER_DATA( m_Transform );
+    //    COMPONENT_DEFAULT_POST_DETACH;
+    //}
+    //
+    ////-----------------------------------------------------------------------------
+    ////  DetachAndSave
+    ////  Detaches a component from an object, saving the old data
+    ////-----------------------------------------------------------------------------
+    //void CLightComponent::DetachAndSave( uint nObject )
+    //{
+    //    COMPONENT_DEFAULT_PRE_DETACH_SAVE;
+    //    // Now initialize this component
+    //    COMPONENT_REORDER_SAVE_DATA( m_bUpdated );
+    //    COMPONENT_REORDER_SAVE_DATA( m_Transform );
+    //    COMPONENT_DEFAULT_POST_DETACH_SAVE;
+    //}
+    //
+    ////-----------------------------------------------------------------------------
+    ////  RemoveInactive
+    ////  Removes the inactive component
+    ////-----------------------------------------------------------------------------
+    //void CLightComponent::RemoveInactive( uint nObject )
+    //{
+    //    COMPONENT_DEFAULT_PRE_REMOVE_INACTIVE;
+    //    COMPONENT_REMOVE_PREV_DATA( m_bUpdated );
+    //    COMPONENT_REMOVE_PREV_DATA( m_Transform );
+    //    COMPONENT_DEFAULT_POST_REMOVE_INACTIVE;
+    //}
 
-    //-----------------------------------------------------------------------------
-    //  ProcessComponent
-    //  Processes the component as necessary
-    //-----------------------------------------------------------------------------
-    void CLightComponent::ProcessComponent( void )
-    {
-        static float fAngle = 0.0f;
-        fAngle += Engine::m_fElapsedTime;
+    ////-----------------------------------------------------------------------------
+    ////  ProcessComponent
+    ////  Processes the component as necessary
+    ////-----------------------------------------------------------------------------
+    //void CLightComponent::ProcessComponent( void )
+    //{
+    //    static float fAngle = 0.0f;
+    //    fAngle += Engine::m_fElapsedTime;
 
-        CRenderer* pRender = Engine::GetRenderer();
-        CObjectManager* pManager = Engine::GetObjectManager();
+    //    CRenderer* pRender = Engine::GetRenderer();
+    //    CObjectManager* pManager = Engine::GetObjectManager();
 
-        for( sint i = 0; i < m_nNumActiveComponents; ++i )
-        {
-            m_Transform[i].position.x = sin( fAngle ) * 10.0f;
-            m_Transform[i].position.z = cos( fAngle ) * 10.0f;
-            m_bUpdated[i] = true;
+    //    for( sint i = 0; i < m_nNumActiveComponents; ++i )
+    //    {
+    //        m_Transform[i].position.x = sin( fAngle ) * 10.0f;
+    //        m_Transform[i].position.z = cos( fAngle ) * 10.0f;
+    //        m_bUpdated[i] = true;
 
-            if( m_bUpdated[i] == true )
-            {
-                pRender->SetLight( m_Transform[i].position, i );
-                m_bUpdated[i] = false;
-                pManager->PostMessage( eComponentMessageTransform, m_pObjectIndices[ i ], &m_Transform[i], ComponentType );
-            }
-        }
-    }
+    //        if( m_bUpdated[i] == true )
+    //        {
+    //            pRender->SetLight( m_Transform[i].position, i );
+    //            m_bUpdated[i] = false;
+    //            pManager->PostMessage( eComponentMessageTransform, m_pObjectIndices[ i ], &m_Transform[i], ComponentType );
+    //        }
+    //    }
+    //}
 
 
-    //-----------------------------------------------------------------------------
-    //  ReceiveMessage
-    //  Receives and processes a message
-    //-----------------------------------------------------------------------------
-    void CLightComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
-    {
-        switch( msg.m_nMessageType )
-        {        
-        case eComponentMessageTransform:
-            {
-                RTransform& transform = *((RTransform*)msg.m_pData);
+    ////-----------------------------------------------------------------------------
+    ////  ReceiveMessage
+    ////  Receives and processes a message
+    ////-----------------------------------------------------------------------------
+    //void CLightComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
+    //{
+    //    switch( msg.m_nMessageType )
+    //    {        
+    //    case eComponentMessageTransform:
+    //        {
+    //            RTransform& transform = *((RTransform*)msg.m_pData);
 
-                m_Transform[nSlot]      = transform;
-                m_bUpdated[nSlot]       = true;
-            }
-            break;
+    //            m_Transform[nSlot]      = transform;
+    //            m_bUpdated[nSlot]       = true;
+    //        }
+    //        break;
 
-        default:
-            {
-            }
-        }
-    }
+    //    default:
+    //        {
+    //        }
+    //    }
+    //}
 
     
     
