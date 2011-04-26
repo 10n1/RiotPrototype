@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/25/2011 7:15:58 PM
+Modified:       4/25/2011 9:33:19 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -15,245 +15,135 @@ Modified by:    Kyle Weicht
 namespace Riot
 {
 
-    /*****************************************************************************\
-    \*****************************************************************************/
-    //
-    #define BEGIN_DEFINE_COMPONENT( Component )         \
-        Component* Component::m_pInstance = NULL;       \
-        Component::Component()                          \
-        {                                               \
-            m_nNumInactiveComponents = MaxComponents;   \
-            m_nNumActiveComponents = 0;                 \
-        }                                               \
-        Component::~Component() { }                     \
-        const eComponentMessageType Component::MessagesReceived[] =    \
-        {
-    //
-
-    //
-    #define END_DEFINE_COMPONENT( Component )   \
-        };                                      \
-        const uint Component::NumMessagesReceived   =  (MessagesReceived[0] == eNULLCOMPONENTMESSAGE) ? 0 : sizeof( MessagesReceived ) / sizeof( eComponentMessageType )
-    //
-
-    //
-    #define COMPONENT_REORDER_DATA( Data )  \
-        Data[nIndex] = Data[ m_nNumActiveComponents ]
-
-    //
-    
-    //
-    #define COMPONENT_REORDER_SAVE_DATA( Data ) \
-        Data[nNewIndex] = Data[nOldIndex];       \
-        Data[nOldIndex] = Data[ m_nNumActiveComponents ]
-
-    //
-
-    //
-    #define COMPONENT_USE_PREV_DATA( Data ) \
-        Data[nIndex] = Data[nOldIndex];     \
-        Data[nOldIndex] = Data[m_nNumInactiveComponents] 
-    //
-    
-    //
-    #define COMPONENT_REMOVE_PREV_DATA( Data ) \
-        Data[nIndex] = Data[m_nNumInactiveComponents]
-    //
-
-    //
-    #define COMPONENT_DEFAULT_PRE_ATTACH    \
-        uint nIndex = AtomicIncrement( &m_nNumActiveComponents ) - 1
-    //
-    
-    //
-    #define COMPONENT_DEFAULT_POST_ATTACH   \
-        m_pObjectIndices[nIndex] = nObject; \
-        m_pComponentIndices[nObject] = nIndex
-    //
-
-    //
-    #define COMPONENT_DEFAULT_PRE_REATTACH  \
-        uint nOldIndex = m_pComponentIndices[nObject]; \
-        uint nIndex = AtomicIncrement( &m_nNumActiveComponents ) - 1
-    //
-
-    //
-    #define COMPONENT_DEFAULT_POST_REATTACH  \
-        m_pObjectIndices[nIndex] = nObject; \
-        m_pObjectIndices[nOldIndex] = m_pObjectIndices[ m_nNumInactiveComponents ]; \
-        AtomicIncrement( &m_nNumInactiveComponents );   \
-        m_pComponentIndices[nObject] = nIndex
-    //
-
-    //
-    #define COMPONENT_DEFAULT_PRE_REMOVE_INACTIVE   \
-        uint nIndex = m_pComponentIndices[nObject]
-    //
-    
-    //
-    #define COMPONENT_DEFAULT_POST_REMOVE_INACTIVE  \
-        m_pObjectIndices[ nIndex ] = m_pObjectIndices[ m_nNumInactiveComponents ]; \
-        AtomicIncrement( &m_nNumInactiveComponents )
-    //
-
-    //
-    #define COMPONENT_DEFAULT_PRE_DETACH_SAVE   \
-        AtomicDecrement( &m_nNumActiveComponents );   \
-        uint nOldIndex = m_pComponentIndices[nObject]; \
-        uint nNewIndex = AtomicDecrement( &m_nNumInactiveComponents )
-    //
-    
-    //
-    #define COMPONENT_DEFAULT_POST_DETACH_SAVE  \
-        m_pObjectIndices[nNewIndex] = nObject;  \
-        m_pObjectIndices[nOldIndex] = m_pObjectIndices[ m_nNumActiveComponents ]; \
-        m_pComponentIndices[m_pObjectIndices[ m_nNumActiveComponents ]] = nOldIndex; \
-        m_pComponentIndices[nObject] = nNewIndex
-    //
-    
-    //
-    #define COMPONENT_DEFAULT_PRE_DETACH \
-        uint nIndex = m_pComponentIndices[nObject]; \
-        AtomicDecrement( &m_nNumActiveComponents )
-    //
-
-    //
-    #define COMPONENT_DEFAULT_POST_DETACH
-    //
-
-    /*****************************************************************************\
-    \*****************************************************************************/
-
-
     /*********************************************************************************\
     |*********************************************************************************|
     |*********************************************************************************|
     |*********************************************************************************|
     \*********************************************************************************/
 
-    //-----------------------------------------------------------------------------
-    BEGIN_DEFINE_COMPONENT( CRenderComponent )
-        eComponentMessageUpdate, 
-        eComponentMessageTransform,
-        eComponentMessageMesh
-    END_DEFINE_COMPONENT( CRenderComponent );
-    //-----------------------------------------------------------------------------
+    ////-----------------------------------------------------------------------------
+    //BEGIN_DEFINE_COMPONENT( CRenderComponent )
+    //    eComponentMessageUpdate, 
+    //    eComponentMessageTransform,
+    //    eComponentMessageMesh
+    //END_DEFINE_COMPONENT( CRenderComponent );
+    ////-----------------------------------------------------------------------------
 
-    //-----------------------------------------------------------------------------
-    //  Attach
-    //  Attaches a component to an object
-    //-----------------------------------------------------------------------------
-    void CRenderComponent::Attach( uint nObject )
-    {
-        COMPONENT_DEFAULT_PRE_ATTACH;
-        // Now initialize this component
-        m_pMesh[nIndex]     = NULL;
-        m_Transform[nIndex] = RTransform();
-        COMPONENT_DEFAULT_POST_ATTACH;
-    }
+    ////-----------------------------------------------------------------------------
+    ////  Attach
+    ////  Attaches a component to an object
+    ////-----------------------------------------------------------------------------
+    //void CRenderComponent::Attach( uint nObject )
+    //{
+    //    COMPONENT_DEFAULT_PRE_ATTACH;
+    //    // Now initialize this component
+    //    m_pMesh[nIndex]     = NULL;
+    //    m_Transform[nIndex] = RTransform();
+    //    COMPONENT_DEFAULT_POST_ATTACH;
+    //}
 
-    //-----------------------------------------------------------------------------
-    //  Rettach
-    //  Reattaches a component to an object, using it's last data
-    //-----------------------------------------------------------------------------
-    void CRenderComponent::Reattach( uint nObject  )
-    {
-        COMPONENT_DEFAULT_PRE_REATTACH;
+    ////-----------------------------------------------------------------------------
+    ////  Rettach
+    ////  Reattaches a component to an object, using it's last data
+    ////-----------------------------------------------------------------------------
+    //void CRenderComponent::Reattach( uint nObject  )
+    //{
+    //    COMPONENT_DEFAULT_PRE_REATTACH;
 
-        // Now initialize this component
-        COMPONENT_USE_PREV_DATA( m_pMesh );
-        COMPONENT_USE_PREV_DATA( m_Transform );
+    //    // Now initialize this component
+    //    COMPONENT_USE_PREV_DATA( m_pMesh );
+    //    COMPONENT_USE_PREV_DATA( m_Transform );
 
-        COMPONENT_DEFAULT_POST_REATTACH;
-    }
+    //    COMPONENT_DEFAULT_POST_REATTACH;
+    //}
 
-    //-----------------------------------------------------------------------------
-    //  Detach
-    //  Detaches a component to an object
-    //-----------------------------------------------------------------------------
-    void CRenderComponent::Detach( uint nObject )
-    {
-        COMPONENT_DEFAULT_PRE_DETACH;
+    ////-----------------------------------------------------------------------------
+    ////  Detach
+    ////  Detaches a component to an object
+    ////-----------------------------------------------------------------------------
+    //void CRenderComponent::Detach( uint nObject )
+    //{
+    //    COMPONENT_DEFAULT_PRE_DETACH;
 
-        SAFE_RELEASE( m_pMesh[nIndex] );
+    //    SAFE_RELEASE( m_pMesh[nIndex] );
 
-        // Now initialize this component
-        COMPONENT_REORDER_DATA( m_pMesh );
-        COMPONENT_REORDER_DATA( m_Transform );
+    //    // Now initialize this component
+    //    COMPONENT_REORDER_DATA( m_pMesh );
+    //    COMPONENT_REORDER_DATA( m_Transform );
 
-        COMPONENT_DEFAULT_POST_DETACH;
-    }
-    
-    //-----------------------------------------------------------------------------
-    //  DetachAndSave
-    //  Detaches a component from an object, saving the old data
-    //-----------------------------------------------------------------------------
-    void CRenderComponent::DetachAndSave( uint nObject )
-    {
-        COMPONENT_DEFAULT_PRE_DETACH_SAVE;
-        // Now initialize this component
-        COMPONENT_REORDER_SAVE_DATA( m_pMesh );
-        COMPONENT_REORDER_SAVE_DATA( m_Transform );
+    //    COMPONENT_DEFAULT_POST_DETACH;
+    //}
+    //
+    ////-----------------------------------------------------------------------------
+    ////  DetachAndSave
+    ////  Detaches a component from an object, saving the old data
+    ////-----------------------------------------------------------------------------
+    //void CRenderComponent::DetachAndSave( uint nObject )
+    //{
+    //    COMPONENT_DEFAULT_PRE_DETACH_SAVE;
+    //    // Now initialize this component
+    //    COMPONENT_REORDER_SAVE_DATA( m_pMesh );
+    //    COMPONENT_REORDER_SAVE_DATA( m_Transform );
 
-        COMPONENT_DEFAULT_POST_DETACH_SAVE;
-    }
-    
-    //-----------------------------------------------------------------------------
-    //  RemoveInactive
-    //  Removes the inactive component
-    //-----------------------------------------------------------------------------
-    void CRenderComponent::RemoveInactive( uint nObject )
-    {
-        COMPONENT_DEFAULT_PRE_REMOVE_INACTIVE;
+    //    COMPONENT_DEFAULT_POST_DETACH_SAVE;
+    //}
+    //
+    ////-----------------------------------------------------------------------------
+    ////  RemoveInactive
+    ////  Removes the inactive component
+    ////-----------------------------------------------------------------------------
+    //void CRenderComponent::RemoveInactive( uint nObject )
+    //{
+    //    COMPONENT_DEFAULT_PRE_REMOVE_INACTIVE;
 
-        SAFE_RELEASE( m_pMesh[nIndex] );
-        COMPONENT_REMOVE_PREV_DATA( m_pMesh );
-        COMPONENT_REMOVE_PREV_DATA( m_Transform );
-        COMPONENT_DEFAULT_POST_REMOVE_INACTIVE;
-    }
+    //    SAFE_RELEASE( m_pMesh[nIndex] );
+    //    COMPONENT_REMOVE_PREV_DATA( m_pMesh );
+    //    COMPONENT_REMOVE_PREV_DATA( m_Transform );
+    //    COMPONENT_DEFAULT_POST_REMOVE_INACTIVE;
+    //}
 
-    //-----------------------------------------------------------------------------
-    //  ProcessComponent
-    //  Processes the component as necessary
-    //-----------------------------------------------------------------------------
-    void CRenderComponent::ProcessComponent( void )
-    {
-        CRenderer* pRender = Engine::GetRenderer();
-        for( sint i = 0; i < m_nNumActiveComponents; ++i )
-        {          
-            // Pass to the render engine
-            TRenderCommand cmd = { m_pMesh[i], NULL };
-            pRender->AddCommand( cmd, m_Transform[i] );
-        }
-    }
+    ////-----------------------------------------------------------------------------
+    ////  ProcessComponent
+    ////  Processes the component as necessary
+    ////-----------------------------------------------------------------------------
+    //void CRenderComponent::ProcessComponent( void )
+    //{
+    //    CRenderer* pRender = Engine::GetRenderer();
+    //    for( sint i = 0; i < m_nNumActiveComponents; ++i )
+    //    {          
+    //        // Pass to the render engine
+    //        TRenderCommand cmd = { m_pMesh[i], NULL };
+    //        pRender->AddCommand( cmd, m_Transform[i] );
+    //    }
+    //}
 
 
-    //-----------------------------------------------------------------------------
-    //  ReceiveMessage
-    //  Receives and processes a message
-    //-----------------------------------------------------------------------------
-    void CRenderComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
-    {
-        switch( msg.m_nMessageType )
-        {        
-        case eComponentMessageTransform:
-            {
-                RTransform& transform = *((RTransform*)msg.m_pData);
+    ////-----------------------------------------------------------------------------
+    ////  ReceiveMessage
+    ////  Receives and processes a message
+    ////-----------------------------------------------------------------------------
+    //void CRenderComponent::ReceiveMessage( uint nSlot, CComponentMessage& msg )
+    //{
+    //    switch( msg.m_nMessageType )
+    //    {        
+    //    case eComponentMessageTransform:
+    //        {
+    //            RTransform& transform = *((RTransform*)msg.m_pData);
 
-                m_Transform[nSlot] = transform;
-            }
-            break;
-        case eComponentMessageMesh:
-            {
-                m_pMesh[nSlot] = (CMesh*)msg.m_pData;
-                m_pMesh[nSlot]->AddRef();
-            }
-            break;
-        default:
-            {
-            }
-        }
-    }
+    //            m_Transform[nSlot] = transform;
+    //        }
+    //        break;
+    //    case eComponentMessageMesh:
+    //        {
+    //            m_pMesh[nSlot] = (CMesh*)msg.m_pData;
+    //            m_pMesh[nSlot]->AddRef();
+    //        }
+    //        break;
+    //    default:
+    //        {
+    //        }
+    //    }
+    //}
 
 
     /*********************************************************************************\

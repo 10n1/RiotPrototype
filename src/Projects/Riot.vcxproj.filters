@@ -118,6 +118,9 @@
     <ClCompile Include="..\core\Camera.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="..\scene\ComponentRender.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\platform\WIN32\Win32Application.h">
@@ -236,6 +239,9 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\scene\ComponentRender.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scene\ComponentLight.h">
       <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>

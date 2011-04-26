@@ -1,36 +1,35 @@
 /*********************************************************\
-File:           ComponentRender.h
-Purpose:        Component used for rendering all basic objects
+File:           ComponentLight.h
+Purpose:        Turns an object into a light!
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/25/2011 9:39:11 PM
+Modified:       4/25/2011 9:40:17 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#ifndef _COMPONENTRENDER_H_
-#define _COMPONENTRENDER_H_
+#ifndef _COMPONENTLIGHT_H_
+#define _COMPONENTLIGHT_H_
 #include "IComponent.h"
 
 /*
-CComponentRender
-0
+CComponentLight
+MAX_LIGHTS
 2
 RTransform m_Transform
-CMesh* m_pMesh
+bool m_bUpdated
 */
 
 namespace Riot
 {
-    class CMesh;
 
-    class CComponentRender : public IComponent
+    class CComponentLight : public IComponent
     {
         friend class CObjectManager;
     public:
-        // CComponentRender constructor
-        CComponentRender();
+        // CComponentLight constructor
+        CComponentLight();
 
-        // CComponentRender destructor
-        ~CComponentRender();
+        // CComponentLight destructor
+        ~CComponentLight();
         /***************************************\
         | class methods                         |
         \***************************************/
@@ -43,8 +42,8 @@ namespace Riot
         void ReceiveMessage( uint nSlot, CComponentMessage& msg );
         void RemoveInactive( uint nObject );
 
-        static const eComponentType ComponentType = eComponentRender;
-        static const uint MaxComponents = IComponent::MaxComponents;
+        static const eComponentType ComponentType = eComponentLight;
+        static const uint MaxComponents = MAX_LIGHTS;
         static const eComponentMessageType MessagesReceived[];
         static const uint NumMessagesReceived;
 
@@ -52,13 +51,13 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        static CComponentRender* m_pInstance;
+        static CComponentLight* m_pInstance;
 
         RTransform  m_Transform[MaxComponents];
-        CMesh*  m_pMesh[MaxComponents];
+        bool        m_bUpdated[MaxComponents];
 
     };
 
 } // namespace Riot
 
-#endif // #ifndef _COMPONENTRENDER_H_
+#endif // #ifndef _COMPONENTLIGHT_H_

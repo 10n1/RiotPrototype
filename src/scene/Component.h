@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/25/2011 7:15:58 PM
+Modified:       4/25/2011 9:39:11 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -11,6 +11,7 @@ Modified by:    Kyle Weicht
 #include "common.h"
 #include "VertexFormats.h"
 #include "IComponent.h"
+#include "ComponentRender.h"
 
 namespace Riot
 {
@@ -33,7 +34,7 @@ namespace Riot
     void ReceiveMessage( uint nSlot, CComponentMessage& msg );  \
     void RemoveInactive( uint nObject );                         \
     static const eComponentType ComponentType=Type;             \
-    static const uint MaxComponents = MAX_OBJECTS;              \
+    static const uint MaxComponents = MaxCount;              \
     static const eComponentMessageType MessagesReceived[];      \
     static const uint NumMessagesReceived;                      \
     private:                                                    \
@@ -57,12 +58,12 @@ namespace Riot
     //  Render component
     //  Component used for rendering all basic objects
     //-----------------------------------------------------------------------------
-    BEGIN_DECLARE_COMPONENT( CRenderComponent, eComponentRender, MAX_OBJECTS );
-    //
-    DECLARE_COMPONENT_DATA( CMesh*,     m_pMesh );
-    DECLARE_COMPONENT_DATA( RTransform, m_Transform );
-    //
-    END_DECLARE_COMPONENT;
+    //BEGIN_DECLARE_COMPONENT( CRenderComponent, eComponentRender, MAX_OBJECTS );
+    ////
+    //DECLARE_COMPONENT_DATA( CMesh*,     m_pMesh );
+    //DECLARE_COMPONENT_DATA( RTransform, m_Transform );
+    ////
+    //END_DECLARE_COMPONENT;
     //
 
     //-----------------------------------------------------------------------------
