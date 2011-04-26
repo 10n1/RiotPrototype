@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/25/2011 7:10:07 PM
+Modified:       4/25/2011 7:15:59 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -163,9 +163,6 @@ namespace Riot
 
         uint&       nComponentIndex = pComponentIndices[nObject];
 
-        atomic_t*   pActiveComponents   = &m_pComponents[nType]->m_nNumActiveComponents;
-        atomic_t*   pInactiveComponents = &m_pComponents[nType]->m_nNumInactiveComponents;
-
         if( nComponentIndex == COMPONENT_FRESH )
         {
             // There is no component to remove
@@ -184,7 +181,6 @@ namespace Riot
         }
 
         // Remove the component
-        AtomicDecrement( pActiveComponents );
         if( bSave )
         {            
             m_pComponents[nType]->DetachAndSave( nObject);
@@ -193,7 +189,7 @@ namespace Riot
         }
         else
         {
-            m_pComponents[nType]->Detach( nComponentIndex );
+            m_pComponents[nType]->Detach( nObject );
 
             nComponentIndex = COMPONENT_FRESH;
         }

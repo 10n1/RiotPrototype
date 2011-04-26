@@ -3,7 +3,7 @@ File:           ComponentRender.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/25/2011 7:07:38 PM
+Modified:       4/25/2011 7:15:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTRENDER_H_
@@ -27,7 +27,7 @@ namespace Riot
 
         void Attach( uint nObject );
         void Reattach( uint nObject  );
-        void Detach( uint nIndex );
+        void Detach( uint nObject );
         void DetachAndSave( uint nObject );
         void ProcessComponent( void );
         void ReceiveMessage( uint nSlot, CComponentMessage& msg );

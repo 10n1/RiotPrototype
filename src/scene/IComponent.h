@@ -3,7 +3,7 @@ File:           IComponent.h
 Purpose:        The definition for the base component
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/25/2011 7:07:38 PM
+Modified:       4/25/2011 7:15:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ICOMPONENT_H_
@@ -102,7 +102,7 @@ namespace Riot
         //  Detach
         //  Detaches a component from an object, discarding the old data
         //-----------------------------------------------------------------------------
-        virtual void Detach( uint nIndex ) = 0;
+        virtual void Detach( uint nObject ) = 0;
         
         //-----------------------------------------------------------------------------
         //  DetachAndSave

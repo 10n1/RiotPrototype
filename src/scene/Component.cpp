@@ -2,7 +2,7 @@
 File:           Component.cpp
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/25/2011 7:10:07 PM
+Modified:       4/25/2011 7:15:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Component.h"
@@ -86,28 +86,39 @@ namespace Riot
     //
 
     //
-#define COMPONENT_DEFAULT_PRE_REMOVE_INACTIVE   \
-    uint nIndex = m_pComponentIndices[nObject]
+    #define COMPONENT_DEFAULT_PRE_REMOVE_INACTIVE   \
+        uint nIndex = m_pComponentIndices[nObject]
     //
     
     //
-#define COMPONENT_DEFAULT_POST_REMOVE_INACTIVE  \
-    m_pObjectIndices[ nIndex ] = m_pObjectIndices[ m_nNumInactiveComponents ]; \
-    AtomicIncrement( &m_nNumInactiveComponents )
+    #define COMPONENT_DEFAULT_POST_REMOVE_INACTIVE  \
+        m_pObjectIndices[ nIndex ] = m_pObjectIndices[ m_nNumInactiveComponents ]; \
+        AtomicIncrement( &m_nNumInactiveComponents )
     //
 
     //
-#define COMPONENT_DEFAULT_PRE_DETACH_SAVE   \
-    uint nOldIndex = m_pComponentIndices[nObject]; \
-    uint nNewIndex = AtomicDecrement( &m_nNumInactiveComponents )
+    #define COMPONENT_DEFAULT_PRE_DETACH_SAVE   \
+        AtomicDecrement( &m_nNumActiveComponents );   \
+        uint nOldIndex = m_pComponentIndices[nObject]; \
+        uint nNewIndex = AtomicDecrement( &m_nNumInactiveComponents )
     //
     
     //
-#define COMPONENT_DEFAULT_POST_DETACH_SAVE  \
-    m_pObjectIndices[nNewIndex] = nObject;  \
-    m_pObjectIndices[nOldIndex] = m_pObjectIndices[ m_nNumActiveComponents ]; \
-    m_pComponentIndices[m_pObjectIndices[ m_nNumActiveComponents ]] = nOldIndex; \
-    m_pComponentIndices[nObject] = nNewIndex
+    #define COMPONENT_DEFAULT_POST_DETACH_SAVE  \
+        m_pObjectIndices[nNewIndex] = nObject;  \
+        m_pObjectIndices[nOldIndex] = m_pObjectIndices[ m_nNumActiveComponents ]; \
+        m_pComponentIndices[m_pObjectIndices[ m_nNumActiveComponents ]] = nOldIndex; \
+        m_pComponentIndices[nObject] = nNewIndex
+    //
+    
+    //
+    #define COMPONENT_DEFAULT_PRE_DETACH \
+        uint nIndex = m_pComponentIndices[nObject]; \
+        AtomicDecrement( &m_nNumActiveComponents )
+    //
+
+    //
+    #define COMPONENT_DEFAULT_POST_DETACH
     //
 
     /*****************************************************************************\
@@ -160,13 +171,17 @@ namespace Riot
     //  Detach
     //  Detaches a component to an object
     //-----------------------------------------------------------------------------
-    void CRenderComponent::Detach( uint nIndex )
+    void CRenderComponent::Detach( uint nObject )
     {
+        COMPONENT_DEFAULT_PRE_DETACH;
+
         SAFE_RELEASE( m_pMesh[nIndex] );
 
         // Now initialize this component
         COMPONENT_REORDER_DATA( m_pMesh );
         COMPONENT_REORDER_DATA( m_Transform );
+
+        COMPONENT_DEFAULT_POST_DETACH;
     }
     
     //-----------------------------------------------------------------------------
@@ -190,6 +205,7 @@ namespace Riot
     void CRenderComponent::RemoveInactive( uint nObject )
     {
         COMPONENT_DEFAULT_PRE_REMOVE_INACTIVE;
+
         SAFE_RELEASE( m_pMesh[nIndex] );
         COMPONENT_REMOVE_PREV_DATA( m_pMesh );
         COMPONENT_REMOVE_PREV_DATA( m_Transform );
@@ -282,11 +298,13 @@ namespace Riot
     //  Detach
     //  Detaches a component to an object
     //-----------------------------------------------------------------------------
-    void CLightComponent::Detach( uint nIndex )
+    void CLightComponent::Detach( uint nObject )
     {
+        COMPONENT_DEFAULT_PRE_DETACH;
         // Now initialize this component
         COMPONENT_REORDER_DATA( m_bUpdated );
         COMPONENT_REORDER_DATA( m_Transform );
+        COMPONENT_DEFAULT_POST_DETACH;
     }
     
     //-----------------------------------------------------------------------------
@@ -414,11 +432,13 @@ namespace Riot
     //  Detach
     //  Detaches a component to an object
     //-----------------------------------------------------------------------------
-    void CCollidableComponent::Detach( uint nIndex )
+    void CCollidableComponent::Detach( uint nObject )
     {
+        COMPONENT_DEFAULT_PRE_DETACH;
         // Now initialize this component
         COMPONENT_REORDER_DATA( m_nVolumeType );
         COMPONENT_REORDER_DATA( m_Volume );
+        COMPONENT_DEFAULT_POST_DETACH;
     }
     
     //-----------------------------------------------------------------------------
@@ -596,12 +616,16 @@ namespace Riot
     //  Detach
     //  Detaches a component to an object
     //-----------------------------------------------------------------------------
-    void CNewtonPhysicsComponent::Detach( uint nIndex )
+    void CNewtonPhysicsComponent::Detach( uint nObject )
     {
+        COMPONENT_DEFAULT_PRE_DETACH;
+
         // Now initialize this component
         COMPONENT_REORDER_DATA( m_bGravity );
         COMPONENT_REORDER_DATA( m_vVelocity );
         COMPONENT_REORDER_DATA( m_Transform );
+
+        COMPONENT_DEFAULT_POST_DETACH;
     }
     
     //-----------------------------------------------------------------------------

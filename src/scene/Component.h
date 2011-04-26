@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/25/2011 7:07:38 PM
+Modified:       4/25/2011 7:15:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -27,7 +27,7 @@ namespace Riot
     ~Component();                                               \
     void Attach( uint nObject );                                 \
     void Reattach( uint nObject  );              \
-    void Detach( uint nIndex );                                 \
+    void Detach( uint nObject );                                 \
     void DetachAndSave( uint nObject );                          \
     void ProcessComponent( void );                              \
     void ReceiveMessage( uint nSlot, CComponentMessage& msg );  \
