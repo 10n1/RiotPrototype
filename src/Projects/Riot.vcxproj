@@ -87,6 +87,7 @@
     <ClInclude Include="..\scene\Component.h" />
     <ClInclude Include="..\scene\IComponent.h" />
     <ClInclude Include="..\scene\ObjectManager.h" />
+    <ClInclude Include="..\scene\ComponentRender.h" />
     <ClInclude Include="..\scene\Terrain.h" />
     <ClInclude Include="..\todo.h" />
   </ItemGroup>

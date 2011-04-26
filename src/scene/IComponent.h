@@ -3,7 +3,7 @@ File:           IComponent.h
 Purpose:        The definition for the base component
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/25/2011 4:12:35 PM
+Modified:       4/25/2011 5:04:18 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ICOMPONENT_H_
@@ -12,7 +12,61 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
-    class CComponentMessage;
+    
+    /*****************************************************************************\
+    \*****************************************************************************/
+
+    //-----------------------------------------------------------------------------
+    //  eComponentMessageType
+    //  These are the types of the inter-component messages
+    enum eComponentMessageType
+    {
+        eComponentMessageTransform,
+        eComponentMessageUpdate,
+        eComponentMessageMesh,
+        eComponentMessageBoundingVolumeType,
+        eComponentMessageCollision,
+
+        eNUMCOMPONENTMESSAGES,
+        eNULLCOMPONENTMESSAGE = -1
+    };
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    //  eComponentType
+    //  These are the actual types of the components
+    enum eComponentType
+    {
+        eComponentRender,
+        eComponentLight,
+        eComponentNewtonPhysics,
+        eComponentCollidable,
+
+        eNUMCOMPONENTS,
+        eNULLCOMPONENT = -1
+    };
+    //-----------------------------------------------------------------------------
+
+
+    //-----------------------------------------------------------------------------
+    //  CComponentMessage
+    // These are the messages passed between components
+    struct CComponentMessage
+    {
+        eComponentMessageType   m_nMessageType;
+        uint                    m_nTargetObject;
+        eComponentType          m_nOrigin;
+        union
+        {
+            nativeuint  m_nData;
+            pvoid       m_pData;
+        };
+    };
+    //-----------------------------------------------------------------------------
+
+    /*****************************************************************************\
+    \*****************************************************************************/
+
 
     class IComponent
     {
@@ -61,6 +115,8 @@ namespace Riot
         //  Removes the inactive component
         //-----------------------------------------------------------------------------
         virtual void RemoveInactive( uint nIndex ) = 0;
+
+        static const uint MaxComponents = MAX_OBJECTS;
         
     protected:
         uint*       m_pObjects;

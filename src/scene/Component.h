@@ -3,7 +3,7 @@ File:           Component.h
 Purpose:        Stores objects components
 Author:         Kyle Weicht
 Created:        3/23/2011
-Modified:       4/25/2011 4:11:53 PM
+Modified:       4/25/2011 4:26:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENT_H_
@@ -14,44 +14,6 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
-
-    enum eComponentMessageType
-    {
-        eComponentMessageTransform,
-        eComponentMessageUpdate,
-        eComponentMessageMesh,
-        eComponentMessageBoundingVolumeType,
-        eComponentMessageCollision,
-
-        eNUMCOMPONENTMESSAGES,
-        eNULLCOMPONENTMESSAGE = -1
-    };
-
-    enum eComponentType
-    {
-        eComponentRender,
-        eComponentLight,
-        eComponentNewtonPhysics,
-        eComponentCollidable,
-
-        eNUMCOMPONENTS,
-        eNULLCOMPONENT = -1
-    };
-
-    class CComponent;
-
-    struct CComponentMessage
-    {
-        eComponentMessageType   m_nMessageType;
-        uint                    m_nTargetObject;
-        eComponentType          m_nOrigin;
-        union
-        {
-            nativeuint  m_nData;
-            pvoid       m_pData;
-        };
-    };
-    
     /*****************************************************************************\
     \*****************************************************************************/
 
