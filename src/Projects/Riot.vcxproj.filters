@@ -124,6 +124,12 @@
     <ClCompile Include="..\scene\ComponentLight.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\scene\ComponentCollidable.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\scene\ComponentRigidBody.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\platform\WIN32\Win32Application.h">
@@ -245,6 +251,12 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\scene\ComponentLight.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scene\ComponentCollidable.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scene\ComponentRigidBody.h">
       <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>

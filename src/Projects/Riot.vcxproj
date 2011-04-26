@@ -46,8 +46,10 @@
     <ClCompile Include="..\platform\WIN32\Win32Application.cpp" />
     <ClCompile Include="..\platform\WIN32\Win32OpenGL.cpp" />
     <ClCompile Include="..\scene\Component.cpp" />
+    <ClCompile Include="..\scene\ComponentCollidable.cpp" />
     <ClCompile Include="..\scene\ComponentLight.cpp" />
     <ClCompile Include="..\scene\ComponentRender.cpp" />
+    <ClCompile Include="..\scene\ComponentRigidBody.cpp" />
     <ClCompile Include="..\scene\ObjectManager.cpp" />
     <ClCompile Include="..\scene\Terrain.cpp" />
   </ItemGroup>
@@ -87,7 +89,9 @@
     <ClInclude Include="..\platform\SystemOpenGL.h" />
     <ClInclude Include="..\platform\WIN32\Win32Application.h" />
     <ClInclude Include="..\scene\Component.h" />
+    <ClInclude Include="..\scene\ComponentCollidable.h" />
     <ClInclude Include="..\scene\ComponentLight.h" />
+    <ClInclude Include="..\scene\ComponentRigidBody.h" />
     <ClInclude Include="..\scene\IComponent.h" />
     <ClInclude Include="..\scene\ObjectManager.h" />
     <ClInclude Include="..\scene\ComponentRender.h" />

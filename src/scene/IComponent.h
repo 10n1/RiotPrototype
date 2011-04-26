@@ -3,7 +3,7 @@ File:           IComponent.h
 Purpose:        The definition for the base component
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/25/2011 9:14:29 PM
+Modified:       4/25/2011 9:56:39 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ICOMPONENT_H_
@@ -39,8 +39,8 @@ namespace Riot
     {
         eComponentRender,
         eComponentLight,
-        eComponentNewtonPhysics,
         eComponentCollidable,
+        eComponentRigidBody,
 
         eNUMCOMPONENTS,
         eNULLCOMPONENT = -1
