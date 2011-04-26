@@ -3,7 +3,7 @@ File:           IComponent.h
 Purpose:        The definition for the base component
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/25/2011 5:04:18 PM
+Modified:       4/25/2011 7:07:38 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ICOMPONENT_H_
@@ -90,13 +90,13 @@ namespace Riot
         //  Attach
         //  Attaches a component to an object
         //-----------------------------------------------------------------------------
-        virtual void Attach( uint nIndex ) = 0;
+        virtual void Attach( uint nObject ) = 0;
 
         //-----------------------------------------------------------------------------
         //  Rettach
         //  Reattaches a component to an object, using it's last data
         //-----------------------------------------------------------------------------
-        virtual void Reattach( uint nIndex, uint nOldIndex ) = 0;
+        virtual void Reattach( uint nObject  ) = 0;
 
         //-----------------------------------------------------------------------------
         //  Detach
@@ -108,18 +108,19 @@ namespace Riot
         //  DetachAndSave
         //  Detaches a component from an object, saving the old data
         //-----------------------------------------------------------------------------
-        virtual void DetachAndSave( uint nOldIndex, uint nNewIndex ) = 0;
+        virtual void DetachAndSave( uint nObject ) = 0;
 
         //-----------------------------------------------------------------------------
         //  RemoveInactive
         //  Removes the inactive component
         //-----------------------------------------------------------------------------
-        virtual void RemoveInactive( uint nIndex ) = 0;
+        virtual void RemoveInactive( uint nObject ) = 0;
 
         static const uint MaxComponents = MAX_OBJECTS;
         
     protected:
-        uint*       m_pObjects;
+        uint*       m_pObjectIndices;
+        uint*       m_pComponentIndices;
         atomic_t    m_nNumActiveComponents;
         atomic_t    m_nNumInactiveComponents;
     };

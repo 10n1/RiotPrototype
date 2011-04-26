@@ -3,7 +3,7 @@ File:           ComponentRender.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/25/2011 5:42:50 PM
+Modified:       4/25/2011 7:07:38 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTRENDER_H_
@@ -25,13 +25,13 @@ namespace Riot
         | class methods                         |
         \***************************************/
 
-        void Attach( uint nIndex );
-        void Reattach( uint nIndex, uint nPrevIndex );
+        void Attach( uint nObject );
+        void Reattach( uint nObject  );
         void Detach( uint nIndex );
-        void DetachAndSave( uint nOldIndex, uint nNewIndex );
+        void DetachAndSave( uint nObject );
         void ProcessComponent( void );
         void ReceiveMessage( uint nSlot, CComponentMessage& msg );
-        void RemoveInactive( uint nIndex );
+        void RemoveInactive( uint nObject );
 
         static const eComponentType ComponentType = eComponentRender;
         static const uint MaxComponents = MAX_OBJECTS;
@@ -42,9 +42,8 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        RTransform              m_Transform[MaxComponents];
-        RTransformsdafsdfioahsdf    m_Transform[MaxComponents];
-        bool                    m_bUpdate[MaxComponents];
+        RTransform  m_Transform[MaxComponents];
+        bool        m_bUpdate[MaxComponents];
 
     };
 

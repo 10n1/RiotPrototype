@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/24/2011 11:00:09 PM
+Modified:       4/25/2011 6:35:08 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -306,13 +306,13 @@ namespace Riot
         CCollidableComponent::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nObject );
 
         // Add more boxes
-        for( uint i = 1; i < 1024; ++i )
+        for( uint i = 1; i < 10; ++i )
         {
             t.position = RVector3( 0.0f, i * 20.0f + 20.0f, 0.0f );
             nObject = m_pObjectManager->CreateObject();
 
             m_pObjectManager->AddComponent( nObject, eComponentNewtonPhysics );
-            //m_pObjectManager->AddComponent( nObject, eComponentRender );
+            m_pObjectManager->AddComponent( nObject, eComponentRender );
             m_pObjectManager->AddComponent( nObject, eComponentCollidable );
 
             m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
