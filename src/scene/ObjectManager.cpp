@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/25/2011 9:56:18 PM
+Modified:       4/25/2011 9:59:01 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -122,12 +122,8 @@ namespace Riot
         CScopedMutex lock( &m_ObjectMutex );
 
         uint*       pComponentIndices   = m_pComponents[nType]->m_pComponentIndices;
-        uint*       pObjectIndices      = m_pComponents[nType]->m_pObjectIndices;
 
         uint& nComponentIndex = pComponentIndices[nObject];
-
-        atomic_t*   pActiveComponents   = &m_pComponents[nType]->m_nNumActiveComponents;
-        atomic_t*   pInactiveComponents = &m_pComponents[nType]->m_nNumInactiveComponents;
 
         if( nComponentIndex == COMPONENT_FRESH )
         {
@@ -158,7 +154,6 @@ namespace Riot
     {
         CScopedMutex lock( &m_ObjectMutex );
 
-        uint*       pObjectIndices      = m_pComponents[nType]->m_pObjectIndices;
         uint*       pComponentIndices   = m_pComponents[nType]->m_pComponentIndices;
 
         uint&       nComponentIndex = pComponentIndices[nObject];
@@ -329,7 +324,6 @@ namespace Riot
                 continue;
             }
 
-            uint*   pObjectIndices      = m_pComponents[nComponent]->m_pObjectIndices;
             uint*   pComponentIndices   = m_pComponents[nComponent]->m_pComponentIndices;
 
             sint nIndex = pComponentIndices[ msg.m_nTargetObject ] & COMPONENT_RESET_REMOVED;

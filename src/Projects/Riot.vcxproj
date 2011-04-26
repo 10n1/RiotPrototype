@@ -45,7 +45,6 @@
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\platform\WIN32\Win32Application.cpp" />
     <ClCompile Include="..\platform\WIN32\Win32OpenGL.cpp" />
-    <ClCompile Include="..\scene\Component.cpp" />
     <ClCompile Include="..\scene\ComponentCollidable.cpp" />
     <ClCompile Include="..\scene\ComponentLight.cpp" />
     <ClCompile Include="..\scene\ComponentRender.cpp" />

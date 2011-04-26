@@ -106,9 +106,6 @@
     <ClCompile Include="..\global\utility.cpp">
       <Filter>global</Filter>
     </ClCompile>
-    <ClCompile Include="..\scene\Component.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="..\scene\ObjectManager.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
