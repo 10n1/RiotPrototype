@@ -49,6 +49,7 @@
     <ClCompile Include="..\scene\ComponentLight.cpp" />
     <ClCompile Include="..\scene\ComponentRender.cpp" />
     <ClCompile Include="..\scene\ComponentRigidBody.cpp" />
+    <ClCompile Include="..\scene\IComponent.cpp" />
     <ClCompile Include="..\scene\ObjectManager.cpp" />
     <ClCompile Include="..\scene\Terrain.cpp" />
   </ItemGroup>

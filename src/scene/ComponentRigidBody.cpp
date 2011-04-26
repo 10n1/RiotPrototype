@@ -2,7 +2,7 @@
 File:           ComponentRigidBody.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/25/2011 9:56:18 PM
+Modified:       4/26/2011 3:18:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentRigidBody.h"
@@ -52,16 +52,16 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentRigidBody::Attach( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_ATTACH;
+        PreAttach( nObject );
         /********************************/
 
         // Now initialize this component
-        m_Transform[nIndex] = RTransform();
-        m_vVelocity[nIndex] = RVector3Zero();
-        m_bGravity[nIndex]  = true;
+        m_Transform[m_nIndex] = RTransform();
+        m_vVelocity[m_nIndex] = RVector3Zero();
+        m_bGravity[m_nIndex]  = true;
 
         /********************************/
-        COMPONENT_DEFAULT_POST_ATTACH;
+        PostAttach( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -70,7 +70,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentRigidBody::Reattach( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_REATTACH;
+        PreReattach( nObject );
+        PreAttach( nObject );
         /********************************/
 
         // Perform any custom reattchment
@@ -81,7 +82,7 @@ namespace Riot
         COMPONENT_USE_PREV_DATA( m_bGravity );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_REATTACH;
+        PostReattach( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -90,7 +91,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentRigidBody::Detach( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_DETACH;
+        PreDetach( nObject );
         /********************************/
 
         // Perform any custom detachment stuff
@@ -101,7 +102,7 @@ namespace Riot
         COMPONENT_REORDER_DATA( m_bGravity );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_DETACH;
+        PostDetach( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -110,7 +111,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentRigidBody::DetachAndSave( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_DETACH_SAVE;
+        PreDetachAndSave( nObject );
         /********************************/
 
         // Perform any custom detachment stuff
@@ -121,7 +122,7 @@ namespace Riot
         COMPONENT_REORDER_SAVE_DATA( m_bGravity );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_DETACH_SAVE;
+        PostDetachAndSave( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -130,7 +131,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentRigidBody::RemoveInactive( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_REMOVE_INACTIVE;
+        PreRemoveInactive( nObject );
         /********************************/
 
         // Perform any custom removal stuff
@@ -141,7 +142,7 @@ namespace Riot
         COMPONENT_REMOVE_PREV_DATA( m_bGravity );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_REMOVE_INACTIVE;
+        PostRemoveInactive( nObject );
     }
 
     //-----------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 File:           ComponentRender.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/25/2011 9:37:03 PM
+Modified:       4/26/2011 3:18:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentRender.h"
@@ -54,15 +54,15 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentRender::Attach( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_ATTACH;
+        PreAttach( nObject );
         /********************************/
 
         // Now initialize this component
-        m_Transform[nIndex]  = RTransform();
-        m_pMesh[nIndex]  = NULL;
+        m_Transform[m_nIndex]  = RTransform();
+        m_pMesh[m_nIndex]  = NULL;
 
         /********************************/
-        COMPONENT_DEFAULT_POST_ATTACH;
+        PostAttach( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -71,7 +71,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentRender::Reattach( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_REATTACH;
+        PreReattach( nObject );
         /********************************/
 
         // Perform any custom reattchment
@@ -80,7 +80,7 @@ namespace Riot
         COMPONENT_USE_PREV_DATA( m_pMesh );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_REATTACH;
+        PostReattach( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -89,18 +89,18 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentRender::Detach( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_DETACH;
+        PreDetach( nObject );
         /********************************/
 
         // Perform any custom detachment stuff
-        SAFE_RELEASE( m_pMesh[nIndex] );
+        SAFE_RELEASE( m_pMesh[m_nIndex] );
 
         // Now reorder the data
         COMPONENT_REORDER_DATA( m_Transform );
         COMPONENT_REORDER_DATA( m_pMesh );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_DETACH;
+        PostDetach( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -109,7 +109,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentRender::DetachAndSave( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_DETACH_SAVE;
+        PreDetachAndSave( nObject );
         /********************************/
 
         // Perform any custom detachment stuff
@@ -118,7 +118,7 @@ namespace Riot
         COMPONENT_REORDER_SAVE_DATA( m_pMesh );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_DETACH_SAVE;
+        PostDetachAndSave( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -127,18 +127,18 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentRender::RemoveInactive( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_REMOVE_INACTIVE;
+        PreRemoveInactive( nObject );
         /********************************/
 
         // Perform any custom removal stuff
-        SAFE_RELEASE( m_pMesh[nIndex] );
+        SAFE_RELEASE( m_pMesh[m_nIndex] );
 
         // Now reorder the data
         COMPONENT_REMOVE_PREV_DATA( m_Transform );
         COMPONENT_REMOVE_PREV_DATA( m_pMesh );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_REMOVE_INACTIVE;
+        PostRemoveInactive( nObject );
     }
 
     //-----------------------------------------------------------------------------

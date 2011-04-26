@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/25/2011 9:50:41 PM
+Modified:       4/26/2011 3:18:26 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -54,15 +54,15 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentCollidable::Attach( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_ATTACH;
+        PreAttach( nObject );
         /********************************/
 
         // Now initialize this component
-        Memset( &m_Volume[nIndex], 0, sizeof(BoundingVolume) );
-        m_nVolumeType[nIndex]   = BoundingSphere;
+        Memset( &m_Volume[m_nIndex], 0, sizeof(BoundingVolume) );
+        m_nVolumeType[m_nIndex]   = BoundingSphere;
 
         /********************************/
-        COMPONENT_DEFAULT_POST_ATTACH;
+        PostAttach( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -71,7 +71,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentCollidable::Reattach( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_REATTACH;
+        PreReattach( nObject );
         /********************************/
 
         // Perform any custom reattchment
@@ -81,7 +81,7 @@ namespace Riot
         COMPONENT_USE_PREV_DATA( m_nVolumeType );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_REATTACH;
+        PostReattach( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -90,7 +90,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentCollidable::Detach( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_DETACH;
+        PreDetach( nObject );
         /********************************/
 
         // Perform any custom detachment stuff
@@ -100,7 +100,7 @@ namespace Riot
         COMPONENT_REORDER_DATA( m_nVolumeType );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_DETACH;
+        PostDetach( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -109,7 +109,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentCollidable::DetachAndSave( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_DETACH_SAVE;
+        PreDetachAndSave( nObject );
         /********************************/
 
         // Perform any custom detachment stuff
@@ -119,7 +119,7 @@ namespace Riot
         COMPONENT_REORDER_SAVE_DATA( m_nVolumeType );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_DETACH_SAVE;
+        PostDetachAndSave( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -128,7 +128,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentCollidable::RemoveInactive( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_REMOVE_INACTIVE;
+        PreRemoveInactive( nObject );
         /********************************/
 
         // Perform any custom removal stuff
@@ -138,7 +138,7 @@ namespace Riot
         COMPONENT_REMOVE_PREV_DATA( m_nVolumeType );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_REMOVE_INACTIVE;
+        PostRemoveInactive( nObject );
     }
 
     //-----------------------------------------------------------------------------

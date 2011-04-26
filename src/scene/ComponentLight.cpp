@@ -2,7 +2,7 @@
 File:           ComponentLight.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/25/2011 9:43:54 PM
+Modified:       4/26/2011 3:18:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentLight.h"
@@ -50,15 +50,15 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentLight::Attach( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_ATTACH;
+        PreAttach( nObject );
         /********************************/
 
         // Now initialize this component
-        m_Transform[nIndex] = RTransform();
-        m_bUpdated[nIndex]  = true;
+        m_Transform[m_nIndex] = RTransform();
+        m_bUpdated[m_nIndex]  = true;
 
         /********************************/
-        COMPONENT_DEFAULT_POST_ATTACH;
+        PostAttach( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -67,7 +67,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentLight::Reattach( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_REATTACH;
+        PreReattach( nObject );
         /********************************/
 
         // Perform any custom reattchment
@@ -77,7 +77,7 @@ namespace Riot
         COMPONENT_USE_PREV_DATA( m_bUpdated );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_REATTACH;
+        PostReattach( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentLight::Detach( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_DETACH;
+        PreDetach( nObject );
         /********************************/
 
         // Perform any custom detachment stuff
@@ -96,7 +96,7 @@ namespace Riot
         COMPONENT_REORDER_DATA( m_bUpdated );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_DETACH;
+        PostDetach( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -105,7 +105,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentLight::DetachAndSave( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_DETACH_SAVE;
+        PreDetachAndSave( nObject );
         /********************************/
 
         // Perform any custom detachment stuff
@@ -115,7 +115,7 @@ namespace Riot
         COMPONENT_REORDER_SAVE_DATA( m_bUpdated );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_DETACH_SAVE;
+        PostDetachAndSave( nObject );
     }
 
     //-----------------------------------------------------------------------------
@@ -124,7 +124,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentLight::RemoveInactive( uint nObject )
     {
-        COMPONENT_DEFAULT_PRE_REMOVE_INACTIVE;
+        PreRemoveInactive( nObject );
         /********************************/
 
         // Perform any custom removal stuff
@@ -134,7 +134,7 @@ namespace Riot
         COMPONENT_REMOVE_PREV_DATA( m_bUpdated );
 
         /********************************/
-        COMPONENT_DEFAULT_POST_REMOVE_INACTIVE;
+        PostRemoveInactive( nObject );
     }
 
     //-----------------------------------------------------------------------------
