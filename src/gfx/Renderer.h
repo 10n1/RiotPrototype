@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/27/2011 2:20:37 PM
+Modified:       4/27/2011 3:10:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -18,6 +18,8 @@ namespace Riot
     class CWindow;
     class CMesh;
     class CView;
+
+    extern bool bShowDebugSpheres;
 
     class CRenderer : public IListener
     {
@@ -149,6 +151,7 @@ namespace Riot
         IGfxPixelShader*    m_pDefaultPShader;
         CMesh*              m_pDefaultMesh;
         IGfxTexture2D*      m_pDefaultTexture;
+        IGfxTexture2D*      m_pWhiteTexture;
         IGfxSamplerState*   m_pLinearSamplerState;
         IGfxSamplerState*   m_pNearestSamplerState;
 

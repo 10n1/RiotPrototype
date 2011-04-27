@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/27/2011 2:30:53 PM
+Modified:       4/27/2011 3:11:45 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "config.h"
@@ -24,6 +24,7 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
+    bool bShowDebugSpheres = false;
 
     /***************************************\
     | class members                         |
@@ -89,6 +90,7 @@ namespace Riot
 
         SAFE_RELEASE( VPosNormalTex::VertexLayoutObject );
 
+        SAFE_RELEASE( m_pWhiteTexture );
         SAFE_RELEASE( m_pNearestSamplerState );
         SAFE_RELEASE( m_pDefaultTexture );
         SAFE_RELEASE( m_pLinearSamplerState );
@@ -166,6 +168,7 @@ namespace Riot
 
         // Texture
         m_pDefaultTexture = m_pDevice->LoadTexture( "Assets/Textures/DefaultTexture.png" );
+        m_pWhiteTexture = m_pDevice->LoadTexture( "Assets/Textures/white.png" );
 
         // debug sphere
         m_pSphereMesh = LoadMesh( "Assets/meshes/sphere.mesh" );
@@ -228,17 +231,23 @@ namespace Riot
         }
         m_nNumCommands = 0;
 
-        m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
-        m_pDevice->SetPSSamplerState( m_pNearestSamplerState );
-        m_pDevice->SetPSTexture( 0, m_pDefaultTexture );
-        for( sint i = 0; i < m_nNumSpheres; ++i )
+        // Draw the debug cubes
+        if( bShowDebugSpheres )
         {
-            RTransform transform( RQuaternionZero(), RVector3(m_DebugSpheres[i].f), m_DebugSpheres[i].w );
-            SetWorldMatrix( transform.GetTransformMatrix() );
-            m_pSphereMesh->DrawMesh();
+            m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
+            m_pDevice->SetPSSamplerState( m_pNearestSamplerState );
+            m_pDevice->SetPSTexture( 0, m_pWhiteTexture );
+            for( sint i = 0; i < m_nNumSpheres; ++i )
+            {
+                RMatrix4 mWorld = RMatrix4Scale( m_DebugSpheres[i].w );
+                mWorld.r3 = m_DebugSpheres[i];
+                mWorld.r3.w = 1.0f;
+                SetWorldMatrix( mWorld );
+                m_pSphereMesh->DrawMesh();
+            }
+            m_nNumSpheres = 0;
+            m_pDevice->SetFillMode( GFX_FILL_SOLID );
         }
-        m_nNumSpheres = 0;
-        m_pDevice->SetFillMode( GFX_FILL_SOLID );
 
         // Present
         m_pDevice->Present();
@@ -379,7 +388,15 @@ namespace Riot
         fread( pIndices, nIndexSize, nIndexCount, pFile );
         fclose( pFile );
 
-        return CreateMesh( nVertexStride, nVertexCount, nIndexSize, nIndexCount, pVertices, pIndices );
+
+        CMesh* pMesh = NULL;
+
+        pMesh = CreateMesh( nVertexStride, nVertexCount, nIndexSize, nIndexCount, pVertices, pIndices );
+        
+        delete [] pIndices;
+        delete [] pVertices;
+        
+        return pMesh;
     }
 
 

@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/27/2011 12:56:02 PM
+Modified:       4/27/2011 3:10:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -187,6 +187,9 @@ namespace Riot
                         }
                         break;
                     }
+                case KEY_O:
+                    bShowDebugSpheres = !bShowDebugSpheres;
+                    break;
                 }
             }
         case mFullscreen:

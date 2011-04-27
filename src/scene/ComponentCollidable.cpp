@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/27/2011 2:29:49 PM
+Modified:       4/27/2011 3:10:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -174,11 +174,13 @@ namespace Riot
             RVector3    fPosition = RVector3(pComponent->m_Volume[i].sphere.position);
             float       fRadius   = pComponent->m_Volume[i].sphere.radius;
 
-            
-            RVector4    debugSphere( fPosition );
-            debugSphere.w = sqrtf(fRadius);
+            if( bShowDebugSpheres )
+            {
+                RVector4    debugSphere( fPosition );
+                debugSphere.w = sqrtf(fRadius);
 
-            pRenderer->DrawDebugSphere( debugSphere );
+                pRenderer->DrawDebugSphere( debugSphere );
+            }
 
             // First check against the terrain
             for( uint j = 0; j < nNumTriangles; ++j )
