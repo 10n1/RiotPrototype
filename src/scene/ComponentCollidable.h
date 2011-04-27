@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/26/2011 9:56:47 PM
+Modified:       4/26/2011 10:21:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -131,8 +131,6 @@ namespace Riot
                 return fDot + fPlaneEquation[3];
             }
         };
-
-        Plane   m_Plane;
     };
 
 } // namespace Riot

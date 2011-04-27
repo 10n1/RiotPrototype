@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/26/2011 10:18:42 PM
+Modified:       4/26/2011 10:21:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -173,9 +173,9 @@ namespace Riot
             // First check against the terrain
             for( uint j = 0; j < nNumTriangles; ++j )
             {
-                pComponent->m_Plane = Plane( pComponent->m_pTerrainTriangles[j] );
+                Plane trianglePlane( pComponent->m_pTerrainTriangles[j] );
 
-                float fDistance = pComponent->m_Plane.DistanceFrom( pComponent->m_Volume[i].sphere.position );
+                float fDistance = trianglePlane.DistanceFrom( pComponent->m_Volume[i].sphere.position );
 
                 if( fDistance > sqrtf(fRadius) )
                 {
@@ -183,7 +183,7 @@ namespace Riot
                     continue;
                 }
                 
-                RVector3 planeCollisionPoint = fPosition - pComponent->m_Plane.vNormal;
+                RVector3 planeCollisionPoint = fPosition - trianglePlane.vNormal;
                 if( pComponent->IsPointInTriangle( planeCollisionPoint, pComponent->m_pTerrainTriangles[j] ) )
                 {
                     // we collided, break
