@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       4/24/2011 3:42:09 PM
+Modified:       4/26/2011 8:56:52 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -61,7 +61,7 @@ namespace Riot
 
         /***************************************\
         | class members                         |
-        \***************************************/        
+        \***************************************/
         static const uint nPolysWidth = TERRAIN_WIDTH;
         static const uint nPolysHeight = TERRAIN_HEIGHT;
         static const uint nPolysTotal = nPolysWidth * nPolysHeight;

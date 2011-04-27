@@ -2,13 +2,14 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       4/24/2011 1:13:34 PM
+Modified:       4/26/2011 10:16:05 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
 #include "Engine.h"
 #include "Renderer.h"
 #include "Mesh.h"
+#include "ComponentCollidable.h"
 
 namespace Riot
 {
@@ -64,10 +65,19 @@ namespace Riot
 
         m_fHeight[0][0] = 10.0f;
 
+        //////////////////////////////////////////
+        // Create a mesh from the new data
         CreateMesh();
 
+        //////////////////////////////////////////
+        // Load the texture
         SAFE_RELEASE( m_pTexture );
         m_pTexture = Engine::GetRenderer()->LoadTexture2D( "Assets/Textures/grass.png" );
+
+        
+        //////////////////////////////////////////
+        // Notify the collidable about the new Terrain data
+        CComponentCollidable::SetTerrainData( m_pVertices, nVertsTotal, m_pIndices, nIndices );
     }
 
     //-----------------------------------------------------------------------------
@@ -142,7 +152,6 @@ namespace Riot
         }
 
         // Create our mesh
-        //m_pMesh = pRender->CreateMesh( sizeof( SimpleVertex ), nVertsTotal, 16, nIndices, vertices, indices );
         m_pMesh = pRender->CreateMesh( VPosNormalTex::VertexStride, nVertsTotal, 2, nIndices, m_pVertices, m_pIndices );
     }
 

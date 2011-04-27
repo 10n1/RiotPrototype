@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/25/2011 9:56:39 PM
+Modified:       4/26/2011 10:18:10 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -285,18 +285,19 @@ namespace Riot
         m_pTerrain->GenerateTerrain();
         m_pTerrain->CreateMesh();
 
+
         //////////////////////////////////////////
         // Create an object
         CMesh* pBox = m_pRenderer->CreateMesh();
 
         static RQuaternion orientation = RQuatFromAxisAngle( RVector3( RandFloat(1.0f), RandFloat(1.0f), RandFloat(1.0f) ), RandFloat( gs_2PI ) );
         orientation = RQuaternionZero();
-        RTransform t = RTransform( orientation, RVector3( 0.0f, 10.0f, 0.0f ) );
+        RTransform t = RTransform( orientation, RVector3( 0.0f, 100.0f, 0.0f ) );
 
         // Add box 1
         uint nObject = m_pObjectManager->CreateObject();
 
-        //m_pObjectManager->AddComponent( nObject, eComponentNewtonPhysics );
+        m_pObjectManager->AddComponent( nObject, eComponentRigidBody );
         m_pObjectManager->AddComponent( nObject, eComponentRender );
         m_pObjectManager->AddComponent( nObject, eComponentCollidable );
 
@@ -306,9 +307,9 @@ namespace Riot
         CComponentCollidable::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nObject );
 
         // Add more boxes
-        for( uint i = 1; i < 10; ++i )
+        for( uint i = 1; i < 64; ++i )
         {
-            t.position = RVector3( 0.0f, i * 20.0f + 20.0f, 0.0f );
+            t.position = RVector3( RandFloat(128.0f) - 64.0f, i * 20.0f + 20.0f, RandFloat(128.0f) - 64.0f );
             nObject = m_pObjectManager->CreateObject();
 
             m_pObjectManager->AddComponent( nObject, eComponentRigidBody );

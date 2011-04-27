@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/26/2011 3:18:26 PM
+Modified:       4/26/2011 10:18:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -44,6 +44,7 @@ namespace Riot
     {
         m_nNumInactiveComponents = MaxComponents;
         m_nNumActiveComponents = 0;
+        Memset( m_pTerrainTriangles, 0, sizeof(m_pTerrainTriangles) );
     }
 
     CComponentCollidable::~CComponentCollidable() { } 
@@ -150,28 +151,55 @@ namespace Riot
         CTaskManager*      pTaskManager = CTaskManager::GetInstance();
 
 #if PARALLEL_UPDATE
-        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 4 );
+        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 1 );
         pTaskManager->WaitForCompletion( nHandle );
 #else
         ProcessBatch( this, 0, 0, m_nNumActiveComponents );
 #endif
     }
+
+    // Reference: http://www.peroxide.dk/papers/collision/collision.pdf
     void CComponentCollidable::ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount )
     {
         CComponentCollidable*   pComponent = (CComponentCollidable*)pData;
         CObjectManager*         pManager = Engine::GetObjectManager();
 
         uint nEnd = nStart + nCount;
-        
+
         for( sint i = nStart; i < nEnd; ++i )
         {
+            RVector3    fPosition = RVector3(pComponent->m_Volume[i].sphere.position);
+            float       fRadius   = pComponent->m_Volume[i].sphere.radius;
+            // First check against the terrain
+            for( uint j = 0; j < nNumTriangles; ++j )
+            {
+                pComponent->m_Plane = Plane( pComponent->m_pTerrainTriangles[j] );
+
+                float fDistance = pComponent->m_Plane.DistanceFrom( pComponent->m_Volume[i].sphere.position );
+
+                if( fDistance > sqrtf(fRadius) )
+                {
+                    // The sphere doesn't interact the triagnles plane
+                    continue;
+                }
+                
+                RVector3 planeCollisionPoint = fPosition - pComponent->m_Plane.vNormal;
+                if( pComponent->IsPointInTriangle( planeCollisionPoint, pComponent->m_pTerrainTriangles[j] ) )
+                {
+                    // we collided, break
+                    pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], j, pComponent->ComponentType );
+                    break;
+                }
+            }
+
+            // Then against all other objects
             for( sint j = 0; j < pComponent->m_nNumActiveComponents; ++j )
             {
                 if( i == j ) continue;
 
-                float fRadSq = pComponent->m_Volume[i].sphere.radius + pComponent->m_Volume[j].sphere.radius;
+                float fRadSq = fRadius + pComponent->m_Volume[j].sphere.radius;
 
-                RVector3 pos1( pComponent->m_Volume[i].sphere.position );
+                RVector3 pos1( fPosition );
                 RVector3 pos2( pComponent->m_Volume[j].sphere.position );
 
                 RVector3 diff = pos2-pos1;
@@ -186,6 +214,10 @@ namespace Riot
         }
     }
 
+    //-----------------------------------------------------------------------------
+    //  CalculateBoundingSphere
+    //  Calculates a bounding sphere to surround the input vertices
+    //-----------------------------------------------------------------------------
     void CComponentCollidable::CalculateBoundingSphere( const VPosNormalTex* pVerts, uint nNumVerts, uint nIndex )
     {
         ASSERT( m_pInstance );
@@ -204,6 +236,25 @@ namespace Riot
         }
 
         m_pInstance->m_Volume[nIndex].sphere.radius = MagnitudeSq( RVector3(fExtents) );
+    }
+
+    //-----------------------------------------------------------------------------
+    //  SetTerrainData
+    //  Sets the terrain data so objects can collide with it
+    //-----------------------------------------------------------------------------
+    void CComponentCollidable::SetTerrainData( const VPosNormalTex* pTerrainVerts, uint nNumVerts, const uint16* pIndices, uint nNumIndices )
+    {
+        for( uint i = 0; i < nNumIndices/3; ++i )
+        {
+            m_pInstance->m_pTerrainTriangles[i].vVerts[0] = pTerrainVerts[ pIndices[ (i*3) + 0 ] ].Pos;
+            m_pInstance->m_pTerrainTriangles[i].vVerts[1] = pTerrainVerts[ pIndices[ (i*3) + 1 ] ].Pos;
+            m_pInstance->m_pTerrainTriangles[i].vVerts[2] = pTerrainVerts[ pIndices[ (i*3) + 2 ] ].Pos;
+            
+            RVector3 vSide1 = m_pInstance->m_pTerrainTriangles[i].vVerts[0] - m_pInstance->m_pTerrainTriangles[i].vVerts[1];
+            RVector3 vSide2 = m_pInstance->m_pTerrainTriangles[i].vVerts[1] - m_pInstance->m_pTerrainTriangles[i].vVerts[2];
+
+            m_pInstance->m_pTerrainTriangles[i].vNormal = Normalize( CrossProduct( vSide1, vSide2 ) );
+        }
     }
 
     //-----------------------------------------------------------------------------
@@ -250,5 +301,33 @@ namespace Riot
             }
         }
     }
+
+#define in(a) ((uint32&) a)
+    bool CComponentCollidable::IsPointInTriangle( const RVector3& point, const Triangle& triangle )
+    {
+        RVector3 vSide1 = triangle.vVerts[1] - triangle.vVerts[0];
+        RVector3 vSide2 = triangle.vVerts[2] - triangle.vVerts[0];
+
+        //Plane
+
+        float a = DotProduct( vSide1, vSide1 );
+        float b = DotProduct( vSide1, vSide2 );
+        float c = DotProduct( vSide2, vSide2 );
+
+        float ac_bb = (a*c) - (b*b);
+
+        RVector3 vp( point.x - triangle.vVerts[0].x, point.y - triangle.vVerts[0].y, point.z - triangle.vVerts[0].z );
+
+        float d = DotProduct( vp, vSide1 );
+        float e = DotProduct( vp, vSide2 );
+
+        float x = (d*c) - (e*b);
+        float y = (e*a) - (d*b);
+        float z = x+y-ac_bb;
+
+        
+        return (( in(z) & ~(in(x)|in(y)) ) & 0x80000000);
+    }
+
 
 } // namespace Riot
