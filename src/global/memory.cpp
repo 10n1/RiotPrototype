@@ -2,7 +2,7 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/17/2011 12:39:52 PM
+Modified:       4/27/2011 10:21:46 AM
 Modified by:    Kyle Weicht
 
 TODO:           Add alignment support? Should be ultra easy
@@ -23,7 +23,7 @@ TODO:           Add alignment support? Should be ultra easy
 #include <stdio.h>
 #include <string.h>
 
-enum { GLOBAL_MEMORY_ALLOCATION = 16*1024*1024 };
+enum { GLOBAL_MEMORY_ALLOCATION = 32*1024*1024 };
 
 static const byte* AllocateGlobalMemory( void );
 

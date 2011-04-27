@@ -2,7 +2,7 @@
 File:           ComponentRigidBody.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/26/2011 3:18:25 PM
+Modified:       4/27/2011 10:19:39 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentRigidBody.h"
@@ -166,7 +166,7 @@ namespace Riot
     
         uint nEnd = nStart + nCount;
         
-        for( sint i = nStart; i < nEnd; ++i )
+        for( uint i = nStart; i < nEnd; ++i )
         {
             if( pComponent->m_bGravity[i] )
             {

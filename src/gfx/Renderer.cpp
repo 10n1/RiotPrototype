@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/21/2011 11:32:41 PM
+Modified:       4/27/2011 2:30:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "config.h"
@@ -19,6 +19,8 @@ Modified by:    Kyle Weicht
 #include "VertexFormats.h"
 #include "View.h"
 #include "TaskManager.h"
+
+#include <fstream>
 
 namespace Riot
 {
@@ -72,6 +74,10 @@ namespace Riot
 
         m_nNumActiveLights  = 0;
         m_bUpdateLighting   = false;
+
+        m_nNumSpheres = 0;
+
+        m_pSphereMesh = NULL;
     }
 
     //-----------------------------------------------------------------------------
@@ -79,6 +85,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Shutdown( void )
     {
+        SAFE_RELEASE( m_pSphereMesh );
+
         SAFE_RELEASE( VPosNormalTex::VertexLayoutObject );
 
         SAFE_RELEASE( m_pNearestSamplerState );
@@ -159,6 +167,9 @@ namespace Riot
         // Texture
         m_pDefaultTexture = m_pDevice->LoadTexture( "Assets/Textures/DefaultTexture.png" );
 
+        // debug sphere
+        m_pSphereMesh = LoadMesh( "Assets/meshes/sphere.mesh" );
+
         // ...finally, set them
         m_pDevice->SetVertexLayout( m_pDefaultVLayout );
         m_pDevice->SetVertexShader( m_pDefaultVShader );
@@ -173,6 +184,10 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Render( void )
     {
+        // Restore solid fill mode
+        m_pDevice->SetFillMode( GFX_FILL_SOLID );
+
+        // Update lighting
         if( m_bUpdateLighting )
         {
             m_pDevice->UpdateBuffer( m_pLightCB, m_vLights );
@@ -182,6 +197,8 @@ namespace Riot
 
         // Clear
         m_pDevice->Clear();
+
+        SetWorldMatrix( RMatrix4Identity() );
 
         // Render
         ASSERT( m_pCurrentView );
@@ -210,6 +227,18 @@ namespace Riot
             m_pRenderCommands[i].pMesh->DrawMesh();
         }
         m_nNumCommands = 0;
+
+        m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
+        m_pDevice->SetPSSamplerState( m_pNearestSamplerState );
+        m_pDevice->SetPSTexture( 0, m_pDefaultTexture );
+        for( sint i = 0; i < m_nNumSpheres; ++i )
+        {
+            RTransform transform( RQuaternionZero(), RVector3(m_DebugSpheres[i].f), m_DebugSpheres[i].w );
+            SetWorldMatrix( transform.GetTransformMatrix() );
+            m_pSphereMesh->DrawMesh();
+        }
+        m_nNumSpheres = 0;
+        m_pDevice->SetFillMode( GFX_FILL_SOLID );
 
         // Present
         m_pDevice->Present();
@@ -317,6 +346,40 @@ namespace Riot
 
         m_pDefaultMesh->AddRef();
         return m_pDefaultMesh;
+    }
+
+    CMesh* CRenderer::LoadMesh( const char* szFilename )
+    {        
+        /********************* File Format ***********************\
+        float   fVertexSize
+        float   fVertexCount
+        uint    nIndexSize
+        uint    nIndexCount
+        float   fVerts[]
+        uint    nIndices[]
+        \*********************************************************/
+        uint nVertexStride;
+        uint nVertexCount; 
+        uint nIndexSize; 
+        uint nIndexCount; 
+        void* pVertices;
+        void* pIndices;
+    
+        FILE* pFile = fopen( szFilename, "rb" );
+        fread( &nVertexStride, sizeof( nVertexStride ), 1, pFile );
+        fread( &nVertexCount, sizeof( nVertexCount ), 1, pFile );
+        fread( &nIndexSize, sizeof( nIndexSize ), 1, pFile );
+        nIndexSize = (nIndexSize == 32 ) ? 4 : 2;
+        fread( &nIndexCount, sizeof( nIndexCount ), 1, pFile );
+
+        pVertices   = new byte[nVertexStride * nVertexCount];
+        pIndices    = new byte[nIndexCount * nIndexSize];
+
+        fread( pVertices, nVertexStride, nVertexCount, pFile );
+        fread( pIndices, nIndexSize, nIndexCount, pFile );
+        fclose( pFile );
+
+        return CreateMesh( nVertexStride, nVertexCount, nIndexSize, nIndexCount, pVertices, pIndices );
     }
 
 
@@ -463,6 +526,17 @@ namespace Riot
             {
             }
         }
+    }
+
+    //-----------------------------------------------------------------------------
+    //  DrawDebugSphere
+    //  Renders a wireframe debug sphere
+    //-----------------------------------------------------------------------------
+    void CRenderer::DrawDebugSphere( const RVector4& fSphere )
+    {
+        sint nIndex = AtomicIncrement( &m_nNumSpheres ) - 1;
+
+        m_DebugSpheres[nIndex] = fSphere;
     }
 
 } // namespace Riot

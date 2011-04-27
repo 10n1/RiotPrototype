@@ -2,7 +2,7 @@
 File:           ComponentLight.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/26/2011 3:18:25 PM
+Modified:       4/27/2011 10:19:39 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentLight.h"
@@ -149,7 +149,7 @@ namespace Riot
         CRenderer* pRender = Engine::GetRenderer();
         CObjectManager* pManager = Engine::GetObjectManager();
 
-        for( sint i = 0; i < m_nNumActiveComponents; ++i )
+        for( uint i = 0; i < m_nNumActiveComponents; ++i )
         {
             m_Transform[i].position.x = sin( fAngle ) * 10.0f;
             m_Transform[i].position.z = cos( fAngle ) * 10.0f;

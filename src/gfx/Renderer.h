@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/21/2011 10:39:40 PM
+Modified:       4/27/2011 2:20:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -78,6 +78,7 @@ namespace Riot
                             void* pVertices, 
                             void* pIndices );
         CMesh* CreateMesh( void ); 
+        CMesh* LoadMesh( const char* szFilename );
 
         //-----------------------------------------------------------------------------
         //  LoadTextureXD
@@ -120,6 +121,12 @@ namespace Riot
         //  Returns the default mesh data
         //-----------------------------------------------------------------------------
         VPosNormalTex* GetDefaultMeshData( void );
+        
+        //-----------------------------------------------------------------------------
+        //  DrawDebugSphere
+        //  Renders a wireframe debug sphere
+        //-----------------------------------------------------------------------------
+        void DrawDebugSphere( const RVector4& fSphere );
 
     private:
         /***************************************\
@@ -152,6 +159,11 @@ namespace Riot
         uint32      _padding[3];
         atomic_t    m_nNumCommands;
         bool        m_bUpdateLighting;
+
+        CMesh*      m_pSphereMesh;
+
+        RVector4    m_DebugSpheres[1024];
+        atomic_t    m_nNumSpheres;
     };
 
 

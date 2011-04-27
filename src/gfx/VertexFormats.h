@@ -3,7 +3,7 @@ File:           VertexFormats.h
 Purpose:        Stores the basic vertex format information
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/20/2011 9:20:42 PM
+Modified:       4/27/2011 1:47:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VERTEXFORMATS_H_
@@ -61,6 +61,13 @@ namespace Riot
 
     extern GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_NEAREST;
     extern GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_LINEAR;
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    typedef const uint GFX_FILL_MODE;
+
+    extern GFX_FILL_MODE    GFX_FILL_SOLID;
+    extern GFX_FILL_MODE    GFX_FILL_WIREFRAME;
     //-----------------------------------------------------------------------------
 
 #ifdef OS_WINDOWS

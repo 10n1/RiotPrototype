@@ -3,11 +3,12 @@ File:           config.h
 Purpose:        Includes platform and build configurations
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/26/2011 10:21:17 PM
+Modified:       4/27/2011 10:59:43 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
+#include "types.h"
 
 //-----------------------------------------------------------------------------
 //  Platform defines
@@ -99,6 +100,21 @@ Modified by:    Kyle Weicht
 #endif // #ifdef __LP64__
 
 #endif // #if defined( __LINUX__ )
+//-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+//  CPU Capabilities
+extern const uint   gs_nNumHardwareThreads;
+
+extern const uint   gs_nSSESupported;
+extern const uint   gs_nSSE2Supported;
+extern const uint   gs_nSSE3Supported;
+extern const uint   gs_nSSSE3Supported;
+extern const uint   gs_nSSE41Supported;
+extern const uint   gs_nSSE42Supported;
+extern const uint   gs_nAVXSupported;
+
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

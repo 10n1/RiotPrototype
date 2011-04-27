@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/27/2011 12:00:09 AM
+Modified:       4/27/2011 12:55:16 PM
 Modified by:    Kyle Weicht
  \*********************************************************/
 #include "OGLGraphics.h"
@@ -27,13 +27,103 @@ Modified by:    Kyle Weicht
 // Linux
 #endif
 
+
+
+//-----------------------------------------------------------------------------
+//  Upon first running, determine the CPU capabilities
+//-----------------------------------------------------------------------------
+static uint _nNumHardwareThreads = 0;
+static uint _nSSESupported    = 0;
+static uint _nSSE2Supported   = 0;
+static uint _nSSE3Supported   = 0;
+static uint _nSSSE3Supported  = 0;
+static uint _nSSE41Supported  = 0;
+static uint _nSSE42Supported  = 0;
+static uint _nAVXSupported    = 0;
+
+static const uint GetCPUCapabilities( void )
+{
+    //////////////////////////////////////////
+    // First determine the number of threads
+#if (MULTITHREADED == 0)
+    gs_nNumHardwareThreads = 1;
+#else
+
+#ifdef OS_WINDOWS
+    SYSTEM_INFO si;
+    GetSystemInfo( &si );
+    _nNumHardwareThreads = si.dwNumberOfProcessors;
+#elif defined( OS_LINUX )
+    m_nNumHardwareThreads = sysconf( _SC_NPROCESSORS_ONLN );
+#elif defined( OS_OSX )
+    int     mib[] = { CTL_HW, HW_AVAILCPU }; // Interested in availible CPUs
+    size_t  nLen = sizeof( m_nNumHardwareThreads );
+
+    // Reads system info
+    sysctl(mib, ARRAY_LENGTH(mib), &m_nNumHardwareThreads, &nLen, NULL, 0);
+
+    if( m_nNumHardwareThreads < 1 ) 
+    {   // HW_AVAILCPU might have been the problem, try HW_NCPU
+        mib[1] = HW_NCPU;
+        sysctl(mib, ARRAY_LENGTH(mib), &m_nNumHardwareThreads, &nLen, NULL, 0);
+
+        if( m_nNumHardwareThreads < 1 )
+        {
+            m_nNumHardwareThreads = 1;
+        }
+    }
+#endif // #ifdef OS_WINDOWS
+    if( _nNumHardwareThreads > MAX_THREADS )
+        _nNumHardwareThreads = MAX_THREADS;
+
+#endif // #if SINGLETHREADED
+
+    //////////////////////////////////////////
+    // Then get the capabilities
+#ifdef OS_WINDOWS
+    sint nFeatures[4] = { 0 };
+
+    __cpuid( nFeatures, 1 );
+
+    _nSSESupported   = (nFeatures[3] & BIT_25) ? 1 : 0;
+    _nSSE2Supported  = (nFeatures[3] & BIT_26) ? 1 : 0;
+    _nSSE3Supported  = (nFeatures[2] & BIT_0 ) ? 1 : 0;
+    _nSSSE3Supported = (nFeatures[2] & BIT_9 ) ? 1 : 0;
+    _nSSE41Supported = (nFeatures[2] & BIT_19) ? 1 : 0;
+    _nSSE42Supported = (nFeatures[2] & BIT_20) ? 1 : 0;
+
+    // For AVX, we need to make sure OSXSAVE is supported too
+    uint nOSXSAVESupported  = (nFeatures[2] & BIT_27) ? 1 : 0;
+    uint nAVXSupported      = (nFeatures[2] & BIT_28) ? 1 : 0;
+
+    _nAVXSupported    = nOSXSAVESupported & nAVXSupported;
+
+#endif
+
+    return 1;
+}
+
+static const uint gs_nCPUPolled = GetCPUCapabilities();
+
+//-----------------------------------------------------------------------------
+//  The location of the supported bits
+const uint gs_nNumHardwareThreads   = _nNumHardwareThreads;
+
+const uint gs_nSSESupported      = _nSSESupported;
+const uint gs_nSSE2Supported     = _nSSE2Supported;
+const uint gs_nSSE3Supported     = _nSSE3Supported;
+const uint gs_nSSSE3Supported    = _nSSSE3Supported;
+const uint gs_nSSE41Supported    = _nSSE41Supported;
+const uint gs_nSSE42Supported    = _nSSE42Supported;
+const uint gs_nAVXSupported      = _nAVXSupported;
+//-----------------------------------------------------------------------------
+
+
 namespace Riot
 {
-
     //-----------------------------------------------------------------------------
     //  Function declarations
     //-----------------------------------------------------------------------------
-
 
     //-----------------------------------------------------------------------------
     //  Struct definitions
@@ -42,11 +132,10 @@ namespace Riot
     | System members
     \***************************************/
     CTimer      System::m_GlobalTimer;
-    uint        System::m_nNumHardwareThreads   = 0;
     CWindow*    System::m_pMainWindow           = NULL;
     IGraphicsDevice*  System::m_pGraphics       = NULL;
-
     handle      System::m_pApplication = NULL;
+
 
     /***************************************\
     | Public methods
@@ -58,42 +147,6 @@ namespace Riot
     {
         // Reset the running timer
         m_GlobalTimer.Reset();
-
-        // Calculate the number of hardware threads
-#if (MULTITHREADED == 0)
-        m_nNumHardwareThreads = 1;
-#else
-
-#ifdef OS_WINDOWS
-        SYSTEM_INFO si;
-        GetSystemInfo( &si );
-        m_nNumHardwareThreads = si.dwNumberOfProcessors;
-#elif defined( OS_LINUX )
-        m_nNumHardwareThreads = sysconf( _SC_NPROCESSORS_ONLN );
-#elif defined( OS_OSX )
-        int     mib[] = { CTL_HW, HW_AVAILCPU }; // Interested in availible CPUs
-        size_t  nLen = sizeof( m_nNumHardwareThreads );
-
-        // Reads system info
-        sysctl(mib, ARRAY_LENGTH(mib), &m_nNumHardwareThreads, &nLen, NULL, 0);
-
-        if( m_nNumHardwareThreads < 1 ) 
-        {   // HW_AVAILCPU might have been the problem, try HW_NCPU
-            mib[1] = HW_NCPU;
-            sysctl(mib, ARRAY_LENGTH(mib), &m_nNumHardwareThreads, &nLen, NULL, 0);
-
-            if( m_nNumHardwareThreads < 1 )
-            {
-                m_nNumHardwareThreads = 1;
-            }
-        }
-#endif // #ifdef OS_WINDOWS
-        if( m_nNumHardwareThreads > MAX_THREADS )
-            m_nNumHardwareThreads = MAX_THREADS;
-
-#endif // #if SINGLETHREADED
-
-        DetermineCPUFeatures();
     }
 
     //-----------------------------------------------------------------------------
@@ -104,28 +157,6 @@ namespace Riot
 #ifdef OS_WINDOWS
         SAFE_DELETE( m_pApplication );
 #endif // #ifdef OS_WINDOWS
-    }
-
-
-    //-----------------------------------------------------------------------------
-    //  DetermineCPUFeatures
-    //  Polls the CPU to determine what features it supports
-    //-----------------------------------------------------------------------------
-    void System::DetermineCPUFeatures( void )
-    {
-#ifdef OS_WINDOWS
-        sint nFeatures[4] = { 0 };
-
-        __cpuid( nFeatures, 1 );
-
-        uint nSSESupported   = (nFeatures[3] & BIT_25) ? 1 : 0;
-        uint nSSE2Supported  = (nFeatures[3] & BIT_26) ? 1 : 0;
-        uint nSSE3Supported  = (nFeatures[2] & BIT_1 ) ? 1 : 0;
-        uint nSSSE3Supported = (nFeatures[2] & BIT_9 ) ? 1 : 0;
-        uint nSSE41Supported = (nFeatures[2] & BIT_19) ? 1 : 0;
-        uint nSSE42Supported = (nFeatures[2] & BIT_20) ? 1 : 0;
-        uint nAVXSupported   = (nFeatures[2] & BIT_28) ? 1 : 0;
-#endif
     }
 
     //-----------------------------------------------------------------------------
@@ -151,15 +182,6 @@ namespace Riot
         nResult = pthread_create( &hThread, NULL, pFunc, pData );
 #endif
         return hThread;
-    }
-
-    //-----------------------------------------------------------------------------
-    //  GetHardwareThreadCount
-    //  Returns the number of hardware threads in the system
-    //-----------------------------------------------------------------------------
-    uint System::GetHardwareThreadCount( void )
-    {
-        return m_nNumHardwareThreads;
     }
 
     //-----------------------------------------------------------------------------

@@ -2,13 +2,14 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/26/2011 10:39:14 PM
+Modified:       4/27/2011 2:29:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
 #include "Engine.h"
 #include "ObjectManager.h"
 #include "TaskManager.h"
+#include "Renderer.h"
 
 /*
 CComponentCollidable
@@ -161,15 +162,24 @@ namespace Riot
     // Reference: http://www.peroxide.dk/papers/collision/collision.pdf
     void CComponentCollidable::ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount )
     {
+        CRenderer*              pRenderer = Engine::GetRenderer();
         CComponentCollidable*   pComponent = (CComponentCollidable*)pData;
         CObjectManager*         pManager = Engine::GetObjectManager();
 
         uint nEnd = nStart + nCount;
 
-        for( sint i = nStart; i < nEnd; ++i )
+        for( uint i = nStart; i < nEnd; ++i )
         {
+
             RVector3    fPosition = RVector3(pComponent->m_Volume[i].sphere.position);
             float       fRadius   = pComponent->m_Volume[i].sphere.radius;
+
+            
+            RVector4    debugSphere( fPosition );
+            debugSphere.w = sqrtf(fRadius);
+
+            pRenderer->DrawDebugSphere( debugSphere );
+
             // First check against the terrain
             for( uint j = 0; j < nNumTriangles; ++j )
             {
@@ -193,7 +203,7 @@ namespace Riot
             }
 
             // Then against all other objects
-            for( sint j = 0; j < pComponent->m_nNumActiveComponents; ++j )
+            for( uint j = 0; j < pComponent->m_nNumActiveComponents; ++j )
             {
                 if( i == j ) continue;
 

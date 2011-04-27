@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/24/2011 12:55:34 AM
+Modified:       4/27/2011 10:47:53 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -45,7 +45,7 @@ namespace Riot
         Memset( (void*)m_pCompletion, 0, sizeof( m_pCompletion ) );
 
         //  Get the number of hardware threads
-        m_nNumThreads = System::GetHardwareThreadCount();
+        m_nNumThreads = gs_nNumHardwareThreads;
 
         // Create semaphores
         m_pSleep = System::CreateRiotSemaphore( 0 );

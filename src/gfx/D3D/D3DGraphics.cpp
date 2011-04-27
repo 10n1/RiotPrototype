@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/24/2011 4:24:27 PM
+Modified:       4/27/2011 2:24:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -39,6 +39,9 @@ namespace Riot
     GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_NEAREST   = D3D11_FILTER_MIN_MAG_MIP_POINT;
     GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_LINEAR    = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
     //-----------------------------------------------------------------------------
+    GFX_FILL_MODE    GFX_FILL_SOLID = D3D11_FILL_SOLID;
+    GFX_FILL_MODE    GFX_FILL_WIREFRAME = D3D11_FILL_WIREFRAME;
+    //-----------------------------------------------------------------------------
 
     // CD3DDevice constructor
     CD3DDevice::CD3DDevice()
@@ -48,12 +51,17 @@ namespace Riot
         , m_pDefaultRenderTargetView( NULL )
         , m_pDefaultDepthStencilResource( NULL )
         , m_pDefaultDepthStencilView( NULL )
+        , m_pSolidRasterizerState( NULL )
+        , m_pWireframeRasterizerState( NULL )
     {
     }
 
     // CD3DDevice destructor
     CD3DDevice::~CD3DDevice()
     {
+        SAFE_RELEASE( m_pSolidRasterizerState );
+        SAFE_RELEASE( m_pWireframeRasterizerState );
+
         SAFE_RELEASE( m_pDefaultRenderTargetView );
         SAFE_RELEASE( m_pDefaultDepthStencilResource );
         SAFE_RELEASE( m_pDefaultDepthStencilView );
@@ -171,6 +179,21 @@ namespace Riot
 
         // Resize everything
         Resize( nWidth, nHeight );
+
+        // Create the rasterizer states
+        D3D11_RASTERIZER_DESC rd;
+        Memset( &rd, 0, sizeof(rd) );
+
+        rd.CullMode = D3D11_CULL_BACK;
+        rd.FillMode = D3D11_FILL_SOLID;
+        rd.DepthClipEnable = TRUE;
+
+        // Solid
+        hr = m_pDevice->CreateRasterizerState( &rd, &m_pSolidRasterizerState );
+
+        // wireframe
+        rd.FillMode = D3D11_FILL_WIREFRAME;
+        hr = m_pDevice->CreateRasterizerState( &rd, &m_pWireframeRasterizerState );
 
         return rResultSuccess;
     }
@@ -317,6 +340,22 @@ namespace Riot
     }
     //
 
+
+    //
+    void CD3DDevice::SetFillMode( GFX_FILL_MODE nFill )
+    {
+        switch( nFill )
+        {
+        case GFX_FILL_SOLID:
+            m_pContext->RSSetState( m_pSolidRasterizerState );
+            break;
+        case GFX_FILL_WIREFRAME:
+            m_pContext->RSSetState( m_pWireframeRasterizerState );
+            break;
+        }
+    }
+    //
+        
     //
     void CD3DDevice::CreateVertexShaderAndLayout( 
             const char* szFilename, 
