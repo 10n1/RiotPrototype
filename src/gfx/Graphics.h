@@ -3,7 +3,7 @@ File:           Graphics.h
 Purpose:        Base graphics hardware API
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/27/2011 1:47:53 PM
+Modified:       4/27/2011 3:28:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -79,9 +79,9 @@ namespace Riot
 
         //
         //virtual IGfxVertexLayout* CreateVertexLayout( InputElementLayout Layout[], uint nLength ) = 0;
-        virtual IGfxBuffer* CreateConstantBuffer( uint nSize, void* pInitialData ) = 0;
-        virtual IGfxBuffer* CreateVertexBuffer( uint nSize, void* pInitialData ) = 0;
-        virtual IGfxBuffer* CreateIndexBuffer( uint nSize, void* pInitialData ) = 0;
+        virtual IGfxBuffer* CreateConstantBuffer( uint nSize, void* pInitialData, GFX_BUFFER_USAGE nUsage = GFX_BUFFER_USAGE_DEFAULT ) = 0;
+        virtual IGfxBuffer* CreateVertexBuffer( uint nSize, void* pInitialData, GFX_BUFFER_USAGE nUsage = GFX_BUFFER_USAGE_DEFAULT ) = 0;
+        virtual IGfxBuffer* CreateIndexBuffer( uint nSize, void* pInitialData, GFX_BUFFER_USAGE nUsage = GFX_BUFFER_USAGE_DEFAULT ) = 0;
         //
 
         //

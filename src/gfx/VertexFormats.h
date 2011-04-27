@@ -3,7 +3,7 @@ File:           VertexFormats.h
 Purpose:        Stores the basic vertex format information
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/27/2011 1:47:53 PM
+Modified:       4/27/2011 3:28:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VERTEXFORMATS_H_
@@ -64,10 +64,23 @@ namespace Riot
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    //  GFX_FILL_MODE
+    //  Defines the various fill modes
     typedef const uint GFX_FILL_MODE;
 
     extern GFX_FILL_MODE    GFX_FILL_SOLID;
     extern GFX_FILL_MODE    GFX_FILL_WIREFRAME;
+    //-----------------------------------------------------------------------------
+
+    
+    //-----------------------------------------------------------------------------
+    //  GFX_BUFFER_USAGE
+    //  Defines the various buffer usage cases (CPU/GPU read/write)
+    typedef const uint GFX_BUFFER_USAGE;
+
+    extern GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DEFAULT;
+    extern GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DYNAMIC;
+    extern GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_IMMUTABLE;
     //-----------------------------------------------------------------------------
 
 #ifdef OS_WINDOWS

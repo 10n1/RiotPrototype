@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/27/2011 2:24:42 PM
+Modified:       4/27/2011 3:42:56 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -41,6 +41,10 @@ namespace Riot
     //-----------------------------------------------------------------------------
     GFX_FILL_MODE    GFX_FILL_SOLID = D3D11_FILL_SOLID;
     GFX_FILL_MODE    GFX_FILL_WIREFRAME = D3D11_FILL_WIREFRAME;
+    //-----------------------------------------------------------------------------
+    GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DEFAULT    = D3D11_USAGE_DEFAULT;
+    GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DYNAMIC    = D3D11_USAGE_DEFAULT;
+    GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_IMMUTABLE  = D3D11_USAGE_DEFAULT;
     //-----------------------------------------------------------------------------
 
     // CD3DDevice constructor
@@ -193,6 +197,8 @@ namespace Riot
 
         // wireframe
         rd.FillMode = D3D11_FILL_WIREFRAME;
+        rd.CullMode = D3D11_CULL_NONE;
+
         hr = m_pDevice->CreateRasterizerState( &rd, &m_pWireframeRasterizerState );
 
         return rResultSuccess;
@@ -462,7 +468,7 @@ namespace Riot
     //
 
     //
-    IGfxBuffer* CD3DDevice::CreateConstantBuffer( uint nSize, void* pInitialData )
+    IGfxBuffer* CD3DDevice::CreateConstantBuffer( uint nSize, void* pInitialData, GFX_BUFFER_USAGE nUsage )
     {
         CD3DBuffer* pBuffer = new CD3DBuffer;
 
@@ -472,7 +478,7 @@ namespace Riot
         HRESULT                 hr          = S_OK;
 
         //////////////////////////////////////////
-        bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
+        bufferDesc.Usage            = (D3D11_USAGE)nUsage;
         bufferDesc.ByteWidth        = nSize;
         bufferDesc.BindFlags        = D3D11_BIND_CONSTANT_BUFFER;
         bufferDesc.CPUAccessFlags   = 0;
@@ -492,7 +498,7 @@ namespace Riot
 
         return pBuffer;
     }
-    IGfxBuffer* CD3DDevice::CreateVertexBuffer( uint nSize, void* pInitialData )
+    IGfxBuffer* CD3DDevice::CreateVertexBuffer( uint nSize, void* pInitialData, GFX_BUFFER_USAGE nUsage )
     {
         CD3DBuffer* pBuffer = new CD3DBuffer;
 
@@ -502,7 +508,7 @@ namespace Riot
         HRESULT                 hr          = S_OK;
 
         //////////////////////////////////////////
-        bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
+        bufferDesc.Usage            = (D3D11_USAGE)nUsage;
         bufferDesc.ByteWidth        = nSize;
         bufferDesc.BindFlags        = D3D11_BIND_VERTEX_BUFFER;
         bufferDesc.CPUAccessFlags   = 0;
@@ -523,7 +529,7 @@ namespace Riot
         return pBuffer;
     }
 
-    IGfxBuffer* CD3DDevice::CreateIndexBuffer( uint nSize, void* pInitialData )
+    IGfxBuffer* CD3DDevice::CreateIndexBuffer( uint nSize, void* pInitialData, GFX_BUFFER_USAGE nUsage )
     {
         CD3DBuffer* pBuffer = new CD3DBuffer;
 
@@ -533,7 +539,7 @@ namespace Riot
         HRESULT                 hr          = S_OK;
 
         //////////////////////////////////////////
-        bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
+        bufferDesc.Usage            = (D3D11_USAGE)nUsage;
         bufferDesc.ByteWidth        = nSize;
         bufferDesc.BindFlags        = D3D11_BIND_INDEX_BUFFER;
         bufferDesc.CPUAccessFlags   = 0;

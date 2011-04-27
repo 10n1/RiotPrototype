@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/27/2011 3:11:45 PM
+Modified:       4/27/2011 3:40:31 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "config.h"
@@ -79,6 +79,7 @@ namespace Riot
         m_nNumSpheres = 0;
 
         m_pSphereMesh = NULL;
+        m_pDebugBox = NULL;
     }
 
     //-----------------------------------------------------------------------------
@@ -86,6 +87,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Shutdown( void )
     {
+        SAFE_RELEASE( m_pDebugBox );
         SAFE_RELEASE( m_pSphereMesh );
 
         SAFE_RELEASE( VPosNormalTex::VertexLayoutObject );
@@ -173,6 +175,9 @@ namespace Riot
         // debug sphere
         m_pSphereMesh = LoadMesh( "Assets/meshes/sphere.mesh" );
 
+        // debug box
+        m_pDebugBox = CreateDynamicBox();
+
         // ...finally, set them
         m_pDevice->SetVertexLayout( m_pDefaultVLayout );
         m_pDevice->SetVertexShader( m_pDefaultVShader );
@@ -249,6 +254,63 @@ namespace Riot
             m_pDevice->SetFillMode( GFX_FILL_SOLID );
         }
 
+        // Draw the debug boxes
+        {
+
+            m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
+            m_pDevice->SetPSSamplerState( m_pNearestSamplerState );
+            m_pDevice->SetPSTexture( 0, m_pWhiteTexture );
+
+            for( sint i = 0; i < m_nNumBoxes; ++i )
+            {
+                RVector3 vMin = m_DebugBoxesMin[i];
+                RVector3 vMax = m_DebugBoxesMax[i];
+
+                RMatrix4 mWorld = RMatrix4Identity();
+                SetWorldMatrix( mWorld );
+
+                VPosNormalTex vertices[] =
+                {
+                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+
+                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+
+                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+
+                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+
+                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 0.0f, 0.0f ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 1.0f, 0.0f ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 1.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 0.0f, 1.0f ) },
+
+                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 0.0f, 0.0f ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 1.0f, 0.0f ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 1.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 0.0f, 1.0f ) },
+                };
+
+                m_pDevice->UpdateBuffer( m_pDebugBox->m_pVertexBuffer, vertices );
+
+                m_pDebugBox->DrawMesh();
+            }
+
+            m_nNumBoxes = 0;
+            m_pDevice->SetFillMode( GFX_FILL_SOLID );
+        }
+
         // Present
         m_pDevice->Present();
     }
@@ -263,13 +325,14 @@ namespace Riot
                                     uint nIndexSize, 
                                     uint nIndexCount, 
                                     void* pVertices, 
-                                    void* pIndices )
+                                    void* pIndices,
+                                    GFX_BUFFER_USAGE nUsage )
     {
         CMesh* pMesh = new CMesh;
 
         //////////////////////////////////////////
         // Create the vertex buffer
-        pMesh->m_pVertexBuffer = m_pDevice->CreateVertexBuffer( nVertexStride * nVertexCount, pVertices );
+        pMesh->m_pVertexBuffer = m_pDevice->CreateVertexBuffer( nVertexStride * nVertexCount, pVertices, nUsage );
         
         //////////////////////////////////////////
         // Create the index buffer
@@ -355,6 +418,70 @@ namespace Riot
 
         m_pDefaultMesh->AddRef();
         return m_pDefaultMesh;
+    }
+    CMesh* CRenderer::CreateDynamicBox( void )
+    {
+        //////////////////////////////////////////
+        // Define vertex buffer
+        VPosNormalTex vertices[] =
+        {
+            { RVector3( -1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
+            { RVector3(  1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
+            { RVector3(  1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+
+            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
+            { RVector3(  1.0f, -1.0f, -1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
+            { RVector3(  1.0f, -1.0f,  1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f, -1.0f,  1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+
+            { RVector3( -1.0f, -1.0f,  1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
+            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
+            { RVector3( -1.0f,  1.0f, -1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f,  1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+
+            { RVector3(  1.0f, -1.0f,  1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
+            { RVector3(  1.0f, -1.0f, -1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
+            { RVector3(  1.0f,  1.0f, -1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
+            { RVector3(  1.0f,  1.0f,  1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+
+            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 0.0f, 0.0f ) },
+            { RVector3(  1.0f, -1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 1.0f, 0.0f ) },
+            { RVector3(  1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 0.0f, 1.0f ) },
+
+            { RVector3( -1.0f, -1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 0.0f, 0.0f ) },
+            { RVector3(  1.0f, -1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 1.0f, 0.0f ) },
+            { RVector3(  1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 1.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 0.0f, 1.0f ) },
+        };
+
+        //////////////////////////////////////////
+        // Define the index buffer
+        uint16 indices[] =
+        {
+            3,1,0,
+            2,1,3,
+
+            6,4,5,
+            7,4,6,
+
+            11,9,8,
+            10,9,11,
+
+            14,12,13,
+            15,12,14,
+
+            19,17,16,
+            18,17,19,
+
+            22,20,21,
+            23,20,22
+        };
+
+        CMesh* pMesh = CreateMesh( VPosNormalTex::VertexStride, ARRAY_LENGTH( vertices ), sizeof(uint16), ARRAY_LENGTH( indices ), vertices, indices, GFX_BUFFER_USAGE_DYNAMIC );
+
+        return pMesh;
     }
 
     CMesh* CRenderer::LoadMesh( const char* szFilename )
@@ -554,6 +681,18 @@ namespace Riot
         sint nIndex = AtomicIncrement( &m_nNumSpheres ) - 1;
 
         m_DebugSpheres[nIndex] = fSphere;
+    }
+
+    //-----------------------------------------------------------------------------
+    //  DrawDebugBox
+    //  Renders a wireframe debug AAB
+    //-----------------------------------------------------------------------------
+    void CRenderer::DrawDebugBox( const RVector3& vMin,const RVector3& vMax )
+    {
+        sint nIndex = AtomicIncrement( &m_nNumBoxes ) - 1;
+
+        m_DebugBoxesMin[nIndex] = vMin;
+        m_DebugBoxesMax[nIndex] = vMax;
     }
 
 } // namespace Riot

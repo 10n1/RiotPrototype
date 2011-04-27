@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/27/2011 3:10:49 PM
+Modified:       4/27/2011 3:35:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -78,9 +78,11 @@ namespace Riot
                             uint nIndexSize, 
                             uint nIndexCount, 
                             void* pVertices, 
-                            void* pIndices );
+                            void* pIndices,
+                            GFX_BUFFER_USAGE nUsage = GFX_BUFFER_USAGE_DEFAULT );
         CMesh* CreateMesh( void ); 
         CMesh* LoadMesh( const char* szFilename );
+        CMesh* CreateDynamicBox( void );
 
         //-----------------------------------------------------------------------------
         //  LoadTextureXD
@@ -129,6 +131,12 @@ namespace Riot
         //  Renders a wireframe debug sphere
         //-----------------------------------------------------------------------------
         void DrawDebugSphere( const RVector4& fSphere );
+        
+        //-----------------------------------------------------------------------------
+        //  DrawDebugBox
+        //  Renders a wireframe debug AAB
+        //-----------------------------------------------------------------------------
+        void DrawDebugBox( const RVector3& vMin,const RVector3& vMax );
 
     private:
         /***************************************\
@@ -167,6 +175,12 @@ namespace Riot
 
         RVector4    m_DebugSpheres[1024];
         atomic_t    m_nNumSpheres;
+
+        RVector3    m_DebugBoxesMin[1024];
+        RVector3    m_DebugBoxesMax[1024];
+        atomic_t    m_nNumBoxes;
+
+        CMesh*      m_pDebugBox;
     };
 
 

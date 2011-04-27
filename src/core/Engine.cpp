@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/27/2011 3:10:49 PM
+Modified:       4/27/2011 3:41:24 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -94,6 +94,7 @@ namespace Riot
         while( m_bRunning )
         {
 
+            m_pRenderer->DrawDebugBox( RVector3( -10.0f, 3.0f, -10.0f ), RVector3( 10.0f, 25.0f, 10.0f ) );
             //////////////////////////////////////////
             // Update everything
             m_pCamera->Update();
