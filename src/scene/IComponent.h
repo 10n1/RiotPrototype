@@ -3,7 +3,7 @@ File:           IComponent.h
 Purpose:        The definition for the base component
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/26/2011 3:18:26 PM
+Modified:       4/26/2011 11:48:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ICOMPONENT_H_
@@ -257,6 +257,9 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void IComponent::PreAttach( uint nObject )
     {
+        ASSERT( m_nNumActiveComponents < MaxComponents );
+        ASSERT( m_nNumActiveComponents < m_nNumInactiveComponents );
+
         m_nIndex = m_nNumActiveComponents++;
     }
 
@@ -273,6 +276,9 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void IComponent::PreReattach( uint nObject )
     {
+        ASSERT( m_nNumActiveComponents < MaxComponents );
+        ASSERT( m_nNumActiveComponents < m_nNumInactiveComponents );
+
         m_nOldIndex = m_pComponentIndices[nObject];
         m_nIndex    = m_nNumActiveComponents++;
     }

@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/26/2011 10:21:42 PM
+Modified:       4/26/2011 10:32:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -227,23 +227,6 @@ namespace Riot
     {
         m_pMessageDispatcher->RegisterListener( pListener, pMessages, nCount );
     }
-
-    //-----------------------------------------------------------------------------
-    //  Accessors/Mutators
-    //-----------------------------------------------------------------------------
-    CTaskManager* Engine::GetTaskManager( void )
-    {
-        return m_pTaskManager;
-    }
-    CRenderer* Engine::GetRenderer( void )
-    {
-        return m_pRenderer;
-    }
-    CObjectManager*      Engine::GetObjectManager( void )
-    {
-        return m_pObjectManager;
-    }
-
 
     //-----------------------------------------------------------------------------
     //  Initialize

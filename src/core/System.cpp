@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 11:56:02 PM
+Modified:       4/27/2011 12:00:09 AM
 Modified by:    Kyle Weicht
  \*********************************************************/
 #include "OGLGraphics.h"
@@ -18,6 +18,7 @@ Modified by:    Kyle Weicht
 #ifdef OS_WINDOWS
 #include <Windows.h>
 #include "Win32Application.h"
+#include <intrin.h>
 #elif defined( OS_OSX )
 #include <sys/types.h>
 #include <sys/sysctl.h>
@@ -91,6 +92,8 @@ namespace Riot
             m_nNumHardwareThreads = MAX_THREADS;
 
 #endif // #if SINGLETHREADED
+
+        DetermineCPUFeatures();
     }
 
     //-----------------------------------------------------------------------------
@@ -101,6 +104,28 @@ namespace Riot
 #ifdef OS_WINDOWS
         SAFE_DELETE( m_pApplication );
 #endif // #ifdef OS_WINDOWS
+    }
+
+
+    //-----------------------------------------------------------------------------
+    //  DetermineCPUFeatures
+    //  Polls the CPU to determine what features it supports
+    //-----------------------------------------------------------------------------
+    void System::DetermineCPUFeatures( void )
+    {
+#ifdef OS_WINDOWS
+        sint nFeatures[4] = { 0 };
+
+        __cpuid( nFeatures, 1 );
+
+        uint nSSESupported   = (nFeatures[3] & BIT_25) ? 1 : 0;
+        uint nSSE2Supported  = (nFeatures[3] & BIT_26) ? 1 : 0;
+        uint nSSE3Supported  = (nFeatures[2] & BIT_1 ) ? 1 : 0;
+        uint nSSSE3Supported = (nFeatures[2] & BIT_9 ) ? 1 : 0;
+        uint nSSE41Supported = (nFeatures[2] & BIT_19) ? 1 : 0;
+        uint nSSE42Supported = (nFeatures[2] & BIT_20) ? 1 : 0;
+        uint nAVXSupported   = (nFeatures[2] & BIT_28) ? 1 : 0;
+#endif
     }
 
     //-----------------------------------------------------------------------------

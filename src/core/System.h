@@ -4,7 +4,7 @@ Purpose:        Interface to the base system. All platform
 specific functions will be called here.
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/23/2011 11:56:02 PM
+Modified:       4/26/2011 11:48:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEM_H_
@@ -53,6 +53,12 @@ namespace Riot
         //  Shutdown
         //-----------------------------------------------------------------------------
         static void Shutdown( void );
+
+        //-----------------------------------------------------------------------------
+        //  DetermineCPUFeatures
+        //  Polls the CPU to determine what features it supports
+        //-----------------------------------------------------------------------------
+        static void DetermineCPUFeatures( void );
 
         //-----------------------------------------------------------------------------
         //  GetRunningTime

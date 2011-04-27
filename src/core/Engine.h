@@ -80,9 +80,9 @@ namespace Riot
         //-----------------------------------------------------------------------------
         //  Accessors/Mutators
         //-----------------------------------------------------------------------------
-        static CTaskManager*        GetTaskManager( void );
-        static CRenderer*           GetRenderer( void );
-        static CObjectManager*      GetObjectManager( void );
+        inline static CTaskManager*        GetTaskManager( void );
+        inline static CRenderer*           GetRenderer( void );
+        inline static CObjectManager*      GetObjectManager( void );
 
     private:    
         //-----------------------------------------------------------------------------
@@ -124,6 +124,23 @@ namespace Riot
     public:
         static float    m_fElapsedTime;
     };
+
+    
+    //-----------------------------------------------------------------------------
+    //  Accessors/Mutators
+    //-----------------------------------------------------------------------------
+    CTaskManager* Engine::GetTaskManager( void )
+    {
+        return m_pTaskManager;
+    }
+    CRenderer* Engine::GetRenderer( void )
+    {
+        return m_pRenderer;
+    }
+    CObjectManager*      Engine::GetObjectManager( void )
+    {
+        return m_pObjectManager;
+    }
 
 
 } // namespace Riot

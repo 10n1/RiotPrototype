@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/26/2011 10:21:02 PM
+Modified:       4/26/2011 10:39:14 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -151,7 +151,7 @@ namespace Riot
         CTaskManager*      pTaskManager = CTaskManager::GetInstance();
 
 #if PARALLEL_UPDATE
-        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 1 );
+        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 4 );
         pTaskManager->WaitForCompletion( nHandle );
 #else
         ProcessBatch( this, 0, 0, m_nNumActiveComponents );
