@@ -33,12 +33,14 @@
 		36D8E0281364130400C6F300 /* Menu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 36D8E0231364130400C6F300 /* Menu.xib */; };
 		36D8E0291364130400C6F300 /* OSXApplication.mm in Sources */ = {isa = PBXBuildFile; fileRef = 36D8E0251364130400C6F300 /* OSXApplication.mm */; };
 		36D8E02A1364130400C6F300 /* OSXOpenGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8E0261364130400C6F300 /* OSXOpenGL.cpp */; };
-		36D8E0361364131E00C6F300 /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8E02D1364131E00C6F300 /* Component.cpp */; };
-		36D8E0371364131E00C6F300 /* ComponentManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8E02F1364131E00C6F300 /* ComponentManager.cpp */; };
 		36D8E0381364131E00C6F300 /* ComponentSystem.txt in Resources */ = {isa = PBXBuildFile; fileRef = 36D8E0311364131E00C6F300 /* ComponentSystem.txt */; };
 		36D8E0391364131E00C6F300 /* ObjectManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8E0321364131E00C6F300 /* ObjectManager.cpp */; };
 		36D8E03A1364131E00C6F300 /* Terrain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8E0341364131E00C6F300 /* Terrain.cpp */; };
 		36EA62ED135426F50052D5E7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36EA62CE135426F50052D5E7 /* main.cpp */; };
+		36FB23761367A96E00B9F9ED /* ComponentCollidable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36FB236D1367A96E00B9F9ED /* ComponentCollidable.cpp */; };
+		36FB23771367A96E00B9F9ED /* ComponentLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36FB236F1367A96E00B9F9ED /* ComponentLight.cpp */; };
+		36FB23781367A96E00B9F9ED /* ComponentRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36FB23711367A96E00B9F9ED /* ComponentRender.cpp */; };
+		36FB23791367A96E00B9F9ED /* ComponentRigidBody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36FB23731367A96E00B9F9ED /* ComponentRigidBody.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -105,10 +107,7 @@
 		36D8E0251364130400C6F300 /* OSXApplication.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OSXApplication.mm; sourceTree = "<group>"; };
 		36D8E0261364130400C6F300 /* OSXOpenGL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = OSXOpenGL.cpp; sourceTree = "<group>"; };
 		36D8E0271364130400C6F300 /* SystemOpenGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemOpenGL.h; path = ../platform/SystemOpenGL.h; sourceTree = "<group>"; };
-		36D8E02D1364131E00C6F300 /* Component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Component.cpp; sourceTree = "<group>"; };
 		36D8E02E1364131E00C6F300 /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Component.h; sourceTree = "<group>"; };
-		36D8E02F1364131E00C6F300 /* ComponentManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentManager.cpp; sourceTree = "<group>"; };
-		36D8E0301364131E00C6F300 /* ComponentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentManager.h; sourceTree = "<group>"; };
 		36D8E0311364131E00C6F300 /* ComponentSystem.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ComponentSystem.txt; sourceTree = "<group>"; };
 		36D8E0321364131E00C6F300 /* ObjectManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectManager.cpp; sourceTree = "<group>"; };
 		36D8E0331364131E00C6F300 /* ObjectManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectManager.h; sourceTree = "<group>"; };
@@ -116,6 +115,15 @@
 		36D8E0351364131E00C6F300 /* Terrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Terrain.h; sourceTree = "<group>"; };
 		36EA62CE135426F50052D5E7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
 		36EA62DC135426F50052D5E7 /* todo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = todo.h; path = ../todo.h; sourceTree = "<group>"; };
+		36FB236D1367A96E00B9F9ED /* ComponentCollidable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentCollidable.cpp; sourceTree = "<group>"; };
+		36FB236E1367A96E00B9F9ED /* ComponentCollidable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentCollidable.h; sourceTree = "<group>"; };
+		36FB236F1367A96E00B9F9ED /* ComponentLight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentLight.cpp; sourceTree = "<group>"; };
+		36FB23701367A96E00B9F9ED /* ComponentLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentLight.h; sourceTree = "<group>"; };
+		36FB23711367A96E00B9F9ED /* ComponentRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentRender.cpp; sourceTree = "<group>"; };
+		36FB23721367A96E00B9F9ED /* ComponentRender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentRender.h; sourceTree = "<group>"; };
+		36FB23731367A96E00B9F9ED /* ComponentRigidBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentRigidBody.cpp; sourceTree = "<group>"; };
+		36FB23741367A96E00B9F9ED /* ComponentRigidBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComponentRigidBody.h; sourceTree = "<group>"; };
+		36FB23751367A96E00B9F9ED /* IComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IComponent.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -276,10 +284,16 @@
 		36D8E02C1364131E00C6F300 /* scene */ = {
 			isa = PBXGroup;
 			children = (
-				36D8E02D1364131E00C6F300 /* Component.cpp */,
+				36FB236D1367A96E00B9F9ED /* ComponentCollidable.cpp */,
+				36FB236E1367A96E00B9F9ED /* ComponentCollidable.h */,
+				36FB236F1367A96E00B9F9ED /* ComponentLight.cpp */,
+				36FB23701367A96E00B9F9ED /* ComponentLight.h */,
+				36FB23711367A96E00B9F9ED /* ComponentRender.cpp */,
+				36FB23721367A96E00B9F9ED /* ComponentRender.h */,
+				36FB23731367A96E00B9F9ED /* ComponentRigidBody.cpp */,
+				36FB23741367A96E00B9F9ED /* ComponentRigidBody.h */,
+				36FB23751367A96E00B9F9ED /* IComponent.h */,
 				36D8E02E1364131E00C6F300 /* Component.h */,
-				36D8E02F1364131E00C6F300 /* ComponentManager.cpp */,
-				36D8E0301364131E00C6F300 /* ComponentManager.h */,
 				36D8E0311364131E00C6F300 /* ComponentSystem.txt */,
 				36D8E0321364131E00C6F300 /* ObjectManager.cpp */,
 				36D8E0331364131E00C6F300 /* ObjectManager.h */,
@@ -390,10 +404,12 @@
 				36D8E021136412F200C6F300 /* vectormath.cpp in Sources */,
 				36D8E0291364130400C6F300 /* OSXApplication.mm in Sources */,
 				36D8E02A1364130400C6F300 /* OSXOpenGL.cpp in Sources */,
-				36D8E0361364131E00C6F300 /* Component.cpp in Sources */,
-				36D8E0371364131E00C6F300 /* ComponentManager.cpp in Sources */,
 				36D8E0391364131E00C6F300 /* ObjectManager.cpp in Sources */,
 				36D8E03A1364131E00C6F300 /* Terrain.cpp in Sources */,
+				36FB23761367A96E00B9F9ED /* ComponentCollidable.cpp in Sources */,
+				36FB23771367A96E00B9F9ED /* ComponentLight.cpp in Sources */,
+				36FB23781367A96E00B9F9ED /* ComponentRender.cpp in Sources */,
+				36FB23791367A96E00B9F9ED /* ComponentRigidBody.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
