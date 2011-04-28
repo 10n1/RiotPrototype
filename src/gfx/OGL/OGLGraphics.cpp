@@ -154,6 +154,9 @@ namespace Riot
     IGfxPixelShader* COGLDevice::CreatePixelShader( const char* szFilename, const char* szEntryPoint )
     {
         COGLPixelShader* pShader = new COGLPixelShader;
+        
+        
+        return pShader;
 
         GLuint  nPixelShader;
         GLint   nTestVal;
@@ -171,8 +174,6 @@ namespace Riot
 
             ASSERT( 0 );
         }
-
-        return pShader;
     }
     //
     

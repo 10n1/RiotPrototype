@@ -31,65 +31,58 @@ Modified by:    Kyle Weicht
 void __cpuid( int* a, int b )
 {
 #ifdef _64BIT
-	__asm __volatile(
-		"	push	%%rbx\n"
-		"	push	%%rcx\n"
-		"	push	%%rdx\n"
-		"	push	%%rdi\n"
+	__asm__ volatile(
+		"push	%%rbx\n"
+		"push	%%rcx\n"
+		"push	%%rdx\n"
+		"push	%%rdi\n"
 		
-		"	mov	%0,	%%rdi\n"
+        "mov    $0x1, %%eax\n"
+                     
+		"cpuid\n"
 		
-		"	mov	(%%rdi),	%%eax\n"
-		"	mov	4(%%rdi),	%%ebx\n"
-		"	mov	8(%%rdi),	%%ecx\n"
-		"	mov	12(%%rdi),	%%edx\n"
-
-        "   mov eax, b\n"
-		
-		"	cpuid\n"
-		
-		"	movl	%%eax,	(%%rdi)\n"
-		"	movl	%%ebx,	4(%%rdi)\n"
-		"	movl	%%ecx,	8(%%rdi)\n"
-		"	movl	%%edx,	12(%%rdi)\n"
-		"	pop	%%rdi\n"
-		"	pop	%%rdx\n"
-		"	pop	%%rcx\n"
-		"	pop	%%rbx\n"
+		"mov	%%eax,	(%%rdi)\n"
+		"mov	%%ebx,	4(%%rdi)\n"
+		"mov	%%ecx,	8(%%rdi)\n"
+		"mov	%%edx,	12(%%rdi)\n"
+                     
+		"pop	%%rdi\n"
+		"pop	%%rdx\n"
+		"pop	%%rcx\n"
+		"pop	%%rbx\n"
 		:
-		:"rdi"(regs)
-		:"memory", "eax"
-	);
+		:"rdi" (a)
+        :"eax"
+        );
 #else
-	__asm __volatile(
-		"	push	%%ebx\n"
-		"	push	%%ecx\n"
-		"	push	%%edx\n"
-		"	push	%%edi\n"
-		"	mov	%0,	%%edi\n"
-		
-		"	mov	(%%edi),	%%eax\n"
-		"	mov	4(%%edi),	%%ebx\n"
-		"	mov	8(%%edi),	%%ecx\n"
-		"	mov	12(%%edi),	%%edx\n"
-		
-        "   mov eax, b\n"
-
-		"	cpuid\n"
-		
-		"	mov	%%eax,	(%%edi)\n"
-		"	mov	%%ebx,	4(%%edi)\n"
-		"	mov	%%ecx,	8(%%edi)\n"
-		"	mov	%%edx,	12(%%edi)\n"
-		"	pop	%%edi\n"
-		"	pop	%%edx\n"
-		"	pop	%%ecx\n"
-		"	pop	%%ebx\n"
-		:
-		:"m"(regs)
-		:"memory", "eax"
-	);
+    // TODO: Make this work in 32-bit
+    return;
+    
+	__asm__ volatile(
+        "push	%%ebx\n"
+        "push	%%ecx\n"
+        "push	%%edx\n"
+        "push	%%edi\n"
+        
+        "mov    $0x1,%%eax\n"
+        
+        "cpuid\n"
+        
+        "mov	%%eax,	(%%edi)\n"
+        "mov	%%ebx,	4(%%edi)\n"
+        "mov	%%ecx,	8(%%edi)\n"
+        "mov	%%edx,	12(%%edi)\n"
+        
+        "pop	%%edi\n"
+        "pop	%%edx\n"
+        "pop	%%ecx\n"
+        "pop	%%ebx\n"
+        :
+        :"edi" (a)
+        :"eax"
+        );
 #endif // _64BIT
+
 }
 #endif
 
@@ -146,10 +139,10 @@ static const uint GetCPUCapabilities( void )
 
     //////////////////////////////////////////
     // Then get the capabilities
-#ifdef OS_WINDOWS
+    //#ifdef OS_WINDOWS
     sint nFeatures[4] = { 0 };
 
-    __cpuid( nFeatures, 1 );
+    __cpuid( nFeatures, 0 );
 
     _nSSESupported   = (nFeatures[3] & BIT_25) ? 1 : 0;
     _nSSE2Supported  = (nFeatures[3] & BIT_26) ? 1 : 0;
@@ -163,7 +156,7 @@ static const uint GetCPUCapabilities( void )
     uint8 nAVXSupported      = (nFeatures[2] & BIT_28) ? 1 : 0;
 
     _nAVXSupported    = nOSXSAVESupported & nAVXSupported;
-#endif
+    //#endif
 
     return 1;
 }
