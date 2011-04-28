@@ -2,13 +2,14 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/27/2011 10:11:38 PM
+Modified:       4/28/2011 3:53:01 PM
 Modified by:    Kyle Weicht
 
 TODO:           Add alignment support? Should be ultra easy
 \*********************************************************/
 #include "memory.h"
 #include "assert.h"
+#include "utility.h"
 
 #ifdef ARCH_IA32
 #include <emmintrin.h>
@@ -23,7 +24,7 @@ TODO:           Add alignment support? Should be ultra easy
 #include <stdio.h>
 #include <string.h>
 
-enum { GLOBAL_MEMORY_ALLOCATION = 32*1024*1024 };
+enum { GLOBAL_MEMORY_ALLOCATION = 64*1024*1024 };
 
 static const byte* AllocateGlobalMemory( void );
 
@@ -112,6 +113,9 @@ void* __cdecl operator new(size_t nSize, const char* szFile, unsigned int nLine)
     gs_nPrevAllocSize   = (uint)nSize;
 
     AddAllocation( pNewAlloc, (uint)nSize, szFile, nLine );
+
+    // In debug, fill it with nothing
+    Memset( pNewAlloc, 0xF0F0F0F0, nSize );
 
     // Return it
     return pNewAlloc;

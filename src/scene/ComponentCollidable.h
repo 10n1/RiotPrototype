@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/28/2011 1:03:43 PM
+Modified:       4/28/2011 4:02:59 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -244,10 +244,10 @@ namespace Riot
                 };
 
 
+                pRenderer->DrawDebugBox( vMin, vMax, vColors[nDepth] );
                 if( nDepth == 0 || pChildren == NULL )
                 {
-                    if( nTemp++ < 1000 )
-                pRenderer->DrawDebugBox( vMin, vMax, vColors[nDepth] );
+                    //if( nTemp++ < 1000 )
                     return;
                 }
 
@@ -334,13 +334,6 @@ namespace Riot
                         vMin = RVector3( 10000.0f, 10000.0f, 10000.0f );
                         for( uint i = 0; i < 3; ++i )
                         {
-                            //vMax.x = Max( tri->vVerts[i].x, vMax.x );
-                            //vMax.y = Max( tri->vVerts[i].y, vMax.y );
-                            //vMax.z = Max( tri->vVerts[i].z, vMax.z );
-                            //vMin.x = Min( tri->vVerts[i].x, vMin.x );
-                            //vMin.y = Min( tri->vVerts[i].y, vMin.y );
-                            //vMin.z = Min( tri->vVerts[i].z, vMin.z );
-
                             vMax.x = Max( pTri[0]->vVerts[i].x, Max( pTri[1]->vVerts[i].x, vMax.x ) );
                             vMax.y = Max( pTri[0]->vVerts[i].y, Max( pTri[1]->vVerts[i].y, vMax.y ) );
                             vMax.z = Max( pTri[0]->vVerts[i].z, Max( pTri[1]->vVerts[i].z, vMax.z ) );
