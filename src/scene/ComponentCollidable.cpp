@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/28/2011 12:46:16 PM
+Modified:       4/28/2011 12:58:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -335,6 +335,58 @@ namespace Riot
 
             BuildLeafNodes( pNewNode, pTriangles );
         }
+
+        //
+        //// Fill with triangles
+        //{
+        //    pNode = m_pInstance->m_pGraph;
+        //    // This is a leaf node, find the triangles
+        //    for( uint i = 0; i < nNumTriangles; ++i )
+        //    {
+        //        Triangle t = m_pInstance->m_pTerrainTriangles[i];
+
+        //        bool bIn = true;
+        //        for( uint j = 0; j < 3; ++j )
+        //        {
+        //            if(    t.vVerts[j].x < pNode->vMin.x
+        //                || t.vVerts[j].y < pNode->vMin.y
+        //                || t.vVerts[j].z < pNode->vMin.z
+        //                || t.vVerts[j].x > pNode->vMax.x
+        //                || t.vVerts[j].y > pNode->vMax.y
+        //                || t.vVerts[j].z > pNode->vMax.z )
+        //            {
+        //                // If any points are outside this node, it doesn't go in
+        //                bIn = false;
+        //                break;
+        //            }
+        //            int x = 0;
+        //        }
+
+        //        if( bIn )
+        //        {
+        //            pNode->pTri[nCount] = &m_pInstance->m_pTerrainTriangles[i];
+        //            nCount++;
+
+        //            if( nCount == 2 )
+        //            {
+        //                pNode->vMax = RVector3( -10000.0f, -10000.0f, -10000.0f );
+        //                pNode->vMin = RVector3( 10000.0f, 10000.0f, 10000.0f );
+        //                //  Recaluclate this nodes bounds
+        //                for( int j = 0; j < 3; ++j ) 
+        //                {
+        //                    pNode->vMax.x = Max( pNode->pTri[0]->vVerts[j].x, Max( pNode->pTri[1]->vVerts[j].x, pNode->vMax.x ) );
+        //                    pNode->vMax.y = Max( pNode->pTri[0]->vVerts[j].y, Max( pNode->pTri[1]->vVerts[j].y, pNode->vMax.y ) );
+        //                    pNode->vMax.z = Max( pNode->pTri[0]->vVerts[j].z, Max( pNode->pTri[1]->vVerts[j].z, pNode->vMax.z ) );
+
+        //                    pNode->vMin.x = Min( pNode->pTri[0]->vVerts[j].x, Min( pNode->pTri[1]->vVerts[j].x, pNode->vMin.x )  );
+        //                    pNode->vMin.y = Min( pNode->pTri[0]->vVerts[j].y, Min( pNode->pTri[1]->vVerts[j].y, pNode->vMin.y )  );
+        //                    pNode->vMin.z = Min( pNode->pTri[0]->vVerts[j].z, Min( pNode->pTri[1]->vVerts[j].z, pNode->vMin.z )  );
+        //                }
+
+        //                int x = 0;
+        //            }
+        //        }
+        //    }
     }
 
     void RecomputeSceneNode( CComponentCollidable::SceneNode* pNode )
@@ -373,12 +425,9 @@ namespace Riot
         BuildLeafNodes( m_pInstance->m_pGraph, m_pInstance->m_pTerrainTriangles );
         
         // Fill with triangles
-        {           
-            // This is a leaf node, find the triangles
-            for( uint i = 0; i < nNumTriangles; ++i )
-            {
-                m_pInstance->m_pGraph->AddTriangleToNode( &m_pInstance->m_pTerrainTriangles[i] );
-            }
+        for( uint i = 0; i < nNumTriangles; ++i )
+        {
+            m_pInstance->m_pGraph->AddTriangleToNode( &m_pInstance->m_pTerrainTriangles[i] );
         }
 
         RecomputeSceneNode( m_pInstance->m_pGraph );

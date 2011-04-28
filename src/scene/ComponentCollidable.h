@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/28/2011 12:54:06 PM
+Modified:       4/28/2011 1:03:43 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -326,21 +326,28 @@ namespace Riot
                 }
                 else
                 {
-                    if( nTri == 0 )
+                    pTri[nTri++] = tri;
+
+                    if( nTri == 2 )
                     {
                         vMax = RVector3( -10000.0f, -10000.0f, -10000.0f );
                         vMin = RVector3( 10000.0f, 10000.0f, 10000.0f );
-                    }
-                    pTri[nTri++] = tri;
+                        for( uint i = 0; i < 3; ++i )
+                        {
+                            //vMax.x = Max( tri->vVerts[i].x, vMax.x );
+                            //vMax.y = Max( tri->vVerts[i].y, vMax.y );
+                            //vMax.z = Max( tri->vVerts[i].z, vMax.z );
+                            //vMin.x = Min( tri->vVerts[i].x, vMin.x );
+                            //vMin.y = Min( tri->vVerts[i].y, vMin.y );
+                            //vMin.z = Min( tri->vVerts[i].z, vMin.z );
 
-                    for( uint i = 0; i < 3; ++i )
-                    {
-                        vMax.x = Max( tri->vVerts[i].x, vMax.x );
-                        vMax.y = Max( tri->vVerts[i].y, vMax.y );
-                        vMax.z = Max( tri->vVerts[i].z, vMax.z );
-                        vMin.x = Min( tri->vVerts[i].x, vMin.x );
-                        vMin.y = Min( tri->vVerts[i].y, vMin.y );
-                        vMin.z = Min( tri->vVerts[i].z, vMin.z );
+                            vMax.x = Max( pTri[0]->vVerts[i].x, Max( pTri[1]->vVerts[i].x, vMax.x ) );
+                            vMax.y = Max( pTri[0]->vVerts[i].y, Max( pTri[1]->vVerts[i].y, vMax.y ) );
+                            vMax.z = Max( pTri[0]->vVerts[i].z, Max( pTri[1]->vVerts[i].z, vMax.z ) );
+                            vMin.x = Min( pTri[0]->vVerts[i].x, Min( pTri[1]->vVerts[i].x, vMin.x ) );
+                            vMin.y = Min( pTri[0]->vVerts[i].y, Min( pTri[1]->vVerts[i].y, vMin.y ) );
+                            vMin.z = Min( pTri[0]->vVerts[i].z, Min( pTri[1]->vVerts[i].z, vMin.z ) );
+                        }
                     }
                 }
             }
