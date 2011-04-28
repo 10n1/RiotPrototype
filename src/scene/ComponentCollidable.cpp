@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/27/2011 3:10:50 PM
+Modified:       4/27/2011 9:54:47 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -46,9 +46,14 @@ namespace Riot
         m_nNumInactiveComponents = MaxComponents;
         m_nNumActiveComponents = 0;
         Memset( m_pTerrainTriangles, 0, sizeof(m_pTerrainTriangles) );
+
+        m_pGraph = NULL;
     }
 
-    CComponentCollidable::~CComponentCollidable() { } 
+    CComponentCollidable::~CComponentCollidable() 
+    {
+        SAFE_DELETE( m_pGraph );
+    } 
 
     //-----------------------------------------------------------------------------
     //  Attach
@@ -149,7 +154,15 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentCollidable::ProcessComponent( void )
     {
-        CTaskManager*      pTaskManager = CTaskManager::GetInstance();
+        CTaskManager*   pTaskManager = CTaskManager::GetInstance();
+        CRenderer*      pRenderer = Engine::GetRenderer();
+
+        //////////////////////////////////////////
+        // Build the scene graph
+        if( m_pGraph )
+        {
+            m_pGraph->DrawNode( pRenderer, RVector3( 0.0f, 0.0f, 0.0f ), 8 );
+        }
 
 #if PARALLEL_UPDATE
         task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 4 );
@@ -267,6 +280,69 @@ namespace Riot
 
             m_pInstance->m_pTerrainTriangles[i].vNormal = Normalize( CrossProduct( vSide1, vSide2 ) );
         }
+
+        BuildSceneGraph();
+    }
+
+    void CComponentCollidable::BuildLeafNodes( SceneNode* pNode, Triangle* pTriangles )
+    {
+        if( abs(pNode->vMax.x-pNode->vMin.x) > 1.0f )
+        {
+            SceneNode* pNewNode = NULL;
+            float fNewX = (pNode->vMax.x + pNode->vMin.x) / 2.0f;
+            float fNewZ = (pNode->vMax.z + pNode->vMin.z) / 2.0f;
+
+            pNewNode = new SceneNode;
+            pNewNode->vMin = pNode->vMin;
+            pNewNode->vMax = pNode->vMax;
+            pNewNode->vMax.x = fNewX;
+            pNewNode->vMax.z = fNewZ;
+            pNode->pChildren[0] = pNewNode;
+
+            BuildLeafNodes( pNewNode, pTriangles );
+            
+            pNewNode = new SceneNode;
+            pNewNode->vMin = pNode->vMin;
+            pNewNode->vMax = pNode->vMax;
+            pNewNode->vMin.z = fNewZ;
+            pNewNode->vMax.x = fNewX;
+            pNode->pChildren[1] = pNewNode;
+
+            BuildLeafNodes( pNewNode, pTriangles );
+            
+            pNewNode = new SceneNode;
+            pNewNode->vMin = pNode->vMin;
+            pNewNode->vMax = pNode->vMax;
+            pNewNode->vMin.x = fNewX;
+            pNewNode->vMin.z = fNewZ;
+            pNode->pChildren[2] = pNewNode;
+
+            BuildLeafNodes( pNewNode, pTriangles );
+            
+            pNewNode = new SceneNode;
+            pNewNode->vMin = pNode->vMin;
+            pNewNode->vMax = pNode->vMax;
+            pNewNode->vMin.x = fNewX;
+            pNewNode->vMax.z = fNewZ;
+            pNode->pChildren[3] = pNewNode;
+
+            BuildLeafNodes( pNewNode, pTriangles );
+        }
+    }
+
+    //-----------------------------------------------------------------------------
+    //  BuildSceneGraph
+    //  Builds the scene graph
+    //-----------------------------------------------------------------------------
+    void CComponentCollidable::BuildSceneGraph( void )
+    {
+        SAFE_DELETE( m_pInstance->m_pGraph );
+
+        m_pInstance->m_pGraph = new SceneNode;
+        m_pInstance->m_pGraph->vMin = RVector3( -64.0f, -3.0f, -64.0f );
+        m_pInstance->m_pGraph->vMax = RVector3( 64.0f, 3.0f, 64.0f );
+
+        BuildLeafNodes( m_pInstance->m_pGraph, m_pInstance->m_pTerrainTriangles );
     }
 
     //-----------------------------------------------------------------------------

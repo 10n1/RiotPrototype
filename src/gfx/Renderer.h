@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/27/2011 3:35:13 PM
+Modified:       4/27/2011 9:52:52 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -136,7 +136,7 @@ namespace Riot
         //  DrawDebugBox
         //  Renders a wireframe debug AAB
         //-----------------------------------------------------------------------------
-        void DrawDebugBox( const RVector3& vMin,const RVector3& vMax );
+        void DrawDebugBox( const RVector3& vMin,const RVector3& vMax, const RVector3& vColor );
 
     private:
         /***************************************\
@@ -180,8 +180,9 @@ namespace Riot
         RVector4    m_DebugSpheres[1024];
         atomic_t    m_nNumSpheres;
 
-        RVector3    m_DebugBoxesMin[1024];
-        RVector3    m_DebugBoxesMax[1024];
+        RVector3    m_DebugBoxesMin[1024*32];
+        RVector3    m_DebugBoxesMax[1024*32];
+        RVector3    m_DebugBoxesColor[1024*32];
         atomic_t    m_nNumBoxes;
 
         CMesh*      m_pDebugBox;

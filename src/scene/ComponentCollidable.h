@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/26/2011 10:21:02 PM
+Modified:       4/27/2011 9:50:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -12,6 +12,7 @@ Modified by:    Kyle Weicht
 #include "IComponent.h"
 #include "VertexFormats.h"
 #include "Terrain.h"
+#include "Renderer.h"
 
 /*
 CComponentCollidable
@@ -26,6 +27,7 @@ namespace Riot
 
     class CComponentCollidable : public IComponent
     {
+        class SceneNode;
         friend class CObjectManager;
     public:
         // CComponentCollidable constructor
@@ -61,6 +63,13 @@ namespace Riot
         //  Sets the terrain data so objects can collide with it
         //-----------------------------------------------------------------------------
         static void SetTerrainData( const VPosNormalTex* pTerrainVerts, uint nNumVerts, const uint16* pIndices, uint nNumIndices );
+
+        //-----------------------------------------------------------------------------
+        //  BuildSceneGraph
+        //  Builds the scene graph
+        //-----------------------------------------------------------------------------
+        static void BuildSceneGraph( void );
+
     private:
         static void ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount );
 
@@ -131,6 +140,63 @@ namespace Riot
                 return fDot + fPlaneEquation[3];
             }
         };
+
+        struct SceneNode
+        {
+            RVector3    vMin;
+            RVector3    vMax;
+
+            SceneNode*  pChildren[4]; 
+
+            SceneNode()
+            {
+                pChildren[0] = NULL;
+                pChildren[1] = NULL;
+                pChildren[2] = NULL;
+                pChildren[3] = NULL;
+            }
+
+            ~SceneNode()
+            {
+                SAFE_DELETE( pChildren[0] );
+                SAFE_DELETE( pChildren[1] );
+                SAFE_DELETE( pChildren[2] );
+                SAFE_DELETE( pChildren[3] );
+            }
+
+            void DrawNode( CRenderer* pRenderer, const RVector3& vColor, uint nDepth )
+            {
+                RVector3    vColors[] =
+                {
+                    RVector3( 1.0f, 1.0f, 1.0f ),
+                    RVector3( 0.0f, 1.0f, 1.0f ),
+                    RVector3( 1.0f, 0.0f, 1.0f ),
+                    RVector3( 1.0f, 1.0f, 0.0f ),
+                    RVector3( 0.0f, 1.0f, 0.0f ),
+                    RVector3( 0.0f, 0.0f, 1.0f ),
+                    RVector3( 1.0f, 0.0f, 0.0f ),
+                    RVector3( 0.0f, 0.0f, 0.0f ),
+                    RVector3( 0.5f, 0.5f, 0.5f ),
+                    RVector3( 1.0f, 0.5f, 0.0f ),
+                    RVector3( 0.0f, 1.0f, 0.5f ),
+                    RVector3( 0.5f, 0.0f, 1.0f ),
+                };
+
+                pRenderer->DrawDebugBox( vMin, vMax, vColors[nDepth] );
+
+                if( nDepth == 0 || pChildren[0] == NULL )
+                    return;
+
+                for( uint i = 0; i < 4; ++i )
+                {
+                    pChildren[i]->DrawNode( pRenderer, vColors[nDepth], nDepth-1 );
+                }
+            };
+        };
+
+        SceneNode*  m_pGraph;
+
+        static void BuildLeafNodes( SceneNode* pNode, Triangle* pTriangles );         
     };
 
 } // namespace Riot

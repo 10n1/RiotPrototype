@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/27/2011 9:14:05 PM
+Modified:       4/27/2011 9:28:15 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -299,41 +299,37 @@ namespace Riot
             {
                 RVector3 vMin = m_DebugBoxesMin[i];
                 RVector3 vMax = m_DebugBoxesMax[i];
+                RVector3 vColor = m_DebugBoxesColor[i];
 
                 RMatrix4 mWorld = RMatrix4Identity();
                 SetWorldMatrix( mWorld );
 
                 VPosColor vertices[] =
                 {
-                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-
-                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-
-                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-
-                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-
-                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-
-                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
                 };
 
                 m_pDevice->UpdateBuffer( m_pDebugBox->m_pVertexBuffer, vertices );
@@ -721,12 +717,13 @@ namespace Riot
     //  DrawDebugBox
     //  Renders a wireframe debug AAB
     //-----------------------------------------------------------------------------
-    void CRenderer::DrawDebugBox( const RVector3& vMin,const RVector3& vMax )
+    void CRenderer::DrawDebugBox( const RVector3& vMin,const RVector3& vMax, const RVector3& vColor )
     {
         sint nIndex = AtomicIncrement( &m_nNumBoxes ) - 1;
 
         m_DebugBoxesMin[nIndex] = vMin;
         m_DebugBoxesMax[nIndex] = vMax;
+        m_DebugBoxesColor[nIndex] = vColor;
     }
 
 } // namespace Riot
