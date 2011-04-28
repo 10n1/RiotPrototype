@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/27/2011 6:13:11 PM
+Modified:       4/27/2011 6:21:59 PM
 Modified by:    Kyle Weicht
  \*********************************************************/
 #include "OGLGraphics.h"
@@ -25,6 +25,72 @@ Modified by:    Kyle Weicht
 #include "OSXApplication.h"
 #else
 // Linux
+#endif
+
+#ifndef OS_WINDOWS
+void __cpuid( int* a, int b )
+{
+#ifdef _64BIT
+	__asm __volatile(
+		"	push	%%rbx\n"
+		"	push	%%rcx\n"
+		"	push	%%rdx\n"
+		"	push	%%rdi\n"
+		
+		"	mov	%0,	%%rdi\n"
+		
+		"	mov	(%%rdi),	%%eax\n"
+		"	mov	4(%%rdi),	%%ebx\n"
+		"	mov	8(%%rdi),	%%ecx\n"
+		"	mov	12(%%rdi),	%%edx\n"
+
+        "   mov eax, b\n"
+		
+		"	cpuid\n"
+		
+		"	movl	%%eax,	(%%rdi)\n"
+		"	movl	%%ebx,	4(%%rdi)\n"
+		"	movl	%%ecx,	8(%%rdi)\n"
+		"	movl	%%edx,	12(%%rdi)\n"
+		"	pop	%%rdi\n"
+		"	pop	%%rdx\n"
+		"	pop	%%rcx\n"
+		"	pop	%%rbx\n"
+		:
+		:"rdi"(regs)
+		:"memory", "eax"
+	);
+#else
+	__asm __volatile(
+		"	push	%%ebx\n"
+		"	push	%%ecx\n"
+		"	push	%%edx\n"
+		"	push	%%edi\n"
+		"	mov	%0,	%%edi\n"
+		
+		"	mov	(%%edi),	%%eax\n"
+		"	mov	4(%%edi),	%%ebx\n"
+		"	mov	8(%%edi),	%%ecx\n"
+		"	mov	12(%%edi),	%%edx\n"
+		
+        "   mov eax, b\n"
+
+		"	cpuid\n"
+		
+		"	mov	%%eax,	(%%edi)\n"
+		"	mov	%%ebx,	4(%%edi)\n"
+		"	mov	%%ecx,	8(%%edi)\n"
+		"	mov	%%edx,	12(%%edi)\n"
+		"	pop	%%edi\n"
+		"	pop	%%edx\n"
+		"	pop	%%ecx\n"
+		"	pop	%%ebx\n"
+		:
+		:"m"(regs)
+		:"memory", "eax"
+	);
+#endif // _64BIT
+}
 #endif
 
 
@@ -97,7 +163,6 @@ static const uint GetCPUCapabilities( void )
     uint8 nAVXSupported      = (nFeatures[2] & BIT_28) ? 1 : 0;
 
     _nAVXSupported    = nOSXSAVESupported & nAVXSupported;
-
 #endif
 
     return 1;

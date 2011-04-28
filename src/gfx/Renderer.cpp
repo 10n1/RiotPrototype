@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/27/2011 3:40:31 PM
+Modified:       4/27/2011 6:04:34 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "config.h"
@@ -77,6 +77,7 @@ namespace Riot
         m_bUpdateLighting   = false;
 
         m_nNumSpheres = 0;
+        m_nNumBoxes = 0;
 
         m_pSphereMesh = NULL;
         m_pDebugBox = NULL;
@@ -414,7 +415,7 @@ namespace Riot
             23,20,22
         };
 
-        m_pDefaultMesh = CreateMesh( VPosNormalTex::VertexStride, ARRAY_LENGTH( vertices ), sizeof(uint16), ARRAY_LENGTH( indices ), vertices, indices );
+        m_pDefaultMesh = CreateMesh( VPosNormalTex::VertexStride, ARRAY_LENGTH( vertices ), sizeof(uint16), ARRAY_LENGTH( indices ), vertices, indices, GFX_BUFFER_USAGE_IMMUTABLE );
 
         m_pDefaultMesh->AddRef();
         return m_pDefaultMesh;
