@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/27/2011 4:27:33 PM
+Modified:       4/27/2011 9:05:07 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -21,6 +21,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    GFX_FORMAT GFX_FORMAT_FLOAT4        = DXGI_FORMAT_R32G32B32A32_FLOAT;
     GFX_FORMAT GFX_FORMAT_FLOAT3        = DXGI_FORMAT_R32G32B32_FLOAT;
     GFX_FORMAT GFX_FORMAT_UINT16        = DXGI_FORMAT_R16_UINT;
     GFX_FORMAT GFX_FORMAT_UINT32        = DXGI_FORMAT_R32_UINT;
@@ -33,6 +34,7 @@ namespace Riot
     GFX_SEMANTIC GFX_SEMANTIC_POSITION  = "POSITION";
     GFX_SEMANTIC GFX_SEMANTIC_NORMAL    = "NORMAL";
     GFX_SEMANTIC GFX_SEMANTIC_TEXCOORD  = "TEXCOORD";
+    GFX_SEMANTIC GFX_SEMANTIC_COLOR     = "COLOR";
     //-----------------------------------------------------------------------------
     GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_TRIANGLELIST   = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     //-----------------------------------------------------------------------------
@@ -43,8 +45,8 @@ namespace Riot
     GFX_FILL_MODE    GFX_FILL_WIREFRAME = D3D11_FILL_WIREFRAME;
     //-----------------------------------------------------------------------------
     GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DEFAULT    = D3D11_USAGE_DEFAULT;
-    GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DYNAMIC    = D3D11_USAGE_DEFAULT;
-    GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_IMMUTABLE  = D3D11_USAGE_DEFAULT;
+    GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DYNAMIC    = D3D11_USAGE_DYNAMIC;
+    GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_IMMUTABLE  = D3D11_USAGE_IMMUTABLE;
     //-----------------------------------------------------------------------------
 
     // CD3DDevice constructor
@@ -391,14 +393,29 @@ namespace Riot
         assert( hr == S_OK );
 
         // and finally create the input layout
-        D3D11_INPUT_ELEMENT_DESC inputLayout[] =
+        if( nLayoutCount == 3 )
         {
-            { Layout[0].szSemanticName, 0, (DXGI_FORMAT)Layout[0].nFormat, 0, Layout[0].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { Layout[1].szSemanticName, 0, (DXGI_FORMAT)Layout[1].nFormat, 0, Layout[1].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { Layout[2].szSemanticName, 0, (DXGI_FORMAT)Layout[2].nFormat, 0, Layout[2].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
-        };
-
-        hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
+            D3D11_INPUT_ELEMENT_DESC inputLayout[] =
+            {
+                { Layout[0].szSemanticName, 0, (DXGI_FORMAT)Layout[0].nFormat, 0, Layout[0].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+                { Layout[1].szSemanticName, 0, (DXGI_FORMAT)Layout[1].nFormat, 0, Layout[1].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+                { Layout[2].szSemanticName, 0, (DXGI_FORMAT)Layout[2].nFormat, 0, Layout[2].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
+            };
+            hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
+        }
+        else if( nLayoutCount == 2 )
+        {
+            D3D11_INPUT_ELEMENT_DESC inputLayout[] =
+            {
+                { Layout[0].szSemanticName, 0, (DXGI_FORMAT)Layout[0].nFormat, 0, Layout[0].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+                { Layout[1].szSemanticName, 0, (DXGI_FORMAT)Layout[1].nFormat, 0, Layout[1].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
+            };
+            hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
+        }
+        else
+        {
+            ASSERT( 0 );
+        }
         assert( hr == S_OK );
 
         // Now return them

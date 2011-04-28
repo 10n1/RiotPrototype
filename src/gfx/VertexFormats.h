@@ -3,7 +3,7 @@ File:           VertexFormats.h
 Purpose:        Stores the basic vertex format information
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/27/2011 3:28:25 PM
+Modified:       4/27/2011 9:14:05 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VERTEXFORMATS_H_
@@ -24,6 +24,7 @@ namespace Riot
     //  Synonomous to DXGI_FORMAT_*
     typedef const uint GFX_FORMAT;
 
+    extern GFX_FORMAT GFX_FORMAT_FLOAT4;
     extern GFX_FORMAT GFX_FORMAT_FLOAT3;
     extern GFX_FORMAT GFX_FORMAT_FLOAT2;
     extern GFX_FORMAT GFX_FORMAT_UINT16;
@@ -44,6 +45,7 @@ namespace Riot
     extern GFX_SEMANTIC GFX_SEMANTIC_POSITION;
     extern GFX_SEMANTIC GFX_SEMANTIC_NORMAL;
     extern GFX_SEMANTIC GFX_SEMANTIC_TEXCOORD;
+    extern GFX_SEMANTIC GFX_SEMANTIC_COLOR;
     //-----------------------------------------------------------------------------
         
     //-----------------------------------------------------------------------------
@@ -107,6 +109,20 @@ namespace Riot
         RVector3 Pos;
         RVector3 Normal;
         RVector2 TexCoord;
+
+        static InputElementLayout Layout[];
+        static IGfxVertexLayout*  VertexLayoutObject;
+        static const uint LayoutSize;
+        static const uint VertexStride;// = sizeof( VVertexPosNormal );
+    };
+    
+    /*
+    Position and color format
+    */
+    struct VPosColor
+    {
+        RVector3 Pos;
+        RVector4 Color;
 
         static InputElementLayout Layout[];
         static IGfxVertexLayout*  VertexLayoutObject;

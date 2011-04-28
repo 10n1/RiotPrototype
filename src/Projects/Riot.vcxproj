@@ -102,6 +102,8 @@
     <None Include="..\..\assets\shaders\BasicPixelShader.hlsl" />
     <None Include="..\..\assets\shaders\BasicVertexShader.glsl" />
     <None Include="..\..\assets\shaders\BasicVertexShader.hlsl" />
+    <None Include="..\..\assets\shaders\PosColorPixelShader.hlsl" />
+    <None Include="..\..\assets\shaders\PosColorVertexShader.hlsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B5535174-0753-4265-9B6E-D9BB0806AB0D}</ProjectGuid>

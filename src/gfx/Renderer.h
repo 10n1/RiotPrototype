@@ -163,6 +163,10 @@ namespace Riot
         IGfxSamplerState*   m_pLinearSamplerState;
         IGfxSamplerState*   m_pNearestSamplerState;
 
+        IGfxVertexLayout*   m_pWireframeVLayout;
+        IGfxVertexShader*   m_pWireframeVShader;
+        IGfxPixelShader*    m_pWireframePShader;
+
         CView*  m_pCurrentView;
 
         RVector4    m_vLights[MAX_LIGHTS];

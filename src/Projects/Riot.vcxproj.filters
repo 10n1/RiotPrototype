@@ -270,5 +270,11 @@
     <None Include="..\..\assets\shaders\BasicVertexShader.glsl">
       <Filter>assets\shaders</Filter>
     </None>
+    <None Include="..\..\assets\shaders\PosColorPixelShader.hlsl">
+      <Filter>assets\shaders</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\PosColorVertexShader.hlsl">
+      <Filter>assets\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

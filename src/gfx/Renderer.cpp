@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/27/2011 6:04:34 PM
+Modified:       4/27/2011 9:14:05 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -68,6 +68,10 @@ namespace Riot
         m_pLinearSamplerState   = NULL;
         m_pNearestSamplerState  = NULL;
 
+        m_pWireframeVLayout = NULL;
+        m_pWireframeVShader = NULL;
+        m_pWireframePShader = NULL;
+
         m_pCurrentView  = NULL;
 
         m_nNumCommands  = 0;
@@ -88,6 +92,10 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Shutdown( void )
     {
+        SAFE_RELEASE( m_pWireframeVLayout );
+        SAFE_RELEASE( m_pWireframeVShader );
+        SAFE_RELEASE( m_pWireframePShader );
+
         SAFE_RELEASE( m_pDebugBox );
         SAFE_RELEASE( m_pSphereMesh );
 
@@ -178,6 +186,17 @@ namespace Riot
 
         // debug box
         m_pDebugBox = CreateDynamicBox();
+        
+        // Create the wireframe vertex shader/layout
+        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/PosColorVertexShader.hlsl", 
+            "main", 
+            VPosColor::Layout, 
+            VPosColor::LayoutSize,
+            &m_pWireframeVShader,
+            &m_pWireframeVLayout );
+        
+        // pixel shader
+        m_pWireframePShader = m_pDevice->CreatePixelShader( "Assets/Shaders/PosColorPixelShader.hlsl", "main" );
 
         // ...finally, set them
         m_pDevice->SetVertexLayout( m_pDefaultVLayout );
@@ -211,8 +230,13 @@ namespace Riot
 
         // Render
         ASSERT( m_pCurrentView );
+        m_pDevice->SetVertexShader( m_pDefaultVShader );
+        m_pDevice->SetVertexLayout( m_pDefaultVLayout );
+        m_pDevice->SetPixelShader( m_pDefaultPShader );
+
         RMatrix4 mView = m_pCurrentView->GetViewMatrix();
         RMatrix4 mProj = m_pCurrentView->GetProjMatrix();
+
         SetViewProj( mView, mProj );
 
         for( sint i = 0; i < m_nNumCommands; ++i )
@@ -236,6 +260,15 @@ namespace Riot
             m_pRenderCommands[i].pMesh->DrawMesh();
         }
         m_nNumCommands = 0;
+
+        
+        m_pDevice->SetVertexShader( m_pWireframeVShader );
+        m_pDevice->SetVertexLayout( m_pWireframeVLayout );
+        m_pDevice->SetPixelShader(  m_pWireframePShader );
+        
+        mView = m_pCurrentView->GetViewMatrix();
+        mProj = m_pCurrentView->GetProjMatrix();
+        SetViewProj( mView, mProj );
 
         // Draw the debug cubes
         if( bShowDebugSpheres )
@@ -270,37 +303,37 @@ namespace Riot
                 RMatrix4 mWorld = RMatrix4Identity();
                 SetWorldMatrix( mWorld );
 
-                VPosNormalTex vertices[] =
+                VPosColor vertices[] =
                 {
-                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
 
-                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
-                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
 
-                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
-                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
 
-                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
 
-                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 0.0f, 0.0f ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 1.0f, 0.0f ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 1.0f, 1.0f ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 0.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
 
-                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 0.0f, 0.0f ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 1.0f, 0.0f ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 1.0f, 1.0f ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 0.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
                 };
 
                 m_pDevice->UpdateBuffer( m_pDebugBox->m_pVertexBuffer, vertices );
@@ -424,37 +457,37 @@ namespace Riot
     {
         //////////////////////////////////////////
         // Define vertex buffer
-        VPosNormalTex vertices[] =
+        VPosColor vertices[] =
         {
-            { RVector3( -1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
-            { RVector3(  1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
-            { RVector3(  1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
-
-            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
-            { RVector3(  1.0f, -1.0f, -1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
-            { RVector3(  1.0f, -1.0f,  1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f, -1.0f,  1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
-
-            { RVector3( -1.0f, -1.0f,  1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
-            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
-            { RVector3( -1.0f,  1.0f, -1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f,  1.0f,  1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
-
-            { RVector3(  1.0f, -1.0f,  1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
-            { RVector3(  1.0f, -1.0f, -1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
-            { RVector3(  1.0f,  1.0f, -1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
-            { RVector3(  1.0f,  1.0f,  1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
-
-            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 0.0f, 0.0f ) },
-            { RVector3(  1.0f, -1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 1.0f, 0.0f ) },
-            { RVector3(  1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 0.0f, 1.0f ) },
-
-            { RVector3( -1.0f, -1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 0.0f, 0.0f ) },
-            { RVector3(  1.0f, -1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 1.0f, 0.0f ) },
-            { RVector3(  1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 0.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f, -1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3(  1.0f,  1.0f, -1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3(  1.0f,  1.0f,  1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f,  1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                                               
+            { RVector3( -1.0f, -1.0f, -1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3(  1.0f, -1.0f, -1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3(  1.0f, -1.0f,  1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3( -1.0f, -1.0f,  1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                                               
+            { RVector3( -1.0f, -1.0f,  1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3( -1.0f, -1.0f, -1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f, -1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f,  1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                                               
+            { RVector3(  1.0f, -1.0f,  1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3(  1.0f, -1.0f, -1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3(  1.0f,  1.0f, -1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3(  1.0f,  1.0f,  1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                                               
+            { RVector3( -1.0f, -1.0f, -1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3(  1.0f, -1.0f, -1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3(  1.0f,  1.0f, -1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f, -1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+                                               
+            { RVector3( -1.0f, -1.0f,  1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3(  1.0f, -1.0f,  1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3(  1.0f,  1.0f,  1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3( -1.0f,  1.0f,  1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
         };
 
         //////////////////////////////////////////
@@ -480,7 +513,7 @@ namespace Riot
             23,20,22
         };
 
-        CMesh* pMesh = CreateMesh( VPosNormalTex::VertexStride, ARRAY_LENGTH( vertices ), sizeof(uint16), ARRAY_LENGTH( indices ), vertices, indices, GFX_BUFFER_USAGE_DYNAMIC );
+        CMesh* pMesh = CreateMesh( VPosColor::VertexStride, ARRAY_LENGTH( vertices ), sizeof(uint16), ARRAY_LENGTH( indices ), vertices, indices, GFX_BUFFER_USAGE_DEFAULT );
 
         return pMesh;
     }

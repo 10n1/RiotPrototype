@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/27/2011 6:21:59 PM
+Modified:       4/27/2011 8:45:15 PM
 Modified by:    Kyle Weicht
  \*********************************************************/
 #include "OGLGraphics.h"
@@ -142,7 +142,7 @@ static const uint GetCPUCapabilities( void )
     //#ifdef OS_WINDOWS
     sint nFeatures[4] = { 0 };
 
-    __cpuid( nFeatures, 0 );
+    __cpuid( nFeatures, 1 );
 
     _nSSESupported   = (nFeatures[3] & BIT_25) ? 1 : 0;
     _nSSE2Supported  = (nFeatures[3] & BIT_26) ? 1 : 0;
