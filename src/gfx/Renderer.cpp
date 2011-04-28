@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/27/2011 9:28:15 PM
+Modified:       4/27/2011 10:27:16 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -24,8 +24,6 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
-    bool bShowDebugSpheres = false;
-
     /***************************************\
     | class members                         |
     \***************************************/
@@ -261,17 +259,17 @@ namespace Riot
         }
         m_nNumCommands = 0;
 
-        
+
         m_pDevice->SetVertexShader( m_pWireframeVShader );
         m_pDevice->SetVertexLayout( m_pWireframeVLayout );
         m_pDevice->SetPixelShader(  m_pWireframePShader );
-        
+
         mView = m_pCurrentView->GetViewMatrix();
         mProj = m_pCurrentView->GetProjMatrix();
         SetViewProj( mView, mProj );
 
         // Draw the debug cubes
-        if( bShowDebugSpheres )
+        if( gs_bShowBoundingVolumes )
         {
             m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
             m_pDevice->SetPSSamplerState( m_pNearestSamplerState );
@@ -286,11 +284,8 @@ namespace Riot
             }
             m_nNumSpheres = 0;
             m_pDevice->SetFillMode( GFX_FILL_SOLID );
-        }
 
-        // Draw the debug boxes
-        {
-
+            // Draw the debug boxes
             m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
             m_pDevice->SetPSSamplerState( m_pNearestSamplerState );
             m_pDevice->SetPSTexture( 0, m_pWhiteTexture );
@@ -708,6 +703,9 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::DrawDebugSphere( const RVector4& fSphere )
     {
+        if( !gs_bShowBoundingVolumes )
+            return;
+
         sint nIndex = AtomicIncrement( &m_nNumSpheres ) - 1;
 
         m_DebugSpheres[nIndex] = fSphere;
@@ -719,6 +717,9 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::DrawDebugBox( const RVector3& vMin,const RVector3& vMax, const RVector3& vColor )
     {
+        if( !gs_bShowBoundingVolumes )
+            return;
+
         sint nIndex = AtomicIncrement( &m_nNumBoxes ) - 1;
 
         m_DebugBoxesMin[nIndex] = vMin;

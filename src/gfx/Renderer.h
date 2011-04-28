@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/27/2011 9:52:52 PM
+Modified:       4/27/2011 10:23:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -18,8 +18,6 @@ namespace Riot
     class CWindow;
     class CMesh;
     class CView;
-
-    extern bool bShowDebugSpheres;
 
     class CRenderer : public IListener
     {

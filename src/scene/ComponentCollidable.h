@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/27/2011 9:50:44 PM
+Modified:       4/27/2011 10:15:54 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -146,27 +146,21 @@ namespace Riot
             RVector3    vMin;
             RVector3    vMax;
 
-            SceneNode*  pChildren[4]; 
+            SceneNode*  pChildren; 
 
             SceneNode()
             {
-                pChildren[0] = NULL;
-                pChildren[1] = NULL;
-                pChildren[2] = NULL;
-                pChildren[3] = NULL;
+                pChildren = NULL;;
             }
 
             ~SceneNode()
             {
-                SAFE_DELETE( pChildren[0] );
-                SAFE_DELETE( pChildren[1] );
-                SAFE_DELETE( pChildren[2] );
-                SAFE_DELETE( pChildren[3] );
+                SAFE_DELETE_ARRAY( pChildren );
             }
 
             void DrawNode( CRenderer* pRenderer, const RVector3& vColor, uint nDepth )
             {
-                RVector3    vColors[] =
+                static const RVector3    vColors[] =
                 {
                     RVector3( 1.0f, 1.0f, 1.0f ),
                     RVector3( 0.0f, 1.0f, 1.0f ),
@@ -184,12 +178,12 @@ namespace Riot
 
                 pRenderer->DrawDebugBox( vMin, vMax, vColors[nDepth] );
 
-                if( nDepth == 0 || pChildren[0] == NULL )
+                if( nDepth == 0 || pChildren == NULL )
                     return;
 
                 for( uint i = 0; i < 4; ++i )
                 {
-                    pChildren[i]->DrawNode( pRenderer, vColors[nDepth], nDepth-1 );
+                    pChildren[i].DrawNode( pRenderer, vColors[nDepth], nDepth-1 );
                 }
             };
         };

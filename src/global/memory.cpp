@@ -2,7 +2,7 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/27/2011 10:21:46 AM
+Modified:       4/27/2011 10:11:38 PM
 Modified by:    Kyle Weicht
 
 TODO:           Add alignment support? Should be ultra easy
@@ -48,9 +48,11 @@ void __cdecl DumpMemoryLeaks(void);
 //-----------------------------------------------------------------------------
 size_t RoundUp( size_t nSize )
 {
-    if( nSize & 0xF )
+    if( nSize & (gs_nSIMDWidth-1) )
     {
-        return (nSize + 0x10) & 0xFFFFFFF0;
+        uint nMask = (gs_nSIMDWidth-1);
+        nMask ^= 0xFFFFFFFF;
+        return (nSize + gs_nSIMDWidth) & nMask;
     }
     return nSize;
 }
@@ -60,7 +62,7 @@ size_t RoundUp( size_t nSize )
 //-----------------------------------------------------------------------------
 static const byte* AllocateGlobalMemory( void )
 {
-    byte* pAlloc = (byte*)_mm_malloc(GLOBAL_MEMORY_ALLOCATION, 16);
+    byte* pAlloc = (byte*)_mm_malloc(GLOBAL_MEMORY_ALLOCATION, 32);
     gs_pGlobalPool = pAlloc;
     return pAlloc;
 }

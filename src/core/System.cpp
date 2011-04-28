@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/27/2011 8:45:15 PM
+Modified:       4/27/2011 10:23:27 PM
 Modified by:    Kyle Weicht
  \*********************************************************/
 #include "OGLGraphics.h"
@@ -139,7 +139,6 @@ static const uint GetCPUCapabilities( void )
 
     //////////////////////////////////////////
     // Then get the capabilities
-    //#ifdef OS_WINDOWS
     sint nFeatures[4] = { 0 };
 
     __cpuid( nFeatures, 1 );
@@ -156,7 +155,6 @@ static const uint GetCPUCapabilities( void )
     uint8 nAVXSupported      = (nFeatures[2] & BIT_28) ? 1 : 0;
 
     _nAVXSupported    = nOSXSAVESupported & nAVXSupported;
-    //#endif
 
     return 1;
 }
@@ -173,6 +171,8 @@ const uint8 gs_nSSSE3Supported     = _nSSSE3Supported;
 const uint8 gs_nSSE41Supported     = _nSSE41Supported;
 const uint8 gs_nSSE42Supported     = _nSSE42Supported;
 const uint8 gs_nAVXSupported       = _nAVXSupported;
+
+const uint8 gs_nSIMDWidth   = (gs_nAVXSupported) ? 32 : ((gs_nSSE2Supported) ? 16 : 0);
 //-----------------------------------------------------------------------------
 
 

@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/27/2011 9:54:47 PM
+Modified:       4/27/2011 10:25:32 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -161,7 +161,7 @@ namespace Riot
         // Build the scene graph
         if( m_pGraph )
         {
-            m_pGraph->DrawNode( pRenderer, RVector3( 0.0f, 0.0f, 0.0f ), 8 );
+            m_pGraph->DrawNode( pRenderer, RVector3( 0.0f, 0.0f, 0.0f ), 4 );
         }
 
 #if PARALLEL_UPDATE
@@ -187,7 +187,7 @@ namespace Riot
             RVector3    fPosition = RVector3(pComponent->m_Volume[i].sphere.position);
             float       fRadius   = pComponent->m_Volume[i].sphere.radius;
 
-            if( bShowDebugSpheres )
+            if( gs_bShowBoundingVolumes )
             {
                 RVector4    debugSphere( fPosition );
                 debugSphere.w = sqrtf(fRadius);
@@ -292,39 +292,37 @@ namespace Riot
             float fNewX = (pNode->vMax.x + pNode->vMin.x) / 2.0f;
             float fNewZ = (pNode->vMax.z + pNode->vMin.z) / 2.0f;
 
-            pNewNode = new SceneNode;
+            pNode->pChildren = new SceneNode[4];
+
+            pNewNode = &pNode->pChildren[0];
             pNewNode->vMin = pNode->vMin;
             pNewNode->vMax = pNode->vMax;
             pNewNode->vMax.x = fNewX;
             pNewNode->vMax.z = fNewZ;
-            pNode->pChildren[0] = pNewNode;
 
             BuildLeafNodes( pNewNode, pTriangles );
             
-            pNewNode = new SceneNode;
+            pNewNode = &pNode->pChildren[1];
             pNewNode->vMin = pNode->vMin;
             pNewNode->vMax = pNode->vMax;
             pNewNode->vMin.z = fNewZ;
             pNewNode->vMax.x = fNewX;
-            pNode->pChildren[1] = pNewNode;
 
             BuildLeafNodes( pNewNode, pTriangles );
             
-            pNewNode = new SceneNode;
+            pNewNode = &pNode->pChildren[2];
             pNewNode->vMin = pNode->vMin;
             pNewNode->vMax = pNode->vMax;
             pNewNode->vMin.x = fNewX;
             pNewNode->vMin.z = fNewZ;
-            pNode->pChildren[2] = pNewNode;
 
             BuildLeafNodes( pNewNode, pTriangles );
             
-            pNewNode = new SceneNode;
+            pNewNode = &pNode->pChildren[3];
             pNewNode->vMin = pNode->vMin;
             pNewNode->vMax = pNode->vMax;
             pNewNode->vMin.x = fNewX;
             pNewNode->vMax.z = fNewZ;
-            pNode->pChildren[3] = pNewNode;
 
             BuildLeafNodes( pNewNode, pTriangles );
         }
