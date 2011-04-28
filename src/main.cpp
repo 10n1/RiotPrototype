@@ -2,7 +2,7 @@
 File:           main.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/27/2011 12:56:02 PM
+Modified:       4/27/2011 6:13:39 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "common.h"
@@ -14,6 +14,11 @@ int main( int argc, char* argv[] )
     //////////////////////////////////////////
     // Free our memory last
     atexit( Riot::Memory::ReleasePool );
+
+    int* x = new int[100];
+    int* y = new int[100];
+
+    Memcpy( x, y, sizeof( int ) * 100 );
 
     //////////////////////////////////////////
     // Run the engine

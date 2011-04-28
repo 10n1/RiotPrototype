@@ -3,7 +3,7 @@ File:           config.h
 Purpose:        Includes platform and build configurations
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/27/2011 10:59:43 AM
+Modified:       4/27/2011 6:12:18 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CONFIG_H_
@@ -105,15 +105,14 @@ Modified by:    Kyle Weicht
 
 //-----------------------------------------------------------------------------
 //  CPU Capabilities
-extern const uint   gs_nNumHardwareThreads;
-
-extern const uint   gs_nSSESupported;
-extern const uint   gs_nSSE2Supported;
-extern const uint   gs_nSSE3Supported;
-extern const uint   gs_nSSSE3Supported;
-extern const uint   gs_nSSE41Supported;
-extern const uint   gs_nSSE42Supported;
-extern const uint   gs_nAVXSupported;
+extern const uint8   gs_nNumHardwareThreads;
+extern const uint8   gs_nSSESupported;
+extern const uint8   gs_nSSE2Supported;
+extern const uint8   gs_nSSE3Supported;
+extern const uint8   gs_nSSSE3Supported;
+extern const uint8   gs_nSSE41Supported;
+extern const uint8   gs_nSSE42Supported;
+extern const uint8   gs_nAVXSupported;
 
 //-----------------------------------------------------------------------------
 

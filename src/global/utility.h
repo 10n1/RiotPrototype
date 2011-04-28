@@ -3,7 +3,7 @@ File:           utility.h
 Purpose:        Various stdlib functions
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/27/2011 10:46:51 AM
+Modified:       4/27/2011 6:14:40 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _UTILITY_H_
@@ -239,7 +239,7 @@ void* MemcpyAVX( void* pDest, const void* pSource, uint nSize )
         // if pSource is not 32 byte aligned, we use the unaligned load
         while( nSize >= nWidth )
         {
-            v0 =  _mm256_loadu_si256( b256 );
+            v0 =  _mm256_load_si256( b256 );
             _mm256_store_si256( a256, v0 );
 
             a256++;

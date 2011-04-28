@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/27/2011 12:55:16 PM
+Modified:       4/27/2011 6:13:11 PM
 Modified by:    Kyle Weicht
  \*********************************************************/
 #include "OGLGraphics.h"
@@ -32,14 +32,14 @@ Modified by:    Kyle Weicht
 //-----------------------------------------------------------------------------
 //  Upon first running, determine the CPU capabilities
 //-----------------------------------------------------------------------------
-static uint _nNumHardwareThreads = 0;
-static uint _nSSESupported    = 0;
-static uint _nSSE2Supported   = 0;
-static uint _nSSE3Supported   = 0;
-static uint _nSSSE3Supported  = 0;
-static uint _nSSE41Supported  = 0;
-static uint _nSSE42Supported  = 0;
-static uint _nAVXSupported    = 0;
+static uint8 _nNumHardwareThreads = 0;
+static uint8 _nSSESupported    = 0;
+static uint8 _nSSE2Supported   = 0;
+static uint8 _nSSE3Supported   = 0;
+static uint8 _nSSSE3Supported  = 0;
+static uint8 _nSSE41Supported  = 0;
+static uint8 _nSSE42Supported  = 0;
+static uint8 _nAVXSupported    = 0;
 
 static const uint GetCPUCapabilities( void )
 {
@@ -52,7 +52,7 @@ static const uint GetCPUCapabilities( void )
 #ifdef OS_WINDOWS
     SYSTEM_INFO si;
     GetSystemInfo( &si );
-    _nNumHardwareThreads = si.dwNumberOfProcessors;
+    _nNumHardwareThreads = (uint8)si.dwNumberOfProcessors;
 #elif defined( OS_LINUX )
     m_nNumHardwareThreads = sysconf( _SC_NPROCESSORS_ONLN );
 #elif defined( OS_OSX )
@@ -93,8 +93,8 @@ static const uint GetCPUCapabilities( void )
     _nSSE42Supported = (nFeatures[2] & BIT_20) ? 1 : 0;
 
     // For AVX, we need to make sure OSXSAVE is supported too
-    uint nOSXSAVESupported  = (nFeatures[2] & BIT_27) ? 1 : 0;
-    uint nAVXSupported      = (nFeatures[2] & BIT_28) ? 1 : 0;
+    uint8 nOSXSAVESupported  = (nFeatures[2] & BIT_27) ? 1 : 0;
+    uint8 nAVXSupported      = (nFeatures[2] & BIT_28) ? 1 : 0;
 
     _nAVXSupported    = nOSXSAVESupported & nAVXSupported;
 
@@ -107,15 +107,14 @@ static const uint gs_nCPUPolled = GetCPUCapabilities();
 
 //-----------------------------------------------------------------------------
 //  The location of the supported bits
-const uint gs_nNumHardwareThreads   = _nNumHardwareThreads;
-
-const uint gs_nSSESupported      = _nSSESupported;
-const uint gs_nSSE2Supported     = _nSSE2Supported;
-const uint gs_nSSE3Supported     = _nSSE3Supported;
-const uint gs_nSSSE3Supported    = _nSSSE3Supported;
-const uint gs_nSSE41Supported    = _nSSE41Supported;
-const uint gs_nSSE42Supported    = _nSSE42Supported;
-const uint gs_nAVXSupported      = _nAVXSupported;
+const uint8 gs_nNumHardwareThreads = _nNumHardwareThreads;
+const uint8 gs_nSSESupported       = _nSSESupported;
+const uint8 gs_nSSE2Supported      = _nSSE2Supported;
+const uint8 gs_nSSE3Supported      = _nSSE3Supported;
+const uint8 gs_nSSSE3Supported     = _nSSSE3Supported;
+const uint8 gs_nSSE41Supported     = _nSSE41Supported;
+const uint8 gs_nSSE42Supported     = _nSSE42Supported;
+const uint8 gs_nAVXSupported       = _nAVXSupported;
 //-----------------------------------------------------------------------------
 
 
