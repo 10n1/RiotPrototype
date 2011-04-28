@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/27/2011 10:23:27 PM
+Modified:       4/27/2011 11:19:39 PM
 Modified by:    Kyle Weicht
  \*********************************************************/
 #include "OGLGraphics.h"
@@ -105,7 +105,7 @@ static const uint GetCPUCapabilities( void )
     //////////////////////////////////////////
     // First determine the number of threads
 #if (MULTITHREADED == 0)
-    gs_nNumHardwareThreads = 1;
+    _nNumHardwareThreads = 1;
 #else
 
 #ifdef OS_WINDOWS

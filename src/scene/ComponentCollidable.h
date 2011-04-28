@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/27/2011 10:15:54 PM
+Modified:       4/27/2011 11:21:59 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -27,6 +27,20 @@ namespace Riot
 
     class CComponentCollidable : public IComponent
     {
+        union BoundingVolume
+        {
+            struct _sphere
+            {
+                float3  position;
+                float   radius; // Radius is stored pre-squared
+            } sphere;
+            struct _AABB
+            {
+                float3  min;
+                float3  max;
+            } aabb;
+        };
+
         class SceneNode;
         friend class CObjectManager;
     public:
@@ -74,7 +88,9 @@ namespace Riot
         static void ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount );
 
         struct Triangle;
-        bool IsPointInTriangle( const RVector3& point, const Triangle& triangle );
+        static bool IsPointInTriangle( const RVector3& point, const Triangle& triangle );
+
+        static bool DoesSphereHitTriangle( SceneNode* pNode, const BoundingVolume::_sphere& s );
 
     private:
         /***************************************\
@@ -95,19 +111,6 @@ namespace Riot
         {
             BoundingSphere,
             AABB,
-        };
-        union BoundingVolume
-        {
-            struct _sphere
-            {
-                float3  position;
-                float   radius; // Radius is stored pre-squared
-            } sphere;
-            struct _AABB
-            {
-                float3  min;
-                float3  max;
-            } aabb;
         };
 
         BoundingVolume  m_Volume[MaxComponents];
@@ -147,10 +150,14 @@ namespace Riot
             RVector3    vMax;
 
             SceneNode*  pChildren; 
+            Triangle*   pTri[2];
 
             SceneNode()
             {
-                pChildren = NULL;;
+                pChildren = NULL;
+
+                pTri[0] = NULL;
+                pTri[1] = NULL;
             }
 
             ~SceneNode()
@@ -186,6 +193,51 @@ namespace Riot
                     pChildren[i].DrawNode( pRenderer, vColors[nDepth], nDepth-1 );
                 }
             };
+
+            bool IsPointInNode( const RVector3& vPoint )
+            {
+                if(    vPoint.x >= vMin.x
+                    && vPoint.y >= vMin.y 
+                    && vPoint.z >= vMin.z
+                    && vPoint.x <= vMax.x
+                    && vPoint.y <= vMax.y 
+                    && vPoint.z <= vMax.z )
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            bool DoesSphereHitTriangle( const BoundingVolume::_sphere& s )
+            {
+                if( pChildren )
+                    return false;
+
+                
+                RVector3    fPosition = RVector3(s.position);
+                float       fRadius   = s.radius;
+
+                for( uint i = 0; i < 2; ++i )
+                {
+                    Plane trianglePlane( *pTri[i] );
+
+                    float fDistance = trianglePlane.DistanceFrom( s.position );
+
+                    if( fDistance > sqrtf(s.radius) )
+                    {
+                        // The sphere doesn't interact the triagnles plane
+                        continue;
+                    }
+                
+                    RVector3 planeCollisionPoint = fPosition - trianglePlane.vNormal;
+                    if( CComponentCollidable::IsPointInTriangle( planeCollisionPoint, *pTri[i] ) )
+                    {
+                        // we collided, break
+                        return true;
+                    }
+                }
+            }
         };
 
         SceneNode*  m_pGraph;
