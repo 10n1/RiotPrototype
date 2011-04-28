@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/27/2011 11:21:59 PM
+Modified:       4/28/2011 12:54:06 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -91,6 +91,7 @@ namespace Riot
         static bool IsPointInTriangle( const RVector3& point, const Triangle& triangle );
 
         static bool DoesSphereHitTriangle( SceneNode* pNode, const BoundingVolume::_sphere& s );
+        static bool AddTriangleToGraph( const Triangle& triangle );
 
     private:
         /***************************************\
@@ -116,6 +117,7 @@ namespace Riot
         BoundingVolume  m_Volume[MaxComponents];
         VolumeType      m_nVolumeType[MaxComponents];
 
+    public:
         struct Plane
         {
             float4      fPlaneEquation;
@@ -137,6 +139,19 @@ namespace Riot
                                         vNormal.z * vOrigin.z );
             }
 
+            Plane( const RVector3& norm, const RVector3& point )
+            {
+                vNormal = norm;
+                vOrigin = point;
+
+                fPlaneEquation[0] = vNormal.x;
+                fPlaneEquation[1] = vNormal.y;
+                fPlaneEquation[2] = vNormal.z;
+                fPlaneEquation[3] = -(  vNormal.x * vOrigin.x + 
+                                        vNormal.y * vOrigin.y + 
+                                        vNormal.z * vOrigin.z );
+            }
+
             float DistanceFrom( const float3& fPoint )
             {
                 float fDot = DotProduct( RVector3( fPoint ), vNormal );
@@ -144,6 +159,9 @@ namespace Riot
             }
         };
 
+        static uint nTemp;
+
+    public:
         struct SceneNode
         {
             RVector3    vMin;
@@ -152,17 +170,59 @@ namespace Riot
             SceneNode*  pChildren; 
             Triangle*   pTri[2];
 
+            uint8       nTri;
+
             SceneNode()
             {
                 pChildren = NULL;
 
                 pTri[0] = NULL;
                 pTri[1] = NULL;
+
+                nTri = 0;
             }
 
             ~SceneNode()
             {
                 SAFE_DELETE_ARRAY( pChildren );
+            }
+
+            bool DoesSphereHitBox(  const BoundingVolume::_sphere& s )
+            {
+                float fRadius = sqrtf( s.radius );
+
+                // Test top
+                Plane pTop( RVector3( 0.0f, 1.0f, 0.0f ),vMax );
+                float fTop = pTop.DistanceFrom( s.position );  
+
+                Plane pRight( RVector3( 1.0f, 0.0f, 0.0f ),vMax );
+                float fRight = pRight.DistanceFrom( s.position );
+
+                Plane pFar( RVector3( 0.0f, 0.0f, 1.0f ),vMax );
+                float fFar = pFar.DistanceFrom( s.position );
+
+                Plane pBottom( RVector3( 0.0f, -1.0f, 0.0f ),vMin );
+                float fBottom = pBottom.DistanceFrom( s.position );  
+
+                Plane pLeft( RVector3( -1.0f, 0.0f, 0.0f ),vMin );
+                float fLeft = pLeft.DistanceFrom( s.position );
+
+                Plane pNear( RVector3( 0.0f, 0.0f, -1.0f ),vMin );
+                float fNear = pNear.DistanceFrom( s.position );
+
+
+                // The box is too far away
+                if(    fTop     > fRadius
+                    || fBottom  > fRadius   
+                    || fRight   > fRadius
+                    || fLeft    > fRadius
+                    || fNear    > fRadius
+                    || fFar     > fRadius )
+                {
+                    return false;
+                }
+
+                return true;
             }
 
             void DrawNode( CRenderer* pRenderer, const RVector3& vColor, uint nDepth )
@@ -183,10 +243,13 @@ namespace Riot
                     RVector3( 0.5f, 0.0f, 1.0f ),
                 };
 
-                pRenderer->DrawDebugBox( vMin, vMax, vColors[nDepth] );
 
                 if( nDepth == 0 || pChildren == NULL )
+                {
+                    if( nTemp++ < 1000 )
+                pRenderer->DrawDebugBox( vMin, vMax, vColors[nDepth] );
                     return;
+                }
 
                 for( uint i = 0; i < 4; ++i )
                 {
@@ -235,6 +298,49 @@ namespace Riot
                     {
                         // we collided, break
                         return true;
+                    }
+                }
+            }
+
+            void AddTriangleToNode( Triangle* tri )
+            {
+                for( int i = 0; i < 3; ++i )
+                {
+                    if(    tri->vVerts[i].x > vMax.x
+                        || tri->vVerts[i].y > vMax.y
+                        || tri->vVerts[i].z > vMax.z
+                        || tri->vVerts[i].x < vMin.x
+                        || tri->vVerts[i].y < vMin.y
+                        || tri->vVerts[i].z < vMin.z )
+                    {
+                        return;
+                    }
+                }
+
+                if( pChildren )
+                {
+                    for( int i = 0; i < 4; ++i )
+                    {
+                        pChildren[i].AddTriangleToNode( tri );
+                    }
+                }
+                else
+                {
+                    if( nTri == 0 )
+                    {
+                        vMax = RVector3( -10000.0f, -10000.0f, -10000.0f );
+                        vMin = RVector3( 10000.0f, 10000.0f, 10000.0f );
+                    }
+                    pTri[nTri++] = tri;
+
+                    for( uint i = 0; i < 3; ++i )
+                    {
+                        vMax.x = Max( tri->vVerts[i].x, vMax.x );
+                        vMax.y = Max( tri->vVerts[i].y, vMax.y );
+                        vMax.z = Max( tri->vVerts[i].z, vMax.z );
+                        vMin.x = Min( tri->vVerts[i].x, vMin.x );
+                        vMin.y = Min( tri->vVerts[i].y, vMin.y );
+                        vMin.z = Min( tri->vVerts[i].z, vMin.z );
                     }
                 }
             }

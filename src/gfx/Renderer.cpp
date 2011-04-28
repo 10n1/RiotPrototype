@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/27/2011 10:27:16 PM
+Modified:       4/28/2011 10:38:04 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -211,7 +211,10 @@ namespace Riot
     void CRenderer::Render( void )
     {
         // Restore solid fill mode
-        m_pDevice->SetFillMode( GFX_FILL_SOLID );
+        if( gs_bRenderWireframe )
+            m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
+        else
+            m_pDevice->SetFillMode( GFX_FILL_SOLID );
 
         // Update lighting
         if( m_bUpdateLighting )

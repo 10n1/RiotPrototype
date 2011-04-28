@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       4/26/2011 10:16:05 PM
+Modified:       4/28/2011 12:27:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -59,11 +59,11 @@ namespace Riot
 
                 float angleX = DegToRad( ((float)x/TERRAIN_WIDTH) * 360.0f );
                 float angleY = DegToRad( ((float)y/TERRAIN_WIDTH) * 360.0f );
-                m_fHeight[x][y] = sinf( angleX ) * 1.0f + cosf( angleY ) * 1.0f + RandFloat(0.1f);
+                m_fHeight[x][y] = sinf( angleX ) * 5.0f + cosf( angleY ) * 5.0f + RandFloat(0.1f);
             }
         }
 
-        m_fHeight[0][0] = 10.0f;
+        //m_fHeight[0][0] = 10.0f;
 
         //////////////////////////////////////////
         // Create a mesh from the new data

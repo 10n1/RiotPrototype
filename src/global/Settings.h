@@ -4,7 +4,7 @@ Purpose:        Holds all the "global" game settings that
                 can be modified in game via the console
 Author:         Kyle Weicht
 Created:        4/27/2011
-Modified:       4/27/2011 10:30:16 PM
+Modified:       4/28/2011 10:38:04 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SETTINGS_H_
@@ -14,7 +14,8 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
-    extern bool gs_bShowBoundingVolumes;   // Renders the bounding volumes
+    extern bool gs_bShowBoundingVolumes;    // Renders the bounding volumes
+    extern bool gs_bRenderWireframe;        // Renders everything wireframe
 
 } // namespace Riot
 

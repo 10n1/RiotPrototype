@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/27/2011 11:28:30 PM
+Modified:       4/28/2011 12:46:16 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -37,6 +37,8 @@ namespace Riot
         eComponentMessageCollision,
     };
     const uint CComponentCollidable::NumMessagesReceived = (MessagesReceived[0] == eNULLCOMPONENTMESSAGE) ? 0 : sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
+
+    uint CComponentCollidable::nTemp = 0;
 
     /***************************************\
     | class methods                         |
@@ -161,7 +163,8 @@ namespace Riot
         // Build the scene graph
         if( m_pGraph )
         {
-            m_pGraph->DrawNode( pRenderer, RVector3( 0.0f, 0.0f, 0.0f ), 4 );
+            nTemp = 0;
+            m_pGraph->DrawNode( pRenderer, RVector3( 0.0f, 0.0f, 0.0f ), 10 );
         }
 
 #if PARALLEL_UPDATE
@@ -196,32 +199,32 @@ namespace Riot
             }
 
             // First check against the terrain
-            for( uint j = 0; j < nNumTriangles; ++j )
-            {
-                Plane trianglePlane( pComponent->m_pTerrainTriangles[j] );
-            
-                float fDistance = trianglePlane.DistanceFrom( pComponent->m_Volume[i].sphere.position );
-            
-                if( fDistance > sqrtf(fRadius) )
-                {
-                    // The sphere doesn't interact the triagnles plane
-                    continue;
-                }
-                
-                RVector3 planeCollisionPoint = fPosition - trianglePlane.vNormal;
-                if( CComponentCollidable::IsPointInTriangle( planeCollisionPoint, pComponent->m_pTerrainTriangles[j] ) )
-                {
-                    // we collided, break
-                    pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], j, pComponent->ComponentType );
-                    break;
-                }
-            }
-
-            //if( DoesSphereHitTriangle( pComponent->m_pGraph, pComponent->m_Volume[i].sphere ) )
+            //for( uint j = 0; j < nNumTriangles; ++j )
             //{
-            //    uint x = 0;
-            //    pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
+            //    Plane trianglePlane( pComponent->m_pTerrainTriangles[j] );
+            //
+            //    float fDistance = trianglePlane.DistanceFrom( pComponent->m_Volume[i].sphere.position );
+            //
+            //    if( fDistance > sqrtf(fRadius) )
+            //    {
+            //        // The sphere doesn't interact the triagnles plane
+            //        continue;
+            //    }
+            //    
+            //    RVector3 planeCollisionPoint = fPosition - trianglePlane.vNormal;
+            //    if( CComponentCollidable::IsPointInTriangle( planeCollisionPoint, pComponent->m_pTerrainTriangles[j] ) )
+            //    {
+            //        // we collided, break
+            //        pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], j, pComponent->ComponentType );
+            //        break;
+            //    }
             //}
+
+            if( DoesSphereHitTriangle( pComponent->m_pGraph, pComponent->m_Volume[i].sphere ) )
+            {
+                uint x = 0;
+                pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
+            }
 
             // Then against all other objects
             for( uint j = 0; j < pComponent->m_nNumActiveComponents; ++j )
@@ -332,36 +335,25 @@ namespace Riot
 
             BuildLeafNodes( pNewNode, pTriangles );
         }
-        else
+    }
+
+    void RecomputeSceneNode( CComponentCollidable::SceneNode* pNode )
+    {
+        if( pNode->pChildren )
         {
-            uint nCount = 0;
-            // This is a leaf node, find the triangles
-            for( uint i = 0; i < nNumTriangles; ++i )
+            pNode->vMax = RVector3( -10000.0f, -10000.0f, -10000.0f );
+            pNode->vMin = RVector3( 10000.0f, 10000.0f, 10000.0f );
+            for( uint i = 0; i < 4; ++i )
             {
-                Triangle t = m_pInstance->m_pTerrainTriangles[i];
+                RecomputeSceneNode( &pNode->pChildren[i] );
 
-                bool bIn = true;
-                for( uint j = 0; j < 3; ++j )
-                {
-                    if(    t.vVerts[j].x < pNode->vMin.x
-                        || t.vVerts[j].y < pNode->vMin.y
-                        || t.vVerts[j].z < pNode->vMin.z
-                        || t.vVerts[j].x > pNode->vMax.x
-                        || t.vVerts[j].y > pNode->vMax.y
-                        || t.vVerts[j].z > pNode->vMax.z )
-                    {
-                        // If any points are outside this node, it doesn't go in
-                        bIn = false;
-                        break;
-                    }
-                }
+                pNode->vMax.x = Max( pNode->pChildren[i].vMax.x, pNode->vMax.x );
+                pNode->vMax.y = Max( pNode->pChildren[i].vMax.y, pNode->vMax.y );
+                pNode->vMax.z = Max( pNode->pChildren[i].vMax.z, pNode->vMax.z );
 
-                if( bIn )
-                {
-                    pNode->pTri[nCount++] = &m_pInstance->m_pTerrainTriangles[i];
-                    if( nCount == 2 )
-                        return;
-                }
+                pNode->vMin.x = Min( pNode->pChildren[i].vMin.x, pNode->vMin.x );
+                pNode->vMin.y = Min( pNode->pChildren[i].vMin.y, pNode->vMin.y );
+                pNode->vMin.z = Min( pNode->pChildren[i].vMin.z, pNode->vMin.z );
             }
         }
     }
@@ -375,10 +367,21 @@ namespace Riot
         SAFE_DELETE( m_pInstance->m_pGraph );
 
         m_pInstance->m_pGraph = new SceneNode;
-        m_pInstance->m_pGraph->vMin = RVector3( -64.0f, -3.0f, -64.0f );
-        m_pInstance->m_pGraph->vMax = RVector3( 64.0f, 3.0f, 64.0f );
+        m_pInstance->m_pGraph->vMin = RVector3( -64.0f, -30000.0f, -64.0f );
+        m_pInstance->m_pGraph->vMax = RVector3( 64.0f, 30000.0f, 64.0f );
 
         BuildLeafNodes( m_pInstance->m_pGraph, m_pInstance->m_pTerrainTriangles );
+        
+        // Fill with triangles
+        {           
+            // This is a leaf node, find the triangles
+            for( uint i = 0; i < nNumTriangles; ++i )
+            {
+                m_pInstance->m_pGraph->AddTriangleToNode( &m_pInstance->m_pTerrainTriangles[i] );
+            }
+        }
+
+        RecomputeSceneNode( m_pInstance->m_pGraph );
     }
 
     //-----------------------------------------------------------------------------
@@ -455,7 +458,7 @@ namespace Riot
 
     bool CComponentCollidable::DoesSphereHitTriangle( SceneNode* pNode, const BoundingVolume::_sphere& s )
     {
-        if( pNode->IsPointInNode( RVector3( s.position ) ) )
+        if( pNode->DoesSphereHitBox( s ) )
         {
             if( pNode->pChildren )
             {
