@@ -37,6 +37,13 @@ namespace Riot
     GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_NEAREST   = 0x1;
     GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_LINEAR    = 0x2;
     //-----------------------------------------------------------------------------
+    GFX_FILL_MODE    GFX_FILL_SOLID     = 0x1;
+    GFX_FILL_MODE    GFX_FILL_WIREFRAME = 0x2;
+    //-----------------------------------------------------------------------------
+    GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DEFAULT    = 0x1;
+    GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DYNAMIC    = 0x2;
+    GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_IMMUTABLE  = 0x3;
+    //-----------------------------------------------------------------------------
 
     using namespace SystemOpenGL;
 
@@ -121,6 +128,13 @@ namespace Riot
         SystemOpenGL::Present( &m_pDevice );
     }
     //
+    
+    
+    //
+    void COGLDevice::SetFillMode( GFX_FILL_MODE nFill )
+    {
+    }
+    //
 
     //
     void COGLDevice::CreateVertexShaderAndLayout( 
@@ -178,20 +192,20 @@ namespace Riot
     //
 
     //
-    IGfxBuffer* COGLDevice::CreateConstantBuffer( uint nSize, void* pInitialData )
+    IGfxBuffer* COGLDevice::CreateConstantBuffer( uint nSize, void* pInitialData, GFX_BUFFER_USAGE nUsage )
     {
         COGLBuffer* pBuffer = new COGLBuffer;
 
         return pBuffer;
     }
-    IGfxBuffer* COGLDevice::CreateVertexBuffer( uint nSize, void* pInitialData )
+    IGfxBuffer* COGLDevice::CreateVertexBuffer( uint nSize, void* pInitialData, GFX_BUFFER_USAGE nUsage )
     {
         COGLBuffer* pBuffer = new COGLBuffer;
 
         return pBuffer;
     }
 
-    IGfxBuffer* COGLDevice::CreateIndexBuffer( uint nSize, void* pInitialData )
+    IGfxBuffer* COGLDevice::CreateIndexBuffer( uint nSize, void* pInitialData, GFX_BUFFER_USAGE nUsage )
     {
         COGLBuffer* pBuffer = new COGLBuffer;
 

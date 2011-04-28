@@ -5,6 +5,7 @@ Created:        4/11/2011
 Modified:       4/27/2011 3:40:31 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
+#include <fstream>
 #include "config.h"
 
 #if USE_OPENGL
@@ -20,7 +21,6 @@ Modified by:    Kyle Weicht
 #include "View.h"
 #include "TaskManager.h"
 
-#include <fstream>
 
 namespace Riot
 {

@@ -55,6 +55,10 @@ namespace Riot
         void Clear( void );
         void Present( void );
         //
+        
+        //
+        void SetFillMode( GFX_FILL_MODE nFill );
+        //
 
         //
         void CreateVertexShaderAndLayout( 
@@ -73,9 +77,9 @@ namespace Riot
         //
 
         //
-        IGfxBuffer* CreateConstantBuffer( uint nSize, void* pInitialData );
-        IGfxBuffer* CreateVertexBuffer( uint nSize, void* pInitialData );
-        IGfxBuffer* CreateIndexBuffer( uint nSize, void* pInitialData );
+        IGfxBuffer* CreateConstantBuffer( uint nSize, void* pInitialData, GFX_BUFFER_USAGE nUsage = GFX_BUFFER_USAGE_DEFAULT );
+        IGfxBuffer* CreateVertexBuffer( uint nSize, void* pInitialData, GFX_BUFFER_USAGE nUsage = GFX_BUFFER_USAGE_DEFAULT );
+        IGfxBuffer* CreateIndexBuffer( uint nSize, void* pInitialData, GFX_BUFFER_USAGE nUsage = GFX_BUFFER_USAGE_DEFAULT );
         //
         
         //
