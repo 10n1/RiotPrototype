@@ -196,32 +196,32 @@ namespace Riot
             }
 
             // First check against the terrain
-            for( uint j = 0; j < nNumTriangles; ++j )
-            {
-                Plane trianglePlane( pComponent->m_pTerrainTriangles[j] );
-            
-                float fDistance = trianglePlane.DistanceFrom( pComponent->m_Volume[i].sphere.position );
-            
-                if( fDistance > sqrtf(fRadius) )
-                {
-                    // The sphere doesn't interact the triagnles plane
-                    continue;
-                }
-                
-                RVector3 planeCollisionPoint = fPosition - trianglePlane.vNormal;
-                if( CComponentCollidable::IsPointInTriangle( planeCollisionPoint, pComponent->m_pTerrainTriangles[j] ) )
-                {
-                    // we collided, break
-                    pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], j, pComponent->ComponentType );
-                    break;
-                }
-            }
-
-            //if( DoesSphereHitTriangle( pComponent->m_pGraph, pComponent->m_Volume[i].sphere ) )
+            //for( uint j = 0; j < nNumTriangles; ++j )
             //{
-            //    uint x = 0;
-            //    pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
+            //    Plane trianglePlane( pComponent->m_pTerrainTriangles[j] );
+            //
+            //    float fDistance = trianglePlane.DistanceFrom( pComponent->m_Volume[i].sphere.position );
+            //
+            //    if( fDistance > sqrtf(fRadius) )
+            //    {
+            //        // The sphere doesn't interact the triagnles plane
+            //        continue;
+            //    }
+            //    
+            //    RVector3 planeCollisionPoint = fPosition - trianglePlane.vNormal;
+            //    if( CComponentCollidable::IsPointInTriangle( planeCollisionPoint, pComponent->m_pTerrainTriangles[j] ) )
+            //    {
+            //        // we collided, break
+            //        pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], j, pComponent->ComponentType );
+            //        break;
+            //    }
             //}
+
+            if( DoesSphereHitTriangle( pComponent->m_pGraph, pComponent->m_Volume[i].sphere ) )
+            {
+                uint x = 0;
+                pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
+            }
 
             // Then against all other objects
             for( uint j = 0; j < pComponent->m_nNumActiveComponents; ++j )
