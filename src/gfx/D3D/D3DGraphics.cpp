@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/27/2011 3:42:56 PM
+Modified:       4/27/2011 4:27:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -188,11 +188,11 @@ namespace Riot
         D3D11_RASTERIZER_DESC rd;
         Memset( &rd, 0, sizeof(rd) );
 
+        // Solid
         rd.CullMode = D3D11_CULL_BACK;
         rd.FillMode = D3D11_FILL_SOLID;
         rd.DepthClipEnable = TRUE;
 
-        // Solid
         hr = m_pDevice->CreateRasterizerState( &rd, &m_pSolidRasterizerState );
 
         // wireframe

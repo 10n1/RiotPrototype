@@ -2,7 +2,7 @@
 File:           Camera.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/24/2011 1:14:28 PM
+Modified:       4/27/2011 4:28:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Camera.h"
@@ -100,12 +100,12 @@ namespace Riot
                     }
                 case KEY_LEFT:
                     {
-                        m_pView->RotateY( fElapsedTime * fLookSpeed );
+                        m_pView->RotateY( fElapsedTime * -fLookSpeed );
                         break;
                     }
                 case KEY_RIGHT:
                     {
-                        m_pView->RotateY( fElapsedTime * -fLookSpeed );
+                        m_pView->RotateY( fElapsedTime * fLookSpeed );
                         break;
                     }
                 case KEY_SPACE:
