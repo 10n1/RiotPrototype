@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/28/2011 10:36:41 PM
+Modified:       4/29/2011 1:01:30 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -52,10 +52,15 @@ namespace Riot
         m_pTerrainLeaves    = NULL;
         m_pTerrainGraph     = NULL;
 
+        // Create the head of the object graph
+        m_pObjectGraph  = new TObjectParentNode;
+        m_pObjectGraph->max = RVector3(  64.0f,  64.0f,  64.0f );
+        m_pObjectGraph->min = RVector3( -64.0f, -64.0f, -64.0f );
     }
 
     CComponentCollidable::~CComponentCollidable() 
     {
+        SAFE_DELETE( m_pObjectGraph );
         SAFE_DELETE_ARRAY( m_pParentNodes );
         SAFE_DELETE_ARRAY( m_pTerrainLeaves );
     } 
@@ -71,6 +76,9 @@ namespace Riot
 
         // Now initialize this component
         Memset( &m_Volume[m_nIndex], 0, sizeof(RSphere) );
+
+        // Add it to the node
+        m_pObjectGraph->AddObjectLeaf( &m_ObjectSceneNodes[m_nIndex] );
 
         /********************************/
         PostAttach( nObject );
@@ -89,6 +97,7 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_USE_PREV_DATA( m_Volume );
+        COMPONENT_USE_PREV_DATA( m_ObjectSceneNodes );
 
         /********************************/
         PostReattach( nObject );
@@ -107,6 +116,7 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REORDER_DATA( m_Volume );
+        COMPONENT_REORDER_DATA( m_ObjectSceneNodes );
 
         /********************************/
         PostDetach( nObject );
@@ -125,6 +135,7 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REORDER_SAVE_DATA( m_Volume );
+        COMPONENT_REORDER_SAVE_DATA( m_ObjectSceneNodes );
 
         /********************************/
         PostDetachAndSave( nObject );
@@ -143,6 +154,7 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REMOVE_PREV_DATA( m_Volume );
+        COMPONENT_REMOVE_PREV_DATA( m_ObjectSceneNodes );
 
         /********************************/
         PostRemoveInactive( nObject );
@@ -155,14 +167,19 @@ namespace Riot
     void CComponentCollidable::ProcessComponent( void )
     {
         CTaskManager*   pTaskManager = CTaskManager::GetInstance();
-        CRenderer*      pRenderer = Engine::GetRenderer();
 
         //////////////////////////////////////////
         // Build the scene graph
-        if( m_pTerrainGraph )
+
+        // Draw the graphs
+        if( gs_bShowBoundingVolumes )
         {
             DrawNodes( m_pTerrainGraph, 4 );
+            m_pObjectGraph->DrawNode( Engine::GetRenderer(), RVector3( 1.0f, 1.0f, 1.0f ) );
         }
+
+        // First update the object graph
+        m_pObjectGraph->RecalculateBounds();
 
 #if PARALLEL_UPDATE
         task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 4 );
@@ -185,6 +202,8 @@ namespace Riot
             if( gs_bShowBoundingVolumes )
             {
                 pRenderer->DrawDebugSphere( pComponent->m_Volume[i] );
+
+                //pComponent->m_ObjectSceneNodes[i].DrawNode( pRenderer, RVector3( 0.5f, 1.0f, 1.0f ) );
             }
 
             // Check against the ground first
@@ -253,16 +272,13 @@ namespace Riot
 
         SAFE_DELETE_ARRAY( m_pInstance->m_pParentNodes );
         SAFE_DELETE_ARRAY( m_pInstance->m_pTerrainLeaves );
-        m_pInstance->m_pParentNodes      = new TSceneParentNode[nTotalParents];
+        m_pInstance->m_pParentNodes      = new TTerrainParentNode[nTotalParents];
         m_pInstance->m_pTerrainLeaves    = new TTerrainLeafNode[nTotalLeaves];
         m_pInstance->m_nNumParentNodes   = 0;
         m_pInstance->m_nNumTerrainLeaves = 0;
 
-        Memset( m_pInstance->m_pParentNodes, 0, sizeof( TSceneParentNode ) * nTotalParents );
-        Memset( m_pInstance->m_pTerrainLeaves, 0, sizeof( TTerrainLeafNode ) * nTotalLeaves );
-
         // Make the tree
-        m_pInstance->m_pTerrainGraph = &m_pInstance->m_pParentNodes[m_pInstance->m_nNumParentNodes++];
+        m_pInstance->m_pTerrainGraph = m_pInstance->m_pParentNodes + m_pInstance->m_nNumParentNodes++;
         m_pInstance->m_pTerrainGraph->min = RVector3( -(CTerrain::TERRAIN_WIDTH >> 1), -30000.0f, -(CTerrain::TERRAIN_HEIGHT >> 1) );
         m_pInstance->m_pTerrainGraph->max = RVector3( (CTerrain::TERRAIN_WIDTH >> 1), 30000.0f, (CTerrain::TERRAIN_HEIGHT >> 1) );
         m_pInstance->BuildParentNodes( m_pInstance->m_pTerrainGraph, 0 );
@@ -286,7 +302,7 @@ namespace Riot
     //  BuildParentNodes
     //  Constructs the top of the tree
     //-----------------------------------------------------------------------------
-    void CComponentCollidable::BuildParentNodes( TSceneParentNode* pNode, TSceneParentNode* pParent )
+    void CComponentCollidable::BuildParentNodes( TTerrainParentNode* pNode, TTerrainParentNode* pParent )
     {
         pNode->m_pParent = pParent;
         float fNewX = (pNode->max.x + pNode->min.x) / 2.0f;
@@ -294,7 +310,7 @@ namespace Riot
 
         if( Abs(pNode->max.x - pNode->min.x) > 2.0f )
         {
-            TSceneParentNode* pNewNode = NULL;
+            TTerrainParentNode* pNewNode = NULL;
 
             pNewNode = &m_pParentNodes[m_nNumParentNodes++];
             pNewNode->min = pNode->min;
@@ -373,7 +389,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentCollidable::RecomputeSceneGraphBounds( CComponentCollidable::TSceneNode* pNode )
     {
-        CComponentCollidable::TSceneParentNode* pParentNode = (CComponentCollidable::TSceneParentNode*)pNode;
+        CComponentCollidable::TTerrainParentNode* pParentNode = (CComponentCollidable::TTerrainParentNode*)pNode;
 
         pParentNode->max = RVector3( -10000.0f, -10000.0f, -10000.0f );
         pParentNode->min = RVector3( 10000.0f, 10000.0f, 10000.0f );
@@ -421,7 +437,7 @@ namespace Riot
     //  DrawNodes
     //  Draws all nodes down to a specific depth
     //-----------------------------------------------------------------------------
-    void CComponentCollidable::DrawNodes( TSceneParentNode* pNode, uint nDepth )
+    void CComponentCollidable::DrawNodes( TTerrainParentNode* pNode, uint nDepth )
     {
         CRenderer*  pRenderer = Engine::GetRenderer();
         static const RVector3    vColors[] =
@@ -442,13 +458,13 @@ namespace Riot
 
         if( nDepth )
         {
-            pNode->DrawNode( pRenderer, vColors[nDepth] );
+            ((TSceneNode*)pNode)->DrawNode( pRenderer, vColors[nDepth] );
 
             if( !pNode->m_nLowestParent )
             {
                 for( uint i = 0; i < 4; ++i )
                 {
-                    DrawNodes( (TSceneParentNode*)pNode->m_pChildren[i], nDepth-1 );
+                    DrawNodes( (TTerrainParentNode*)pNode->m_pChildren[i], nDepth-1 );
                 }
             }
             else
@@ -483,7 +499,7 @@ namespace Riot
         if( !bLeaf )
         {
             // There are still children below us, add it
-            TSceneParentNode* pParentNode = (TSceneParentNode*)pNode;
+            TTerrainParentNode* pParentNode = (TTerrainParentNode*)pNode;
             if( !pParentNode->m_nLowestParent )
             {
                 for( int i = 0; i < 4; ++i )
@@ -534,9 +550,16 @@ namespace Riot
             {
                 RTransform& transform = *((RTransform*)msg.m_pData);
 
-                m_Volume[nSlot].position[0] = transform.position[0];
-                m_Volume[nSlot].position[1] = transform.position[1];
-                m_Volume[nSlot].position[2] = transform.position[2];                    
+                m_Volume[nSlot].position = transform.position;  
+                float fRad = m_Volume[nSlot].radius;
+                
+                RVector3 vMax = RVector3(  fRad,  fRad,  fRad );
+                RVector3 vMin = RVector3( -fRad, -fRad, -fRad );
+                
+                m_ObjectSceneNodes[nSlot].max = vMax + transform.position;
+                m_ObjectSceneNodes[nSlot].min = vMin + transform.position;
+
+                ((TObjectParentNode*)m_ObjectSceneNodes[nSlot].m_pParent)->m_nInvalid = 1;
             }
             break;
         case eComponentMessageBoundingVolumeType:
@@ -591,7 +614,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     bool CComponentCollidable::SphereTerrainCollision( TSceneNode* pNode, const RSphere& s )
     {
-        TSceneParentNode* pParentNode = (TSceneParentNode*)pNode;
+        TTerrainParentNode* pParentNode = (TTerrainParentNode*)pNode;
         if( SphereAABBCollision( *pNode, s ) )
         {
             if( !pParentNode->m_nLowestParent )
@@ -616,6 +639,14 @@ namespace Riot
         return false;
     }
 
+    //-----------------------------------------------------------------------------
+    //  ObjectObjectCollision
+    //  Performs object-object collision
+    //-----------------------------------------------------------------------------
+    bool CComponentCollidable::ObjectObjectCollision( TSceneNode* pGraph, TSceneNode* pNode )
+    {
+       
+    }
 
 
 } // namespace Riot

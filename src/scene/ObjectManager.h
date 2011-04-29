@@ -3,7 +3,7 @@ File:           ObjectManager.h
 Purpose:        Handles allocation of objects
 Author:         Kyle Weicht
 Created:        3/31/2011
-Modified:       4/24/2011 10:56:57 PM
+Modified:       4/29/2011 12:16:02 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECTMANAGER_H_
@@ -91,6 +91,12 @@ namespace Riot
         //  Updates all the components, then resolves issues
         //-----------------------------------------------------------------------------
         void ProcessComponents( void );
+        
+        //-----------------------------------------------------------------------------
+        //  GetComponentIndex
+        //  Returns the objects index in the specified component
+        //-----------------------------------------------------------------------------
+        uint GetComponentIndex( uint nObject, eComponentType nType );
 
         //-----------------------------------------------------------------------------
         //  PostMessage

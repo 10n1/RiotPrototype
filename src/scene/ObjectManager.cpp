@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/25/2011 9:59:01 PM
+Modified:       4/29/2011 12:16:02 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -269,7 +269,17 @@ namespace Riot
             pManager->SendMessage( pManager->m_pMessages[ nMessage ] );
         }
     }
-    
+
+    //-----------------------------------------------------------------------------
+    //  GetComponentIndex
+    //  Returns the objects index in the specified component
+    //-----------------------------------------------------------------------------
+    uint CObjectManager::GetComponentIndex( uint nObject, eComponentType nType )
+    {
+        return m_pComponentIndices[nType][nObject];
+    }
+
+
     //-----------------------------------------------------------------------------
     //  PostMessage
     //  Posts a message to be processed

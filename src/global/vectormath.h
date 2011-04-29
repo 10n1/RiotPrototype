@@ -3,7 +3,7 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/28/2011 8:42:13 PM
+Modified:       4/28/2011 11:20:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
@@ -658,6 +658,11 @@ public:
     \***************************************/
     inline RAABB() : min( -1.0f, -1.0f, -1.0f ), max( 1.0f, 1.0f, 1.0f ) { }
     inline RAABB( const RVector3& inMin, const RVector3& inMax ) : min( inMin ), max( inMax ) { }
+    
+    inline RVector3 ComputePos( void )
+    {
+        return (min + max) / 2.0f;
+    }
 };
 
 inline bool AABBCollision( const RAABB& a, const RAABB& b )

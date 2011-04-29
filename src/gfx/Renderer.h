@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/28/2011 8:45:03 PM
+Modified:       4/28/2011 10:48:08 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -175,7 +175,7 @@ namespace Riot
 
         CMesh*      m_pSphereMesh;
 
-        RSphere     m_DebugSpheres[1024];
+        RSphere     m_DebugSpheres[1024*32];
         atomic_t    m_nNumSpheres;
 
         RAABB       m_DebugBoxes[1024*32];
