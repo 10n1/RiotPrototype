@@ -2,7 +2,7 @@
 File:           ComponentRigidBody.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 1:26:36 PM
+Modified:       4/29/2011 2:31:48 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentRigidBody.h"
@@ -145,7 +145,6 @@ namespace Riot
         PostRemoveInactive( nObject );
     }
 
-    static float fMathTest = 0.0f;
     //-----------------------------------------------------------------------------
     //  ProcessComponent
     //  Processes the component as necessary
@@ -169,10 +168,6 @@ namespace Riot
         
         for( uint i = nStart; i < nEnd; ++i )
         {
-            if( i == 1 )
-            {
-                fMathTest += Engine::m_fElapsedTime;
-            }
             if( pComponent->m_bGravity[i] )
             {
                 float fDt = Engine::m_fElapsedTime;
@@ -227,15 +222,6 @@ namespace Riot
         case eComponentMessageCollision:
             {
                 m_bGravity[nSlot] = false;
-                if( nSlot == 1 )
-                {
-                    static bool b = false;
-                    if( !b )
-                    {
-                        printf( "Time: %f\n", fMathTest );
-                        b = true;
-                    }
-                }
             }
             break;
         default:

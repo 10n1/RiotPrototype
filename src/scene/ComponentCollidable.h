@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 2:14:13 PM
+Modified:       4/29/2011 2:40:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -42,6 +42,7 @@ namespace Riot
         struct TSceneNode : public RAABB
         {
             TSceneNode* m_pParent;
+            CMutex      m_Mutex;
 
             virtual ~TSceneNode() { }
 
@@ -60,7 +61,6 @@ namespace Riot
         struct TObjectParentNode : public TSceneNode
         {
             TSceneNode* m_pChildren[8];
-            CMutex      m_Mutex;
             atomic_t    m_nNumChildren;
             uint8       m_nLowestParent;
             uint8       m_nInvalid;
@@ -125,7 +125,14 @@ namespace Riot
                 else
                 {
                     m_Mutex.Lock();
-                    uint nIndex = AtomicIncrement( &m_nNumChildren ) - 1;
+                    if( !m_nLowestParent )
+                    {
+                        // We were split, add us to a child
+                        m_Mutex.Unlock();
+                        AddObjectLeaf( pNode );
+                        return;
+                    }
+                    uint nIndex = m_nNumChildren++;
                     m_pChildren[ nIndex ] = pNode;
                     pNode->m_pParent = this;
 
@@ -135,6 +142,31 @@ namespace Riot
                     }
                     m_Mutex.Unlock();
                 }
+            }
+
+            void Prune( void )
+            {            
+                // We have no children, kill ourselves
+                if( m_nNumChildren == 0 )
+                {
+                    ((TObjectParentNode*)m_pParent)->RemoveObject( this );
+                    delete this;
+                    return;
+                }
+
+                // Our children are objects, just stop
+                if( m_nLowestParent )
+                {
+                    return;
+                }
+
+                // Prune our children
+                for( uint i = 0; i < m_nNumChildren; ++i )
+                {
+                    TObjectParentNode* pChild = (TObjectParentNode*)m_pChildren[i];
+                    pChild->Prune();
+                }
+
             }
 
             void RemoveObject( TSceneNode* pNode )
@@ -151,12 +183,6 @@ namespace Riot
                 }
 
                 m_pChildren[nIndex] = m_pChildren[--m_nNumChildren];
-
-                if( m_nNumChildren == 0 )
-                {
-                    ((TObjectParentNode*)m_pParent)->RemoveObject( this );
-                    delete this;
-                }
 
                 // Make sure we're not still our child's parent
                 pNode->m_pParent = NULL;

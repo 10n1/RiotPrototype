@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 1:53:11 PM
+Modified:       4/29/2011 2:35:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -184,6 +184,7 @@ namespace Riot
 
         // First update the object graph
         //m_pObjectGraph->RecalculateBounds();
+        //m_pObjectGraph->Prune();
 
 #if PARALLEL_UPDATE
         task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 16 );
@@ -217,18 +218,8 @@ namespace Riot
                 pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
             }
 
+            // Then against other objects
             pComponent->ObjectObjectCollision( pComponent->m_pObjectGraph, &pComponent->m_ObjectSceneNodes[i] );
-
-            // Then against all other objects
-            //for( uint j = 0; j < pComponent->m_nNumActiveComponents; ++j )
-            //{
-            //    if( i == j ) continue;
-            //
-            //    if( SphereSphereCollision( pComponent->m_Volume[i], pComponent->m_Volume[j] ) )
-            //    {
-            //        pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], j, pComponent->ComponentType );
-            //    }
-            //}
         }
     }
 
@@ -694,7 +685,7 @@ namespace Riot
 
                         if( SphereSphereCollision( m_Volume[nThisObject], m_Volume[nThatObject] ) )
                         {
-                            if( m_Volume[nThisObject].position.y > m_Volume[nThisObject].position.y )
+                            //if( m_Volume[nThisObject].position.y > m_Volume[nThisObject].position.y )
                                 Engine::GetObjectManager()->PostMessage( eComponentMessageCollision, m_pObjectIndices[ nThisObject ], nThatObject, ComponentType );
                         }
                     }
