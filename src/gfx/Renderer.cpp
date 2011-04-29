@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/28/2011 10:38:04 AM
+Modified:       4/28/2011 6:46:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -210,6 +210,17 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Render( void )
     {
+        if( !gs_bRenderOn )
+        {   // Don't render if we shouldn't
+            m_nNumCommands  = 0;
+            m_nNumSpheres   = 0;
+            m_nNumBoxes     = 0;
+
+            m_pDevice->Clear();
+            m_pDevice->Present();
+            return;
+        }
+
         // Restore solid fill mode
         if( gs_bRenderWireframe )
             m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );

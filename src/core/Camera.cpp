@@ -2,7 +2,7 @@
 File:           Camera.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/27/2011 4:28:04 PM
+Modified:       4/28/2011 6:39:27 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Camera.h"
@@ -24,6 +24,7 @@ namespace Riot
         mMouseButtonDown,
         mMouseButtonUp,
         mMouseMove,
+        mResize,
     };
     const uint           CCamera::NumMessagesReceived = ARRAY_LENGTH( MessagesReceived );
 

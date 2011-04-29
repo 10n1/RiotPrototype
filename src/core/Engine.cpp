@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/28/2011 11:41:08 AM
+Modified:       4/28/2011 6:44:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -193,6 +193,9 @@ namespace Riot
                 case KEY_F:
                     gs_bRenderWireframe = !gs_bRenderWireframe;
                     break;
+                case KEY_R:
+                    gs_bRenderOn = !gs_bRenderOn;
+                    break;
                 }
             }
         case mFullscreen:
@@ -265,6 +268,7 @@ namespace Riot
 
         m_pCamera = new CCamera;
         m_pCamera->SetView( pView );
+        m_pMessageDispatcher->RegisterListener( m_pCamera, CCamera::MessagesReceived, CCamera::NumMessagesReceived );
 
         SAFE_RELEASE( pView );
 
