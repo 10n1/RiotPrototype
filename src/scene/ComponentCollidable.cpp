@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/28/2011 8:15:47 PM
+Modified:       4/28/2011 10:36:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -47,12 +47,17 @@ namespace Riot
         m_nNumActiveComponents = 0;
         Memset( m_pTerrainTriangles, 0, sizeof(m_pTerrainTriangles) );
 
-        m_pGraph = NULL;
+        // Make sure we don't have any leaves
+        m_pParentNodes      = NULL;
+        m_pTerrainLeaves    = NULL;
+        m_pTerrainGraph     = NULL;
+
     }
 
     CComponentCollidable::~CComponentCollidable() 
     {
-        SAFE_DELETE( m_pGraph );
+        SAFE_DELETE_ARRAY( m_pParentNodes );
+        SAFE_DELETE_ARRAY( m_pTerrainLeaves );
     } 
 
     //-----------------------------------------------------------------------------
@@ -66,7 +71,6 @@ namespace Riot
 
         // Now initialize this component
         Memset( &m_Volume[m_nIndex], 0, sizeof(RSphere) );
-        m_nVolumeType[m_nIndex]   = BoundingSphere;
 
         /********************************/
         PostAttach( nObject );
@@ -85,7 +89,6 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_USE_PREV_DATA( m_Volume );
-        COMPONENT_USE_PREV_DATA( m_nVolumeType );
 
         /********************************/
         PostReattach( nObject );
@@ -104,7 +107,6 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REORDER_DATA( m_Volume );
-        COMPONENT_REORDER_DATA( m_nVolumeType );
 
         /********************************/
         PostDetach( nObject );
@@ -123,7 +125,6 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REORDER_SAVE_DATA( m_Volume );
-        COMPONENT_REORDER_SAVE_DATA( m_nVolumeType );
 
         /********************************/
         PostDetachAndSave( nObject );
@@ -142,7 +143,6 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REMOVE_PREV_DATA( m_Volume );
-        COMPONENT_REMOVE_PREV_DATA( m_nVolumeType );
 
         /********************************/
         PostRemoveInactive( nObject );
@@ -159,9 +159,9 @@ namespace Riot
 
         //////////////////////////////////////////
         // Build the scene graph
-        if( m_pGraph )
+        if( m_pTerrainGraph )
         {
-            m_pGraph->DrawNode( pRenderer, RVector3( 0.0f, 0.0f, 0.0f ), 4 );
+            DrawNodes( m_pTerrainGraph, 4 );
         }
 
 #if PARALLEL_UPDATE
@@ -182,21 +182,15 @@ namespace Riot
 
         for( uint i = nStart; i < nEnd; ++i )
         {
-
-            RVector3    fPosition = RVector3(pComponent->m_Volume[i].position);
-            float       fRadius   = pComponent->m_Volume[i].radius;
-
             if( gs_bShowBoundingVolumes )
             {
-                RVector4    debugSphere( fPosition );
-                debugSphere.w = fRadius;
-
-                pRenderer->DrawDebugSphere( debugSphere );
+                pRenderer->DrawDebugSphere( pComponent->m_Volume[i] );
             }
 
-            if( DoesSphereHitTriangle( pComponent->m_pGraph, pComponent->m_Volume[i] ) )
+            // Check against the ground first
+            if( pComponent->SphereTerrainCollision( pComponent->m_pTerrainGraph, pComponent->m_Volume[i] ) )
             {
-                uint x = 0;
+                int x = 0;
                 pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
             }
 
@@ -205,16 +199,7 @@ namespace Riot
             {
                 if( i == j ) continue;
 
-                float fRadSq = Square(fRadius) + Square(pComponent->m_Volume[j].radius);
-
-                RVector3 pos1( fPosition );
-                RVector3 pos2( pComponent->m_Volume[j].position );
-
-                RVector3 diff = pos2-pos1;
-
-                float fDistance = Abs( MagnitudeSq( diff ) );
-
-                if( fDistance <= fRadSq )
+                if( SphereSphereCollision( pComponent->m_Volume[i], pComponent->m_Volume[j] ) )
                 {
                     pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], j, pComponent->ComponentType );
                 }
@@ -252,6 +237,36 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentCollidable::SetTerrainData( const VPosNormalTex* pTerrainVerts, uint nNumVerts, const uint16* pIndices, uint nNumIndices )
     {
+        // Calculate the tree's depth
+        uint nTotalLeaves = (nNumIndices/3) >> 1;
+        uint nTotalParents = 0;
+        uint nLevel = 0;
+        uint nThisLevel = nTotalLeaves;
+
+        while( nThisLevel != 1 )
+        {
+            nThisLevel = nThisLevel/4;
+            ++nLevel;
+            nTotalParents += nThisLevel;
+        }
+
+
+        SAFE_DELETE_ARRAY( m_pInstance->m_pParentNodes );
+        SAFE_DELETE_ARRAY( m_pInstance->m_pTerrainLeaves );
+        m_pInstance->m_pParentNodes      = new TSceneParentNode[nTotalParents];
+        m_pInstance->m_pTerrainLeaves    = new TTerrainLeafNode[nTotalLeaves];
+        m_pInstance->m_nNumParentNodes   = 0;
+        m_pInstance->m_nNumTerrainLeaves = 0;
+
+        Memset( m_pInstance->m_pParentNodes, 0, sizeof( TSceneParentNode ) * nTotalParents );
+        Memset( m_pInstance->m_pTerrainLeaves, 0, sizeof( TTerrainLeafNode ) * nTotalLeaves );
+
+        // Make the tree
+        m_pInstance->m_pTerrainGraph = &m_pInstance->m_pParentNodes[m_pInstance->m_nNumParentNodes++];
+        m_pInstance->m_pTerrainGraph->min = RVector3( -(CTerrain::TERRAIN_WIDTH >> 1), -30000.0f, -(CTerrain::TERRAIN_HEIGHT >> 1) );
+        m_pInstance->m_pTerrainGraph->max = RVector3( (CTerrain::TERRAIN_WIDTH >> 1), 30000.0f, (CTerrain::TERRAIN_HEIGHT >> 1) );
+        m_pInstance->BuildParentNodes( m_pInstance->m_pTerrainGraph, 0 );
+
         for( uint i = 0; i < nNumIndices/3; ++i )
         {
             m_pInstance->m_pTerrainTriangles[i].vVerts[0] = pTerrainVerts[ pIndices[ (i*3) + 0 ] ].Pos;
@@ -267,77 +282,116 @@ namespace Riot
         BuildSceneGraph();
     }
 
-    void CComponentCollidable::BuildLeafNodes( SceneNode* pNode, Triangle* pTriangles )
+    //-----------------------------------------------------------------------------
+    //  BuildParentNodes
+    //  Constructs the top of the tree
+    //-----------------------------------------------------------------------------
+    void CComponentCollidable::BuildParentNodes( TSceneParentNode* pNode, TSceneParentNode* pParent )
     {
-        if( abs(pNode->vMax.x-pNode->vMin.x) > 1.0f )
+        pNode->m_pParent = pParent;
+        float fNewX = (pNode->max.x + pNode->min.x) / 2.0f;
+        float fNewZ = (pNode->max.z + pNode->min.z) / 2.0f;
+
+        if( Abs(pNode->max.x - pNode->min.x) > 2.0f )
         {
-            SceneNode* pNewNode = NULL;
-            float fNewX = (pNode->vMax.x + pNode->vMin.x) / 2.0f;
-            float fNewZ = (pNode->vMax.z + pNode->vMin.z) / 2.0f;
+            TSceneParentNode* pNewNode = NULL;
 
-            pNode->pChildren = new SceneNode[4];
+            pNewNode = &m_pParentNodes[m_nNumParentNodes++];
+            pNewNode->min = pNode->min;
+            pNewNode->max = pNode->max;
+            pNewNode->max.x = fNewX;
+            pNewNode->max.z = fNewZ;
+            pNode->m_pChildren[0] = pNewNode;
 
-            pNewNode = &pNode->pChildren[0];
-            pNewNode->vMin = pNode->vMin;
-            pNewNode->vMax = pNode->vMax;
-            pNewNode->vMax.x = fNewX;
-            pNewNode->vMax.z = fNewZ;
-
-            BuildLeafNodes( pNewNode, pTriangles );
+            BuildParentNodes( pNewNode, pNode );
             
-            pNewNode = &pNode->pChildren[1];
-            pNewNode->vMin = pNode->vMin;
-            pNewNode->vMax = pNode->vMax;
-            pNewNode->vMin.z = fNewZ;
-            pNewNode->vMax.x = fNewX;
+            pNewNode = &m_pParentNodes[m_nNumParentNodes++];
+            pNewNode->min = pNode->min;
+            pNewNode->max = pNode->max;
+            pNewNode->min.z = fNewZ;
+            pNewNode->max.x = fNewX;
+            pNode->m_pChildren[1] = pNewNode;
 
-            BuildLeafNodes( pNewNode, pTriangles );
+            BuildParentNodes( pNewNode, pNode );
             
-            pNewNode = &pNode->pChildren[2];
-            pNewNode->vMin = pNode->vMin;
-            pNewNode->vMax = pNode->vMax;
-            pNewNode->vMin.x = fNewX;
-            pNewNode->vMin.z = fNewZ;
+            pNewNode = &m_pParentNodes[m_nNumParentNodes++];
+            pNewNode->min = pNode->min;
+            pNewNode->max = pNode->max;
+            pNewNode->min.x = fNewX;
+            pNewNode->min.z = fNewZ;
+            pNode->m_pChildren[2] = pNewNode;
 
-            BuildLeafNodes( pNewNode, pTriangles );
+            BuildParentNodes( pNewNode, pNode );
 
-            pNewNode = &pNode->pChildren[3];
-            pNewNode->vMin = pNode->vMin;
-            pNewNode->vMax = pNode->vMax;
-            pNewNode->vMin.x = fNewX;
-            pNewNode->vMax.z = fNewZ;
+            pNewNode = &m_pParentNodes[m_nNumParentNodes++];
+            pNewNode->min = pNode->min;
+            pNewNode->max = pNode->max;
+            pNewNode->min.x = fNewX;
+            pNewNode->max.z = fNewZ;
+            pNode->m_pChildren[3] = pNewNode;
 
-            BuildLeafNodes( pNewNode, pTriangles );
+            BuildParentNodes( pNewNode, pNode );
         }
         else
         {
-            if( pNode->pChildren != NULL )
-            {
-                int x = 0;
-            }
+            TTerrainLeafNode* pLeafNode = NULL;
+            pNode->m_nLowestParent = 1;
+            
+            pLeafNode = &m_pTerrainLeaves[m_nNumTerrainLeaves++];
+            pLeafNode->min = pNode->min;
+            pLeafNode->max = pNode->max;
+            pLeafNode->max.x = fNewX;
+            pLeafNode->max.z = fNewZ;
+            pNode->m_pChildren[0] = pLeafNode;
+            
+            pLeafNode = &m_pTerrainLeaves[m_nNumTerrainLeaves++];
+            pLeafNode->min = pNode->min;
+            pLeafNode->max = pNode->max;
+            pLeafNode->min.z = fNewZ;
+            pLeafNode->max.x = fNewX;
+            pNode->m_pChildren[1] = pLeafNode;
+            
+            pLeafNode = &m_pTerrainLeaves[m_nNumTerrainLeaves++];
+            pLeafNode->min = pNode->min;
+            pLeafNode->max = pNode->max;
+            pLeafNode->min.x = fNewX;
+            pLeafNode->min.z = fNewZ;
+            pNode->m_pChildren[2] = pLeafNode;
+
+            pLeafNode = &m_pTerrainLeaves[m_nNumTerrainLeaves++];
+            pLeafNode->min = pNode->min;
+            pLeafNode->max = pNode->max;
+            pLeafNode->min.x = fNewX;
+            pLeafNode->max.z = fNewZ;
+            pNode->m_pChildren[3] = pLeafNode;
         }
     }
 
-    void RecomputeSceneNode( CComponentCollidable::SceneNode* pNode )
+    //-----------------------------------------------------------------------------
+    //  RecomputeSceneGraphBounds
+    //  Recomputes the bounds of the top of the tree
+    //-----------------------------------------------------------------------------
+    void CComponentCollidable::RecomputeSceneGraphBounds( CComponentCollidable::TSceneNode* pNode )
     {
-        if( pNode->pChildren )
+        CComponentCollidable::TSceneParentNode* pParentNode = (CComponentCollidable::TSceneParentNode*)pNode;
+
+        pParentNode->max = RVector3( -10000.0f, -10000.0f, -10000.0f );
+        pParentNode->min = RVector3( 10000.0f, 10000.0f, 10000.0f );
+        for( uint i = 0; i < 4; ++i )
         {
-            if( reinterpret_cast<uint64>(pNode->pChildren) & 0xFFFF000000000000 )
-                int x = 0;
-            pNode->vMax = RVector3( -10000.0f, -10000.0f, -10000.0f );
-            pNode->vMin = RVector3( 10000.0f, 10000.0f, 10000.0f );
-            for( uint i = 0; i < 4; ++i )
+            if( !pParentNode->m_nLowestParent )
             {
-                RecomputeSceneNode( &pNode->pChildren[i] );
-
-                pNode->vMax.x = Max( pNode->pChildren[i].vMax.x, pNode->vMax.x );
-                pNode->vMax.y = Max( pNode->pChildren[i].vMax.y, pNode->vMax.y );
-                pNode->vMax.z = Max( pNode->pChildren[i].vMax.z, pNode->vMax.z );
-
-                pNode->vMin.x = Min( pNode->pChildren[i].vMin.x, pNode->vMin.x );
-                pNode->vMin.y = Min( pNode->pChildren[i].vMin.y, pNode->vMin.y );
-                pNode->vMin.z = Min( pNode->pChildren[i].vMin.z, pNode->vMin.z );
+                // We're a grandparent, calculate the children
+                RecomputeSceneGraphBounds( pParentNode->m_pChildren[i] );
             }
+
+            pNode->max.x = Max( pParentNode->m_pChildren[i]->max.x, pNode->max.x );
+            pNode->max.y = Max( pParentNode->m_pChildren[i]->max.y, pNode->max.y );
+            pNode->max.z = Max( pParentNode->m_pChildren[i]->max.z, pNode->max.z );
+
+            pNode->min.x = Min( pParentNode->m_pChildren[i]->min.x, pNode->min.x );
+            pNode->min.y = Min( pParentNode->m_pChildren[i]->min.y, pNode->min.y );
+            pNode->min.z = Min( pParentNode->m_pChildren[i]->min.z, pNode->min.z );
         }
     }
 
@@ -347,27 +401,125 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentCollidable::BuildSceneGraph( void )
     {
-        SAFE_DELETE( m_pInstance->m_pGraph );
+        // Remove the triangles from the leaves
+        for( uint i = 0; i < m_pInstance->m_nNumTerrainLeaves; ++i )
+        {
+            m_pInstance->m_pTerrainLeaves[i].m_nNumTri = 0;
+        }
 
-        m_pInstance->m_pGraph = new SceneNode;
-        m_pInstance->m_pGraph->vMin = RVector3( -(CTerrain::TERRAIN_WIDTH >> 1), -30000.0f, -(CTerrain::TERRAIN_HEIGHT >> 1) );
-        m_pInstance->m_pGraph->vMax = RVector3( (CTerrain::TERRAIN_WIDTH >> 1), 30000.0f, (CTerrain::TERRAIN_HEIGHT >> 1) );
-
-        BuildLeafNodes( m_pInstance->m_pGraph, m_pInstance->m_pTerrainTriangles );
-        
         // Fill with triangles
         for( uint i = 0; i < nNumTriangles; ++i )
         {
-            m_pInstance->m_pGraph->AddTriangleToNode( &m_pInstance->m_pTerrainTriangles[i] );
+            m_pInstance->AddTriangleToGraph( m_pInstance->m_pTerrainGraph, &m_pInstance->m_pTerrainTriangles[i] );
         }
 
-        RecomputeSceneNode( m_pInstance->m_pGraph );
+        // Rebalance the top of the tree
+        m_pInstance->RecomputeSceneGraphBounds( m_pInstance->m_pTerrainGraph );
+    }
 
-        TTerrainLeafNode a, b;
+    //-----------------------------------------------------------------------------
+    //  DrawNodes
+    //  Draws all nodes down to a specific depth
+    //-----------------------------------------------------------------------------
+    void CComponentCollidable::DrawNodes( TSceneParentNode* pNode, uint nDepth )
+    {
+        CRenderer*  pRenderer = Engine::GetRenderer();
+        static const RVector3    vColors[] =
+        {
+            RVector3( 1.0f, 1.0f, 1.0f ),
+            RVector3( 0.0f, 1.0f, 1.0f ),
+            RVector3( 1.0f, 0.0f, 1.0f ),
+            RVector3( 1.0f, 1.0f, 0.0f ),
+            RVector3( 0.0f, 1.0f, 0.0f ),
+            RVector3( 0.0f, 0.0f, 1.0f ),
+            RVector3( 1.0f, 0.0f, 0.0f ),
+            RVector3( 0.0f, 0.0f, 0.0f ),
+            RVector3( 0.5f, 0.5f, 0.5f ),
+            RVector3( 1.0f, 0.5f, 0.0f ),
+            RVector3( 0.0f, 1.0f, 0.5f ),
+            RVector3( 0.5f, 0.0f, 1.0f ),
+        };
 
-        AABBCollision( a, b );
+        if( nDepth )
+        {
+            pNode->DrawNode( pRenderer, vColors[nDepth] );
 
-        PointInAABB( a, RVector3( 0.0f, 0.0f, 0.0f ) );
+            if( !pNode->m_nLowestParent )
+            {
+                for( uint i = 0; i < 4; ++i )
+                {
+                    DrawNodes( (TSceneParentNode*)pNode->m_pChildren[i], nDepth-1 );
+                }
+            }
+            else
+            {
+                for( uint i = 0; i < 4; ++i )
+                {
+                    pNode->m_pChildren[i]->DrawNode( pRenderer, vColors[nDepth-1] );
+                }
+            }
+        }
+    }
+
+    //-----------------------------------------------------------------------------
+    //  AddTriangleToGraph
+    //  Adds a triangle to the graph
+    //-----------------------------------------------------------------------------
+    void CComponentCollidable::AddTriangleToGraph( TSceneNode* pNode, Triangle* pTriangle, bool bLeaf )
+    {
+        for( int i = 0; i < 3; ++i )
+        {
+            if(    pTriangle->vVerts[i].x > pNode->max.x
+                || pTriangle->vVerts[i].y > pNode->max.y
+                || pTriangle->vVerts[i].z > pNode->max.z
+                || pTriangle->vVerts[i].x < pNode->min.x
+                || pTriangle->vVerts[i].y < pNode->min.y
+                || pTriangle->vVerts[i].z < pNode->min.z )
+            {
+                return;
+            }
+        }
+
+        if( !bLeaf )
+        {
+            // There are still children below us, add it
+            TSceneParentNode* pParentNode = (TSceneParentNode*)pNode;
+            if( !pParentNode->m_nLowestParent )
+            {
+                for( int i = 0; i < 4; ++i )
+                {
+                    AddTriangleToGraph( pParentNode->m_pChildren[i], pTriangle );
+                }
+                return;
+            }
+            else
+            {
+                for( int i = 0; i < 4; ++i )
+                {
+                    AddTriangleToGraph( pParentNode->m_pChildren[i], pTriangle, true );
+                }
+                return;
+            }
+        }
+
+        // This is a leaf, see which child the triangle goes in
+        TTerrainLeafNode* pLeaf = (TTerrainLeafNode*)pNode;
+        pLeaf->m_pTri[ pLeaf->m_nNumTri++ ] = pTriangle;
+
+        if( pLeaf->m_nNumTri == 2 )
+        {
+            pLeaf->max = RVector3( -10000.0f, -10000.0f, -10000.0f );
+            pLeaf->min = RVector3( 10000.0f, 10000.0f, 10000.0f );
+            for( uint i = 0; i < 3; ++i )
+            {
+                pLeaf->max.x = Max( pLeaf->m_pTri[0]->vVerts[i].x, Max( pLeaf->m_pTri[1]->vVerts[i].x, pLeaf->max.x ) );
+                pLeaf->max.y = Max( pLeaf->m_pTri[0]->vVerts[i].y, Max( pLeaf->m_pTri[1]->vVerts[i].y, pLeaf->max.y ) );
+                pLeaf->max.z = Max( pLeaf->m_pTri[0]->vVerts[i].z, Max( pLeaf->m_pTri[1]->vVerts[i].z, pLeaf->max.z ) );
+                pLeaf->min.x = Min( pLeaf->m_pTri[0]->vVerts[i].x, Min( pLeaf->m_pTri[1]->vVerts[i].x, pLeaf->min.x ) );
+                pLeaf->min.y = Min( pLeaf->m_pTri[0]->vVerts[i].y, Min( pLeaf->m_pTri[1]->vVerts[i].y, pLeaf->min.y ) );
+                pLeaf->min.z = Min( pLeaf->m_pTri[0]->vVerts[i].z, Min( pLeaf->m_pTri[1]->vVerts[i].z, pLeaf->min.z ) );
+            }
+        }
     }
 
     //-----------------------------------------------------------------------------
@@ -382,23 +534,9 @@ namespace Riot
             {
                 RTransform& transform = *((RTransform*)msg.m_pData);
 
-                switch( m_nVolumeType[nSlot] )
-                {
-                case BoundingSphere:
-                    {
-                        m_Volume[nSlot].position[0] = transform.position[0];
-                        m_Volume[nSlot].position[1] = transform.position[1];
-                        m_Volume[nSlot].position[2] = transform.position[2];
-                    }
-                    break;
-                case AABB:
-                    {
-                    }
-                    break;
-                default:
-                    {
-                    }
-                };
+                m_Volume[nSlot].position[0] = transform.position[0];
+                m_Volume[nSlot].position[1] = transform.position[1];
+                m_Volume[nSlot].position[2] = transform.position[2];                    
             }
             break;
         case eComponentMessageBoundingVolumeType:
@@ -415,6 +553,10 @@ namespace Riot
         }
     }
 
+    //-----------------------------------------------------------------------------
+    //  IsPointInTriangle
+    //  Determines if a point is inside a particular triangle
+    //-----------------------------------------------------------------------------
     // Reference: http://www.peroxide.dk/papers/collision/collision.pdf
 #define FloatBitwiseToInt(a) ((uint32&) a)
     bool CComponentCollidable::IsPointInTriangle( const RVector3& point, const Triangle& triangle )
@@ -443,24 +585,31 @@ namespace Riot
         return (( FloatBitwiseToInt(z) & ~(FloatBitwiseToInt(x)|FloatBitwiseToInt(y)) ) & 0x80000000);
     }
 
-    bool CComponentCollidable::DoesSphereHitTriangle( SceneNode* pNode, const RSphere& s )
+    //-----------------------------------------------------------------------------
+    //  SphereTerrainCollision
+    //  Determines if a tree hits any triangles within the node
+    //-----------------------------------------------------------------------------
+    bool CComponentCollidable::SphereTerrainCollision( TSceneNode* pNode, const RSphere& s )
     {
-        if( pNode->DoesSphereHitBox( s ) )
+        TSceneParentNode* pParentNode = (TSceneParentNode*)pNode;
+        if( SphereAABBCollision( *pNode, s ) )
         {
-            if( pNode->pChildren )
+            if( !pParentNode->m_nLowestParent )
             {
-                if( DoesSphereHitTriangle( &pNode->pChildren[0], s ) )
-                    return true;
-                if( DoesSphereHitTriangle( &pNode->pChildren[1], s ) )
-                    return true;
-                if( DoesSphereHitTriangle( &pNode->pChildren[2], s ) )
-                    return true;
-                if( DoesSphereHitTriangle( &pNode->pChildren[3], s ) )
-                    return true;
+                for( uint i = 0; i < 4; ++i )
+                {
+                    if( SphereTerrainCollision( pParentNode->m_pChildren[i], s ) )
+                        return true;
+                }
             }
             else
             {
-                return pNode->DoesSphereHitTriangle( s );
+                for( uint i = 0; i < 4; ++i )
+                {
+                    TTerrainLeafNode* pLeaf = (TTerrainLeafNode*)pParentNode->m_pChildren[i];
+                    if( pLeaf->SphereTriangleCollision( s ) )
+                        return true;
+                }
             }
         }
 

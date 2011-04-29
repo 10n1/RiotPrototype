@@ -3,7 +3,7 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/28/2011 8:12:21 PM
+Modified:       4/28/2011 8:42:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
@@ -698,7 +698,19 @@ inline bool PointInAABB( const RAABB& b, const RVector3& p )
     return true;
 }
 
-inline bool SphereInAABB( const RAABB& b, const RSphere& s )
+inline bool SphereSphereCollision( const RSphere& a, const RSphere& b )
+{
+    float fDistance = MagnitudeSq( a.position - b.position );
+
+    float fMaxDistance = Square(a.radius) + Square(b.radius);
+
+    if( Abs( fDistance ) < fMaxDistance )
+        return true;
+
+    return false;
+}
+
+inline bool SphereAABBCollision( const RAABB& b, const RSphere& s )
 {
     // First to see if the spheres position is in
     //  to avoid the full check

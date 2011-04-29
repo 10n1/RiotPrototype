@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/28/2011 8:16:45 PM
+Modified:       4/28/2011 10:36:18 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -27,7 +27,93 @@ namespace Riot
 
     class CComponentCollidable : public IComponent
     {
-        class SceneNode;
+    public:
+        struct Triangle
+        {
+            RVector3    vVerts[3];
+            RVector3    vNormal;
+        };
+
+        //-----------------------------------------------------------------------------
+        //  TSceneNode
+        //  Basic interface for all other nodes (Terrain, Object and Parent)
+        //-----------------------------------------------------------------------------
+        struct TSceneNode : public RAABB
+        {
+            TSceneNode* m_pParent;
+
+            void DrawNode( CRenderer* pRenderer, const RVector3& vColor)
+            {
+                pRenderer->DrawDebugBox( *this, vColor );
+            }
+        };
+        
+        //-----------------------------------------------------------------------------
+        //  TSceneParentNode
+        //  The non-object/terrain nodes. All this parent node does is hold them
+        //-----------------------------------------------------------------------------
+        struct TSceneParentNode : public TSceneNode
+        {
+            TSceneNode* m_pChildren[4];
+            uint16      m_nNumChildren;
+            uint16      m_nLowestParent;
+
+            TSceneParentNode()
+            {
+                m_pChildren[0] = NULL;
+                m_pChildren[1] = NULL;
+                m_pChildren[2] = NULL;
+                m_pChildren[3] = NULL;
+
+                m_nNumChildren  = 0;
+                m_nLowestParent = 0;
+            }
+        };
+        
+        //-----------------------------------------------------------------------------
+        //  TTerrainLeafNode
+        //  Holds the terrain triangle data
+        //-----------------------------------------------------------------------------
+        struct TTerrainLeafNode : public TSceneNode
+        {
+            Triangle*   m_pTri[2];
+            uint        m_nNumTri;
+            TTerrainLeafNode()
+            {
+                m_pTri[0] = NULL;
+                m_pTri[1] = NULL;
+                m_nNumTri = 0;
+            }
+
+            bool SphereTriangleCollision( const RSphere& s )
+            {
+                RVector3    fPosition = RVector3(s.position);
+                float       fRadius   = s.radius;
+
+                for( uint i = 0; i < 2; ++i )
+                {
+                    RPlane trianglePlane( m_pTri[i]->vVerts[0], m_pTri[i]->vVerts[1], m_pTri[i]->vVerts[2] );
+
+                    float fDistance = DistanceFromPlane( trianglePlane, s.position );
+
+                    if( fDistance > s.radius )
+                    {
+                        // The sphere doesn't interact the triangles plane
+                        continue;
+                    }
+                
+                    RVector3 planeCollisionPoint = fPosition - trianglePlane.normal;
+                    if( CComponentCollidable::IsPointInTriangle( planeCollisionPoint, *m_pTri[i] ) )
+                    {
+                        // we collided, break
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        };
+        
         friend class CObjectManager;
     public:
         // CComponentCollidable constructor
@@ -70,14 +156,46 @@ namespace Riot
         //-----------------------------------------------------------------------------
         static void BuildSceneGraph( void );
 
+        //-----------------------------------------------------------------------------
+        //  BuildParentNodes
+        //  Constructs the top of the tree
+        //-----------------------------------------------------------------------------
+        void BuildParentNodes( TSceneParentNode* pNode, TSceneParentNode* pParent );
+
+        //-----------------------------------------------------------------------------
+        //  AddTriangleToGraph
+        //  Adds a triangle to the graph
+        //-----------------------------------------------------------------------------
+        void AddTriangleToGraph( TSceneNode* pNode, Triangle* pTriangle, bool bLeaf = false );
+
+        //-----------------------------------------------------------------------------
+        //  RecomputeSceneGraphBounds
+        //  Recomputes the bounds of the top of the tree
+        //-----------------------------------------------------------------------------
+        void RecomputeSceneGraphBounds( CComponentCollidable::TSceneNode* pNode );
+        
+        //-----------------------------------------------------------------------------
+        //  SphereTerrainCollision
+        //  Determines if a tree hits any triangles within the node
+        //-----------------------------------------------------------------------------
+        bool SphereTerrainCollision( TSceneNode* pNode, const RSphere& s );
+        
+        //-----------------------------------------------------------------------------
+        //  DrawNodes
+        //  Draws all nodes down to a specific depth
+        //-----------------------------------------------------------------------------
+        void DrawNodes( TSceneParentNode* pNode, uint nDepth );
+
     private:
         static void ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount );
-
-        struct Triangle;
+        
+        //-----------------------------------------------------------------------------
+        //  IsPointInTriangle
+        //  Determines if a point is inside a particular triangle
+        //-----------------------------------------------------------------------------
+        // Reference: http://www.peroxide.dk/papers/collision/collision.pdf
         static bool IsPointInTriangle( const RVector3& point, const Triangle& triangle );
-
-        static bool DoesSphereHitTriangle( SceneNode* pNode, const RSphere& s );
-        static bool AddTriangleToGraph( const Triangle& triangle );
+        
 
     private:
         /***************************************\
@@ -87,185 +205,17 @@ namespace Riot
 
         static const uint nNumTriangles = CTerrain::TERRAIN_HEIGHT * CTerrain::TERRAIN_WIDTH * 2;
         
-        struct Triangle
-        {
-            RVector3    vVerts[3];
-            RVector3    vNormal;
-        };
-        Triangle m_pTerrainTriangles[nNumTriangles];
-
-        enum VolumeType
-        {
-            BoundingSphere,
-            AABB,
-        };
-
         RSphere     m_Volume[MaxComponents];
-        VolumeType  m_nVolumeType[MaxComponents];
 
-    public:
-        struct TSceneNode : public RAABB
-        {
-            TSceneNode* m_pParent;
-        };
+        Triangle    m_pTerrainTriangles[nNumTriangles];
 
-        struct TTerrainLeafNode : public TSceneNode
-        {
+        TSceneParentNode*   m_pTerrainGraph;
+        TSceneParentNode*   m_pParentNodes;
+        TTerrainLeafNode*   m_pTerrainLeaves;
 
-        };
-        struct SceneNode
-        {
-            RVector3    vMin;
-            RVector3    vMax;
-
-            SceneNode*  pChildren; 
-            Triangle*   pTri[2];
-
-            uint8       nTri;
-
-            SceneNode()
-            {
-                pChildren = NULL;
-
-                pTri[0] = NULL;
-                pTri[1] = NULL;
-
-                nTri = 0;
-            }
-
-            ~SceneNode()
-            {
-                SAFE_DELETE_ARRAY( pChildren );
-            }
-
-            bool DoesSphereHitBox(  const RSphere& s )
-            {
-                return SphereInAABB( RAABB( vMin, vMax ), s );
-            }
-
-            void DrawNode( CRenderer* pRenderer, const RVector3& vColor, uint nDepth )
-            {
-                static const RVector3    vColors[] =
-                {
-                    RVector3( 1.0f, 1.0f, 1.0f ),
-                    RVector3( 0.0f, 1.0f, 1.0f ),
-                    RVector3( 1.0f, 0.0f, 1.0f ),
-                    RVector3( 1.0f, 1.0f, 0.0f ),
-                    RVector3( 0.0f, 1.0f, 0.0f ),
-                    RVector3( 0.0f, 0.0f, 1.0f ),
-                    RVector3( 1.0f, 0.0f, 0.0f ),
-                    RVector3( 0.0f, 0.0f, 0.0f ),
-                    RVector3( 0.5f, 0.5f, 0.5f ),
-                    RVector3( 1.0f, 0.5f, 0.0f ),
-                    RVector3( 0.0f, 1.0f, 0.5f ),
-                    RVector3( 0.5f, 0.0f, 1.0f ),
-                };
-
-
-                pRenderer->DrawDebugBox( vMin, vMax, vColors[nDepth] );
-                if( nDepth == 0 || pChildren == NULL )
-                {
-                    return;
-                }
-
-                for( uint i = 0; i < 4; ++i )
-                {
-                    pChildren[i].DrawNode( pRenderer, vColors[nDepth], nDepth-1 );
-                }
-            };
-
-            bool IsPointInNode( const RVector3& vPoint )
-            {
-                if(    vPoint.x >= vMin.x
-                    && vPoint.y >= vMin.y 
-                    && vPoint.z >= vMin.z
-                    && vPoint.x <= vMax.x
-                    && vPoint.y <= vMax.y 
-                    && vPoint.z <= vMax.z )
-                {
-                    return true;
-                }
-
-                return false;
-            }
-
-            bool DoesSphereHitTriangle( const RSphere& s )
-            {
-                if( pChildren )
-                    return false;
-
-                
-                RVector3    fPosition = RVector3(s.position);
-                float       fRadius   = s.radius;
-
-                for( uint i = 0; i < 2; ++i )
-                {
-                    RPlane trianglePlane( pTri[i]->vVerts[0], pTri[i]->vVerts[1], pTri[i]->vVerts[2] );
-
-                    float fDistance = DistanceFromPlane( trianglePlane, s.position );
-
-                    if( fDistance > s.radius )
-                    {
-                        // The sphere doesn't interact the triagnles plane
-                        continue;
-                    }
-                
-                    RVector3 planeCollisionPoint = fPosition - trianglePlane.normal;
-                    if( CComponentCollidable::IsPointInTriangle( planeCollisionPoint, *pTri[i] ) )
-                    {
-                        // we collided, break
-                        return true;
-                    }
-                }
-            }
-
-            void AddTriangleToNode( Triangle* tri )
-            {
-                for( int i = 0; i < 3; ++i )
-                {
-                    if(    tri->vVerts[i].x > vMax.x
-                        || tri->vVerts[i].y > vMax.y
-                        || tri->vVerts[i].z > vMax.z
-                        || tri->vVerts[i].x < vMin.x
-                        || tri->vVerts[i].y < vMin.y
-                        || tri->vVerts[i].z < vMin.z )
-                    {
-                        return;
-                    }
-                }
-
-                if( pChildren )
-                {
-                    for( int i = 0; i < 4; ++i )
-                    {
-                        pChildren[i].AddTriangleToNode( tri );
-                    }
-                }
-                else
-                {
-                    pTri[nTri++] = tri;
-
-                    if( nTri == 2 )
-                    {
-                        vMax = RVector3( -10000.0f, -10000.0f, -10000.0f );
-                        vMin = RVector3( 10000.0f, 10000.0f, 10000.0f );
-                        for( uint i = 0; i < 3; ++i )
-                        {
-                            vMax.x = Max( pTri[0]->vVerts[i].x, Max( pTri[1]->vVerts[i].x, vMax.x ) );
-                            vMax.y = Max( pTri[0]->vVerts[i].y, Max( pTri[1]->vVerts[i].y, vMax.y ) );
-                            vMax.z = Max( pTri[0]->vVerts[i].z, Max( pTri[1]->vVerts[i].z, vMax.z ) );
-                            vMin.x = Min( pTri[0]->vVerts[i].x, Min( pTri[1]->vVerts[i].x, vMin.x ) );
-                            vMin.y = Min( pTri[0]->vVerts[i].y, Min( pTri[1]->vVerts[i].y, vMin.y ) );
-                            vMin.z = Min( pTri[0]->vVerts[i].z, Min( pTri[1]->vVerts[i].z, vMin.z ) );
-                        }
-                    }
-                }
-            }
-        };
-
-        SceneNode*  m_pGraph;
-
-        static void BuildLeafNodes( SceneNode* pNode, Triangle* pTriangles );         
+        uint                m_nNumParentNodes;
+        uint                m_nNumTerrainLeaves;
+     
     };
 
 } // namespace Riot

@@ -2,7 +2,7 @@
 File:           Camera.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/28/2011 6:39:27 PM
+Modified:       4/28/2011 10:37:26 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Camera.h"
@@ -128,7 +128,7 @@ namespace Riot
                 {
                 case KEY_SHIFT:
                     {
-                        m_fMovementSpeed *= 5.0f;
+                        m_fMovementSpeed *= 2.5f;
                         break;
                     }
                 }

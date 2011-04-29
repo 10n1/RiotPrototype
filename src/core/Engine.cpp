@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/28/2011 6:44:58 PM
+Modified:       4/28/2011 8:48:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -101,7 +101,7 @@ namespace Riot
 
             // Make sure terrain is the last thing drawn
             m_pTerrain->Render();
-
+            
             //////////////////////////////////////////
             // Render
             m_pRenderer->Render();
@@ -303,6 +303,7 @@ namespace Riot
         for( uint i = 1; i < 40; ++i )
         {
             t.position = RVector3( RandFloat(128.0f) - 64.0f, i * 20.0f + 20.0f, RandFloat(128.0f) - 64.0f );
+            //t.position = RVector3( 0.0f, i * 30.0f + 20.0f, 0.0f );
             nObject = m_pObjectManager->CreateObject();
 
             m_pObjectManager->AddComponent( nObject, eComponentRigidBody );

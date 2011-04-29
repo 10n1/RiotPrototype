@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/28/2011 6:46:04 PM
+Modified:       4/28/2011 8:49:15 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -282,32 +282,28 @@ namespace Riot
         mProj = m_pCurrentView->GetProjMatrix();
         SetViewProj( mView, mProj );
 
-        // Draw the debug cubes
+        // Draw the debug volumes
         if( gs_bShowBoundingVolumes )
         {
+            // Draw the spheres
             m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
             m_pDevice->SetPSSamplerState( m_pNearestSamplerState );
             m_pDevice->SetPSTexture( 0, m_pWhiteTexture );
             for( sint i = 0; i < m_nNumSpheres; ++i )
             {
-                RMatrix4 mWorld = RMatrix4Scale( m_DebugSpheres[i].w );
-                mWorld.r3 = m_DebugSpheres[i];
+                RMatrix4 mWorld = RMatrix4Scale( m_DebugSpheres[i].radius );
+                mWorld.r3 = Homogonize(m_DebugSpheres[i].position);
                 mWorld.r3.w = 1.0f;
                 SetWorldMatrix( mWorld );
                 m_pSphereMesh->DrawMesh();
             }
             m_nNumSpheres = 0;
-            m_pDevice->SetFillMode( GFX_FILL_SOLID );
 
             // Draw the debug boxes
-            m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
-            m_pDevice->SetPSSamplerState( m_pNearestSamplerState );
-            m_pDevice->SetPSTexture( 0, m_pWhiteTexture );
-
             for( sint i = 0; i < m_nNumBoxes; ++i )
             {
-                RVector3 vMin = m_DebugBoxesMin[i];
-                RVector3 vMax = m_DebugBoxesMax[i];
+                RVector3 vMin = m_DebugBoxes[i].min;
+                RVector3 vMax = m_DebugBoxes[i].max;
                 RVector3 vColor = m_DebugBoxesColor[i];
 
                 RMatrix4 mWorld = RMatrix4Identity();
@@ -319,22 +315,27 @@ namespace Riot
                     { RVector3(  vMax.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
                     { RVector3(  vMax.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
                     { RVector3(  vMin.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+
                     { RVector3(  vMin.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
                     { RVector3(  vMax.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
                     { RVector3(  vMax.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
                     { RVector3(  vMin.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
+
                     { RVector3(  vMin.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
                     { RVector3(  vMin.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
                     { RVector3(  vMin.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
                     { RVector3(  vMin.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+
                     { RVector3(  vMax.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
                     { RVector3(  vMax.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
                     { RVector3(  vMax.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
                     { RVector3(  vMax.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+
                     { RVector3(  vMin.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
                     { RVector3(  vMax.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
                     { RVector3(  vMax.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
                     { RVector3(  vMin.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
+
                     { RVector3(  vMin.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
                     { RVector3(  vMax.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
                     { RVector3(  vMax.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
@@ -537,8 +538,8 @@ namespace Riot
         uint nVertexCount; 
         uint nIndexSize; 
         uint nIndexCount; 
-        void* pVertices;
-        void* pIndices;
+        byte* pVertices;
+        byte* pIndices;
     
         FILE* pFile = fopen( szFilename, "rb" );
         fread( &nVertexStride, sizeof( nVertexStride ), 1, pFile );
@@ -715,7 +716,7 @@ namespace Riot
     //  DrawDebugSphere
     //  Renders a wireframe debug sphere
     //-----------------------------------------------------------------------------
-    void CRenderer::DrawDebugSphere( const RVector4& fSphere )
+    void CRenderer::DrawDebugSphere( const RSphere& fSphere )
     {
         if( !gs_bShowBoundingVolumes )
             return;
@@ -729,15 +730,14 @@ namespace Riot
     //  DrawDebugBox
     //  Renders a wireframe debug AAB
     //-----------------------------------------------------------------------------
-    void CRenderer::DrawDebugBox( const RVector3& vMin,const RVector3& vMax, const RVector3& vColor )
+    void CRenderer::DrawDebugBox( const RAABB& box, const RVector3& vColor )
     {
         if( !gs_bShowBoundingVolumes )
             return;
 
         sint nIndex = AtomicIncrement( &m_nNumBoxes ) - 1;
 
-        m_DebugBoxesMin[nIndex] = vMin;
-        m_DebugBoxesMax[nIndex] = vMax;
+        m_DebugBoxes[nIndex] = box;
         m_DebugBoxesColor[nIndex] = vColor;
     }
 
