@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/28/2011 5:43:38 PM
+Modified:       4/28/2011 7:06:24 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -37,8 +37,6 @@ namespace Riot
         eComponentMessageCollision,
     };
     const uint CComponentCollidable::NumMessagesReceived = (MessagesReceived[0] == eNULLCOMPONENTMESSAGE) ? 0 : sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
-
-    uint CComponentCollidable::nTemp = 0;
 
     /***************************************\
     | class methods                         |
@@ -163,7 +161,6 @@ namespace Riot
         // Build the scene graph
         if( m_pGraph )
         {
-            nTemp = 0;
             m_pGraph->DrawNode( pRenderer, RVector3( 0.0f, 0.0f, 0.0f ), 4 );
         }
 

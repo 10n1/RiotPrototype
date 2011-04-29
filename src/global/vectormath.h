@@ -3,7 +3,7 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/24/2011 12:26:10 AM
+Modified:       4/28/2011 7:01:15 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
@@ -509,7 +509,7 @@ RQuaternion Lerp( const RQuaternion& a, const RQuaternion& b, float t );
 RQuaternion Slerp( const RQuaternion& a, const RQuaternion& b, float t );
 
 //-----------------------------------------------------------------------------
-//  Quaternion
+//  3D Transform
 //-----------------------------------------------------------------------------
 class RTransform
 {
@@ -579,6 +579,48 @@ public:
     inline void RotateLocalY( float rad ) { orientation = RQuatFromAxisAngle( RQuatGetYAxis( orientation ), rad ) * orientation; }
     inline void RotateLocalZ( float rad ) { orientation = RQuatFromAxisAngle( RQuatGetZAxis( orientation ), rad ) * orientation; }  
 };
+
+//-----------------------------------------------------------------------------
+//  Plane
+//-----------------------------------------------------------------------------
+class RPlane
+{
+public:
+    /***************************************\
+    | class members
+    \***************************************/
+    RVector3    normal;
+    float       D;
+
+    /***************************************\
+    | class methods
+    \***************************************/
+    inline RPlane() : normal( 0.0f, 1.0f, 0.0f ), D(0.0f) { }
+    inline RPlane( const RVector3& norm, const RVector3& origin )
+    {
+        normal = norm;
+        D = -(  normal.x * origin.x +
+                normal.y * origin.y +
+                normal.z * origin.z );
+    }
+    inline RPlane( const RVector3& p0, const RVector3& p1, const RVector3& p2 )
+    {
+        RVector3 vSide1 = p0 - p1;
+        RVector3 vSide2 = p1 - p2;
+
+        normal = Normalize( CrossProduct( vSide1, vSide2 ) );
+
+        D = -(  normal.x * p0.x +
+                normal.y * p0.y +
+                normal.z * p0.z );
+    }
+};
+
+inline float DistanceFromPlane( const RPlane& plane, const RVector3& p )
+{
+    float fDot = DotProduct( p, plane.normal );
+    return fDot + plane.D;
+}
 
 #pragma warning(disable:4201)
 

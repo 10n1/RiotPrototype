@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/28/2011 4:02:59 PM
+Modified:       4/28/2011 7:05:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -118,50 +118,6 @@ namespace Riot
         VolumeType      m_nVolumeType[MaxComponents];
 
     public:
-        struct Plane
-        {
-            float4      fPlaneEquation;
-            RVector3    vOrigin;
-            RVector3    vNormal;
-
-            Plane() { }
-
-            Plane( Triangle& tri )
-            {
-                vNormal = tri.vNormal;
-                vOrigin = tri.vVerts[0];
-
-                fPlaneEquation[0] = vNormal.x;
-                fPlaneEquation[1] = vNormal.y;
-                fPlaneEquation[2] = vNormal.z;
-                fPlaneEquation[3] = -(  vNormal.x * vOrigin.x + 
-                                        vNormal.y * vOrigin.y + 
-                                        vNormal.z * vOrigin.z );
-            }
-
-            Plane( const RVector3& norm, const RVector3& point )
-            {
-                vNormal = norm;
-                vOrigin = point;
-
-                fPlaneEquation[0] = vNormal.x;
-                fPlaneEquation[1] = vNormal.y;
-                fPlaneEquation[2] = vNormal.z;
-                fPlaneEquation[3] = -(  vNormal.x * vOrigin.x + 
-                                        vNormal.y * vOrigin.y + 
-                                        vNormal.z * vOrigin.z );
-            }
-
-            float DistanceFrom( const float3& fPoint )
-            {
-                float fDot = DotProduct( RVector3( fPoint ), vNormal );
-                return fDot + fPlaneEquation[3];
-            }
-        };
-
-        static uint nTemp;
-
-    public:
         struct SceneNode
         {
             RVector3    vMin;
@@ -192,23 +148,23 @@ namespace Riot
                 float fRadius = sqrtf( s.radius );
 
                 // Test top
-                Plane pTop( RVector3( 0.0f, 1.0f, 0.0f ),vMax );
-                float fTop = pTop.DistanceFrom( s.position );  
+                RPlane pTop( RVector3( 0.0f, 1.0f, 0.0f ), vMax );
+                float fTop = DistanceFromPlane( pTop, s.position );  
 
-                Plane pRight( RVector3( 1.0f, 0.0f, 0.0f ),vMax );
-                float fRight = pRight.DistanceFrom( s.position );
+                RPlane pRight( RVector3( 1.0f, 0.0f, 0.0f ), vMax );
+                float fRight = DistanceFromPlane( pRight, s.position );
 
-                Plane pFar( RVector3( 0.0f, 0.0f, 1.0f ),vMax );
-                float fFar = pFar.DistanceFrom( s.position );
+                RPlane pFar( RVector3( 0.0f, 0.0f, 1.0f ), vMax );
+                float fFar = DistanceFromPlane( pFar, s.position );
 
-                Plane pBottom( RVector3( 0.0f, -1.0f, 0.0f ),vMin );
-                float fBottom = pBottom.DistanceFrom( s.position );  
+                RPlane pBottom( RVector3( 0.0f, -1.0f, 0.0f ), vMin );
+                float fBottom = DistanceFromPlane( pBottom, s.position );  
 
-                Plane pLeft( RVector3( -1.0f, 0.0f, 0.0f ),vMin );
-                float fLeft = pLeft.DistanceFrom( s.position );
+                RPlane pLeft( RVector3( -1.0f, 0.0f, 0.0f ), vMin );
+                float fLeft = DistanceFromPlane( pLeft, s.position );
 
-                Plane pNear( RVector3( 0.0f, 0.0f, -1.0f ),vMin );
-                float fNear = pNear.DistanceFrom( s.position );
+                RPlane pNear( RVector3( 0.0f, 0.0f, -1.0f ), vMin );
+                float fNear = DistanceFromPlane( pNear, s.position );
 
 
                 // The box is too far away
@@ -247,7 +203,6 @@ namespace Riot
                 pRenderer->DrawDebugBox( vMin, vMax, vColors[nDepth] );
                 if( nDepth == 0 || pChildren == NULL )
                 {
-                    //if( nTemp++ < 1000 )
                     return;
                 }
 
@@ -283,9 +238,9 @@ namespace Riot
 
                 for( uint i = 0; i < 2; ++i )
                 {
-                    Plane trianglePlane( *pTri[i] );
+                    RPlane trianglePlane( pTri[i]->vVerts[0], pTri[i]->vVerts[1], pTri[i]->vVerts[2] );
 
-                    float fDistance = trianglePlane.DistanceFrom( s.position );
+                    float fDistance = DistanceFromPlane( trianglePlane, s.position );
 
                     if( fDistance > sqrtf(s.radius) )
                     {
@@ -293,7 +248,7 @@ namespace Riot
                         continue;
                     }
                 
-                    RVector3 planeCollisionPoint = fPosition - trianglePlane.vNormal;
+                    RVector3 planeCollisionPoint = fPosition - trianglePlane.normal;
                     if( CComponentCollidable::IsPointInTriangle( planeCollisionPoint, *pTri[i] ) )
                     {
                         // we collided, break
