@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 4:15:35 PM
+Modified:       4/29/2011 4:23:19 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -16,7 +16,7 @@ CComponentCollidable
 3
 eComponentMessageTransform
 eComponentMessageBoundingVolumeType
-eComponentMessageCollision
+eComponentMessageObjectCollision
 2
 BoundingVolume m_Volume
 VolumeType m_nVolumeType
@@ -34,7 +34,8 @@ namespace Riot
     {
         eComponentMessageTransform,
         eComponentMessageBoundingVolumeType,
-        eComponentMessageCollision,
+        eComponentMessageObjectCollision,
+        eComponentMessageTerrainCollision,
     };
     const uint CComponentCollidable::NumMessagesReceived = (MessagesReceived[0] == eNULLCOMPONENTMESSAGE) ? 0 : sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
 
@@ -214,7 +215,7 @@ namespace Riot
             if( pComponent->SphereTerrainCollision( pComponent->m_pTerrainGraph, pComponent->m_Volume[i] ) )
             {
                 int x = 0;
-                pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
+                pManager->PostMessage( eComponentMessageTerrainCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
             }
 
             // Then against other objects
@@ -578,7 +579,7 @@ namespace Riot
             {
             }
             break;
-        case eComponentMessageCollision:
+        case eComponentMessageObjectCollision:
             {
             }
             break;
@@ -684,8 +685,7 @@ namespace Riot
 
                         if( SphereSphereCollision( m_Volume[nThisObject], m_Volume[nThatObject] ) )
                         {
-                            //if( m_Volume[nThisObject].position.y > m_Volume[nThisObject].position.y )
-                                Engine::GetObjectManager()->PostMessage( eComponentMessageCollision, m_pObjectIndices[ nThisObject ], nThatObject, ComponentType );
+                            Engine::GetObjectManager()->PostMessage( eComponentMessageObjectCollision, m_pObjectIndices[ nThisObject ], nThatObject, ComponentType );
                         }
                     }
                 }

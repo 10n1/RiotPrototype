@@ -2,7 +2,7 @@
 File:           ComponentRigidBody.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 2:31:48 PM
+Modified:       4/29/2011 4:25:57 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentRigidBody.h"
@@ -13,7 +13,7 @@ Modified by:    Kyle Weicht
 CComponentRigidBody
 2
 eComponentMessageTransform
-eComponentMessageCollision
+eComponentMessageObjectCollision
 3
 RTransform m_Transform
 RVector3 m_vVelocity
@@ -31,7 +31,8 @@ namespace Riot
     const eComponentMessageType CComponentRigidBody::MessagesReceived[] =
     {
         eComponentMessageTransform,
-        eComponentMessageCollision,
+        eComponentMessageObjectCollision,
+        eComponentMessageTerrainCollision,
     };
     const uint CComponentRigidBody::NumMessagesReceived = (MessagesReceived[0] == eNULLCOMPONENTMESSAGE) ? 0 : sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
 
@@ -219,11 +220,17 @@ namespace Riot
                 m_Transform[nSlot] = transform;
             }
             break;
-        case eComponentMessageCollision:
+
+        case eComponentMessageObjectCollision:
+            if( m_Transform[nSlot].position.y > m_Transform[msg.m_nData].position.y )
             {
-                m_bGravity[nSlot] = false;
+                m_vVelocity[nSlot] = RVector3( 0.0f, 5.0f, 0.0f );
             }
             break;
+
+        case eComponentMessageTerrainCollision:
+            m_bGravity[nSlot] = false;
+            break;            
         default:
             {
             }

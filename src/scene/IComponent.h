@@ -3,7 +3,7 @@ File:           IComponent.h
 Purpose:        The definition for the base component
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/26/2011 11:48:49 PM
+Modified:       4/29/2011 4:23:19 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ICOMPONENT_H_
@@ -25,7 +25,8 @@ namespace Riot
         eComponentMessageUpdate,
         eComponentMessageMesh,
         eComponentMessageBoundingVolumeType,
-        eComponentMessageCollision,
+        eComponentMessageObjectCollision,
+        eComponentMessageTerrainCollision,
 
         eNUMCOMPONENTMESSAGES,
         eNULLCOMPONENTMESSAGE = -1
