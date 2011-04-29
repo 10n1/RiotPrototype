@@ -3,7 +3,7 @@ File:           vectormath.h
 Purpose:        3D math library
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/28/2011 7:01:15 PM
+Modified:       4/28/2011 8:12:21 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VECTORMATH_H_
@@ -620,6 +620,123 @@ inline float DistanceFromPlane( const RPlane& plane, const RVector3& p )
 {
     float fDot = DotProduct( p, plane.normal );
     return fDot + plane.D;
+}
+
+//-----------------------------------------------------------------------------
+//  Sphere
+//-----------------------------------------------------------------------------
+class RSphere
+{
+public:
+    /***************************************\
+    | class members
+    \***************************************/
+    RVector3    position;
+    float       radius;
+
+    /***************************************\
+    | class methods
+    \***************************************/
+    inline RSphere( ) : position( RVector3Zero() ), radius( 1.0f ) { }
+    inline RSphere( const RVector3& p, float r ) : position( p ), radius( r ) { }
+};
+
+//-----------------------------------------------------------------------------
+//  Axis aligned bounding box
+//-----------------------------------------------------------------------------
+class RAABB
+{
+public:
+    /***************************************\
+    | class members
+    \***************************************/
+    RVector3    min;
+    RVector3    max;
+
+    /***************************************\
+    | class methods
+    \***************************************/
+    inline RAABB() : min( -1.0f, -1.0f, -1.0f ), max( 1.0f, 1.0f, 1.0f ) { }
+    inline RAABB( const RVector3& inMin, const RVector3& inMax ) : min( inMin ), max( inMax ) { }
+};
+
+inline bool AABBCollision( const RAABB& a, const RAABB& b )
+{
+    if( a.max.x < b.min.x )
+        return false;
+    if( a.max.y < b.min.y )
+        return false;
+    if( a.max.z < b.min.z )
+        return false;
+    
+    if( b.max.x < a.min.x )
+        return false;
+    if( b.max.y < a.min.y )
+        return false;
+    if( b.max.z < a.min.z )
+        return false;
+
+    return true;
+}
+
+inline bool PointInAABB( const RAABB& b, const RVector3& p )
+{
+    if( p.x < b.min.x )
+        return false;
+    if( p.y < b.min.y )
+        return false;
+    if( p.z < b.min.z )
+        return false;
+    
+    if( p.x > b.max.x )
+        return false;
+    if( p.y > b.max.y )
+        return false;
+    if( p.z > b.max.z )
+        return false;
+
+    return true;
+}
+
+inline bool SphereInAABB( const RAABB& b, const RSphere& s )
+{
+    // First to see if the spheres position is in
+    //  to avoid the full check
+    if( PointInAABB( b, s.position ) )
+        return true;
+
+    // Test top
+    RPlane pTop( RVector3( 0.0f, 1.0f, 0.0f ), b.max );
+    float fTop = DistanceFromPlane( pTop, s.position );  
+
+    RPlane pRight( RVector3( 1.0f, 0.0f, 0.0f ), b.max );
+    float fRight = DistanceFromPlane( pRight, s.position );
+
+    RPlane pFar( RVector3( 0.0f, 0.0f, 1.0f ), b.max );
+    float fFar = DistanceFromPlane( pFar, s.position );
+
+    RPlane pBottom( RVector3( 0.0f, -1.0f, 0.0f ), b.min );
+    float fBottom = DistanceFromPlane( pBottom, s.position );  
+
+    RPlane pLeft( RVector3( -1.0f, 0.0f, 0.0f ), b.min );
+    float fLeft = DistanceFromPlane( pLeft, s.position );
+
+    RPlane pNear( RVector3( 0.0f, 0.0f, -1.0f ), b.min );
+    float fNear = DistanceFromPlane( pNear, s.position );
+
+
+    // The box is too far away
+    if(    fTop     > s.radius
+        || fBottom  > s.radius   
+        || fRight   > s.radius
+        || fLeft    > s.radius
+        || fNear    > s.radius
+        || fFar     > s.radius )
+    {
+        return false;
+    }
+
+    return true;
 }
 
 #pragma warning(disable:4201)

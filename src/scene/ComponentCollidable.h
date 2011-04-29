@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/28/2011 7:05:58 PM
+Modified:       4/28/2011 8:16:45 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -27,20 +27,6 @@ namespace Riot
 
     class CComponentCollidable : public IComponent
     {
-        union BoundingVolume
-        {
-            struct _sphere
-            {
-                float3  position;
-                float   radius; // Radius is stored pre-squared
-            } sphere;
-            struct _AABB
-            {
-                float3  min;
-                float3  max;
-            } aabb;
-        };
-
         class SceneNode;
         friend class CObjectManager;
     public:
@@ -90,7 +76,7 @@ namespace Riot
         struct Triangle;
         static bool IsPointInTriangle( const RVector3& point, const Triangle& triangle );
 
-        static bool DoesSphereHitTriangle( SceneNode* pNode, const BoundingVolume::_sphere& s );
+        static bool DoesSphereHitTriangle( SceneNode* pNode, const RSphere& s );
         static bool AddTriangleToGraph( const Triangle& triangle );
 
     private:
@@ -114,10 +100,19 @@ namespace Riot
             AABB,
         };
 
-        BoundingVolume  m_Volume[MaxComponents];
-        VolumeType      m_nVolumeType[MaxComponents];
+        RSphere     m_Volume[MaxComponents];
+        VolumeType  m_nVolumeType[MaxComponents];
 
     public:
+        struct TSceneNode : public RAABB
+        {
+            TSceneNode* m_pParent;
+        };
+
+        struct TTerrainLeafNode : public TSceneNode
+        {
+
+        };
         struct SceneNode
         {
             RVector3    vMin;
@@ -143,42 +138,9 @@ namespace Riot
                 SAFE_DELETE_ARRAY( pChildren );
             }
 
-            bool DoesSphereHitBox(  const BoundingVolume::_sphere& s )
+            bool DoesSphereHitBox(  const RSphere& s )
             {
-                float fRadius = sqrtf( s.radius );
-
-                // Test top
-                RPlane pTop( RVector3( 0.0f, 1.0f, 0.0f ), vMax );
-                float fTop = DistanceFromPlane( pTop, s.position );  
-
-                RPlane pRight( RVector3( 1.0f, 0.0f, 0.0f ), vMax );
-                float fRight = DistanceFromPlane( pRight, s.position );
-
-                RPlane pFar( RVector3( 0.0f, 0.0f, 1.0f ), vMax );
-                float fFar = DistanceFromPlane( pFar, s.position );
-
-                RPlane pBottom( RVector3( 0.0f, -1.0f, 0.0f ), vMin );
-                float fBottom = DistanceFromPlane( pBottom, s.position );  
-
-                RPlane pLeft( RVector3( -1.0f, 0.0f, 0.0f ), vMin );
-                float fLeft = DistanceFromPlane( pLeft, s.position );
-
-                RPlane pNear( RVector3( 0.0f, 0.0f, -1.0f ), vMin );
-                float fNear = DistanceFromPlane( pNear, s.position );
-
-
-                // The box is too far away
-                if(    fTop     > fRadius
-                    || fBottom  > fRadius   
-                    || fRight   > fRadius
-                    || fLeft    > fRadius
-                    || fNear    > fRadius
-                    || fFar     > fRadius )
-                {
-                    return false;
-                }
-
-                return true;
+                return SphereInAABB( RAABB( vMin, vMax ), s );
             }
 
             void DrawNode( CRenderer* pRenderer, const RVector3& vColor, uint nDepth )
@@ -227,7 +189,7 @@ namespace Riot
                 return false;
             }
 
-            bool DoesSphereHitTriangle( const BoundingVolume::_sphere& s )
+            bool DoesSphereHitTriangle( const RSphere& s )
             {
                 if( pChildren )
                     return false;
@@ -242,7 +204,7 @@ namespace Riot
 
                     float fDistance = DistanceFromPlane( trianglePlane, s.position );
 
-                    if( fDistance > sqrtf(s.radius) )
+                    if( fDistance > s.radius )
                     {
                         // The sphere doesn't interact the triagnles plane
                         continue;

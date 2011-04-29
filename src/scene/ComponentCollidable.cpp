@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/28/2011 7:06:24 PM
+Modified:       4/28/2011 8:15:47 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -65,7 +65,7 @@ namespace Riot
         /********************************/
 
         // Now initialize this component
-        Memset( &m_Volume[m_nIndex], 0, sizeof(BoundingVolume) );
+        Memset( &m_Volume[m_nIndex], 0, sizeof(RSphere) );
         m_nVolumeType[m_nIndex]   = BoundingSphere;
 
         /********************************/
@@ -172,7 +172,6 @@ namespace Riot
 #endif
     }
 
-    // Reference: http://www.peroxide.dk/papers/collision/collision.pdf
     void CComponentCollidable::ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount )
     {
         CRenderer*              pRenderer = Engine::GetRenderer();
@@ -184,18 +183,18 @@ namespace Riot
         for( uint i = nStart; i < nEnd; ++i )
         {
 
-            RVector3    fPosition = RVector3(pComponent->m_Volume[i].sphere.position);
-            float       fRadius   = pComponent->m_Volume[i].sphere.radius;
+            RVector3    fPosition = RVector3(pComponent->m_Volume[i].position);
+            float       fRadius   = pComponent->m_Volume[i].radius;
 
             if( gs_bShowBoundingVolumes )
             {
                 RVector4    debugSphere( fPosition );
-                debugSphere.w = sqrtf(fRadius);
+                debugSphere.w = fRadius;
 
                 pRenderer->DrawDebugSphere( debugSphere );
             }
 
-            if( DoesSphereHitTriangle( pComponent->m_pGraph, pComponent->m_Volume[i].sphere ) )
+            if( DoesSphereHitTriangle( pComponent->m_pGraph, pComponent->m_Volume[i] ) )
             {
                 uint x = 0;
                 pManager->PostMessage( eComponentMessageCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
@@ -206,10 +205,10 @@ namespace Riot
             {
                 if( i == j ) continue;
 
-                float fRadSq = fRadius + pComponent->m_Volume[j].sphere.radius;
+                float fRadSq = Square(fRadius) + Square(pComponent->m_Volume[j].radius);
 
                 RVector3 pos1( fPosition );
-                RVector3 pos2( pComponent->m_Volume[j].sphere.position );
+                RVector3 pos2( pComponent->m_Volume[j].position );
 
                 RVector3 diff = pos2-pos1;
 
@@ -244,7 +243,7 @@ namespace Riot
             }
         }
 
-        m_pInstance->m_Volume[nIndex].sphere.radius = MagnitudeSq( RVector3(fExtents) );
+        m_pInstance->m_Volume[nIndex].radius = Magnitude( RVector3(fExtents) );
     }
 
     //-----------------------------------------------------------------------------
@@ -363,6 +362,12 @@ namespace Riot
         }
 
         RecomputeSceneNode( m_pInstance->m_pGraph );
+
+        TTerrainLeafNode a, b;
+
+        AABBCollision( a, b );
+
+        PointInAABB( a, RVector3( 0.0f, 0.0f, 0.0f ) );
     }
 
     //-----------------------------------------------------------------------------
@@ -381,9 +386,9 @@ namespace Riot
                 {
                 case BoundingSphere:
                     {
-                        m_Volume[nSlot].sphere.position[0] = transform.position[0];
-                        m_Volume[nSlot].sphere.position[1] = transform.position[1];
-                        m_Volume[nSlot].sphere.position[2] = transform.position[2];
+                        m_Volume[nSlot].position[0] = transform.position[0];
+                        m_Volume[nSlot].position[1] = transform.position[1];
+                        m_Volume[nSlot].position[2] = transform.position[2];
                     }
                     break;
                 case AABB:
@@ -410,7 +415,8 @@ namespace Riot
         }
     }
 
-#define in(a) ((uint32&) a)
+    // Reference: http://www.peroxide.dk/papers/collision/collision.pdf
+#define FloatBitwiseToInt(a) ((uint32&) a)
     bool CComponentCollidable::IsPointInTriangle( const RVector3& point, const Triangle& triangle )
     {
         RVector3 vSide1 = triangle.vVerts[1] - triangle.vVerts[0];
@@ -434,10 +440,10 @@ namespace Riot
         float z = x+y-ac_bb;
 
 
-        return (( in(z) & ~(in(x)|in(y)) ) & 0x80000000);
+        return (( FloatBitwiseToInt(z) & ~(FloatBitwiseToInt(x)|FloatBitwiseToInt(y)) ) & 0x80000000);
     }
 
-    bool CComponentCollidable::DoesSphereHitTriangle( SceneNode* pNode, const BoundingVolume::_sphere& s )
+    bool CComponentCollidable::DoesSphereHitTriangle( SceneNode* pNode, const RSphere& s )
     {
         if( pNode->DoesSphereHitBox( s ) )
         {
