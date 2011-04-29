@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/28/2011 8:49:15 PM
+Modified:       4/29/2011 2:48:47 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -242,9 +242,6 @@ namespace Riot
 
         // Render
         ASSERT( m_pCurrentView );
-        m_pDevice->SetVertexShader( m_pDefaultVShader );
-        m_pDevice->SetVertexLayout( m_pDefaultVLayout );
-        m_pDevice->SetPixelShader( m_pDefaultPShader );
 
         RMatrix4 mView = m_pCurrentView->GetViewMatrix();
         RMatrix4 mProj = m_pCurrentView->GetProjMatrix();
@@ -274,9 +271,6 @@ namespace Riot
         m_nNumCommands = 0;
 
 
-        m_pDevice->SetVertexShader( m_pWireframeVShader );
-        m_pDevice->SetVertexLayout( m_pWireframeVLayout );
-        m_pDevice->SetPixelShader(  m_pWireframePShader );
 
         mView = m_pCurrentView->GetViewMatrix();
         mProj = m_pCurrentView->GetProjMatrix();
@@ -285,6 +279,10 @@ namespace Riot
         // Draw the debug volumes
         if( gs_bShowBoundingVolumes )
         {
+            m_pDevice->SetVertexShader( m_pWireframeVShader );
+            m_pDevice->SetVertexLayout( m_pWireframeVLayout );
+            m_pDevice->SetPixelShader(  m_pWireframePShader );
+
             // Draw the spheres
             m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
             m_pDevice->SetPSSamplerState( m_pNearestSamplerState );
@@ -349,6 +347,9 @@ namespace Riot
 
             m_nNumBoxes = 0;
             m_pDevice->SetFillMode( GFX_FILL_SOLID );
+            m_pDevice->SetVertexShader( m_pDefaultVShader );
+            m_pDevice->SetVertexLayout( m_pDefaultVLayout );
+            m_pDevice->SetPixelShader( m_pDefaultPShader );
         }
 
         // Present

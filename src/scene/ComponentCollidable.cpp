@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 2:35:04 PM
+Modified:       4/29/2011 4:15:35 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -182,9 +182,8 @@ namespace Riot
             m_pObjectGraph->DrawNode( Engine::GetRenderer(), RVector3( 1.0f, 1.0f, 1.0f ) );
         }
 
-        // First update the object graph
-        //m_pObjectGraph->RecalculateBounds();
-        //m_pObjectGraph->Prune();
+        // Remove dead leaves
+        m_pObjectGraph->Prune();
 
 #if PARALLEL_UPDATE
         task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 16 );

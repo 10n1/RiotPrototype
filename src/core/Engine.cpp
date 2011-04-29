@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/29/2011 1:49:26 PM
+Modified:       4/29/2011 2:51:07 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -226,7 +226,7 @@ namespace Riot
                 static uint nCount = 1;
                 static CMesh* pBox = m_pRenderer->CreateMesh();
                 RTransform t = RTransform();
-                t.position = RVector3( RandFloat(128.0f) - 64.0f, RandFloat( 32.0f ) + 32.0f, RandFloat(128.0f) - 64.0f );
+                t.position = RVector3( RandFloat(128.0f) - 64.0f, RandFloat( 256.0f ) + 65.0f, RandFloat(128.0f) - 64.0f );
                 //t.position = RVector3( 0.0f, i * 30.0f + 20.0f, 0.0f );
                 uint nObject = m_pObjectManager->CreateObject();
 

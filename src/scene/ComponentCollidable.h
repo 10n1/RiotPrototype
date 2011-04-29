@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 2:40:41 PM
+Modified:       4/29/2011 4:13:11 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -98,6 +98,52 @@ namespace Riot
                 }
             }
 
+            void Prune()
+            {
+                // We have children and they're objects,
+                //  so just return
+                if( m_nLowestParent && m_nNumChildren )
+                {
+                    return;
+                }
+
+                // If we don't have children, don't do anything (the parent)
+                if( m_nNumChildren )
+                {
+                    uint nLowestChildren = 0;
+
+                    for( uint i = 0; i < m_nNumChildren; ++i )
+                    {
+                        TObjectParentNode* pChild = (TObjectParentNode*)m_pChildren[i];
+
+                        // If its not a leaf, prune it
+                        if( !pChild->m_nLowestParent )
+                        {
+                            pChild->Prune();
+                        }
+                        else if( pChild->m_nLowestParent == 1 && pChild->m_nNumChildren == 0 )
+                        {
+                            // This child is an empty leaf
+                            ++nLowestChildren;
+                        }
+                    }
+
+                    // All our children are empty and the lowest level
+                    if( nLowestChildren == 8 )
+                    {
+                        for( uint i = 0; i < m_nNumChildren; ++i )
+                        {
+                            delete m_pChildren[i];
+                            m_pChildren[i] = NULL;
+                        }
+                        
+                        // We're now the lowest
+                        m_nLowestParent = 1;
+                        m_nNumChildren = 0;
+                    }
+                }
+            }
+
             void AddObjectLeaf( TSceneNode* pNode )
             {
                 if( !m_nLowestParent )
@@ -143,32 +189,7 @@ namespace Riot
                     m_Mutex.Unlock();
                 }
             }
-
-            void Prune( void )
-            {            
-                // We have no children, kill ourselves
-                if( m_nNumChildren == 0 )
-                {
-                    ((TObjectParentNode*)m_pParent)->RemoveObject( this );
-                    delete this;
-                    return;
-                }
-
-                // Our children are objects, just stop
-                if( m_nLowestParent )
-                {
-                    return;
-                }
-
-                // Prune our children
-                for( uint i = 0; i < m_nNumChildren; ++i )
-                {
-                    TObjectParentNode* pChild = (TObjectParentNode*)m_pChildren[i];
-                    pChild->Prune();
-                }
-
-            }
-
+            
             void RemoveObject( TSceneNode* pNode )
             {
                 m_Mutex.Lock();
@@ -219,6 +240,7 @@ namespace Riot
                 pNewNode->max.x = fNewX;
                 pNewNode->max.y = fNewY;
                 pNewNode->max.z = fNewZ;
+                pNewNode->m_nLowestParent = 1;
                 m_pChildren[0] = pNewNode;
 
                 pNewNode = new TObjectParentNode;
@@ -228,6 +250,7 @@ namespace Riot
                 pNewNode->min.z = fNewZ;
                 pNewNode->max.y = fNewY;
                 pNewNode->max.x = fNewX;
+                pNewNode->m_nLowestParent = 1;
                 m_pChildren[1] = pNewNode;
 
                 pNewNode = new TObjectParentNode;
@@ -237,6 +260,7 @@ namespace Riot
                 pNewNode->min.x = fNewX;
                 pNewNode->max.y = fNewY;
                 pNewNode->min.z = fNewZ;
+                pNewNode->m_nLowestParent = 1;
                 m_pChildren[2] = pNewNode;
 
                 pNewNode = new TObjectParentNode;
@@ -246,6 +270,7 @@ namespace Riot
                 pNewNode->min.x = fNewX;
                 pNewNode->max.y = fNewY;
                 pNewNode->max.z = fNewZ;
+                pNewNode->m_nLowestParent = 1;
                 m_pChildren[3] = pNewNode;
 
                 pNewNode = new TObjectParentNode;
@@ -255,6 +280,7 @@ namespace Riot
                 pNewNode->max.x = fNewX;
                 pNewNode->min.y = fNewY;
                 pNewNode->max.z = fNewZ;
+                pNewNode->m_nLowestParent = 1;
                 m_pChildren[4] = pNewNode;
 
                 pNewNode = new TObjectParentNode;
@@ -264,6 +290,7 @@ namespace Riot
                 pNewNode->min.z = fNewZ;
                 pNewNode->min.y = fNewY;
                 pNewNode->max.x = fNewX;
+                pNewNode->m_nLowestParent = 1;
                 m_pChildren[5] = pNewNode;
 
                 pNewNode = new TObjectParentNode;
@@ -273,6 +300,7 @@ namespace Riot
                 pNewNode->min.x = fNewX;
                 pNewNode->min.y = fNewY;
                 pNewNode->min.z = fNewZ;
+                pNewNode->m_nLowestParent = 1;
                 m_pChildren[6] = pNewNode;
 
                 pNewNode = new TObjectParentNode;
@@ -282,6 +310,7 @@ namespace Riot
                 pNewNode->min.x = fNewX;
                 pNewNode->min.y = fNewY;
                 pNewNode->max.z = fNewZ;
+                pNewNode->m_nLowestParent = 1;
                 m_pChildren[7] = pNewNode;
 
                 m_nLowestParent = 0;
