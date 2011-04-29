@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 11:17:38 AM
+Modified:       4/29/2011 1:53:11 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -79,8 +79,10 @@ namespace Riot
         Memset( &m_Volume[m_nIndex], 0, sizeof(RSphere) );
 
         // Add it to the node
-        m_pObjectGraph->AddObjectLeaf( &m_ObjectSceneNodes[m_nIndex] );
         m_ObjectSceneNodes[m_nIndex].m_nObject = m_nIndex;
+        m_ObjectSceneNodes[m_nIndex].m_pParent = NULL;      // Set its parent to null, we don't
+        // want to add uninitialized objects to
+        // the graph
 
         /********************************/
         PostAttach( nObject );
@@ -176,7 +178,7 @@ namespace Riot
         // Draw the graphs
         if( gs_bShowBoundingVolumes )
         {
-            DrawNodes( m_pTerrainGraph, 4 );
+            //DrawNodes( m_pTerrainGraph, 4 );
             m_pObjectGraph->DrawNode( Engine::GetRenderer(), RVector3( 1.0f, 1.0f, 1.0f ) );
         }
 
@@ -184,7 +186,7 @@ namespace Riot
         //m_pObjectGraph->RecalculateBounds();
 
 #if PARALLEL_UPDATE
-        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 4 );
+        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 16 );
         pTaskManager->WaitForCompletion( nHandle );
 #else
         ProcessBatch( this, 0, 0, m_nNumActiveComponents );
@@ -292,7 +294,7 @@ namespace Riot
             m_pInstance->m_pTerrainTriangles[i].vVerts[0] = pTerrainVerts[ pIndices[ (i*3) + 0 ] ].Pos;
             m_pInstance->m_pTerrainTriangles[i].vVerts[1] = pTerrainVerts[ pIndices[ (i*3) + 1 ] ].Pos;
             m_pInstance->m_pTerrainTriangles[i].vVerts[2] = pTerrainVerts[ pIndices[ (i*3) + 2 ] ].Pos;
-            
+
             RVector3 vSide1 = m_pInstance->m_pTerrainTriangles[i].vVerts[0] - m_pInstance->m_pTerrainTriangles[i].vVerts[1];
             RVector3 vSide2 = m_pInstance->m_pTerrainTriangles[i].vVerts[1] - m_pInstance->m_pTerrainTriangles[i].vVerts[2];
 
@@ -324,7 +326,7 @@ namespace Riot
             pNode->m_pChildren[0] = pNewNode;
 
             BuildParentNodes( pNewNode, pNode );
-            
+
             pNewNode = &m_pParentNodes[m_nNumParentNodes++];
             pNewNode->min = pNode->min;
             pNewNode->max = pNode->max;
@@ -333,7 +335,7 @@ namespace Riot
             pNode->m_pChildren[1] = pNewNode;
 
             BuildParentNodes( pNewNode, pNode );
-            
+
             pNewNode = &m_pParentNodes[m_nNumParentNodes++];
             pNewNode->min = pNode->min;
             pNewNode->max = pNode->max;
@@ -356,21 +358,21 @@ namespace Riot
         {
             TTerrainLeafNode* pLeafNode = NULL;
             pNode->m_nLowestParent = 1;
-            
+
             pLeafNode = &m_pTerrainLeaves[m_nNumTerrainLeaves++];
             pLeafNode->min = pNode->min;
             pLeafNode->max = pNode->max;
             pLeafNode->max.x = fNewX;
             pLeafNode->max.z = fNewZ;
             pNode->m_pChildren[0] = pLeafNode;
-            
+
             pLeafNode = &m_pTerrainLeaves[m_nNumTerrainLeaves++];
             pLeafNode->min = pNode->min;
             pLeafNode->max = pNode->max;
             pLeafNode->min.z = fNewZ;
             pLeafNode->max.x = fNewX;
             pNode->m_pChildren[1] = pLeafNode;
-            
+
             pLeafNode = &m_pTerrainLeaves[m_nNumTerrainLeaves++];
             pLeafNode->min = pNode->min;
             pLeafNode->max = pNode->max;
@@ -556,16 +558,30 @@ namespace Riot
 
                 m_Volume[nSlot].position = transform.position;  
                 float fRad = m_Volume[nSlot].radius;
-                
+
                 RVector3 vMax = RVector3(  fRad,  fRad,  fRad );
                 RVector3 vMin = RVector3( -fRad, -fRad, -fRad );
-                
+
                 m_ObjectSceneNodes[nSlot].max = vMax + transform.position;
                 m_ObjectSceneNodes[nSlot].min = vMin + transform.position;
 
-                ((TObjectParentNode*)m_ObjectSceneNodes[nSlot].m_pParent)->Invalidate();
-                //((TObjectParentNode*)m_ObjectSceneNodes[nSlot].m_pParent)->RemoveObject( &m_ObjectSceneNodes[nSlot] );
-                //AddObjectLe
+                TObjectParentNode* pParent = (TObjectParentNode*)m_ObjectSceneNodes[nSlot].m_pParent;
+
+                // If we don't have a parent, see if we can go in the graph
+                if( pParent == NULL )
+                {
+                    if( AABBCollision( *m_pObjectGraph, m_ObjectSceneNodes[nSlot] ) )
+                    {
+                        m_pObjectGraph->AddObjectLeaf( &m_ObjectSceneNodes[nSlot] );
+                    }
+                }
+                else if( !AABBCollision( *pParent, m_ObjectSceneNodes[nSlot] ) )
+                {
+                    // We're no longer in our parent, remove ourself and
+                    //  readd to the list
+                    pParent->RemoveObject( &m_ObjectSceneNodes[nSlot] );
+                    m_pObjectGraph->AddObjectLeaf( &m_ObjectSceneNodes[nSlot] );
+                }
             }
             break;
         case eComponentMessageBoundingVolumeType:
@@ -651,39 +667,40 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentCollidable::ObjectObjectCollision( TSceneNode* pGraph, TSceneNode* pNode )
     {
-       TObjectParentNode* pParentNode = ((TObjectParentNode*)pGraph);
+        TObjectParentNode* pParentNode = ((TObjectParentNode*)pGraph);
 
-       if( AABBCollision( *pParentNode, *pNode ) )
-       {
-           if( !pParentNode->m_nLowestParent )
-           {
-               for( uint i = 0; i < pParentNode->m_nNumChildren; ++i )
-               {
-                   ObjectObjectCollision( pParentNode->m_pChildren[i], pNode );
-               }
-           }
-           else
-           {
-               for( uint i = 0; i < pParentNode->m_nNumChildren; ++i )
-               {
-                   // Don't check against yourself
-                   if( pParentNode->m_pChildren[i] == pNode ) continue;
+        if( AABBCollision( *pParentNode, *pNode ) )
+        {
+            if( !pParentNode->m_nLowestParent )
+            {
+                for( uint i = 0; i < pParentNode->m_nNumChildren; ++i )
+                {
+                    ObjectObjectCollision( pParentNode->m_pChildren[i], pNode );
+                }
+            }
+            else
+            {
+                for( uint i = 0; i < pParentNode->m_nNumChildren; ++i )
+                {
+                    // Don't check against yourself
+                    if( pParentNode->m_pChildren[i] == pNode ) continue;
 
-                   // The two objects leaf nodes collide, perform "real" object
-                   //   collision between them
-                   if( AABBCollision( *pParentNode->m_pChildren[i], *pNode ) )
-                   {
-                       uint nThisObject = ((TObjectLeafNode*)pNode)->m_nObject;
-                       uint nThatObject = ((TObjectLeafNode*)pParentNode->m_pChildren[i])->m_nObject;
+                    // The two objects leaf nodes collide, perform "real" object
+                    //   collision between them
+                    if( AABBCollision( *pParentNode->m_pChildren[i], *pNode ) )
+                    {
+                        uint nThisObject = ((TObjectLeafNode*)pNode)->m_nObject;
+                        uint nThatObject = ((TObjectLeafNode*)pParentNode->m_pChildren[i])->m_nObject;
 
-                       if( SphereSphereCollision( m_Volume[nThisObject], m_Volume[nThatObject] ) )
-                       {
-                           Engine::GetObjectManager()->PostMessage( eComponentMessageCollision, m_pObjectIndices[ nThisObject ], nThatObject, ComponentType );
-                       }
-                   }
-               }
-           }
-       }
+                        if( SphereSphereCollision( m_Volume[nThisObject], m_Volume[nThatObject] ) )
+                        {
+                            if( m_Volume[nThisObject].position.y > m_Volume[nThisObject].position.y )
+                                Engine::GetObjectManager()->PostMessage( eComponentMessageCollision, m_pObjectIndices[ nThisObject ], nThatObject, ComponentType );
+                        }
+                    }
+                }
+            }
+        }
     }
 
 

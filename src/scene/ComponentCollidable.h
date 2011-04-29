@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 11:13:41 AM
+Modified:       4/29/2011 2:14:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -13,6 +13,7 @@ Modified by:    Kyle Weicht
 #include "VertexFormats.h"
 #include "Terrain.h"
 #include "Renderer.h"
+#include "Thread.h"
 
 /*
 CComponentCollidable
@@ -59,6 +60,7 @@ namespace Riot
         struct TObjectParentNode : public TSceneNode
         {
             TSceneNode* m_pChildren[8];
+            CMutex      m_Mutex;
             atomic_t    m_nNumChildren;
             uint8       m_nLowestParent;
             uint8       m_nInvalid;
@@ -107,14 +109,22 @@ namespace Riot
                     if( leafPos.y > nodePos.y )
                         nOffset += 4;
                     if( leafPos.x > nodePos.x )
+                    {
                         nOffset += 2;
-                    if( leafPos.z > nodePos.z )
-                        nOffset += 1;
+                        if( leafPos.z < nodePos.z )
+                            nOffset += 1;
+                    }
+                    else
+                    {
+                        if( leafPos.z > nodePos.z )
+                            nOffset += 1;
+                    }
 
                     ((TObjectParentNode*)m_pChildren[ nOffset ])->AddObjectLeaf( pNode );
                 }
                 else
                 {
+                    m_Mutex.Lock();
                     uint nIndex = AtomicIncrement( &m_nNumChildren ) - 1;
                     m_pChildren[ nIndex ] = pNode;
                     pNode->m_pParent = this;
@@ -123,69 +133,36 @@ namespace Riot
                     {
                         SplitNode();
                     }
+                    m_Mutex.Unlock();
                 }
             }
 
             void RemoveObject( TSceneNode* pNode )
             {
+                m_Mutex.Lock();
+                ASSERT( m_nNumChildren );
+
                 uint nIndex = 0;
                 while( m_pChildren[nIndex] != pNode )
                 {
                     nIndex++;
+
+                    ASSERT( nIndex < 8 );
                 }
 
                 m_pChildren[nIndex] = m_pChildren[--m_nNumChildren];
 
                 if( m_nNumChildren == 0 )
                 {
-                    ((TObjectParentNode*)m_pParent)->RemoveObject(this);
+                    ((TObjectParentNode*)m_pParent)->RemoveObject( this );
                     delete this;
                 }
+
+                // Make sure we're not still our child's parent
+                pNode->m_pParent = NULL;
+                m_Mutex.Unlock();
             }
-
-            void Invalidate( void )
-            {
-                if( m_pParent )
-                {
-                    ((TObjectParentNode*)m_pParent)->Invalidate();
-                }
             
-                m_nInvalid = 1;
-            }
-
-            void RecalculateBounds( void )
-            {
-                if( !m_nInvalid )
-                {
-                    // We weren't updated, just return
-                    return;
-                }
-            
-                if( !m_nLowestParent )
-                {
-                    for( uint i = 0; i < m_nNumChildren; ++i )
-                    {
-                        ((TObjectParentNode*)m_pChildren[i])->RecalculateBounds();
-                    }
-                }
-
-                if( this == m_pInstance->m_pObjectGraph )
-                    int x = 0;
-            
-                max = RVector3( -10000.0f, -10000.0f, -10000.0f );
-                min = RVector3( 10000.0f, 10000.0f, 10000.0f );
-            
-                for( uint i = 0; i < m_nNumChildren; ++i )
-                {
-                    max.x = Max( m_pChildren[i]->max.x, max.x );
-                    max.y = Max( m_pChildren[i]->max.y, max.y );
-                    max.z = Max( m_pChildren[i]->max.z, max.z );
-                    min.x = Min( m_pChildren[i]->min.x, min.x );
-                    min.y = Min( m_pChildren[i]->min.y, min.y );
-                    min.z = Min( m_pChildren[i]->min.z, min.z );
-                }
-            }
-
             void SplitNode( void )
             {
                 // This node has 8 children and is going
@@ -283,6 +260,7 @@ namespace Riot
 
                 m_nLowestParent = 0;
 
+                //m_Mutex.Unlock();
                 for( uint i = 0; i < 8; ++i )
                 {
                     AddObjectLeaf( pChildren[i] );

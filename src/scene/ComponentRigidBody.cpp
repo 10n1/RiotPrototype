@@ -2,7 +2,7 @@
 File:           ComponentRigidBody.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 11:10:45 AM
+Modified:       4/29/2011 1:26:36 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentRigidBody.h"
@@ -145,6 +145,7 @@ namespace Riot
         PostRemoveInactive( nObject );
     }
 
+    static float fMathTest = 0.0f;
     //-----------------------------------------------------------------------------
     //  ProcessComponent
     //  Processes the component as necessary
@@ -168,10 +169,35 @@ namespace Riot
         
         for( uint i = nStart; i < nEnd; ++i )
         {
+            if( i == 1 )
+            {
+                fMathTest += Engine::m_fElapsedTime;
+            }
             if( pComponent->m_bGravity[i] )
             {
-                pComponent->m_vVelocity[i] += vGravity * Engine::m_fElapsedTime;
-                pComponent->m_Transform[i].position += pComponent->m_vVelocity[i] * Engine::m_fElapsedTime;
+                float fDt = Engine::m_fElapsedTime;
+                RVector3 pos0 = pComponent->m_Transform[i].position;
+                RVector3 vel0 = pComponent->m_vVelocity[i];
+                RVector3 acc0 = vGravity;
+                RVector3 vel05;
+                RVector3 pos1;
+                RVector3 vel1;
+                RVector3 acc1;
+                
+                //  1. Calcualte new position
+                pos1    = pos0 + vel0*fDt + (0.5f * vGravity * Square(fDt));
+
+                //  2. Calculate 1/2 of the new velocity
+                vel05   = vel0 + 0.5f * acc0 * fDt;
+
+                //  3. Calculate the new acceleration
+                acc1    = vGravity;
+
+                //  4. Calculate the other half of the new velocity
+                vel1    = vel05 + 0.5 * vGravity * fDt;
+
+                pComponent->m_Transform[i].position = pos1;
+                pComponent->m_vVelocity[i] = vel1;
 
                 pManager->PostMessage( eComponentMessageTransform, pComponent->m_pObjectIndices[ i ], &pComponent->m_Transform[i], ComponentType );
             }
@@ -182,6 +208,7 @@ namespace Riot
         }
     }
 
+#include <stdio.h>
     //-----------------------------------------------------------------------------
     //  ReceiveMessage
     //  Receives and processes a message
@@ -200,6 +227,15 @@ namespace Riot
         case eComponentMessageCollision:
             {
                 m_bGravity[nSlot] = false;
+                if( nSlot == 1 )
+                {
+                    static bool b = false;
+                    if( !b )
+                    {
+                        printf( "Time: %f\n", fMathTest );
+                        b = true;
+                    }
+                }
             }
             break;
         default:

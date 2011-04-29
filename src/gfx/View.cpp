@@ -2,7 +2,7 @@
 File:           View.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/21/2011 11:29:40 PM
+Modified:       4/29/2011 12:37:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "View.h"
@@ -16,7 +16,7 @@ namespace Riot
     {
         SetPerspective( 60.0f, 1024.0f/768.0f, 0.1f, 10000.0f );
 
-        m_vPosition = RVector4( 0.0f, 10.0f, -10.0f, 0.0f );
+        m_vPosition = RVector4( 0.0f, 90, -100.0f, 0.0f );
         m_vLook =     RVector4( 0.0f, -4.0f, 5.0f, 0.0f );
         m_vUp =       RVector4( 0.0f, 1.0f, 0.0f, 0.0f );
     }

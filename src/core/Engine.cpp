@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/29/2011 11:16:10 AM
+Modified:       4/29/2011 1:49:26 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -102,7 +102,7 @@ namespace Riot
 
             // Make sure terrain is the last thing drawn
             m_pTerrain->Render();
-            
+
             //////////////////////////////////////////
             // Render
             m_pRenderer->Render();
@@ -196,6 +196,26 @@ namespace Riot
                     break;
                 case KEY_R:
                     gs_bRenderOn = !gs_bRenderOn;
+                    break;                    
+                case KEY_X:
+                    static uint nCount = 1;
+                    static CMesh* pBox = m_pRenderer->CreateMesh();
+                    RTransform t = RTransform();
+                    t.position = RVector3( RandFloat(128.0f) - 64.0f, RandFloat( 32.0f ) + 32.0f, RandFloat(128.0f) - 64.0f );
+                    //t.position = RVector3( 0.0f, i * 30.0f + 20.0f, 0.0f );
+                    //t.position = RVector3( -30.0f, 50.0f, -30.0f );
+                    uint nObject = m_pObjectManager->CreateObject();
+
+                    m_pObjectManager->AddComponent( nObject, eComponentRigidBody );
+                    m_pObjectManager->AddComponent( nObject, eComponentRender );
+                    m_pObjectManager->AddComponent( nObject, eComponentCollidable );
+                    uint nCollidableIndex = m_pObjectManager->GetComponentIndex( nObject, eComponentCollidable );
+                    CComponentCollidable::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nCollidableIndex );
+
+                    m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
+                    m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+                    nCount++;
+                    printf( "Objects: %d\n", nCount );
                     break;
                 }
             }
@@ -206,7 +226,7 @@ namespace Riot
                 static uint nCount = 1;
                 static CMesh* pBox = m_pRenderer->CreateMesh();
                 RTransform t = RTransform();
-                t.position = RVector3( RandFloat(128.0f) - 64.0f, RandFloat( 64.0f ) + 20.0f, RandFloat(128.0f) - 64.0f );
+                t.position = RVector3( RandFloat(128.0f) - 64.0f, RandFloat( 32.0f ) + 32.0f, RandFloat(128.0f) - 64.0f );
                 //t.position = RVector3( 0.0f, i * 30.0f + 20.0f, 0.0f );
                 uint nObject = m_pObjectManager->CreateObject();
 
@@ -310,7 +330,7 @@ namespace Riot
 
         static RQuaternion orientation = RQuatFromAxisAngle( RVector3( RandFloat(1.0f), RandFloat(1.0f), RandFloat(1.0f) ), RandFloat( gs_2PI ) );
         orientation = RQuaternionZero();
-        RTransform t = RTransform( orientation, RVector3( 0.0f, 100.0f, 0.0f ) );
+        RTransform t = RTransform( orientation, RVector3( 0.0f, 50.0f, 0.0f ) );
 
         // Add box 1
         uint nObject = m_pObjectManager->CreateObject();
@@ -318,11 +338,11 @@ namespace Riot
         m_pObjectManager->AddComponent( nObject, eComponentRigidBody );
         m_pObjectManager->AddComponent( nObject, eComponentRender );
         m_pObjectManager->AddComponent( nObject, eComponentCollidable );
+        CComponentCollidable::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nObject );
 
         m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
         m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
 
-        CComponentCollidable::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nObject );
 
         // Add more boxes
         for( uint i = 1; i < 1; ++i )
