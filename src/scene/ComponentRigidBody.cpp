@@ -2,7 +2,7 @@
 File:           ComponentRigidBody.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/27/2011 3:10:50 PM
+Modified:       4/29/2011 11:10:45 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentRigidBody.h"
@@ -171,15 +171,14 @@ namespace Riot
             if( pComponent->m_bGravity[i] )
             {
                 pComponent->m_vVelocity[i] += vGravity * Engine::m_fElapsedTime;
+                pComponent->m_Transform[i].position += pComponent->m_vVelocity[i] * Engine::m_fElapsedTime;
+
+                pManager->PostMessage( eComponentMessageTransform, pComponent->m_pObjectIndices[ i ], &pComponent->m_Transform[i], ComponentType );
             }
             else
             {
                 pComponent->m_vVelocity[i] = RVector3( 0.0f, 0.0f, 0.0f );
             }
-
-            pComponent->m_Transform[i].position += pComponent->m_vVelocity[i] * Engine::m_fElapsedTime;
-
-            pManager->PostMessage( eComponentMessageTransform, pComponent->m_pObjectIndices[ i ], &pComponent->m_Transform[i], ComponentType );
         }
     }
 

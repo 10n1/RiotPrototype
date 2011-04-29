@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/29/2011 12:16:02 AM
+Modified:       4/29/2011 11:16:10 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -58,6 +58,7 @@ namespace Riot
         mFullscreen,
         mResize,
         mKeyPressed,
+        mKeyDown,
     };
     const uint          Engine::NumMessagesReceived = ARRAY_LENGTH( MessagesReceived );
 
@@ -196,24 +197,32 @@ namespace Riot
                 case KEY_R:
                     gs_bRenderOn = !gs_bRenderOn;
                     break;
-                case KEY_G:
-                    static CMesh* pBox = m_pRenderer->CreateMesh();
-                    RTransform t = RTransform();
-                    t.position = RVector3( RandFloat(128.0f) - 64.0f, RandFloat( 64.0f ) + 20.0f, RandFloat(128.0f) - 64.0f );
-                    //t.position = RVector3( 0.0f, i * 30.0f + 20.0f, 0.0f );
-                    uint nObject = m_pObjectManager->CreateObject();
-
-                    m_pObjectManager->AddComponent( nObject, eComponentRigidBody );
-                    m_pObjectManager->AddComponent( nObject, eComponentRender );
-                    m_pObjectManager->AddComponent( nObject, eComponentCollidable );
-                    uint nCollidableIndex = m_pObjectManager->GetComponentIndex( nObject, eComponentCollidable );
-                    CComponentCollidable::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nCollidableIndex );
-
-                    m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
-                    m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
-                    break;
                 }
             }
+        case mKeyDown:
+            switch( msg.nMessage )
+            {
+            case KEY_G:
+                static uint nCount = 1;
+                static CMesh* pBox = m_pRenderer->CreateMesh();
+                RTransform t = RTransform();
+                t.position = RVector3( RandFloat(128.0f) - 64.0f, RandFloat( 64.0f ) + 20.0f, RandFloat(128.0f) - 64.0f );
+                //t.position = RVector3( 0.0f, i * 30.0f + 20.0f, 0.0f );
+                uint nObject = m_pObjectManager->CreateObject();
+
+                m_pObjectManager->AddComponent( nObject, eComponentRigidBody );
+                m_pObjectManager->AddComponent( nObject, eComponentRender );
+                m_pObjectManager->AddComponent( nObject, eComponentCollidable );
+                uint nCollidableIndex = m_pObjectManager->GetComponentIndex( nObject, eComponentCollidable );
+                CComponentCollidable::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nCollidableIndex );
+
+                m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
+                m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+                nCount++;
+                printf( "Objects: %d\n", nCount );
+                break;
+            }
+            break;
         case mFullscreen:
             {
                 break;

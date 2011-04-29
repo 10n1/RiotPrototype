@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 1:01:30 AM
+Modified:       4/29/2011 11:13:41 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -59,7 +59,7 @@ namespace Riot
         struct TObjectParentNode : public TSceneNode
         {
             TSceneNode* m_pChildren[8];
-            uint16      m_nNumChildren;
+            atomic_t    m_nNumChildren;
             uint8       m_nLowestParent;
             uint8       m_nInvalid;
 
@@ -115,7 +115,8 @@ namespace Riot
                 }
                 else
                 {
-                    m_pChildren[ m_nNumChildren++ ] = pNode;
+                    uint nIndex = AtomicIncrement( &m_nNumChildren ) - 1;
+                    m_pChildren[ nIndex ] = pNode;
                     pNode->m_pParent = this;
 
                     if( m_nNumChildren == 8 )
@@ -125,13 +126,30 @@ namespace Riot
                 }
             }
 
+            void RemoveObject( TSceneNode* pNode )
+            {
+                uint nIndex = 0;
+                while( m_pChildren[nIndex] != pNode )
+                {
+                    nIndex++;
+                }
+
+                m_pChildren[nIndex] = m_pChildren[--m_nNumChildren];
+
+                if( m_nNumChildren == 0 )
+                {
+                    ((TObjectParentNode*)m_pParent)->RemoveObject(this);
+                    delete this;
+                }
+            }
+
             void Invalidate( void )
             {
                 if( m_pParent )
                 {
                     ((TObjectParentNode*)m_pParent)->Invalidate();
                 }
-
+            
                 m_nInvalid = 1;
             }
 
@@ -142,7 +160,7 @@ namespace Riot
                     // We weren't updated, just return
                     return;
                 }
-
+            
                 if( !m_nLowestParent )
                 {
                     for( uint i = 0; i < m_nNumChildren; ++i )
@@ -151,9 +169,12 @@ namespace Riot
                     }
                 }
 
+                if( this == m_pInstance->m_pObjectGraph )
+                    int x = 0;
+            
                 max = RVector3( -10000.0f, -10000.0f, -10000.0f );
                 min = RVector3( 10000.0f, 10000.0f, 10000.0f );
-
+            
                 for( uint i = 0; i < m_nNumChildren; ++i )
                 {
                     max.x = Max( m_pChildren[i]->max.x, max.x );
@@ -413,7 +434,7 @@ namespace Riot
         //  ObjectObjectCollision
         //  Performs object-object collision
         //-----------------------------------------------------------------------------
-        bool ObjectObjectCollision( TSceneNode* pGraph, TSceneNode* pNode );
+        void ObjectObjectCollision( TSceneNode* pGraph, TSceneNode* pNode );
         
         //-----------------------------------------------------------------------------
         //  DrawNodes
