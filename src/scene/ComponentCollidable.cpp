@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 4:23:19 PM
+Modified:       4/29/2011 5:02:32 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -10,6 +10,11 @@ Modified by:    Kyle Weicht
 #include "ObjectManager.h"
 #include "TaskManager.h"
 #include "Renderer.h"
+
+/*
+TODO:   Fix messaging threading issue
+        Make sure objects are in every box they touch, not just their origin
+*/
 
 /*
 CComponentCollidable
@@ -81,9 +86,10 @@ namespace Riot
 
         // Add it to the node
         m_ObjectSceneNodes[m_nIndex].m_nObject = m_nIndex;
-        m_ObjectSceneNodes[m_nIndex].m_pParent = NULL;      // Set its parent to null, we don't
+        // Set its parent to null, we don't
         // want to add uninitialized objects to
         // the graph
+        m_ObjectSceneNodes[m_nIndex].m_pParent = NULL;
 
         /********************************/
         PostAttach( nObject );
@@ -97,12 +103,13 @@ namespace Riot
     {
         PreReattach( nObject );
         /********************************/
-
-        // Perform any custom reattchment
-
+        
         // Now reorder the data
         COMPONENT_USE_PREV_DATA( m_Volume );
         COMPONENT_USE_PREV_DATA( m_ObjectSceneNodes );
+
+        // Perform any custom reattchment
+        m_ObjectSceneNodes[m_nIndex].m_pParent = NULL;
 
         /********************************/
         PostReattach( nObject );
@@ -118,6 +125,11 @@ namespace Riot
         /********************************/
 
         // Perform any custom detachment stuff
+        TObjectParentNode* pParent = (TObjectParentNode*)m_ObjectSceneNodes[m_nIndex].m_pParent;
+        if( pParent )
+        {
+            pParent->RemoveObject( &m_ObjectSceneNodes[m_nIndex] );
+        }
 
         // Now reorder the data
         COMPONENT_REORDER_DATA( m_Volume );
@@ -137,6 +149,11 @@ namespace Riot
         /********************************/
 
         // Perform any custom detachment stuff
+        TObjectParentNode* pParent = (TObjectParentNode*)m_ObjectSceneNodes[m_nIndex].m_pParent;
+        if( pParent )
+        {
+            pParent->RemoveObject( &m_ObjectSceneNodes[m_nIndex] );
+        }
 
         // Now reorder the data
         COMPONENT_REORDER_SAVE_DATA( m_Volume );
