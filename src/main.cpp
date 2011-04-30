@@ -16,6 +16,11 @@ int main( int argc, char* argv[] )
     //////////////////////////////////////////
     // Free our memory last
     atexit( Riot::Memory::ReleasePool );
+    
+    uint x = gs_nSSE3Supported;
+    x = gs_nSSE42Supported;
+    x = gs_nAVXSupported;
+    x = gs_nNumHardwareThreads;
 
     //////////////////////////////////////////
     // Run the engine

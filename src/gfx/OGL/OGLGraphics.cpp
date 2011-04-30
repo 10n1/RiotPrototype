@@ -19,6 +19,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
+    GFX_FORMAT GFX_FORMAT_FLOAT4        = 0x5;
     GFX_FORMAT GFX_FORMAT_FLOAT3        = 0x1;
     GFX_FORMAT GFX_FORMAT_UINT16        = 0x2;
     GFX_FORMAT GFX_FORMAT_UINT32        = 0x3;
@@ -31,6 +32,7 @@ namespace Riot
     GFX_SEMANTIC GFX_SEMANTIC_POSITION  = "vPosition";
     GFX_SEMANTIC GFX_SEMANTIC_NORMAL    = "vNormal";
     GFX_SEMANTIC GFX_SEMANTIC_TEXCOORD  = "vTexCoord";
+    GFX_SEMANTIC GFX_SEMANTIC_COLOR     = "vColor";
     //-----------------------------------------------------------------------------
     GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_TRIANGLELIST   = GL_TRIANGLE_STRIP;
     //-----------------------------------------------------------------------------

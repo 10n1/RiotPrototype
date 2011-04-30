@@ -36,6 +36,7 @@
 		36D8E0381364131E00C6F300 /* ComponentSystem.txt in Resources */ = {isa = PBXBuildFile; fileRef = 36D8E0311364131E00C6F300 /* ComponentSystem.txt */; };
 		36D8E0391364131E00C6F300 /* ObjectManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8E0321364131E00C6F300 /* ObjectManager.cpp */; };
 		36D8E03A1364131E00C6F300 /* Terrain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D8E0341364131E00C6F300 /* Terrain.cpp */; };
+		36E8BB5B136B8C5E003BD881 /* Settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36E8BB59136B8C5E003BD881 /* Settings.cpp */; };
 		36EA62ED135426F50052D5E7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36EA62CE135426F50052D5E7 /* main.cpp */; };
 		36FB23761367A96E00B9F9ED /* ComponentCollidable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36FB236D1367A96E00B9F9ED /* ComponentCollidable.cpp */; };
 		36FB23771367A96E00B9F9ED /* ComponentLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36FB236F1367A96E00B9F9ED /* ComponentLight.cpp */; };
@@ -113,6 +114,8 @@
 		36D8E0331364131E00C6F300 /* ObjectManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectManager.h; sourceTree = "<group>"; };
 		36D8E0341364131E00C6F300 /* Terrain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Terrain.cpp; sourceTree = "<group>"; };
 		36D8E0351364131E00C6F300 /* Terrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Terrain.h; sourceTree = "<group>"; };
+		36E8BB59136B8C5E003BD881 /* Settings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Settings.cpp; sourceTree = "<group>"; };
+		36E8BB5A136B8C5E003BD881 /* Settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Settings.h; sourceTree = "<group>"; };
 		36EA62CE135426F50052D5E7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
 		36EA62DC135426F50052D5E7 /* todo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = todo.h; path = ../todo.h; sourceTree = "<group>"; };
 		36FB236D1367A96E00B9F9ED /* ComponentCollidable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentCollidable.cpp; sourceTree = "<group>"; };
@@ -241,6 +244,8 @@
 		36D8DFFB136412F200C6F300 /* global */ = {
 			isa = PBXGroup;
 			children = (
+				36E8BB59136B8C5E003BD881 /* Settings.cpp */,
+				36E8BB5A136B8C5E003BD881 /* Settings.h */,
 				36D8DFFC136412F200C6F300 /* assert.h */,
 				36D8DFFD136412F200C6F300 /* atomic.cpp */,
 				36D8DFFE136412F200C6F300 /* atomic.h */,
@@ -410,6 +415,7 @@
 				36FB23771367A96E00B9F9ED /* ComponentLight.cpp in Sources */,
 				36FB23781367A96E00B9F9ED /* ComponentRender.cpp in Sources */,
 				36FB23791367A96E00B9F9ED /* ComponentRigidBody.cpp in Sources */,
+				36E8BB5B136B8C5E003BD881 /* Settings.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
