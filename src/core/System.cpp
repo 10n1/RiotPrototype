@@ -115,22 +115,25 @@ static const uint GetCPUCapabilities( void )
 #elif defined( OS_LINUX )
     m_nNumHardwareThreads = sysconf( _SC_NPROCESSORS_ONLN );
 #elif defined( OS_OSX )
+    uint    nThreads = 0;
     int     mib[] = { CTL_HW, HW_AVAILCPU }; // Interested in availible CPUs
-    size_t  nLen = sizeof( _nNumHardwareThreads );
+    size_t  nLen = sizeof( nThreads );
 
     // Reads system info
-    sysctl(mib, ARRAY_LENGTH(mib), &_nNumHardwareThreads, &nLen, NULL, 0);
+    sysctl(mib, ARRAY_LENGTH(mib), &nThreads, &nLen, NULL, 0);
 
-    if( _nNumHardwareThreads < 1 ) 
+    if( nThreads < 1 ) 
     {   // HW_AVAILCPU might have been the problem, try HW_NCPU
         mib[1] = HW_NCPU;
-        sysctl(mib, ARRAY_LENGTH(mib), &_nNumHardwareThreads, &nLen, NULL, 0);
+        sysctl(mib, ARRAY_LENGTH(mib), &nThreads, &nLen, NULL, 0);
 
-        if( _nNumHardwareThreads < 1 )
+        if( nThreads < 1 )
         {
-            _nNumHardwareThreads = 1;
+            nThreads = 1;
         }
     }
+    
+    _nNumHardwareThreads = (uint8)nThreads;
 #endif // #ifdef OS_WINDOWS
     if( _nNumHardwareThreads > MAX_THREADS )
         _nNumHardwareThreads = MAX_THREADS;
