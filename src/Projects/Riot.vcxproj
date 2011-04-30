@@ -46,6 +46,7 @@
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\platform\WIN32\Win32Application.cpp" />
     <ClCompile Include="..\platform\WIN32\Win32OpenGL.cpp" />
+    <ClCompile Include="..\scene\ComponentCharacter.cpp" />
     <ClCompile Include="..\scene\ComponentCollidable.cpp" />
     <ClCompile Include="..\scene\ComponentLight.cpp" />
     <ClCompile Include="..\scene\ComponentRender.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="..\platform\SystemOpenGL.h" />
     <ClInclude Include="..\platform\WIN32\Win32Application.h" />
     <ClInclude Include="..\scene\Component.h" />
+    <ClInclude Include="..\scene\ComponentCharacter.h" />
     <ClInclude Include="..\scene\ComponentCollidable.h" />
     <ClInclude Include="..\scene\ComponentLight.h" />
     <ClInclude Include="..\scene\ComponentRigidBody.h" />

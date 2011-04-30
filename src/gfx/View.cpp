@@ -2,7 +2,7 @@
 File:           View.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       4/29/2011 12:37:37 PM
+Modified:       4/30/2011 12:57:23 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "View.h"
@@ -13,6 +13,7 @@ namespace Riot
 
     // CView constructor
     CView::CView()
+        //: m_Transform( RQuaternionZero(), RVector3( 0.0f, 90, -100.0f ) )
     {
         SetPerspective( 60.0f, 1024.0f/768.0f, 0.1f, 10000.0f );
 
@@ -33,16 +34,20 @@ namespace Riot
     void CView::TranslateX( float fTrans )
     {
         m_vPosition += (m_vRight * fTrans);
+
+        //m_Transform.TranslateLocalX( fTrans );
     }
 
     void CView::TranslateY( float fTrans )
     {
         m_vPosition += (m_vUp * fTrans);
+        //m_Transform.TranslateLocalY( fTrans );
     }
 
     void CView::TranslateZ( float fTrans )
     {
         m_vPosition += (m_vLook * fTrans);
+        //m_Transform.TranslateLocalZ( fTrans );
     }
 
     //-----------------------------------------------------------------------------
@@ -58,11 +63,25 @@ namespace Riot
         {
             m_vLook = newLook;
         }
+
+        //RQuaternion q = RQuatFromAxisAngle( RQuatGetXAxis( m_Transform.orientation ), fRad ) * m_Transform.orientation;
+        //RQuaternion q = m_Transform.orientation * RQuatFromAxisAngle( RQuatGetXAxis( m_Transform.orientation ), fRad );
+        //RVector3 z = RQuatGetZAxis( q );
+        //if( z.y < 0.98f && z.y > -0.98f )
+        //{
+        //    m_Transform.RotateLocalX( fRad );
+        //}
+        //else
+        //{
+        //    int d = 0;
+        //}
     }
 
     void CView::RotateY( float fRad )
     {
         m_vLook = m_vLook * RQuatRotationY( fRad );
+
+        //m_Transform.RotateWorldY( fRad );
     }
 
 
@@ -78,14 +97,27 @@ namespace Riot
         z = m_vLook = Normalize( m_vLook );
         x = m_vRight = Normalize( CrossProduct( m_vUp, z ) );
         y = CrossProduct( z, x );
-
+        
         m_mView.r0 = x;
         m_mView.r1 = y;
         m_mView.r2 = z;
         m_mView.r3 = RVector4Zero();
         m_mView = Transpose( m_mView );
-
+        
         m_mView.r3 = RVector4( -DotProduct( x, m_vPosition), -DotProduct( y, m_vPosition), -DotProduct( z, m_vPosition), 1.0f );
+
+        
+        //z = Normalize( RQuatGetZAxis(m_Transform.orientation) );
+        //x = Normalize( CrossProduct( RVector3(0.0f,1.0f,0.0f), z ) );
+        //y = CrossProduct( z, x );
+        //
+        //m_mView.r0 = Homogonize( x );
+        //m_mView.r1 = Homogonize( y );
+        //m_mView.r2 = Homogonize( z );
+        //m_mView.r3 = RVector4Zero();
+        //m_mView = Transpose( m_mView );
+        //
+        //m_mView.r3 = RVector4( -DotProduct( x, m_Transform.position), -DotProduct( y, m_Transform.position), -DotProduct( z, m_Transform.position), 1.0f );
     }
 
     //-----------------------------------------------------------------------------

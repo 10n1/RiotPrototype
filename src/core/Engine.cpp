@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/29/2011 5:05:07 PM
+Modified:       4/30/2011 12:30:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -19,7 +19,7 @@ Modified by:    Kyle Weicht
 #include "Terrain.h"
 #include "Camera.h"
 
-#include <stdio.h>
+#include <stdio.h> // included for printf
 
 #define SHUTDOWN_AND_DELETE( Module ) if( Module ) { Module->Shutdown(); delete Module; Module = NULL; }
 #define NEW_AND_INITIALIZE( Module, Type ) Module = new Type; Module->Initialize();
@@ -137,7 +137,7 @@ namespace Riot
                 nFPSFrames = 0;
             }
 
-            if( m_fElapsedTime > 1.0f )
+            if( m_fElapsedTime > 1.0f/60.0f )
             {   // Prevent huge lapses in frame rate (when debugging, etc.)
                 m_fElapsedTime = 1.0f/60.0f;
             }

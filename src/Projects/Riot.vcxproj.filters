@@ -130,6 +130,9 @@
     <ClCompile Include="..\global\Settings.cpp">
       <Filter>global</Filter>
     </ClCompile>
+    <ClCompile Include="..\scene\ComponentCharacter.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\platform\WIN32\Win32Application.h">
@@ -261,6 +264,9 @@
     </ClInclude>
     <ClInclude Include="..\global\Settings.h">
       <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\scene\ComponentCharacter.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

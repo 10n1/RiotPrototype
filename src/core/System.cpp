@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/27/2011 11:19:39 PM
+Modified:       4/30/2011 12:31:53 PM
 Modified by:    Kyle Weicht
  \*********************************************************/
 #include "OGLGraphics.h"
@@ -175,7 +175,7 @@ const uint8 gs_nSSE41Supported     = _nSSE41Supported;
 const uint8 gs_nSSE42Supported     = _nSSE42Supported;
 const uint8 gs_nAVXSupported       = _nAVXSupported;
 
-const uint8 gs_nSIMDWidth   = (gs_nAVXSupported) ? 32 : ((gs_nSSE2Supported) ? 16 : 0);
+const uint8 gs_nSIMDWidth   = (gs_nAVXSupported) ? 32 : ((gs_nSSE2Supported) ? 16 : 1);
 //-----------------------------------------------------------------------------
 
 

@@ -2,7 +2,7 @@
 File:           ComponentRigidBody.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 4:25:57 PM
+Modified:       4/30/2011 12:30:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentRigidBody.h"
@@ -204,7 +204,6 @@ namespace Riot
         }
     }
 
-#include <stdio.h>
     //-----------------------------------------------------------------------------
     //  ReceiveMessage
     //  Receives and processes a message

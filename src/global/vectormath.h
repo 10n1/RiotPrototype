@@ -565,19 +565,19 @@ public:
     inline void TranslateWorldY( float f ) { position.y += f; }
     inline void TranslateWorldZ( float f ) { position.z += f; }
 
-    //inline void RotateWorldX( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 1.0f, 0.0f, 0.0f ), rad ); }
-    //inline void RotateWorldY( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 0.0f, 1.0f, 0.0f ), rad ); }
-    //inline void RotateWorldZ( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 0.0f, 0.0f, 1.0f ), rad ); } 
-    //inline void RotateLocalX( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetXAxis( orientation ), rad ); }
-    //inline void RotateLocalY( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetYAxis( orientation ), rad ); }
-    //inline void RotateLocalZ( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetZAxis( orientation ), rad ); }
+    inline void RotateWorldX( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 1.0f, 0.0f, 0.0f ), rad ); }
+    inline void RotateWorldY( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 0.0f, 1.0f, 0.0f ), rad ); }
+    inline void RotateWorldZ( float rad ) { orientation = orientation * RQuatFromAxisAngle( RVector3( 0.0f, 0.0f, 1.0f ), rad ); } 
+    inline void RotateLocalX( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetXAxis( orientation ), rad ); }
+    inline void RotateLocalY( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetYAxis( orientation ), rad ); }
+    inline void RotateLocalZ( float rad ) { orientation = orientation * RQuatFromAxisAngle( RQuatGetZAxis( orientation ), rad ); }
 
-    inline void RotateWorldX( float rad ) { orientation = RQuatFromAxisAngle( RVector3( 1.0f, 0.0f, 0.0f ), rad ) * orientation; }
-    inline void RotateWorldY( float rad ) { orientation = RQuatFromAxisAngle( RVector3( 0.0f, 1.0f, 0.0f ), rad ) * orientation; }
-    inline void RotateWorldZ( float rad ) { orientation = RQuatFromAxisAngle( RVector3( 0.0f, 0.0f, 1.0f ), rad ) * orientation; } 
-    inline void RotateLocalX( float rad ) { orientation = RQuatFromAxisAngle( RQuatGetXAxis( orientation ), rad ) * orientation; }
-    inline void RotateLocalY( float rad ) { orientation = RQuatFromAxisAngle( RQuatGetYAxis( orientation ), rad ) * orientation; }
-    inline void RotateLocalZ( float rad ) { orientation = RQuatFromAxisAngle( RQuatGetZAxis( orientation ), rad ) * orientation; }  
+    //inline void RotateWorldX( float rad ) { orientation = RQuatFromAxisAngle( RVector3( 1.0f, 0.0f, 0.0f ), rad ) * orientation; }
+    //inline void RotateWorldY( float rad ) { orientation = RQuatFromAxisAngle( RVector3( 0.0f, 1.0f, 0.0f ), rad ) * orientation; }
+    //inline void RotateWorldZ( float rad ) { orientation = RQuatFromAxisAngle( RVector3( 0.0f, 0.0f, 1.0f ), rad ) * orientation; } 
+    //inline void RotateLocalX( float rad ) { orientation = RQuatFromAxisAngle( RQuatGetXAxis( orientation ), rad ) * orientation; }
+    //inline void RotateLocalY( float rad ) { orientation = RQuatFromAxisAngle( RQuatGetYAxis( orientation ), rad ) * orientation; }
+    //inline void RotateLocalZ( float rad ) { orientation = RQuatFromAxisAngle( RQuatGetZAxis( orientation ), rad ) * orientation; }  
 };
 
 //-----------------------------------------------------------------------------

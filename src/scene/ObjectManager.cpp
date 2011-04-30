@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/29/2011 2:43:50 PM
+Modified:       4/30/2011 12:20:59 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -77,6 +77,7 @@ namespace Riot
         LOAD_COMPONENT( CComponentLight );
         LOAD_COMPONENT( CComponentRigidBody );
         LOAD_COMPONENT( CComponentCollidable );
+        LOAD_COMPONENT( CComponentCharacter );
     }
 
     //-----------------------------------------------------------------------------

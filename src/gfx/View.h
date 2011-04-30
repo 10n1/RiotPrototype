@@ -4,7 +4,7 @@ Purpose:        Interface for anything in the engine that
                 can "view", aka, a camera
 Author:         Kyle Weicht
 Created:        4/14/2011
-Modified:       4/17/2011 9:29:42 PM
+Modified:       4/30/2011 12:57:23 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VIEW_H_
@@ -77,6 +77,8 @@ namespace Riot
         RVector4    m_vUp;
         RVector4    m_vLook;
         RVector4    m_vRight;
+
+        //RTransform  m_Transform;
     };
 
 } // namespace Riot

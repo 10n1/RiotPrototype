@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 5:02:32 PM
+Modified:       4/29/2011 5:09:59 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -14,6 +14,7 @@ Modified by:    Kyle Weicht
 /*
 TODO:   Fix messaging threading issue
         Make sure objects are in every box they touch, not just their origin
+        Eliminate the news and deletes in the nodes
 */
 
 /*
