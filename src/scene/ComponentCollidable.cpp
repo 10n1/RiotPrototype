@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/1/2011 6:51:58 PM
+Modified:       5/2/2011 1:27:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -576,22 +576,25 @@ namespace Riot
                 m_ObjectSceneNodes[nSlot].max = vMax + transform.position;
                 m_ObjectSceneNodes[nSlot].min = vMin + transform.position;
 
-                TObjectParentNode* pParent = (TObjectParentNode*)m_ObjectSceneNodes[nSlot].m_pParent;
 
                 // If we don't have a parent, see if we can go in the graph
-                if( pParent == NULL )
+                if( m_ObjectSceneNodes[nSlot].m_pParent == NULL )
                 {
                     if( AABBCollision( *m_pObjectGraph, m_ObjectSceneNodes[nSlot] ) )
                     {
                         m_pObjectGraph->AddObjectLeaf( &m_ObjectSceneNodes[nSlot] );
                     }
                 }
-                else if( !AABBCollision( *pParent, m_ObjectSceneNodes[nSlot] ) )
+                else if( !AABBCollision( *m_ObjectSceneNodes[nSlot].m_pParent, m_ObjectSceneNodes[nSlot] ) )
                 {
+                    TObjectParentNode* pParent = (TObjectParentNode*)m_ObjectSceneNodes[nSlot].m_pParent;
                     // We're no longer in our parent, remove ourself and
                     //  readd to the list
-                    pParent->RemoveObject( &m_ObjectSceneNodes[nSlot] );
-                    m_pObjectGraph->AddObjectLeaf( &m_ObjectSceneNodes[nSlot] );
+                    if( pParent->RemoveObject( &m_ObjectSceneNodes[nSlot] ) )
+                    {
+                        // We were successfully removed, readd ourselves
+                        m_pObjectGraph->AddObjectLeaf( &m_ObjectSceneNodes[nSlot] );
+                    }
                 }
             }
             break;

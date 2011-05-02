@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       5/1/2011 5:38:28 PM
+Modified:       5/2/2011 1:19:17 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -241,9 +241,9 @@ namespace Riot
         pTaskManager->WaitForCompletion( nProcessTask );
 
         // ...then resolve any discrepencies and handle messages
-        //task_handle_t nMessageTask = pTaskManager->PushTask( ParallelProcessComponentMessages, this, m_nNumMessages, 16 );
-        //pTaskManager->WaitForCompletion( nMessageTask );
-        ParallelProcessComponentMessages( this, 0, 0, m_nNumMessages );
+        task_handle_t nMessageTask = pTaskManager->PushTask( ParallelProcessComponentMessages, this, m_nNumMessages, 16 );
+        pTaskManager->WaitForCompletion( nMessageTask );
+        //ParallelProcessComponentMessages( this, 0, 0, m_nNumMessages );
 #else
         ParallelProcessComponents( this, 0, 0, eNUMCOMPONENTS );
         ParallelProcessComponentMessages( this, 0, 0, m_nNumMessages );

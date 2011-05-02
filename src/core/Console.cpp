@@ -2,7 +2,7 @@
 File:           Console.cpp
 Author:         Kyle Weicht
 Created:        5/1/2011
-Modified:       5/1/2011 6:58:34 PM
+Modified:       5/2/2011 8:44:04 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Console.h"
@@ -66,7 +66,7 @@ namespace Riot
     //  ParseCommand
     //  Parses the command when ENTER is pressed
     //-----------------------------------------------------------------------------
-    void CConsole::ParseCommand( const TCommand& cmd )
+    void CConsole::ParseCommand( const char* szCmd )
     {
         static const uint szBoolTrueHash = StringHash32CaseInsensitive( "true" );
         static const uint szBoolFalseHash = StringHash32CaseInsensitive( "false" );
@@ -76,23 +76,23 @@ namespace Riot
         char szValue[256] = { 0 };
 
         uint nIndex = 0;
-        while( cmd.szCommand[nIndex] != ' ' )
+        while( szCmd[nIndex] != ' ' )
         {
-            szVariable[nIndex] = cmd.szCommand[nIndex];
+            szVariable[nIndex] = szCmd[nIndex];
 
             nIndex++;
         }
 
-        while( cmd.szCommand[nIndex] == ' ' )
+        while( szCmd[nIndex] == ' ' )
         {
             nIndex++;
         }
 
         uint nValueIndex = 0;
         
-        while( cmd.szCommand[nIndex] != 0 )
+        while( szCmd[nIndex] != 0 )
         {
-            szValue[nValueIndex++] = cmd.szCommand[nIndex];
+            szValue[nValueIndex++] = szCmd[nIndex];
             nIndex++;
         }
 
@@ -145,6 +145,8 @@ namespace Riot
 
         m_nCurrPos = 0;
         m_nCurrCommand++;
+
+        Memset( m_szCurrCommand, 0, sizeof( m_szCurrCommand ) );
     }
 
     //-----------------------------------------------------------------------------
@@ -166,19 +168,19 @@ namespace Riot
                 gbConsoleActive = !gbConsoleActive;
                 break;
             case KEY_ENTER:
-                m_Commands[ m_nCurrCommand ].szCommand[ m_nCurrPos++ ] = 0;
-                ParseCommand( m_Commands[ m_nCurrCommand ] );
+                m_szCurrCommand[ m_nCurrPos++ ] = 0;
+                ParseCommand( m_szCurrCommand );
                 break;
             case KEY_BACKSPACE:
                 if( m_nCurrPos > 0 )
                 {
-                    m_Commands[ m_nCurrCommand ].szCommand[ --m_nCurrPos ] = 0;
+                    m_szCurrCommand[ --m_nCurrPos ] = 0;
                 }
                 break;
             default:                
-                m_Commands[ m_nCurrCommand ].szCommand[ m_nCurrPos++ ] = (char)msg.nMessage;
+                m_szCurrCommand[ m_nCurrPos++ ] = (char)msg.nMessage;
                 //printf( "%c", (char)msg.nMessage );
-                printf( "%s\n", m_Commands[ m_nCurrCommand ].szCommand );
+                printf( "%s\n", m_szCurrCommand );
             }
             break;
         default:

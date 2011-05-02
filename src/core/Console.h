@@ -3,7 +3,7 @@ File:           Console.h
 Purpose:        The console for entering commands
 Author:         Kyle Weicht
 Created:        5/1/2011
-Modified:       5/1/2011 6:01:06 PM
+Modified:       5/2/2011 8:45:44 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CONSOLE_H_
@@ -18,7 +18,7 @@ namespace Riot
     class CConsole : public IListener
     {
         friend class Engine;
-        class TCommand;
+        struct TCommand;
     public:
         // CConsole constructor
         CConsole();
@@ -50,7 +50,7 @@ namespace Riot
         //  ParseCommand
         //  Parses the command when ENTER is pressed
         //-----------------------------------------------------------------------------
-        void ParseCommand( const TCommand& cmd );
+        void ParseCommand( const char* szCmd );
         
     private:
         /***************************************\
@@ -70,6 +70,8 @@ namespace Riot
         };
 
         TCommand    m_Commands[MAX_COMMANDS];
+
+        char        m_szCurrCommand[MAX_COMMAND_LENGTH];
 
         uint        m_nCurrPos;
         uint        m_nCurrCommand;

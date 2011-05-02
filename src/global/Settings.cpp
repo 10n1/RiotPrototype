@@ -2,7 +2,7 @@
 File:           Settings.cpp
 Author:         Kyle Weicht
 Created:        4/27/2011
-Modified:       5/1/2011 6:55:50 PM
+Modified:       5/2/2011 8:45:25 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "settings.h"
@@ -14,11 +14,11 @@ namespace Riot
     TSetting<Type> Name( #Name, InitialValue )
 
     
-    DEFINE_SETTING( bool, gbShowBoundingVolumes, true );
-    DEFINE_SETTING( bool, gbRenderWireframe, false );
-    DEFINE_SETTING( bool, gbRenderOn, true );
-    DEFINE_SETTING( bool, gbConsoleActive, false );
-    DEFINE_SETTING( bool, gbShowFPS, false );
+    DEFINE_SETTING( uint, gbShowBoundingVolumes, 1 );
+    DEFINE_SETTING( uint, gbRenderWireframe, 0 );
+    DEFINE_SETTING( uint, gbRenderOn, 1 );
+    DEFINE_SETTING( uint, gbConsoleActive, 0 );
+    DEFINE_SETTING( uint, gbShowFPS, 0 );
 
     template<class T>
     TSetting<T>::TSetting( const char* szName, T initialValue )
@@ -27,7 +27,7 @@ namespace Riot
     {
     }
 
-    TSetting<bool>* m_bSettings[] = 
+    TSetting<uint>* m_bSettings[] = 
     {
         &gbShowBoundingVolumes,
         &gbRenderWireframe,

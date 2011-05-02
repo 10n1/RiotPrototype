@@ -4,8 +4,10 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 4:13:11 PM
+Modified:       5/2/2011 1:27:05 PM
 Modified by:    Kyle Weicht
+
+210fps 4k objects
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
 #define _COMPONENTCOLLIDABLE_H_
@@ -190,7 +192,7 @@ namespace Riot
                 }
             }
             
-            void RemoveObject( TSceneNode* pNode )
+            bool RemoveObject( TSceneNode* pNode )
             {
                 m_Mutex.Lock();
                 ASSERT( m_nNumChildren );
@@ -199,8 +201,13 @@ namespace Riot
                 while( m_pChildren[nIndex] != pNode )
                 {
                     nIndex++;
+                }
 
-                    ASSERT( nIndex < 8 );
+                if( nIndex == 8 )
+                {
+                    // This node isn't one of our children,
+                    //  so we can't remove it
+                    return false;
                 }
 
                 m_pChildren[nIndex] = m_pChildren[--m_nNumChildren];
@@ -208,6 +215,8 @@ namespace Riot
                 // Make sure we're not still our child's parent
                 pNode->m_pParent = NULL;
                 m_Mutex.Unlock();
+
+                return true;
             }
             
             void SplitNode( void )
