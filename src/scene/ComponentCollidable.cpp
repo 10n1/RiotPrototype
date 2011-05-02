@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/29/2011 5:09:59 PM
+Modified:       5/1/2011 6:51:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -195,7 +195,9 @@ namespace Riot
         // Build the scene graph
 
         // Draw the graphs
-        if( gs_bShowBoundingVolumes )
+        //if( gbShowBoundingVolumes )
+        //if( bShowBoundingVolumes.GetValue() )
+        if( gbShowBoundingVolumes == true )
         {
             //DrawNodes( m_pTerrainGraph, 4 );
             m_pObjectGraph->DrawNode( Engine::GetRenderer(), RVector3( 1.0f, 1.0f, 1.0f ) );
@@ -222,7 +224,7 @@ namespace Riot
 
         for( uint i = nStart; i < nEnd; ++i )
         {
-            if( gs_bShowBoundingVolumes )
+            if( gbShowBoundingVolumes )
             {
                 pRenderer->DrawDebugSphere( pComponent->m_Volume[i] );
 

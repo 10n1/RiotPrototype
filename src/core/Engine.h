@@ -3,7 +3,7 @@ File:           Engine.h
 Purpose:        The main engine
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/24/2011 8:08:49 PM
+Modified:       5/1/2011 5:56:20 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _ENGINE_H_
@@ -23,6 +23,7 @@ namespace Riot
     class CObjectManager;
     class CTerrain;
     class CCamera;
+    class CConsole;
 
     class Engine : public IListener
     {
@@ -80,9 +81,10 @@ namespace Riot
         //-----------------------------------------------------------------------------
         //  Accessors/Mutators
         //-----------------------------------------------------------------------------
-        inline static CTaskManager*        GetTaskManager( void );
-        inline static CRenderer*           GetRenderer( void );
-        inline static CObjectManager*      GetObjectManager( void );
+        inline static CTaskManager*     GetTaskManager( void );
+        inline static CRenderer*        GetRenderer( void );
+        inline static CObjectManager*   GetObjectManager( void );
+        inline static CConsole*         GetConsole( void );   
 
     private:    
         //-----------------------------------------------------------------------------
@@ -110,6 +112,7 @@ namespace Riot
         static CMessageDispatcher*  m_pMessageDispatcher;
         static CInputManager*       m_pInputManager;
         static CObjectManager*      m_pObjectManager;
+        static CConsole*    m_pConsole;
 
         static CWindow*     m_pMainWindow;
         static CRenderer*   m_pRenderer;
@@ -140,6 +143,10 @@ namespace Riot
     CObjectManager*      Engine::GetObjectManager( void )
     {
         return m_pObjectManager;
+    }
+    CConsole* Engine::GetConsole( void )
+    {
+        return m_pConsole;
     }
 
 

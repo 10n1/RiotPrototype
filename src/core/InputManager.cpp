@@ -2,13 +2,14 @@
 File:           InputManager.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/25/2011 4:10:00 PM
+Modified:       5/1/2011 6:51:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "InputManager.h"
 #include "Message.h"
 #include "Engine.h"
 #include "Input.h"
+#include "Console.h"
 
 namespace Riot
 {
@@ -69,11 +70,24 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CInputManager::ProcessInput( void )
     {
-        for( uint i = 0; i < 256; ++i )
+        if( gbConsoleActive )
         {
-            if( m_pKeys[i] == DOWN )
+            for( uint i = 0; i < 256; ++i )
             {
-                Engine::PostMsg( TMessage( mKeyDown, i ) );
+                if( m_pKeys[i] == DOWN )
+                {
+                    Engine::GetConsole()->ProcessMessage( TMessage( mKeyDown, i ) );
+                }
+            }
+        }
+        else
+        {
+            for( uint i = 0; i < 256; ++i )
+            {
+                if( m_pKeys[i] == DOWN )
+                {
+                    Engine::PostMsg( TMessage( mKeyDown, i ) );
+                }
             }
         }
 
@@ -103,7 +117,14 @@ namespace Riot
                 {
                     theKey = DOWN;
 
-                    Engine::SendMsg( TMessage( mKeyPressed, nKey ) );
+                    if( gbConsoleActive )
+                    {
+                        Engine::GetConsole()->ProcessMessage( TMessage( mKeyPressed, nKey ) );
+                    }
+                    else
+                    {
+                        Engine::SendMsg( TMessage( mKeyPressed, nKey ) );
+                    }
                 }
 
                 break;
@@ -117,7 +138,14 @@ namespace Riot
                 {
                     theKey = UP;
 
-                    Engine::PostMsg( TMessage( mKeyUp, nKey ) );
+                    if( gbConsoleActive )
+                    {
+                        Engine::GetConsole()->ProcessMessage( TMessage( mKeyUp, nKey ) );
+                    }
+                    else
+                    {
+                        Engine::PostMsg( TMessage( mKeyUp, nKey ) );
+                    }
                 }
 
                 break;

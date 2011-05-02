@@ -3,7 +3,7 @@ File:           Input.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/17/2011 7:36:42 PM
+Modified:       5/1/2011 6:47:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _INPUT_H_
@@ -22,9 +22,10 @@ namespace Riot
     {
 #ifdef OS_WINDOWS
         // Utility keys
-        KEY_ESCAPE  = 0x1B, // VK_ESCAPE
-        KEY_ENTER   = 0x0D,
-        KEY_SHIFT   = 0x10,
+        KEY_ESCAPE      = 0x1B, // VK_ESCAPE
+        KEY_ENTER       = 0x0D,
+        KEY_SHIFT       = 0x10,
+        KEY_BACKSPACE   = 0x08,
 
         // Arrows
         KEY_LEFT    = 0x25, // VK_LEFT 
@@ -60,6 +61,7 @@ namespace Riot
         KEY_Y = 'Y',
         KEY_Z = 'Z',
         KEY_SPACE = ' ',
+        KEY_TILDE = 192,
 
 #elif defined( OS_OSX ) // Defined in NSEvent.h
         // Utility keys

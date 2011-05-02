@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/30/2011 12:20:59 PM
+Modified:       5/1/2011 5:38:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -35,12 +35,12 @@ namespace Riot
     const uint           CObjectManager::NumMessagesReceived = 0; //ARRAY_LENGTH(MessagesReceived);
 
 
-    // CComponentManager constructor
+    // CObjectManager constructor
     CObjectManager::CObjectManager()
     {
     }
 
-    // CComponentManager destructor
+    // CObjectManager destructor
     CObjectManager::~CObjectManager()
     {
     }

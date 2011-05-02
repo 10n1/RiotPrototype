@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\core\Camera.cpp" />
+    <ClCompile Include="..\core\Console.cpp" />
     <ClCompile Include="..\core\Engine.cpp" />
     <ClCompile Include="..\core\InputManager.cpp" />
     <ClCompile Include="..\core\MessageDispatcher.cpp" />
@@ -56,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\core\Camera.h" />
+    <ClInclude Include="..\core\Console.h" />
     <ClInclude Include="..\core\Engine.h" />
     <ClInclude Include="..\core\IListener.h" />
     <ClInclude Include="..\core\Input.h" />

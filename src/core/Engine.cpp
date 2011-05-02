@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/30/2011 12:30:58 PM
+Modified:       5/1/2011 6:51:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -18,6 +18,7 @@ Modified by:    Kyle Weicht
 #include "ObjectManager.h"
 #include "Terrain.h"
 #include "Camera.h"
+#include "Console.h"
 
 #include <stdio.h> // included for printf
 
@@ -45,6 +46,7 @@ namespace Riot
     CRenderer*          Engine::m_pRenderer             = NULL;
     CCamera*            Engine::m_pCamera               = NULL;
     CObjectManager*     Engine::m_pObjectManager        = NULL;
+    CConsole*           Engine::m_pConsole              = NULL;
 
     CTerrain*           Engine::m_pTerrain              = NULL;
 
@@ -130,11 +132,14 @@ namespace Riot
             fFPSTime += m_fElapsedTime;
             nFPSFrames++;
 
-            if( fFPSTime > 1.0f )
+            if( gbShowFPS )
             {
-                printf( "FPS: %d\n", nFPSFrames );
-                fFPSTime -= 1.0f;
-                nFPSFrames = 0;
+                if( fFPSTime > 1.0f )
+                {
+                    printf( "FPS: %d\n", nFPSFrames );
+                    fFPSTime -= 1.0f;
+                    nFPSFrames = 0;
+                }
             }
 
             if( m_fElapsedTime > 1.0f/60.0f )
@@ -165,6 +170,9 @@ namespace Riot
             {
                 switch( msg.nMessage )
                 {
+                case KEY_TILDE:
+                    gbConsoleActive = !gbConsoleActive;
+                    break;
                 case KEY_ESCAPE:
                     {
                         m_pMessageDispatcher->SendMsg( mShutdown );
@@ -189,13 +197,13 @@ namespace Riot
                         break;
                     }
                 case KEY_O:
-                    gs_bShowBoundingVolumes = !gs_bShowBoundingVolumes;
+                    gbShowBoundingVolumes = !gbShowBoundingVolumes;
                     break;
                 case KEY_F:
-                    gs_bRenderWireframe = !gs_bRenderWireframe;
+                    gbRenderWireframe = !gbRenderWireframe;
                     break;
                 case KEY_R:
-                    gs_bRenderOn = !gs_bRenderOn;
+                    gbRenderOn = !gbRenderOn;
                     break;                    
                 case KEY_X:
                     static uint nCount = 1;
@@ -305,6 +313,7 @@ namespace Riot
         CTaskManager::m_pInstance = m_pTaskManager;
         NEW_AND_INITIALIZE( m_pMessageDispatcher, CMessageDispatcher );
         m_pMessageDispatcher->RegisterListener( Engine::GetInstance(), Engine::MessagesReceived, Engine::NumMessagesReceived );
+        NEW_AND_INITIALIZE( m_pConsole, CConsole ); // Console doesn't register for messages
         NEW_AND_INITIALIZE_AND_REGISTER( m_pInputManager, CInputManager );
         NEW_AND_INITIALIZE_AND_REGISTER( m_pRenderer, CRenderer );
         NEW_AND_INITIALIZE_AND_REGISTER( m_pObjectManager, CObjectManager );
@@ -416,6 +425,7 @@ namespace Riot
         SHUTDOWN_AND_DELETE( m_pObjectManager );
         SHUTDOWN_AND_DELETE( m_pRenderer );
         SHUTDOWN_AND_DELETE( m_pInputManager );
+        SHUTDOWN_AND_DELETE( m_pConsole );
         SHUTDOWN_AND_DELETE( m_pMessageDispatcher );
         SHUTDOWN_AND_DELETE( m_pTaskManager );
         System::Shutdown();

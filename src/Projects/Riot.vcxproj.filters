@@ -133,6 +133,9 @@
     <ClCompile Include="..\scene\ComponentCharacter.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\core\Console.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\platform\WIN32\Win32Application.h">
@@ -267,6 +270,9 @@
     </ClInclude>
     <ClInclude Include="..\scene\ComponentCharacter.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core\Console.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

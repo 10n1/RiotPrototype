@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/30/2011 12:31:53 PM
+Modified:       5/1/2011 6:49:18 PM
 Modified by:    Kyle Weicht
  \*********************************************************/
 #include "OGLGraphics.h"
@@ -195,7 +195,6 @@ namespace Riot
     CWindow*    System::m_pMainWindow           = NULL;
     IGraphicsDevice*  System::m_pGraphics       = NULL;
     handle      System::m_pApplication = NULL;
-
 
     /***************************************\
     | Public methods
