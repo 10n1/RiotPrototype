@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/2/2011 6:53:14 PM
+Modified:       5/2/2011 7:40:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -132,7 +132,7 @@ namespace Riot
             fFPSTime += m_fElapsedTime;
             nFPSFrames++;
 
-            if( gbShowFPS )
+            if( gnShowFPS )
             {
                 if( fFPSTime > 1.0f )
                 {
@@ -171,7 +171,7 @@ namespace Riot
                 switch( msg.nMessage )
                 {
                 case KEY_TILDE:
-                    gbConsoleActive = !gbConsoleActive;
+                    gnConsoleActive = !gnConsoleActive;
                     break;
                 case KEY_ESCAPE:
                     {
@@ -197,13 +197,13 @@ namespace Riot
                         break;
                     }
                 case KEY_O:
-                    gbShowBoundingVolumes = !gbShowBoundingVolumes;
+                    gnShowBoundingVolumes = !gnShowBoundingVolumes;
                     break;
                 case KEY_F:
-                    gbRenderWireframe = !gbRenderWireframe;
+                    gnRenderWireframe = !gnRenderWireframe;
                     break;
                 case KEY_R:
-                    gbRenderOn = !gbRenderOn;
+                    gnRenderOn = !gnRenderOn;
                     break;                    
                 case KEY_X:
                     static uint nCount = 1;

@@ -2,7 +2,7 @@
 File:           InputManager.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/1/2011 6:51:58 PM
+Modified:       5/2/2011 7:40:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "InputManager.h"
@@ -70,7 +70,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CInputManager::ProcessInput( void )
     {
-        if( gbConsoleActive )
+        if( gnConsoleActive )
         {
             for( uint i = 0; i < 256; ++i )
             {
@@ -117,7 +117,7 @@ namespace Riot
                 {
                     theKey = DOWN;
 
-                    if( gbConsoleActive )
+                    if( gnConsoleActive )
                     {
                         Engine::GetConsole()->ProcessMessage( TMessage( mKeyPressed, nKey ) );
                     }
@@ -138,7 +138,7 @@ namespace Riot
                 {
                     theKey = UP;
 
-                    if( gbConsoleActive )
+                    if( gnConsoleActive )
                     {
                         Engine::GetConsole()->ProcessMessage( TMessage( mKeyUp, nKey ) );
                     }

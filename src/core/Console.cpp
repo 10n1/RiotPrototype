@@ -2,7 +2,7 @@
 File:           Console.cpp
 Author:         Kyle Weicht
 Created:        5/1/2011
-Modified:       5/2/2011 8:44:04 AM
+Modified:       5/2/2011 7:44:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Console.h"
@@ -53,6 +53,7 @@ namespace Riot
         m_nCurrPos = 0;
 
         Memset( m_Commands, 0, sizeof( m_Commands ) );
+        Memset( m_szCurrCommand, 0, sizeof( m_szCurrCommand ) );
     }
 
     //-----------------------------------------------------------------------------
@@ -99,7 +100,7 @@ namespace Riot
         uint nVariableHash = StringHash32CaseInsensitive( szValue );
 
         bool bValue = true;
-        uint nValue = 0;
+        int nValue = 0;
         eCommandType nType = eCommandInteger;
         if( nVariableHash == szBoolTrueHash )
         {
@@ -113,7 +114,6 @@ namespace Riot
         }
         else
         {
-            uint nNewValue = 0;
             nIndex = 0;
             while( szValue[nIndex] != 0 )
             {
@@ -134,10 +134,8 @@ namespace Riot
 
         switch( nType )
         {
-        case eCommandBoolean:
-            SetBoolSetting( szVariable, bValue );
-            break;
         case eCommandInteger:
+            SetSetting( szVariable, nValue );
             break;
         default:
             break;
@@ -165,7 +163,7 @@ namespace Riot
                 Engine::PostMsg( msg );
                 break;
             case KEY_TILDE:
-                gbConsoleActive = !gbConsoleActive;
+                gnConsoleActive = !gnConsoleActive;
                 break;
             case KEY_ENTER:
                 m_szCurrCommand[ m_nCurrPos++ ] = 0;

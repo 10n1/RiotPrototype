@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/1/2011 6:51:58 PM
+Modified:       5/2/2011 7:40:32 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -210,7 +210,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Render( void )
     {
-        if( !gbRenderOn )
+        if( !gnRenderOn )
         {   // Don't render if we shouldn't
             m_nNumCommands  = 0;
             m_nNumSpheres   = 0;
@@ -222,7 +222,7 @@ namespace Riot
         }
 
         // Restore solid fill mode
-        if( gbRenderWireframe )
+        if( gnRenderWireframe )
             m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
         else
             m_pDevice->SetFillMode( GFX_FILL_SOLID );
@@ -277,7 +277,7 @@ namespace Riot
         SetViewProj( mView, mProj );
 
         // Draw the debug volumes
-        if( gbShowBoundingVolumes )
+        if( gnShowBoundingVolumes )
         {
             m_pDevice->SetVertexShader( m_pWireframeVShader );
             m_pDevice->SetVertexLayout( m_pWireframeVLayout );
@@ -719,7 +719,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::DrawDebugSphere( const RSphere& fSphere )
     {
-        if( !gbShowBoundingVolumes )
+        if( !gnShowBoundingVolumes )
             return;
 
         sint nIndex = AtomicIncrement( &m_nNumSpheres ) - 1;
@@ -733,7 +733,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::DrawDebugBox( const RAABB& box, const RVector3& vColor )
     {
-        if( !gbShowBoundingVolumes )
+        if( !gnShowBoundingVolumes )
             return;
 
         sint nIndex = AtomicIncrement( &m_nNumBoxes ) - 1;

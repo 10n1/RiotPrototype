@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/2/2011 7:18:31 PM
+Modified:       5/2/2011 7:40:32 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -195,19 +195,16 @@ namespace Riot
         // Build the scene graph
 
         // Draw the graphs
-        //if( gbShowBoundingVolumes )
-        //if( bShowBoundingVolumes.GetValue() )
-        if( gbShowBoundingVolumes == true )
+        if( gnShowBoundingVolumes == true )
         {
-            //DrawNodes( m_pTerrainGraph, 4 );
             m_pObjectGraph->DrawNode( Engine::GetRenderer(), RVector3( 1.0f, 1.0f, 1.0f ) );
         }
 
         // Remove dead leaves
-        //m_pObjectGraph->Prune();
+        m_pObjectGraph->Prune();
 
 #if PARALLEL_UPDATE
-        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 16 );
+        task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 32 );
         pTaskManager->WaitForCompletion( nHandle );
 #else
         ProcessBatch( this, 0, 0, m_nNumActiveComponents );
@@ -224,11 +221,9 @@ namespace Riot
 
         for( uint i = nStart; i < nEnd; ++i )
         {
-            if( gbShowBoundingVolumes )
+            if( gnShowBoundingVolumes )
             {
                 pRenderer->DrawDebugSphere( pComponent->m_Volume[i] );
-
-                //pComponent->m_ObjectSceneNodes[i].DrawNode( pRenderer, RVector3( 0.5f, 1.0f, 1.0f ) );
             }
 
             // Check against the ground first
@@ -561,8 +556,6 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentCollidable::ReceiveMessage( uint nSlot, CComponentMessage& msg )
     {
-        //static CMutex lock;
-        //CScopedMutex m(&lock);
         switch( msg.m_nMessageType )
         {
         case eComponentMessageTransform:

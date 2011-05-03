@@ -4,7 +4,7 @@ Purpose:        Holds all the "global" game settings that
                 can be modified in game via the console
 Author:         Kyle Weicht
 Created:        4/27/2011
-Modified:       5/2/2011 8:38:09 AM
+Modified:       5/2/2011 7:36:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SETTINGS_H_
@@ -35,13 +35,14 @@ namespace Riot
 #define DECLARE_SETTING( Type, Name ) \
     extern TSetting<Type> Name;
 
-    DECLARE_SETTING( uint, gbShowBoundingVolumes );
-    DECLARE_SETTING( uint, gbRenderWireframe );
-    DECLARE_SETTING( uint, gbRenderOn );
-    DECLARE_SETTING( uint, gbConsoleActive );
-    DECLARE_SETTING( uint, gbShowFPS );
+    DECLARE_SETTING( uint, gnShowBoundingVolumes );
+    DECLARE_SETTING( uint, gnRenderWireframe );
+    DECLARE_SETTING( uint, gnRenderOn );
+    DECLARE_SETTING( uint, gnConsoleActive );
+    DECLARE_SETTING( uint, gnShowFPS );
 
-    void SetBoolSetting( const char* szVariableName, bool bValue );
+    void SetSetting( const char* szVariableName, float fValue );
+    void SetSetting( const char* szVariableName, int nValue );
 
     
     inline uint StringHash32( const char* szString )

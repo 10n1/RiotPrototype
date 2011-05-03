@@ -2,7 +2,7 @@
 File:           Settings.cpp
 Author:         Kyle Weicht
 Created:        4/27/2011
-Modified:       5/2/2011 5:10:01 PM
+Modified:       5/2/2011 7:42:01 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "settings.h"
@@ -14,11 +14,11 @@ namespace Riot
     TSetting<Type> Name( #Name, InitialValue )
 
     
-    DEFINE_SETTING( uint, gbShowBoundingVolumes, 0 );
-    DEFINE_SETTING( uint, gbRenderWireframe, 0 );
-    DEFINE_SETTING( uint, gbRenderOn, 0 );
-    DEFINE_SETTING( uint, gbConsoleActive, 0 );
-    DEFINE_SETTING( uint, gbShowFPS, 1 );
+    DEFINE_SETTING( uint, gnShowBoundingVolumes, 0 );
+    DEFINE_SETTING( uint, gnRenderWireframe, 0 );
+    DEFINE_SETTING( uint, gnRenderOn, 0 );
+    DEFINE_SETTING( uint, gnConsoleActive, 0 );
+    DEFINE_SETTING( uint, gnShowFPS, 1 );
 
     template<class T>
     TSetting<T>::TSetting( const char* szName, T initialValue )
@@ -27,26 +27,48 @@ namespace Riot
     {
     }
 
-    TSetting<uint>* m_bSettings[] = 
+    TSetting<uint>* m_nSettings[] = 
     {
-        &gbShowBoundingVolumes,
-        &gbRenderWireframe,
-        &gbRenderOn,
-        &gbConsoleActive,
-        &gbShowFPS,
+        &gnShowBoundingVolumes,
+        &gnRenderWireframe,
+        &gnRenderOn,
+        &gnConsoleActive,
+        &gnShowFPS,
     };
-    static uint gs_nNumBoolSettings = ARRAY_LENGTH( m_bSettings );
+    
+    DEFINE_SETTING( float, fNothing, 0.0f );
+    TSetting<float>* m_fSettings[1] = 
+    {
+        &fNothing,
+    };
 
-    void SetBoolSetting( const char* szVariableName, bool bValue )
+    static uint gs_nNumIntSettings = ARRAY_LENGTH( m_nSettings );
+    static uint gs_nNumFloatSettings = 0;
+
+    void SetSetting( const char* szVariableName, float fValue )
     {
         uint nHash = StringHash32CaseInsensitive( szVariableName );
 
         bool bFound = false;
-        for( uint i = 0; i < gs_nNumBoolSettings; ++i )
+        for( uint i = 0; i < gs_nNumFloatSettings; ++i )
         {
-            if( nHash == m_bSettings[i]->GetNameHash() )
+            if( nHash == m_fSettings[i]->GetNameHash() )
             {
-                *m_bSettings[i] = bValue;
+                *m_fSettings[i] = fValue;
+                break;
+            }
+        }
+    }
+    void SetSetting( const char* szVariableName, int nValue )
+    {
+        uint nHash = StringHash32CaseInsensitive( szVariableName );
+
+        bool bFound = false;
+        for( uint i = 0; i < gs_nNumIntSettings; ++i )
+        {
+            if( nHash == m_nSettings[i]->GetNameHash() )
+            {
+                *m_nSettings[i] = nValue;
                 break;
             }
         }
