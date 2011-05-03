@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/2/2011 1:27:05 PM
+Modified:       5/2/2011 7:23:52 PM
 Modified by:    Kyle Weicht
 
 210fps 4k objects
@@ -176,8 +176,8 @@ namespace Riot
                     if( !m_nLowestParent )
                     {
                         // We were split, add us to a child
-                        m_Mutex.Unlock();
                         AddObjectLeaf( pNode );
+                        m_Mutex.Unlock();
                         return;
                     }
                     uint nIndex = m_nNumChildren++;
@@ -194,15 +194,18 @@ namespace Riot
             
             bool RemoveObject( TSceneNode* pNode )
             {
-                m_Mutex.Lock();
+                CScopedMutex lock( &m_Mutex );
                 ASSERT( m_nNumChildren );
 
                 uint nIndex = 0;
                 while( m_pChildren[nIndex] != pNode )
                 {
                     nIndex++;
+                    if( nIndex == 8 )
+                        break;
                 }
 
+                //ASSERT( nIndex < 8 );
                 if( nIndex == 8 )
                 {
                     // This node isn't one of our children,
@@ -214,7 +217,6 @@ namespace Riot
 
                 // Make sure we're not still our child's parent
                 pNode->m_pParent = NULL;
-                m_Mutex.Unlock();
 
                 return true;
             }
@@ -224,7 +226,7 @@ namespace Riot
                 // This node has 8 children and is going
                 //  to be split into 8 sub parent nodes,
                 //  redistrubting the objects to the subnodes
-                TSceneNode* pChildren[8] = 
+                TSceneNode* pChildren[] = 
                 {
                     m_pChildren[0],
                     m_pChildren[1],

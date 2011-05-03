@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/2/2011 1:27:04 PM
+Modified:       5/2/2011 7:18:31 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -204,7 +204,7 @@ namespace Riot
         }
 
         // Remove dead leaves
-        m_pObjectGraph->Prune();
+        //m_pObjectGraph->Prune();
 
 #if PARALLEL_UPDATE
         task_handle_t   nHandle = pTaskManager->PushTask( ProcessBatch, this, m_nNumActiveComponents, 16 );
@@ -561,39 +561,46 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentCollidable::ReceiveMessage( uint nSlot, CComponentMessage& msg )
     {
+        //static CMutex lock;
+        //CScopedMutex m(&lock);
         switch( msg.m_nMessageType )
         {
         case eComponentMessageTransform:
             {
-                RTransform& transform = *((RTransform*)msg.m_pData);
+                RTransform&         newTransform = *((RTransform*)msg.m_pData);
+                TObjectLeafNode*    pThisNode = &m_ObjectSceneNodes[nSlot];
 
-                m_Volume[nSlot].position = transform.position;  
+                m_Volume[nSlot].position = newTransform.position;  
                 float fRad = m_Volume[nSlot].radius;
 
                 RVector3 vMax = RVector3(  fRad,  fRad,  fRad );
                 RVector3 vMin = RVector3( -fRad, -fRad, -fRad );
 
-                m_ObjectSceneNodes[nSlot].max = vMax + transform.position;
-                m_ObjectSceneNodes[nSlot].min = vMin + transform.position;
+                pThisNode->max = vMax + newTransform.position;
+                pThisNode->min = vMin + newTransform.position;
 
 
                 // If we don't have a parent, see if we can go in the graph
-                if( m_ObjectSceneNodes[nSlot].m_pParent == NULL )
+                if( pThisNode->m_pParent == NULL )
                 {
-                    if( AABBCollision( *m_pObjectGraph, m_ObjectSceneNodes[nSlot] ) )
+                    if( AABBCollision( *m_pObjectGraph, *pThisNode ) )
                     {
-                        m_pObjectGraph->AddObjectLeaf( &m_ObjectSceneNodes[nSlot] );
+                        m_pObjectGraph->AddObjectLeaf( pThisNode );
                     }
                 }
-                else if( !AABBCollision( *m_ObjectSceneNodes[nSlot].m_pParent, m_ObjectSceneNodes[nSlot] ) )
+                else if( !AABBCollision( *pThisNode->m_pParent, *pThisNode ) )
                 {
-                    TObjectParentNode* pParent = (TObjectParentNode*)m_ObjectSceneNodes[nSlot].m_pParent;
+                    TObjectParentNode* pParent = (TObjectParentNode*)pThisNode->m_pParent;
                     // We're no longer in our parent, remove ourself and
                     //  readd to the list
-                    if( pParent->RemoveObject( &m_ObjectSceneNodes[nSlot] ) )
+                    if( pParent->RemoveObject( pThisNode ) )
                     {
                         // We were successfully removed, readd ourselves
-                        m_pObjectGraph->AddObjectLeaf( &m_ObjectSceneNodes[nSlot] );
+                        m_pObjectGraph->AddObjectLeaf( pThisNode );
+                    }
+                    else
+                    {
+                        int x = 0;
                     }
                 }
             }

@@ -3,7 +3,7 @@ File:           config.h
 Purpose:        Includes platform and build configurations
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/30/2011 12:28:24 PM
+Modified:       5/2/2011 6:42:29 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CONFIG_H_
@@ -146,7 +146,7 @@ extern const uint8  gs_nSIMDWidth;
 #define MAX_SUB_TASKS           (1024*32)
 #define MAX_OBJECTS             (16*1024)
 #define MAX_LIGHTS              8
-#define MAX_RENDER_COMMANDS     (16*1024)
+#define MAX_RENDER_COMMANDS     (32*1024)
 #define MAX_CHARACTERS          1
 
 #define RELEASE_ASSERTS         0

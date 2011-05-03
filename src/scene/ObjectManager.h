@@ -3,7 +3,7 @@ File:           ObjectManager.h
 Purpose:        Handles allocation of objects
 Author:         Kyle Weicht
 Created:        3/31/2011
-Modified:       4/29/2011 12:16:02 AM
+Modified:       5/2/2011 6:41:07 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECTMANAGER_H_
@@ -130,7 +130,7 @@ namespace Riot
             COMPONENT_RESET_REMOVED = 0x7FFFFFFF,
             COMPONENT_FRESH         = 0x40000000,
 
-            MAX_COMPONENT_MESSAGES  = 1024*16,
+            MAX_COMPONENT_MESSAGES  = MAX_OBJECTS * eNUMCOMPONENTS,
         };
         /***************************************\
         | class members                         |

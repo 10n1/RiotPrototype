@@ -2,7 +2,7 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/28/2011 3:53:01 PM
+Modified:       5/2/2011 7:25:46 PM
 Modified by:    Kyle Weicht
 
 TODO:           Add alignment support? Should be ultra easy
@@ -117,6 +117,8 @@ void* __cdecl operator new(size_t nSize, const char* szFile, unsigned int nLine)
     // In debug, fill it with nothing
     Memset( pNewAlloc, 0xF0F0F0F0, nSize );
 
+    ASSERT( pNewAlloc );
+
     // Return it
     return pNewAlloc;
 };
@@ -141,6 +143,11 @@ void* __cdecl operator new[](size_t nSize, const char* szFile, unsigned int nLin
     gs_nPrevAllocSize   = (uint)nSize;
 
     AddAllocation( pNewAlloc, (uint)nSize, szFile, nLine );
+    
+    // In debug, fill it with nothing
+    Memset( pNewAlloc, 0xF0F0F0F0, nSize );
+
+    ASSERT( pNewAlloc );
 
     // Return it
     return pNewAlloc;

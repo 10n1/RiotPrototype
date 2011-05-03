@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/1/2011 6:51:58 PM
+Modified:       5/2/2011 6:53:14 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -235,28 +235,42 @@ namespace Riot
                     static uint nCount = 1;
                     static CMesh* pBox = m_pRenderer->CreateMesh();
                     RTransform t = RTransform();
-                    t.position = RVector3( RandFloat(128.0f) - 64.0f, RandFloat( 256.0f ) + 65.0f, RandFloat(128.0f) - 64.0f );
-                    //t.position = RVector3( 0.0f, i * 30.0f + 20.0f, 0.0f );
-                    uint nObject = m_pObjectManager->CreateObject();
 
-                    m_pObjectManager->AddComponent( nObject, eComponentRigidBody );
-                    m_pObjectManager->AddComponent( nObject, eComponentRender );
-                    m_pObjectManager->AddComponent( nObject, eComponentCollidable );
-                    uint nCollidableIndex = m_pObjectManager->GetComponentIndex( nObject, eComponentCollidable );
-                    CComponentCollidable::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nCollidableIndex );
+                    for( uint i = 0; i < 24; ++i )
+                    {
+                        t.position = RVector3( RandFloat(128.0f) - 64.0f, RandFloat( 256.0f ) + 65.0f, RandFloat(128.0f) - 64.0f );
+                        //t.position = RVector3( 0.0f, i * 30.0f + 20.0f, 0.0f );
+                        uint nObject = m_pObjectManager->CreateObject();
 
-                    m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
-                    m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+                        if( nObject == -1 )
+                        {
+                            break;
+                        }
+
+                        m_pObjectManager->AddComponent( nObject, eComponentRigidBody );
+                        m_pObjectManager->AddComponent( nObject, eComponentRender );
+                        m_pObjectManager->AddComponent( nObject, eComponentCollidable );
+                        uint nCollidableIndex = m_pObjectManager->GetComponentIndex( nObject, eComponentCollidable );
+                        CComponentCollidable::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nCollidableIndex );
+
+                        m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
+                        m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+                    }
                     nCount++;
-                    printf( "Objects: %d\n", nCount );
+                    printf( "Objects: %d\n", m_pObjectManager->GetNumObjects() );
                 }
                 break;
 
             case KEY_H:
                 {
-                    uint nObject = m_pObjectManager->GetNumObjects();
-                    if( nObject > 0 )
-                        m_pObjectManager->DeleteObject( nObject-1 );
+                    for( uint i = 0; i < 20; ++i )
+                    {
+                        uint nObject = m_pObjectManager->GetNumObjects();
+                        if( nObject > 0 )
+                            m_pObjectManager->DeleteObject( nObject-1 );
+                    }
+
+                    printf( "Objects: %d\n", m_pObjectManager->GetNumObjects() );
                 }
                 break;
             }

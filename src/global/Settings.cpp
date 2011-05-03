@@ -2,7 +2,7 @@
 File:           Settings.cpp
 Author:         Kyle Weicht
 Created:        4/27/2011
-Modified:       5/2/2011 8:45:25 AM
+Modified:       5/2/2011 5:10:01 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "settings.h"
@@ -14,11 +14,11 @@ namespace Riot
     TSetting<Type> Name( #Name, InitialValue )
 
     
-    DEFINE_SETTING( uint, gbShowBoundingVolumes, 1 );
+    DEFINE_SETTING( uint, gbShowBoundingVolumes, 0 );
     DEFINE_SETTING( uint, gbRenderWireframe, 0 );
-    DEFINE_SETTING( uint, gbRenderOn, 1 );
+    DEFINE_SETTING( uint, gbRenderOn, 0 );
     DEFINE_SETTING( uint, gbConsoleActive, 0 );
-    DEFINE_SETTING( uint, gbShowFPS, 0 );
+    DEFINE_SETTING( uint, gbShowFPS, 1 );
 
     template<class T>
     TSetting<T>::TSetting( const char* szName, T initialValue )

@@ -2,7 +2,7 @@
 File:           utility.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/27/2011 10:57:43 AM
+Modified:       5/2/2011 6:51:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "utility.h"
@@ -33,10 +33,16 @@ void* Memset( void* pDest, uint c, uint nSize )
     }
     
     // Finally get the rest of the buffer
+    while( nSize >= 4 )
+    {
+        *(uint*)a = c;
+        a += sizeof(uint);
+        nSize -= sizeof(uint);
+    }
     while( nSize > 0 )
     {
-        *a = (byte)c;
-        a++;
+        *a = (char)c;
+        ++a;
         --nSize;
     }
 #else
@@ -50,11 +56,18 @@ void* Memset( void* pDest, uint c, uint nSize )
         nSize -= sizeof( uint64 );
     }
     
+    
     // Finally get the rest of the buffer
+    while( nSize >= 4 )
+    {
+        *(uint*)a = c;
+        a += sizeof(uint);
+        nSize -= sizeof(uint);
+    }
     while( nSize > 0 )
     {
-        *a = c;
-        a++;
+        *a = (char)c;
+        ++a;
         --nSize;
     }
 #endif // #ifndef RIOT_USE_INTRINSICS
