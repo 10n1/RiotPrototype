@@ -2,7 +2,7 @@
 File:           Settings.cpp
 Author:         Kyle Weicht
 Created:        4/27/2011
-Modified:       5/2/2011 7:42:01 PM
+Modified:       5/3/2011 2:26:31 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "settings.h"
@@ -16,7 +16,7 @@ namespace Riot
     
     DEFINE_SETTING( uint, gnShowBoundingVolumes, 0 );
     DEFINE_SETTING( uint, gnRenderWireframe, 0 );
-    DEFINE_SETTING( uint, gnRenderOn, 0 );
+    DEFINE_SETTING( uint, gnRenderOn, 1 );
     DEFINE_SETTING( uint, gnConsoleActive, 0 );
     DEFINE_SETTING( uint, gnShowFPS, 1 );
 

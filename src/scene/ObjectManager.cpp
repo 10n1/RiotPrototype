@@ -2,7 +2,7 @@
 File:           ObjectManager.cpp
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       5/2/2011 7:29:58 PM
+Modified:       5/3/2011 4:28:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ObjectManager.h"
@@ -253,6 +253,14 @@ namespace Riot
 #endif
         m_nNumMessages = 0;
     }
+
+    void CObjectManager::PipelineObjectUpdate( void* pData, uint nThreadId, uint nStart, uint nCount )
+    {
+        CObjectManager* pManager = (CObjectManager*)pData;
+
+        pManager->ProcessComponents();
+    }
+
     void CObjectManager::ParallelProcessComponents( void* pData, uint nThreadId, uint nStart, uint nCount )
     {
         CObjectManager* pManager = (CObjectManager*)pData;

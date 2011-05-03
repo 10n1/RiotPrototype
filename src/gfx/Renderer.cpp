@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/2/2011 7:40:32 PM
+Modified:       5/3/2011 2:26:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -83,6 +83,20 @@ namespace Riot
 
         m_pSphereMesh = NULL;
         m_pDebugBox = NULL;
+
+        m_pPrevCommands = m_pRenderCommands[0];
+        m_pCurrCommands = m_pRenderCommands[1];
+
+        m_pPrevTransforms = m_pTransforms[0];
+        m_pCurrTransforms = m_pTransforms[1];
+
+        m_pPrevDebugBoxes = m_DebugBoxes[0];
+        m_pPrevDebugBoxesColor = m_DebugBoxesColor[0];        
+        m_pCurrDebugBoxes = m_DebugBoxes[1];
+        m_pCurrDebugBoxesColor = m_DebugBoxesColor[1];
+
+        m_pPrevDebugSpheres = m_DebugSpheres[0];
+        m_pCurrDebugSpheres = m_DebugSpheres[1];
     }
 
     //-----------------------------------------------------------------------------
@@ -212,9 +226,9 @@ namespace Riot
     {
         if( !gnRenderOn )
         {   // Don't render if we shouldn't
-            m_nNumCommands  = 0;
-            m_nNumSpheres   = 0;
-            m_nNumBoxes     = 0;
+            m_nPrevNumCommands  = 0;
+            m_nPrevNumSpheres   = 0;
+            m_nPrevNumBoxes     = 0;
 
             m_pDevice->Clear();
             m_pDevice->Present();
@@ -248,12 +262,12 @@ namespace Riot
 
         SetViewProj( mView, mProj );
 
-        for( sint i = 0; i < m_nNumCommands; ++i )
+        for( sint i = 0; i < m_nPrevNumCommands; ++i )
         {
-            RMatrix4 mWorld = m_pTransforms[i].GetTransformMatrix();
+            RMatrix4 mWorld = m_pPrevTransforms[i].GetTransformMatrix();
             SetWorldMatrix( mWorld );
 
-            IGfxTexture2D* pTexture = m_pRenderCommands[i].pTexture;
+            IGfxTexture2D* pTexture = m_pPrevCommands[i].pTexture;
 
             if( pTexture == NULL )
             {
@@ -266,10 +280,8 @@ namespace Riot
             }
 
             m_pDevice->SetPSTexture( 0, pTexture );
-            m_pRenderCommands[i].pMesh->DrawMesh();
+            m_pPrevCommands[i].pMesh->DrawMesh();
         }
-        m_nNumCommands = 0;
-
 
 
         mView = m_pCurrentView->GetViewMatrix();
@@ -287,22 +299,21 @@ namespace Riot
             m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
             m_pDevice->SetPSSamplerState( m_pNearestSamplerState );
             m_pDevice->SetPSTexture( 0, m_pWhiteTexture );
-            for( sint i = 0; i < m_nNumSpheres; ++i )
+            for( sint i = 0; i < m_nPrevNumSpheres; ++i )
             {
-                RMatrix4 mWorld = RMatrix4Scale( m_DebugSpheres[i].radius );
-                mWorld.r3 = Homogonize(m_DebugSpheres[i].position);
+                RMatrix4 mWorld = RMatrix4Scale( m_pPrevDebugSpheres[i].radius );
+                mWorld.r3 = Homogonize(m_pPrevDebugSpheres[i].position);
                 mWorld.r3.w = 1.0f;
                 SetWorldMatrix( mWorld );
                 m_pSphereMesh->DrawMesh();
             }
-            m_nNumSpheres = 0;
 
             // Draw the debug boxes
             for( sint i = 0; i < m_nNumBoxes; ++i )
             {
-                RVector3 vMin = m_DebugBoxes[i].min;
-                RVector3 vMax = m_DebugBoxes[i].max;
-                RVector3 vColor = m_DebugBoxesColor[i];
+                RVector3 vMin = m_pPrevDebugBoxes[i].min;
+                RVector3 vMax = m_pPrevDebugBoxes[i].max;
+                RVector3 vColor = m_pPrevDebugBoxesColor[i];
 
                 RMatrix4 mWorld = RMatrix4Identity();
                 SetWorldMatrix( mWorld );
@@ -345,7 +356,6 @@ namespace Riot
                 m_pDebugBox->DrawMesh();
             }
 
-            m_nNumBoxes = 0;
             m_pDevice->SetFillMode( GFX_FILL_SOLID );
             m_pDevice->SetVertexShader( m_pDefaultVShader );
             m_pDevice->SetVertexLayout( m_pDefaultVLayout );
@@ -624,9 +634,9 @@ namespace Riot
         ASSERT( m_nNumCommands < MAX_RENDER_COMMANDS );
 
         uint nIndex = AtomicIncrement( &m_nNumCommands ) - 1;
-        m_pRenderCommands[nIndex] = cmd;
+        m_pCurrCommands[nIndex] = cmd;
 
-        m_pTransforms[nIndex] = transform;
+        m_pCurrTransforms[nIndex] = transform;
     }
 
     //-----------------------------------------------------------------------------
@@ -724,7 +734,7 @@ namespace Riot
 
         sint nIndex = AtomicIncrement( &m_nNumSpheres ) - 1;
 
-        m_DebugSpheres[nIndex] = fSphere;
+        m_pCurrDebugSpheres[nIndex] = fSphere;
     }
 
     //-----------------------------------------------------------------------------
@@ -738,8 +748,29 @@ namespace Riot
 
         sint nIndex = AtomicIncrement( &m_nNumBoxes ) - 1;
 
-        m_DebugBoxes[nIndex] = box;
-        m_DebugBoxesColor[nIndex] = vColor;
+        m_pCurrDebugBoxes[nIndex] = box;
+        m_pCurrDebugBoxesColor[nIndex] = vColor;
     }
 
+    //-----------------------------------------------------------------------------
+    //  SwapBuffers
+    //  Swaps last and previous frames buffers
+    //-----------------------------------------------------------------------------
+    void CRenderer::SwapBuffers( void )
+    {
+        Swap( m_pPrevCommands, m_pCurrCommands );
+        Swap( m_pPrevTransforms, m_pCurrTransforms );
+        Swap( m_pPrevDebugBoxes, m_pCurrDebugBoxes );
+        Swap( m_pPrevDebugSpheres, m_pCurrDebugSpheres );
+        Swap( m_pPrevDebugBoxesColor, m_pCurrDebugBoxesColor );
+
+
+        m_nPrevNumCommands  = m_nNumCommands;
+        m_nPrevNumSpheres   = m_nNumSpheres;
+        m_nPrevNumBoxes     = m_nNumBoxes;
+
+        m_nNumBoxes     = 0;
+        m_nNumSpheres   = 0;
+        m_nNumCommands  = 0;
+    }
 } // namespace Riot

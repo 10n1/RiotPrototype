@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       4/28/2011 10:48:08 PM
+Modified:       5/3/2011 2:23:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -132,9 +132,16 @@ namespace Riot
         
         //-----------------------------------------------------------------------------
         //  DrawDebugBox
-        //  Renders a wireframe debug AAB
+        //  Renders a wireframe debug AABB
         //-----------------------------------------------------------------------------
         void DrawDebugBox( const RAABB& box, const RVector3& vColor );
+
+        
+        //-----------------------------------------------------------------------------
+        //  SwapBuffers
+        //  Swaps last and previous frames buffers
+        //-----------------------------------------------------------------------------
+        void SwapBuffers( void );
 
     private:
         /***************************************\
@@ -143,8 +150,14 @@ namespace Riot
         static const MessageType    MessagesReceived[];
         static const uint           NumMessagesReceived;
 
-        RTransform      m_pTransforms[MAX_RENDER_COMMANDS];
-        TRenderCommand  m_pRenderCommands[MAX_RENDER_COMMANDS];
+        RTransform      m_pTransforms[2][MAX_RENDER_COMMANDS];
+        TRenderCommand  m_pRenderCommands[2][MAX_RENDER_COMMANDS];
+
+        RTransform*     m_pPrevTransforms;
+        RTransform*     m_pCurrTransforms;
+        
+        TRenderCommand* m_pPrevCommands;
+        TRenderCommand* m_pCurrCommands;
 
         IGraphicsDevice*    m_pDevice;
 
@@ -171,16 +184,25 @@ namespace Riot
         uint32      m_nNumActiveLights;
         uint32      _padding[3];
         atomic_t    m_nNumCommands;
+        uint        m_nPrevNumCommands;
         bool        m_bUpdateLighting;
 
         CMesh*      m_pSphereMesh;
 
-        RSphere     m_DebugSpheres[1024*32];
+        RSphere     m_DebugSpheres[2][1024*32];
+        RSphere*    m_pPrevDebugSpheres;
+        RSphere*    m_pCurrDebugSpheres;
         atomic_t    m_nNumSpheres;
+        uint        m_nPrevNumSpheres;
 
-        RAABB       m_DebugBoxes[1024*32];
-        RVector3    m_DebugBoxesColor[1024*32];
+        RAABB       m_DebugBoxes[2][1024*32];
+        RVector3    m_DebugBoxesColor[2][1024*32];
+        RAABB*      m_pPrevDebugBoxes;
+        RVector3*   m_pPrevDebugBoxesColor;        
+        RAABB*      m_pCurrDebugBoxes;
+        RVector3*   m_pCurrDebugBoxesColor;
         atomic_t    m_nNumBoxes;
+        uint        m_nPrevNumBoxes;
 
         CMesh*      m_pDebugBox;
     };

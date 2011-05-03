@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/2/2011 7:40:33 PM
+Modified:       5/3/2011 4:34:05 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -96,11 +96,16 @@ namespace Riot
         // Run the engine
         while( m_bRunning )
         {
+            m_pRenderer->SwapBuffers();
 
             //////////////////////////////////////////
             // Update everything
             m_pCamera->Update();
-            m_pObjectManager->ProcessComponents();
+#if PIPELINED_RENDER
+            task_handle_t nObjectUpdateHandle =  m_pTaskManager->PushTask( CObjectManager::PipelineObjectUpdate, m_pObjectManager, 1, 1 );
+#else
+            CObjectManager::PipelineObjectUpdate( m_pObjectManager, 0, 0, 1 )
+#endif // #if PIPELINED_RENDER
 
             // Make sure terrain is the last thing drawn
             m_pTerrain->Render();
@@ -108,6 +113,10 @@ namespace Riot
             //////////////////////////////////////////
             // Render
             m_pRenderer->Render();
+
+#if PIPELINED_RENDER
+            m_pTaskManager->WaitForCompletion( nObjectUpdateHandle );
+#endif // #if PIPELINED_RENDER
 
             //////////////////////////////////////////
             //  Process OS messages
@@ -120,6 +129,7 @@ namespace Riot
             //////////////////////////////////////////
             //  Process this frames messages
             m_pMessageDispatcher->ProcessMessages();
+
 
             //////////////////////////////////////////
             // Perform end of frame timing, etc.

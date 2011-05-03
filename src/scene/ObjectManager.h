@@ -3,7 +3,7 @@ File:           ObjectManager.h
 Purpose:        Handles allocation of objects
 Author:         Kyle Weicht
 Created:        3/31/2011
-Modified:       5/2/2011 6:41:07 PM
+Modified:       5/3/2011 4:28:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECTMANAGER_H_
@@ -122,7 +122,7 @@ namespace Riot
         //-----------------------------------------------------------------------------
         static void ParallelProcessComponents( void* pData, uint nThreadId, uint nStart, uint nCount );
         static void ParallelProcessComponentMessages( void* pData, uint nThreadId, uint nStart, uint nCount );
-
+        static void PipelineObjectUpdate( void* pData, uint nThreadId, uint nStart, uint nCount );
     private:
         enum 
         { 
