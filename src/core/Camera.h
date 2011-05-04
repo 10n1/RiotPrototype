@@ -3,13 +3,16 @@ File:           Camera.h
 Purpose:        An interface for the main camera
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/17/2011 6:52:38 PM
+Modified:       5/4/2011 12:52:54 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
 #include "common.h"
 #include "IListener.h"
+
+#define AVERAGE_WALK_SPEED 1.4f
+#define AVERAGE_RUN_SPEED  6.7f
 
 namespace Riot
 {

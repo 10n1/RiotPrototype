@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/4/2011 12:07:49 PM
+Modified:       5/4/2011 12:16:41 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -177,7 +177,13 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CTerrain::GenerateTerrain( void )
     {
-        PerlinNoise p( 0.5, 0.0625f, 30.0f, 6, 10000 );
+        float fPersistance = 0.5f;
+        float fFrequency = 0.0625f / 8.0f;
+        float fAmplitude = 150.0f;
+        uint  nOctaves = 6;
+        uint  nSeed = 10000;
+
+        PerlinNoise p( fPersistance, fFrequency, fAmplitude, nOctaves, nSeed );
         
         sint nX;
         sint nY;
