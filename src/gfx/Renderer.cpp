@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/3/2011 2:26:22 PM
+Modified:       5/4/2011 11:16:15 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -268,6 +268,13 @@ namespace Riot
 
         SetWorldMatrix( RMatrix4Identity() );
 
+        
+        m_pDevice->SetVertexLayout( m_pDefaultVLayout );
+        m_pDevice->SetVertexShader( m_pDefaultVShader );
+        m_pDevice->SetPixelShader( m_pDefaultPShader );
+        m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
+        m_pDevice->SetPSSamplerState( m_pLinearSamplerState );
+
         // Render
         ASSERT( m_pCurrentView );
 
@@ -378,9 +385,10 @@ namespace Riot
                 RVector3 vEnd = m_pPrevDebugRays[i].end;
 
                 RVector4 vWhite( 1.0f, 1.0f, 1.0f, 1.0f );
+                RVector4 vBlack( 0.0f, 0.0f, 0.0f, 0.0f );
                 VPosColor vertices[] =
                 {
-                    { vStart, vWhite },
+                    { vStart, vBlack },
                     { vEnd, vWhite },
                 };
 

@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/2/2011 7:40:32 PM
+Modified:       5/4/2011 11:39:54 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -199,7 +199,7 @@ namespace Riot
         {
             m_pObjectGraph->DrawNode( Engine::GetRenderer(), RVector3( 1.0f, 1.0f, 1.0f ) );
 
-            DrawNodes( m_pTerrainGraph, 4 );
+            //DrawNodes( m_pTerrainGraph, 4 );
         }
 
         // Remove dead leaves

@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       4/28/2011 6:42:36 PM
+Modified:       5/4/2011 12:07:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -40,6 +40,11 @@ namespace Riot
         TRenderCommand cmd = { m_pMesh, m_pTexture };
         RTransform t = RTransform();
         pRender->AddCommand( cmd, t );
+
+        for( int i = 0; i < 32*32; ++i )
+        {
+            pRender->DrawDebugRay( m_pVertices[i].Pos, m_pVertices[i].Normal );
+        }
     }
 
     void GenerateSmoothNoise( uint nWidth, uint nHeight, float* fBase, float* fBlend, uint nOctave )
@@ -172,70 +177,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CTerrain::GenerateTerrain( void )
     {
-        //PerlinNoise();
-        for( uint x = 0; x < TERRAIN_WIDTH+1; ++x )
-        {
-            for( uint y = 0; y < TERRAIN_HEIGHT+1; ++y )
-            {
-                //float angleX = DegToRad( ((float)x/TERRAIN_WIDTH) * 360.0f );
-                //float angleY = DegToRad( ((float)y/TERRAIN_WIDTH) * 360.0f );
-                //m_fHeight[x][y] = sinf( angleX ) * 3.0f + cosf( angleY ) * 3.0f + RandFloat(0.1f);
-                //m_fHeight[x][y] = rand()/(float)RAND_MAX * 0.5f;
-        
-                //float angleX = DegToRad( ((float)x/TERRAIN_WIDTH) * 360.0f * 1.5f );
-                //float angleY = DegToRad( ((float)y/TERRAIN_WIDTH) * 360.0f * 1.5f );
-                //m_fHeight[x][y] = sinf( angleX ) * 6.0f + cosf( angleY ) * 6.0f + RandFloat(0.1f);
-                //m_fHeight[x][y] = RandFloat( 3.0f );
-            }
-        }
-        m_fHeight[0][0] = 10.0f;
-        
-        const uint nWidth = TERRAIN_WIDTH+1;
-        const uint nHeight = TERRAIN_HEIGHT+1;
-        const uint nOctaveCount = 3;
-        //
-        float fPersistance = 0.5f;
-        //
-        //float fBase[nWidth][nHeight] = { 0.0f };
-        //
-        //float fSmooth[nOctaveCount][nWidth][nHeight] = { 0.0f };
-        //
-        //// Generate the base pass
-        //GenerateRandomNoise( nWidth, nHeight, &fBase[0][0] );
-        //
-        //// Generate each octave
-        //for( uint i = 0; i < nOctaveCount; ++i )
-        //{
-        //    GenerateSmoothNoise( nWidth, nHeight, &fBase[0][0], &fSmooth[i][0][0], i );
-        //}
-        //
-        //// the final
-        //float fFinal[nWidth][nHeight] = { 0.0f };
-        //
-        //float fAmplitude = 1.0f;
-        //float fTotalAmplitude = 0.0f;
-        //float fWeight = 0.5f;
-        //
-        //for( uint i = 0; i < nOctaveCount; ++i )
-        //{
-        //    fAmplitude *= fPersistance;
-        //    fTotalAmplitude += fAmplitude;
-        //
-        //    for( uint x = 0; x < nWidth; ++x )
-        //    {
-        //        for( uint y = 0; y < nHeight; ++y )
-        //        {
-        //            m_fHeight[x][y] += fSmooth[i][x][y] * fWeight;
-        //        }
-        //    }
-        //
-        //    fWeight *= 0.5f;
-        //}
-
-
-        //fAmplitude *= fPersistance;
-        //fTotalAmplitude += fAmplitude;
-        PerlinNoise p( 0.25f, 0.0625f, 30.0f, 6, 100 );
+        PerlinNoise p( 0.5, 0.0625f, 30.0f, 6, 10000 );
         
         sint nX;
         sint nY;
@@ -248,8 +190,6 @@ namespace Riot
                 m_fHeight[nX][nY] = p.GetHeight( fX, fY );
             }
         }
-
-        //fWeight *= 0.5f;
         
 
         //////////////////////////////////////////
@@ -288,39 +228,8 @@ namespace Riot
         {
             for( fY = -(nPolysHeight/2.0f), nY = 0; fY <= (nPolysHeight/2.0f); fY += 1.0f, ++nY )
             {
-                VPosNormalTex vert = { RVector3( fX, m_fHeight[nX][nY], fY ), RVector3( 0.0f, 1.0f, 0.0f ), RVector2( 0.0f, 0.0f ) };
+                VPosNormalTex vert = { RVector3( fX, m_fHeight[nX][nY], fY ), RVector3( 0.0f, 0.0f, 0.0f ), RVector2( 0.0f, 0.0f ) };
                 m_pVertices[ nVertex++ ] = vert;
-            }
-        }
-
-        nVertex = 0;
-        for( fX = -(nPolysWidth/2.0f), nX = 0; fX <= (nPolysWidth/2.0f); fX += 1.0f, ++nX  )
-        {
-            for( fY = -(nPolysHeight/2.0f), nY = 0; fY <= (nPolysHeight/2.0f); fY += 1.0f, ++nY )
-            {
-                if( nX == 0 || nY == 0 || nX == TERRAIN_WIDTH || nY == TERRAIN_HEIGHT )
-                {
-                    // skip the edges
-                    continue;
-                }
-
-                RVector3 top =      RVector3( fX,   m_fHeight[nX][nY+1], fY+1 );
-                RVector3 bottom =   RVector3( fX,   m_fHeight[nX][nY-1], fY-1 );
-                RVector3 left =     RVector3( fX-1, m_fHeight[nX-1][nY], fY   );
-                RVector3 right =    RVector3( fX+1, m_fHeight[nX+1][nY], fY   );
-                RVector3 me =       RVector3( fX,   m_fHeight[nX][nY],   fY   );
-
-                RVector3 norm0 = Normalize( CrossProduct( (top-me),    (me-left)    ) );
-                RVector3 norm1 = Normalize( CrossProduct( (right-me),  (me-top)     ) );
-                RVector3 norm2 = Normalize( CrossProduct( (bottom-me), (me-right)   ) );
-                RVector3 norm3 = Normalize( CrossProduct( (left-me),   (me-bottom)  ) );
-
-                RVector3 avgNorm = norm0 + norm1 + norm2 + norm3;
-                avgNorm = Normalize( avgNorm );
-
-                //avgNorm = RVector3( 0.0f, 1.0f, 0.0f );
-
-                m_pVertices[ nVertex++ ].Normal = avgNorm;
             }
         }
 
@@ -340,8 +249,33 @@ namespace Riot
             }
         }
 
+        // Calculate the face normals
+        for( int i = 0; i < nIndices; i += 3 )
+        {
+            VPosNormalTex& v0 = m_pVertices[ m_pIndices[i + 0] ];
+            VPosNormalTex& v1 = m_pVertices[ m_pIndices[i + 1] ];
+            VPosNormalTex& v2 = m_pVertices[ m_pIndices[i + 2] ];
+
+            RVector3 s0 = v0.Pos - v1.Pos;
+            RVector3 s1 = v1.Pos - v2.Pos;
+
+            RVector3 norm = Normalize( CrossProduct( s0, s1 ) );
+
+            v0.Normal += norm;
+            v1.Normal += norm;
+            v2.Normal += norm;
+        }
+
+        // Then normalize them
+        for( uint i = 0; i < nVertsTotal; ++i )
+        {
+            m_pVertices[i].Normal = Normalize( m_pVertices[i].Normal );
+        }
+
         // Create our mesh
         m_pMesh = pRender->CreateMesh( VPosNormalTex::VertexStride, nVertsTotal, 2, nIndices, m_pVertices, m_pIndices );
+
+        //m_pMesh->m_nIndexCount /= 2;
     }
 
     PerlinNoise::PerlinNoise()

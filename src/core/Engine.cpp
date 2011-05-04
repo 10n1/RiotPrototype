@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/3/2011 4:34:05 PM
+Modified:       5/4/2011 11:49:56 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -366,7 +366,7 @@ namespace Riot
         // Create the terrain
         m_pTerrain = new CTerrain();
         m_pTerrain->GenerateTerrain();
-        m_pTerrain->CreateMesh();
+        //m_pTerrain->CreateMesh();
 
 
         //////////////////////////////////////////
