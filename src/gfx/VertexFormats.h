@@ -117,6 +117,21 @@ namespace Riot
     };
     
     /*
+    Screen space vertex format
+    */
+    struct VPosColorTex
+    {
+        RVector3 Pos;
+        RVector3 Color;
+        RVector2 TexCoord;
+
+        static InputElementLayout Layout[];
+        static IGfxVertexLayout*  VertexLayoutObject;
+        static const uint LayoutSize;
+        static const uint VertexStride;// = sizeof( VVertexPosNormal );
+    };
+
+    /*
     Position and color format
     */
     struct VPosColor

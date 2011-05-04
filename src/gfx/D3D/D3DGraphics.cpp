@@ -528,7 +528,7 @@ namespace Riot
         bufferDesc.Usage            = (D3D11_USAGE)nUsage;
         bufferDesc.ByteWidth        = nSize;
         bufferDesc.BindFlags        = D3D11_BIND_VERTEX_BUFFER;
-        bufferDesc.CPUAccessFlags   = 0;
+        bufferDesc.CPUAccessFlags   = ( nUsage == GFX_BUFFER_USAGE_DYNAMIC ) ? D3D11_CPU_ACCESS_WRITE : 0;
 
 
         D3D11_SUBRESOURCE_DATA* pData = NULL;
@@ -583,6 +583,13 @@ namespace Riot
     {
         m_pContext->UpdateSubresource( ((CD3DBuffer*)pBuffer)->m_pBuffer, 0, NULL, pData, 0, 0 );
     }
+    void CD3DDevice::UpdateBuffer( IGfxBuffer* pBuffer, void* pData, uint nSize )
+    {
+        D3D11_MAPPED_SUBRESOURCE pMappedBuffer;
+        m_pContext->Map( ((CD3DBuffer*)pBuffer)->m_pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &pMappedBuffer );
+        Memcpy( pMappedBuffer.pData, pData, nSize );
+        m_pContext->Unmap( ((CD3DBuffer*)pBuffer)->m_pBuffer, 0 );
+    }
     //
 
     //
@@ -636,6 +643,10 @@ namespace Riot
     //
 
     //
+    void CD3DDevice::Draw( uint nVertexCount )
+    {
+        m_pContext->Draw( nVertexCount, 0 );
+    }
     void CD3DDevice::DrawIndexedPrimitive( uint nIndexCount )
     {
         m_pContext->DrawIndexed( nIndexCount, 0, 0 );

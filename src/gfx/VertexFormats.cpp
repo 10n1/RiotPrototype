@@ -24,6 +24,19 @@ namespace Riot
     const uint          VPosNormalTex::VertexStride = sizeof( VPosNormalTex );
     
     /*
+    Screen space vertex format
+    */
+    InputElementLayout VPosColorTex::Layout[] = 
+    { 
+        { GFX_SEMANTIC_POSITION,    GFX_FORMAT_FLOAT3, 0 },
+        { GFX_SEMANTIC_COLOR,       GFX_FORMAT_FLOAT3, 12 },
+        { GFX_SEMANTIC_TEXCOORD,    GFX_FORMAT_FLOAT2, 24 },
+    };
+    IGfxVertexLayout*   VPosColorTex::VertexLayoutObject = NULL;
+    const uint          VPosColorTex::LayoutSize = ARRAY_LENGTH(Layout);
+    const uint          VPosColorTex::VertexStride = sizeof( VPosColorTex );
+
+    /*
     Position and color format
     */        
     InputElementLayout VPosColor::Layout[] = 

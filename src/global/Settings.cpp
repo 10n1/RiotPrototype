@@ -16,7 +16,7 @@ namespace Riot
     
     DEFINE_SETTING( uint, gnShowBoundingVolumes, 0 );
     DEFINE_SETTING( uint, gnRenderWireframe, 0 );
-    DEFINE_SETTING( uint, gnRenderOn, 0 );
+    DEFINE_SETTING( uint, gnRenderOn, 1 );
     DEFINE_SETTING( uint, gnConsoleActive, 0 );
     DEFINE_SETTING( uint, gnShowFPS, 1 );
 

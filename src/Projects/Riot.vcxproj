@@ -28,6 +28,7 @@
     <ClCompile Include="..\core\TaskManager.cpp" />
     <ClCompile Include="..\core\Thread.cpp" />
     <ClCompile Include="..\core\timer.cpp" />
+    <ClCompile Include="..\core\UI.cpp" />
     <ClCompile Include="..\core\Window.cpp" />
     <ClCompile Include="..\gfx\D3D\D3DGraphics.cpp" />
     <ClCompile Include="..\gfx\D3D\D3DGraphicsObjects.cpp" />
@@ -69,6 +70,7 @@
     <ClInclude Include="..\core\TaskManager.h" />
     <ClInclude Include="..\core\Thread.h" />
     <ClInclude Include="..\core\timer.h" />
+    <ClInclude Include="..\core\UI.h" />
     <ClInclude Include="..\core\Window.h" />
     <ClInclude Include="..\gfx\D3D\D3DGraphics.h" />
     <ClInclude Include="..\gfx\D3D\D3DGraphicsObjects.h" />

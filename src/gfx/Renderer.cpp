@@ -20,6 +20,7 @@ Modified by:    Kyle Weicht
 #include "VertexFormats.h"
 #include "View.h"
 #include "TaskManager.h"
+#include "UI.h"
 
 
 namespace Riot
@@ -112,6 +113,8 @@ namespace Riot
         SAFE_RELEASE( m_pViewProjCB );
         SAFE_RELEASE( m_pLightCB );
         SAFE_RELEASE( m_pDevice );
+
+        UI::Destroy();
     }
 
     //-----------------------------------------------------------------------------
@@ -144,6 +147,9 @@ namespace Riot
         
         // Load the defaults
         CreateDefaultObjects();
+
+        // Init UI
+        UI::Initialize( m_pDevice );
     }
 
     //-----------------------------------------------------------------------------
@@ -351,6 +357,17 @@ namespace Riot
             m_pDevice->SetVertexLayout( m_pDefaultVLayout );
             m_pDevice->SetPixelShader( m_pDefaultPShader );
         }
+
+        // Draw text
+        //UI::DrawString( m_pDevice, 10, 10, "Hi Kyle...this is Omar :)" );
+        UI::AddString( 10, 10, "Hi Kyle...this is Omar" );
+        UI::Draw( m_pDevice );
+
+        // Set default states
+        m_pDevice->SetFillMode( GFX_FILL_SOLID );
+        m_pDevice->SetVertexShader( m_pDefaultVShader );
+        m_pDevice->SetVertexLayout( m_pDefaultVLayout );
+        m_pDevice->SetPixelShader( m_pDefaultPShader );
 
         // Present
         m_pDevice->Present();
