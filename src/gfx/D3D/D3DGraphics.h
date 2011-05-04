@@ -102,6 +102,7 @@ namespace Riot
 
         //
         void DrawIndexedPrimitive( uint nIndexCount );
+        void DrawPrimitive( uint nVertexCount );
         //
 
     private:

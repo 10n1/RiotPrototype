@@ -591,10 +591,6 @@ namespace Riot
                         // We were successfully removed, readd ourselves
                         m_pObjectGraph->AddObjectLeaf( pThisNode );
                     }
-                    else
-                    {
-                        int x = 0;
-                    }
                 }
             }
             break;

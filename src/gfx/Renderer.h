@@ -135,7 +135,12 @@ namespace Riot
         //  Renders a wireframe debug AABB
         //-----------------------------------------------------------------------------
         void DrawDebugBox( const RAABB& box, const RVector3& vColor );
-
+        
+        //-----------------------------------------------------------------------------
+        //  DrawDebugRay
+        //  Draws a vector from the start point the length of the vector
+        //-----------------------------------------------------------------------------
+        void DrawDebugRay( const RVector3& start, const RVector3& dir );
         
         //-----------------------------------------------------------------------------
         //  SwapBuffers
@@ -178,6 +183,20 @@ namespace Riot
         IGfxVertexShader*   m_pWireframeVShader;
         IGfxPixelShader*    m_pWireframePShader;
 
+        IGfxBuffer*         m_pLineBuffer;
+
+        struct TDebugBox
+        {
+            RAABB       box;
+            RVector3    color;
+        };
+
+        struct TDebugRay
+        {
+            RVector3    start;
+            RVector3    end;
+        };
+
         CView*  m_pCurrentView;
 
         RVector4    m_vLights[MAX_LIGHTS];
@@ -195,14 +214,17 @@ namespace Riot
         atomic_t    m_nNumSpheres;
         uint        m_nPrevNumSpheres;
 
-        RAABB       m_DebugBoxes[2][1024*32];
-        RVector3    m_DebugBoxesColor[2][1024*32];
-        RAABB*      m_pPrevDebugBoxes;
-        RVector3*   m_pPrevDebugBoxesColor;        
-        RAABB*      m_pCurrDebugBoxes;
-        RVector3*   m_pCurrDebugBoxesColor;
+        TDebugBox   m_DebugBoxes[2][1024*32];
+        TDebugBox*  m_pPrevDebugBoxes;
+        TDebugBox*  m_pCurrDebugBoxes;
         atomic_t    m_nNumBoxes;
         uint        m_nPrevNumBoxes;
+
+        TDebugRay   m_DebugRays[2][1024*32];
+        TDebugRay*  m_pPrevDebugRays;
+        TDebugRay*  m_pCurrDebugRays;
+        atomic_t    m_nNumRays;
+        uint        m_nPrevNumRays;
 
         CMesh*      m_pDebugBox;
     };

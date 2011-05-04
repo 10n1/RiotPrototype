@@ -54,6 +54,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Initialize( void )
     {        
+        m_pLineBuffer   = NULL;
+
         m_pDevice       = NULL;
         m_pViewProjCB   = NULL;
         m_pWorldCB      = NULL;
@@ -90,13 +92,14 @@ namespace Riot
         m_pPrevTransforms = m_pTransforms[0];
         m_pCurrTransforms = m_pTransforms[1];
 
-        m_pPrevDebugBoxes = m_DebugBoxes[0];
-        m_pPrevDebugBoxesColor = m_DebugBoxesColor[0];        
+        m_pPrevDebugBoxes = m_DebugBoxes[0];     
         m_pCurrDebugBoxes = m_DebugBoxes[1];
-        m_pCurrDebugBoxesColor = m_DebugBoxesColor[1];
 
         m_pPrevDebugSpheres = m_DebugSpheres[0];
         m_pCurrDebugSpheres = m_DebugSpheres[1];
+
+        m_pPrevDebugRays = m_DebugRays[0];
+        m_pCurrDebugRays = m_DebugRays[1];
     }
 
     //-----------------------------------------------------------------------------
@@ -104,6 +107,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Shutdown( void )
     {
+        SAFE_RELEASE( m_pLineBuffer );
+
         SAFE_RELEASE( m_pWireframeVLayout );
         SAFE_RELEASE( m_pWireframeVShader );
         SAFE_RELEASE( m_pWireframePShader );
@@ -210,6 +215,15 @@ namespace Riot
         // pixel shader
         m_pWireframePShader = m_pDevice->CreatePixelShader( "Assets/Shaders/PosColorPixelShader.hlsl", "main" );
 
+        // a vertex shader for drawing lines
+        
+        VPosColor pLineVertices[] =
+        {
+            { RVector3(  0.0f,  0.0f,  0.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+            { RVector3(  1.0f,  1.0f,  1.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
+        };
+        m_pLineBuffer = m_pDevice->CreateVertexBuffer( sizeof( pLineVertices ), pLineVertices );
+
         // ...finally, set them
         m_pDevice->SetVertexLayout( m_pDefaultVLayout );
         m_pDevice->SetVertexShader( m_pDefaultVShader );
@@ -309,11 +323,11 @@ namespace Riot
             }
 
             // Draw the debug boxes
-            for( sint i = 0; i < m_nNumBoxes; ++i )
+            for( sint i = 0; i < m_nPrevNumBoxes; ++i )
             {
-                RVector3 vMin = m_pPrevDebugBoxes[i].min;
-                RVector3 vMax = m_pPrevDebugBoxes[i].max;
-                RVector3 vColor = m_pPrevDebugBoxesColor[i];
+                RVector3 vMin = m_pPrevDebugBoxes[i].box.min;
+                RVector3 vMax = m_pPrevDebugBoxes[i].box.max;
+                RVector3 vColor = m_pPrevDebugBoxes[i].color;
 
                 RMatrix4 mWorld = RMatrix4Identity();
                 SetWorldMatrix( mWorld );
@@ -356,7 +370,28 @@ namespace Riot
                 m_pDebugBox->DrawMesh();
             }
 
+            // Draw the rays
+            m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_LINELIST );
+            for( sint i = 0; i < m_nPrevNumRays; ++i )
+            {
+                RVector3 vStart = m_pPrevDebugRays[i].start;
+                RVector3 vEnd = m_pPrevDebugRays[i].end;
+
+                RVector4 vWhite( 1.0f, 1.0f, 1.0f, 1.0f );
+                VPosColor vertices[] =
+                {
+                    { vStart, vWhite },
+                    { vEnd, vWhite },
+                };
+
+                m_pDevice->UpdateBuffer( m_pLineBuffer, vertices );
+
+                m_pDevice->SetVertexBuffer( m_pLineBuffer, VPosColor::VertexStride );
+                m_pDevice->DrawPrimitive( 2 );
+            }
+
             m_pDevice->SetFillMode( GFX_FILL_SOLID );
+            m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
             m_pDevice->SetVertexShader( m_pDefaultVShader );
             m_pDevice->SetVertexLayout( m_pDefaultVLayout );
             m_pDevice->SetPixelShader( m_pDefaultPShader );
@@ -748,8 +783,20 @@ namespace Riot
 
         sint nIndex = AtomicIncrement( &m_nNumBoxes ) - 1;
 
-        m_pCurrDebugBoxes[nIndex] = box;
-        m_pCurrDebugBoxesColor[nIndex] = vColor;
+        m_pCurrDebugBoxes[nIndex].box = box;
+        m_pCurrDebugBoxes[nIndex].color = vColor;
+    }
+
+    //-----------------------------------------------------------------------------
+    //  DrawDebugRay
+    //  Draws a vector from the start point the length of the vector
+    //-----------------------------------------------------------------------------
+    void CRenderer::DrawDebugRay( const RVector3& start, const RVector3& dir )
+    {
+        sint nIndex = AtomicIncrement( &m_nNumRays ) - 1;
+
+        m_pCurrDebugRays[nIndex].start = start;
+        m_pCurrDebugRays[nIndex].end = start + dir;
     }
 
     //-----------------------------------------------------------------------------
@@ -762,15 +809,16 @@ namespace Riot
         Swap( m_pPrevTransforms, m_pCurrTransforms );
         Swap( m_pPrevDebugBoxes, m_pCurrDebugBoxes );
         Swap( m_pPrevDebugSpheres, m_pCurrDebugSpheres );
-        Swap( m_pPrevDebugBoxesColor, m_pCurrDebugBoxesColor );
-
+        Swap( m_pPrevDebugRays, m_pCurrDebugRays );
 
         m_nPrevNumCommands  = m_nNumCommands;
         m_nPrevNumSpheres   = m_nNumSpheres;
         m_nPrevNumBoxes     = m_nNumBoxes;
+        m_nPrevNumRays      = m_nNumRays;
 
         m_nNumBoxes     = 0;
         m_nNumSpheres   = 0;
         m_nNumCommands  = 0;
+        m_nNumRays      = 0;
     }
 } // namespace Riot

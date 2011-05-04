@@ -32,6 +32,23 @@ template<class T> inline void Swap( T& a, T& b ) { T tmp = a; a = b; b = tmp; }
 inline float Square( float f ) { return f*f; }
 template<class T> inline T Abs( const T& a ) { if( a < 0 ) return -a; return a; }
 
+template<class T> inline T Interpolate( const T& a, const T& b, float t )
+{
+    float inv = 1.0f - t;
+
+    return inv*a + t*b;
+}
+
+template<class T> inline T CosInterpolate( const T& a, const T& b, float t )
+{
+    t = t * gs_PI;
+    t = (1.0f - cosf( t )) * 0.5f;
+
+    float inv = 1.0f - t;
+
+    return inv*a + t*b;
+}
+
 typedef float float2[2];
 typedef float float3[3];
 typedef float float4[4];

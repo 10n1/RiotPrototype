@@ -37,6 +37,7 @@ namespace Riot
     GFX_SEMANTIC GFX_SEMANTIC_COLOR     = "COLOR";
     //-----------------------------------------------------------------------------
     GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_TRIANGLELIST   = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+    GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_LINELIST       = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
     //-----------------------------------------------------------------------------
     GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_NEAREST   = D3D11_FILTER_MIN_MAG_MIP_POINT;
     GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_LINEAR    = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -640,6 +641,11 @@ namespace Riot
     {
         m_pContext->DrawIndexed( nIndexCount, 0, 0 );
     }
+    void CD3DDevice::DrawPrimitive( uint nVertexCount )
+    {
+        m_pContext->Draw( nVertexCount, 0 );
+    }
+
     //
 
     Result CompileShader( const char* szFilename, const char* szEntryPoint, const char* szProfile, ID3DBlob** ppBlob )

@@ -8,6 +8,7 @@ Modified by:    Kyle Weicht
 #include "ComponentRigidBody.h"
 #include "Engine.h"
 #include "ObjectManager.h"
+#include "Renderer.h"
 
 /*
 CComponentRigidBody
@@ -164,6 +165,7 @@ namespace Riot
         static const RVector3 vGravity = RVector3( 0.0f, -9.8f, 0.0f );
         CComponentRigidBody*    pComponent = (CComponentRigidBody*)pData;
         CObjectManager*         pManager = Engine::GetObjectManager();
+        CRenderer*              pRenderer = Engine::GetRenderer();
     
         uint nEnd = nStart + nCount;
         
@@ -196,6 +198,8 @@ namespace Riot
                 pComponent->m_vVelocity[i] = vel1;
 
                 pManager->PostMessage( eComponentMessageTransform, pComponent->m_pObjectIndices[ i ], &pComponent->m_Transform[i], ComponentType );
+
+                pRenderer->DrawDebugRay( pos1, vel1 );
             }
             else
             {

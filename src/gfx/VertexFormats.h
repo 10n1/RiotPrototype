@@ -54,6 +54,7 @@ namespace Riot
     typedef const uint GFX_PRIMITIVE_TYPE;
 
     extern GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_TRIANGLELIST;
+    extern GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_LINELIST;
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------

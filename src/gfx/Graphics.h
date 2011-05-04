@@ -103,6 +103,7 @@ namespace Riot
 
         //
         virtual void DrawIndexedPrimitive( uint nIndexCount ) = 0;
+        virtual void DrawPrimitive( uint nVertexCount ) = 0;
         //
 
     private:
