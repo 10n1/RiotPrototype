@@ -151,9 +151,9 @@ namespace Riot
 
         for( uint i = 0; i < m_nNumActiveComponents; ++i )
         {
-            m_Transform[i].position.x = sin( fAngle ) * 10.0f;
-            m_Transform[i].position.z = cos( fAngle ) * 10.0f;
-            m_bUpdated[i] = true;
+            //m_Transform[i].position.x = sin( fAngle ) * 10.0f;
+            //m_Transform[i].position.z = cos( fAngle ) * 10.0f;
+            //m_bUpdated[i] = true;
 
             if( m_bUpdated[i] == true )
             {

@@ -195,7 +195,14 @@ namespace Riot
             bool RemoveObject( TSceneNode* pNode )
             {
                 CScopedMutex lock( &m_Mutex );
-                ASSERT( m_nNumChildren );
+
+                if( m_nNumChildren == 0 )
+                {
+                    // There should never be 0 children, but it has happened....
+                    //  it technically shouldn't be a problem
+                    ASSERT( m_nNumChildren );
+                    return false;
+                }
 
                 uint nIndex = 0;
                 while( m_pChildren[nIndex] != pNode )

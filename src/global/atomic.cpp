@@ -38,6 +38,7 @@ namespace Riot
     sint AtomicAdd( volatile sint* pValue, sint nValue )
     {
 #ifdef OS_WINDOWS
+        //sint nTemp = _InterlockedExchangeAdd( (volatile long*)pValue, nValue );
         return _InterlockedExchangeAdd( (volatile long*)pValue, nValue ) + nValue;
 #else
         return OSAtomicAdd32( nValue, pValue );

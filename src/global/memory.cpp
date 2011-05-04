@@ -10,6 +10,7 @@ TODO:           Add alignment support? Should be ultra easy
 #include "memory.h"
 #include "assert.h"
 #include "utility.h"
+#include "atomic.h"
 
 #ifdef ARCH_IA32
 #include <emmintrin.h>
@@ -20,6 +21,8 @@ TODO:           Add alignment support? Should be ultra easy
 #define _mm_free( pData ) free( pData )
 #endif
 
+using namespace Riot;
+
 // Included for sprintf/printf
 #include <stdio.h>
 #include <string.h>
@@ -29,10 +32,10 @@ enum { GLOBAL_MEMORY_ALLOCATION = 64*1024*1024 };
 static const byte* AllocateGlobalMemory( void );
 
 static const byte*  gs_pGlobalPool      = AllocateGlobalMemory();
-static byte*        gs_pCurrAlloc       = (byte*)gs_pGlobalPool;
-static byte*        gs_pPrevAlloc       = NULL;
-static uint         gs_nPrevAllocSize   = 0;
-static uint         gs_nActiveMemory    = 0;
+static volatile byte*   gs_pCurrAlloc       = (byte*)gs_pGlobalPool;
+static volatile byte*   gs_pPrevAlloc       = NULL;
+static atomic_t   gs_nPrevAllocSize   = 0;
+static atomic_t   gs_nActiveMemory    = 0;
 
 #ifdef DEBUG
 void AddAllocation(void* pData, uint nSize, const char* szFile, uint nLine);
@@ -98,19 +101,18 @@ void* __cdecl operator new(size_t nSize, const char* szFile, unsigned int nLine)
     ASSERT( gs_pGlobalPool );
 
     ASSERT( gs_nActiveMemory + nSize < GLOBAL_MEMORY_ALLOCATION );
-
-    // Grab the current pointer
-    byte* pNewAlloc = gs_pCurrAlloc;
-
+    
 #ifdef RIOT_ALIGN_MEMORY
     nSize = RoundUp( nSize );
 #endif
 
+    // Grab the current pointer
+    byte* pNewAlloc = reinterpret_cast<byte*>( AtomicAdd( (volatile sint*)&gs_pCurrAlloc, nSize ) ) - nSize;
+
     // Increment the counters
-    gs_pCurrAlloc       += nSize;
-    gs_nActiveMemory    += (uint)nSize;
-    gs_pPrevAlloc       = pNewAlloc;
-    gs_nPrevAllocSize   = (uint)nSize;
+    AtomicAdd( &gs_nActiveMemory, nSize );
+    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<sint>(&pNewAlloc) );
+    AtomicExchange( &gs_nPrevAllocSize, nSize );
 
     AddAllocation( pNewAlloc, (uint)nSize, szFile, nLine );
 
@@ -128,22 +130,21 @@ void* __cdecl operator new[](size_t nSize, const char* szFile, unsigned int nLin
     ASSERT( gs_pGlobalPool );
 
     ASSERT( gs_nActiveMemory + nSize < GLOBAL_MEMORY_ALLOCATION );
-
-    // Grab the current pointer
-    byte* pNewAlloc = gs_pCurrAlloc;
-
+    
 #ifdef RIOT_ALIGN_MEMORY
     nSize = RoundUp( nSize );
 #endif
 
+    // Grab the current pointer
+    byte* pNewAlloc = reinterpret_cast<byte*>( AtomicAdd( (volatile sint*)&gs_pCurrAlloc, nSize ) ) - nSize;
+
     // Increment the counters
-    gs_pCurrAlloc       += nSize;
-    gs_nActiveMemory    += (uint)nSize;
-    gs_pPrevAlloc       = pNewAlloc;
-    gs_nPrevAllocSize   = (uint)nSize;
+    AtomicAdd( &gs_nActiveMemory, nSize );
+    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<sint>(&pNewAlloc) );
+    AtomicExchange( &gs_nPrevAllocSize, nSize );
 
     AddAllocation( pNewAlloc, (uint)nSize, szFile, nLine );
-    
+
     // In debug, fill it with nothing
     Memset( pNewAlloc, 0xF0F0F0F0, nSize );
 
@@ -156,23 +157,22 @@ void* __cdecl operator new[](size_t nSize, const char* szFile, unsigned int nLin
 
 #else
 void* __cdecl operator new(size_t nSize)
-{
+{    
     ASSERT( gs_pGlobalPool );
 
     ASSERT( gs_nActiveMemory + nSize < GLOBAL_MEMORY_ALLOCATION );
-
-    // Grab the current pointer
-    byte* pNewAlloc = gs_pCurrAlloc;
-
+    
 #ifdef RIOT_ALIGN_MEMORY
     nSize = RoundUp( nSize );
 #endif
 
+    // Grab the current pointer
+    byte* pNewAlloc = reinterpret_cast<byte*>( AtomicAdd( (volatile sint*)&gs_pCurrAlloc, nSize ) ) - nSize;
+
     // Increment the counters
-    gs_pCurrAlloc       += nSize;
-    gs_nActiveMemory    += (uint)nSize;
-    gs_pPrevAlloc       = pNewAlloc;
-    gs_nPrevAllocSize   = (uint)nSize;
+    AtomicAdd( &gs_nActiveMemory, nSize );
+    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<sint>(&pNewAlloc) );
+    AtomicExchange( &gs_nPrevAllocSize, nSize );
 
     // Return it
     return pNewAlloc;
@@ -183,19 +183,18 @@ void* __cdecl operator new[](size_t nSize)
     ASSERT( gs_pGlobalPool );
 
     ASSERT( gs_nActiveMemory + nSize < GLOBAL_MEMORY_ALLOCATION );
-
-    // Grab the current pointer
-    byte* pNewAlloc = gs_pCurrAlloc;
-
+    
 #ifdef RIOT_ALIGN_MEMORY
     nSize = RoundUp( nSize );
 #endif
 
+    // Grab the current pointer
+    byte* pNewAlloc = reinterpret_cast<byte*>( AtomicAdd( (volatile sint*)&gs_pCurrAlloc, nSize ) ) - nSize;
+
     // Increment the counters
-    gs_pCurrAlloc       += nSize;
-    gs_nActiveMemory    += (uint)nSize;
-    gs_pPrevAlloc       = pNewAlloc;
-    gs_nPrevAllocSize   = (uint)nSize;
+    AtomicAdd( &gs_nActiveMemory, nSize );
+    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<sint>(&pNewAlloc) );
+    AtomicExchange( &gs_nPrevAllocSize, nSize );
 
     // Return it
     return pNewAlloc;
@@ -250,10 +249,10 @@ struct MemoryAllocation
 
 // Define vector to hold allocations
 static MemoryAllocation g_pAllocations[1024*1024];
-static uint g_nCurrentAllocations = 0;
-static uint g_nCurrentMemoryUsage = 0;
-static uint g_nMaxMemoryAllocatedAtOnce = 0;
-static uint g_nTotalMemoryAllocated = 0;
+static atomic_t   g_nCurrentAllocations = 0;
+static atomic_t   g_nCurrentMemoryUsage = 0;
+static atomic_t   g_nMaxMemoryAllocatedAtOnce = 0;
+static atomic_t   g_nTotalMemoryAllocated = 0;
 
 
 void AddAllocation(void* pData, uint nSize, const char* szFile, uint nLine)
@@ -264,10 +263,13 @@ void AddAllocation(void* pData, uint nSize, const char* szFile, uint nLine)
     strcpy(allocation.szFile, szFile);
     allocation.nLine = nLine;
 
-    g_pAllocations[g_nCurrentAllocations++] = allocation;
+    uint nIndex = AtomicIncrement( &g_nCurrentAllocations ) - 1;
+    g_pAllocations[ nIndex ] = allocation;
     
-    g_nCurrentMemoryUsage += nSize;
-    g_nTotalMemoryAllocated += nSize;
+    AtomicAdd( &g_nCurrentMemoryUsage, nSize );
+    AtomicAdd( &g_nTotalMemoryAllocated, nSize );
+    //g_nCurrentMemoryUsage += nSize;
+    //g_nTotalMemoryAllocated += nSize;
     g_nMaxMemoryAllocatedAtOnce = ( g_nCurrentMemoryUsage > g_nMaxMemoryAllocatedAtOnce ) ? g_nCurrentMemoryUsage : g_nMaxMemoryAllocatedAtOnce;
 }
 
@@ -278,8 +280,9 @@ void RemoveAllocation(void* pData)
     {
         if(g_pAllocations[i].nAddress == nAddress)
         {
-            g_nCurrentMemoryUsage -= g_pAllocations[i].nSize;
-            g_pAllocations[i] = g_pAllocations[--g_nCurrentAllocations];
+            AtomicAdd( &g_nCurrentMemoryUsage, g_pAllocations[i].nSize );
+            //g_nCurrentMemoryUsage -= g_pAllocations[i].nSize;
+            g_pAllocations[i] = g_pAllocations[ AtomicDecrement(&g_nCurrentAllocations) ];
             break;
         }
     }
