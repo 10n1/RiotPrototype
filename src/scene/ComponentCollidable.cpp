@@ -198,6 +198,8 @@ namespace Riot
         if( gnShowBoundingVolumes == true )
         {
             m_pObjectGraph->DrawNode( Engine::GetRenderer(), RVector3( 1.0f, 1.0f, 1.0f ) );
+
+            DrawNodes( m_pTerrainGraph, 4 );
         }
 
         // Remove dead leaves

@@ -408,7 +408,7 @@ namespace Riot
 
         //////////////////////////////////////////
         // Add a light
-        t = RTransform( orientation, RVector3( 0.0f, 15.0f, 0.0f ), 0.1f );
+        t = RTransform( orientation, RVector3( 0.0f, 50.0f, 0.0f ), 0.1f );
 
         uint nObject = m_pObjectManager->CreateObject();
         m_pObjectManager->AddComponent( nObject, eComponentLight );
@@ -419,13 +419,13 @@ namespace Riot
         
         //////////////////////////////////////////
         // Add a light
-        t = RTransform( orientation, RVector3( 10.0f, 5.0f, 0.0f ), 0.1f );
-
-        nObject = m_pObjectManager->CreateObject();
-        m_pObjectManager->AddComponent( nObject, eComponentLight );
-        m_pObjectManager->AddComponent( nObject, eComponentRender );
-        m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
-        m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t  );
+        //t = RTransform( orientation, RVector3( 10.0f, 5.0f, 0.0f ), 0.1f );
+        //
+        //nObject = m_pObjectManager->CreateObject();
+        //m_pObjectManager->AddComponent( nObject, eComponentLight );
+        //m_pObjectManager->AddComponent( nObject, eComponentRender );
+        //m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
+        //m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t  );
 
         SAFE_RELEASE( pBox );
 

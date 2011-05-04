@@ -173,22 +173,22 @@ namespace Riot
     void CTerrain::GenerateTerrain( void )
     {
         //PerlinNoise();
-        //for( uint x = 0; x < TERRAIN_WIDTH+1; ++x )
-        //{
-        //    for( uint y = 0; y < TERRAIN_HEIGHT+1; ++y )
-        //    {
-        //        //float angleX = DegToRad( ((float)x/TERRAIN_WIDTH) * 360.0f );
-        //        //float angleY = DegToRad( ((float)y/TERRAIN_WIDTH) * 360.0f );
-        //        //m_fHeight[x][y] = sinf( angleX ) * 3.0f + cosf( angleY ) * 3.0f + RandFloat(0.1f);
-        //        //m_fHeight[x][y] = rand()/(float)RAND_MAX * 0.5f;
-        //
-        //        //float angleX = DegToRad( ((float)x/TERRAIN_WIDTH) * 360.0f * 1.5f );
-        //        //float angleY = DegToRad( ((float)y/TERRAIN_WIDTH) * 360.0f * 1.5f );
-        //        //m_fHeight[x][y] = sinf( angleX ) * 6.0f + cosf( angleY ) * 6.0f + RandFloat(0.1f);
-        //        m_fHeight[x][y] = RandFloat( 1.0f );
-        //    }
-        //}
-        //m_fHeight[0][0] = 10.0f;
+        for( uint x = 0; x < TERRAIN_WIDTH+1; ++x )
+        {
+            for( uint y = 0; y < TERRAIN_HEIGHT+1; ++y )
+            {
+                //float angleX = DegToRad( ((float)x/TERRAIN_WIDTH) * 360.0f );
+                //float angleY = DegToRad( ((float)y/TERRAIN_WIDTH) * 360.0f );
+                //m_fHeight[x][y] = sinf( angleX ) * 3.0f + cosf( angleY ) * 3.0f + RandFloat(0.1f);
+                //m_fHeight[x][y] = rand()/(float)RAND_MAX * 0.5f;
+        
+                //float angleX = DegToRad( ((float)x/TERRAIN_WIDTH) * 360.0f * 1.5f );
+                //float angleY = DegToRad( ((float)y/TERRAIN_WIDTH) * 360.0f * 1.5f );
+                //m_fHeight[x][y] = sinf( angleX ) * 6.0f + cosf( angleY ) * 6.0f + RandFloat(0.1f);
+                //m_fHeight[x][y] = RandFloat( 3.0f );
+            }
+        }
+        m_fHeight[0][0] = 10.0f;
         
         const uint nWidth = TERRAIN_WIDTH+1;
         const uint nHeight = TERRAIN_HEIGHT+1;
@@ -235,13 +235,17 @@ namespace Riot
 
         //fAmplitude *= fPersistance;
         //fTotalAmplitude += fAmplitude;
-        PerlinNoise p( 0.5f, 0.0625f, 30.0f, 6, 100 );
-
-        for( uint x = 0; x < nWidth; ++x )
+        PerlinNoise p( 0.25f, 0.0625f, 30.0f, 6, 100 );
+        
+        sint nX;
+        sint nY;
+        float fX;
+        float fY;
+        for( fX = -(nPolysWidth/2.0f), nX = 0; fX <= (nPolysWidth/2.0f); fX += 1.0f, ++nX  )
         {
-            for( uint y = 0; y < nHeight; ++y )
+            for( fY = -(nPolysHeight/2.0f), nY = 0; fY <= (nPolysHeight/2.0f); fY += 1.0f, ++nY )
             {
-                m_fHeight[x][y] = p.GetHeight( x, y );
+                m_fHeight[nX][nY] = p.GetHeight( fX, fY );
             }
         }
 
@@ -284,7 +288,7 @@ namespace Riot
         {
             for( fY = -(nPolysHeight/2.0f), nY = 0; fY <= (nPolysHeight/2.0f); fY += 1.0f, ++nY )
             {
-                VPosNormalTex vert = { RVector3( fX, m_fHeight[nX][nY], fY ), RVector3( 0.0f, 1.0f, 0.0f ) };
+                VPosNormalTex vert = { RVector3( fX, m_fHeight[nX][nY], fY ), RVector3( 0.0f, 1.0f, 0.0f ), RVector2( 0.0f, 0.0f ) };
                 m_pVertices[ nVertex++ ] = vert;
             }
         }
@@ -306,13 +310,15 @@ namespace Riot
                 RVector3 right =    RVector3( fX+1, m_fHeight[nX+1][nY], fY   );
                 RVector3 me =       RVector3( fX,   m_fHeight[nX][nY],   fY   );
 
-                RVector3 norm0 = CrossProduct( (top-me),    (me-left)    );
-                RVector3 norm1 = CrossProduct( (right-me),  (me-top)     );
-                RVector3 norm2 = CrossProduct( (bottom-me), (me-right)   );
-                RVector3 norm3 = CrossProduct( (left-me),   (me-bottom)  );
+                RVector3 norm0 = Normalize( CrossProduct( (top-me),    (me-left)    ) );
+                RVector3 norm1 = Normalize( CrossProduct( (right-me),  (me-top)     ) );
+                RVector3 norm2 = Normalize( CrossProduct( (bottom-me), (me-right)   ) );
+                RVector3 norm3 = Normalize( CrossProduct( (left-me),   (me-bottom)  ) );
 
                 RVector3 avgNorm = norm0 + norm1 + norm2 + norm3;
                 avgNorm = Normalize( avgNorm );
+
+                //avgNorm = RVector3( 0.0f, 1.0f, 0.0f );
 
                 m_pVertices[ nVertex++ ].Normal = avgNorm;
             }
