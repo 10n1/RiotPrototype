@@ -33,7 +33,7 @@ namespace Riot
         //-----------------------------------------------------------------------------
         static void Initialize( IGraphicsDevice* pDevice );
         //-----------------------------------------------------------------------------
-        //  AddText
+        //  AddString
         //  Add some text to the list of strings
         //-----------------------------------------------------------------------------
         static void AddString( uint nLeft, uint nTop, const char* szText );
