@@ -85,6 +85,7 @@ namespace Riot
         
         //
         void UpdateBuffer( IGfxBuffer* pBuffer, void* pData );
+        void UpdateBuffer( IGfxBuffer* pBuffer, void* pData, uint nSize );
         //
 
         //
@@ -101,6 +102,7 @@ namespace Riot
         //
 
         //
+        void Draw( uint nVertexCount );
         void DrawIndexedPrimitive( uint nIndexCount );
         void DrawPrimitive( uint nVertexCount );
         //

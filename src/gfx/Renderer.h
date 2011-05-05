@@ -148,6 +148,12 @@ namespace Riot
         //-----------------------------------------------------------------------------
         void SwapBuffers( void );
 
+        //-----------------------------------------------------------------------------
+        //  DrawText
+        //  Renders a string of text on screen at (nLeft, nTop)
+        //-----------------------------------------------------------------------------
+        void DrawString( uint nLeft, uint nTop, const char* szText );
+
     private:
         /***************************************\
         | class members                         |

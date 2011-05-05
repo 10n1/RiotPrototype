@@ -30,6 +30,7 @@ namespace Riot
     DEFINE_BASE_GRAPHICS_INTERFACE( PixelShader );
     DEFINE_BASE_GRAPHICS_INTERFACE( Texture2D );
     DEFINE_BASE_GRAPHICS_INTERFACE( SamplerState );
+    DEFINE_BASE_GRAPHICS_INTERFACE( BlendState );
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
     

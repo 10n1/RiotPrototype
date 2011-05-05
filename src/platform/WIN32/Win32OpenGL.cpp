@@ -7,10 +7,10 @@ Modified by:    Kyle Weicht
 \*********************************************************/
 #include "platform/SystemOpenGL.h"
 #include "Window.h"
-#include <gl3/gl3.h>
-#include <gl/wglext.h>
 
 #if USE_OPENGL
+#include <gl3/gl3.h>
+#include <gl/wglext.h>
 
 namespace Riot
 {

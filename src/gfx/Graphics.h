@@ -75,6 +75,7 @@ namespace Riot
         //
         virtual IGfxTexture2D* LoadTexture( const char* szFilename ) = 0;
         virtual IGfxSamplerState* CreateSamplerState( GFX_TEXTURE_SAMPLE nType ) = 0;
+        //virtual IGfxBlendState* CreateBlendState( GFX_TEXTURE_SAMPLE nType ) = 0;
         //
 
         //
@@ -86,6 +87,7 @@ namespace Riot
 
         //
         virtual void UpdateBuffer( IGfxBuffer* pBuffer, void* pData ) = 0;
+        virtual void UpdateBuffer( IGfxBuffer* pBuffer, void* pData, uint nSize ) = 0;
         //
 
         //
@@ -102,6 +104,7 @@ namespace Riot
         //
 
         //
+        virtual void Draw( uint nVertexCount ) = 0;
         virtual void DrawIndexedPrimitive( uint nIndexCount ) = 0;
         virtual void DrawPrimitive( uint nVertexCount ) = 0;
         //
