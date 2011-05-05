@@ -2,7 +2,7 @@
 File:           main.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/28/2011 7:06:09 PM
+Modified:       5/4/2011 10:18:59 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "common.h"
@@ -17,10 +17,7 @@ int main( int argc, char* argv[] )
     // Free our memory last
     atexit( Riot::Memory::ReleasePool );
     
-    uint x = gs_nSSE3Supported;
-    x = gs_nSSE42Supported;
-    x = gs_nAVXSupported;
-    x = gs_nNumHardwareThreads;
+    int x = sizeof( Riot::CTerrainTile );
 
     //////////////////////////////////////////
     // Run the engine

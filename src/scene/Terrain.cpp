@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/4/2011 7:00:42 PM
+Modified:       5/4/2011 10:39:06 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -23,26 +23,13 @@ namespace Riot
     CTerrain::CTerrain()
         : m_PerlinDetail( fPersistance, fFrequency, 150.0f, nOctaves, nSeed )
         , m_PerlinShape( fPersistance, fFrequency, 150.0f, nOctaves, nSeed << 1 )
+        , m_nNumTiles( 0 )
     {
-        for( uint i = 0; i < 4; ++i )
-        {
-            for( uint j = 0; j < 4; ++j )
-            {
-                m_pTerrainTiles[i][j] = new CTerrainTile;
-            }
-        }
     }
 
     // CTerrain destructor
     CTerrain::~CTerrain()
     {
-        for( uint i = 0; i < 4; ++i )
-        {
-            for( uint j = 0; j < 4; ++j )
-            {
-                SAFE_DELETE( m_pTerrainTiles[i][j] );
-            }
-        }
     }
 
 
@@ -52,12 +39,9 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CTerrain::Render( void )
     {
-        for( uint i = 0; i < 4; ++i )
+        for( uint i = 0; i < m_nNumTiles; ++i )
         {
-            for( uint j = 0; j < 4; ++j )
-            {
-                m_pTerrainTiles[i][j]->Render();
-            }
+            m_pTerrainTiles[i].Render();
         }
     }
 
@@ -67,37 +51,64 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CTerrain::GenerateTerrain( void )
     {
-        sint nX;
-        sint nY;
-        float fX;
-        float fY;
-
-        sint nDims = (sint)nTerrainTiles >> 1;
-
-        for( sint i = 0; i < nTerrainTiles; ++i )
-        {
-            for( sint j = 0; j < nTerrainTiles; ++j )
-            {
-                m_pTerrainTiles[i][j]->m_fXPos = (float)( i - nDims) * CTerrainTile::TERRAIN_WIDTH;
-                m_pTerrainTiles[i][j]->m_fYPos = (float)( j - nDims) * CTerrainTile::TERRAIN_WIDTH;
-
-                for( fX = -(nPolysWidth/2.0f), nX = 0; fX <= (nPolysWidth/2.0f); fX += 1.0f, ++nX  )
-                {
-                    for( fY = -(nPolysHeight/2.0f), nY = 0; fY <= (nPolysHeight/2.0f); fY += 1.0f, ++nY )
-                    {
-                        float fAbsoluteX = m_pTerrainTiles[i][j]->m_fXPos + fX;
-                        float fAbsoluteY = m_pTerrainTiles[i][j]->m_fYPos + fY;
-
-                        m_pTerrainTiles[i][j]->m_fHeight[nX][nY] = m_PerlinDetail.GetHeight( fAbsoluteX, fAbsoluteY );// + m_PerlinShape.GetHeight( i, j );
-                    }
-                }
-
-                m_pTerrainTiles[i][j]->CreateMesh();
-            }
-        }
+        GenerateTerrain( 0.0f, 0.0f );
     }
 
-    
+    CTerrainTile* CTerrain::GenerateTerrain( float fX, float fY )
+    {
+        // See if this tile already exists
+        for( uint i = 0; i < m_nNumTiles; ++i )
+        {
+            if(    (fX > m_pTerrainTiles[i].m_fXPos - 64.0f)
+                && (fY > m_pTerrainTiles[i].m_fYPos - 64.0f)
+                && (fX < m_pTerrainTiles[i].m_fXPos + 64.0f)
+                && (fY < m_pTerrainTiles[i].m_fYPos + 64.0f) )
+            {
+                return &m_pTerrainTiles[i];
+            }
+        }
+
+        // It doesn't
+        CTerrainTile* pTile = &m_pTerrainTiles[ m_nNumTiles++ ];
+
+        fX = fX / 128.0f;
+        fX = floorf( fX + 0.5f );
+        fX = (float)((int)fX);
+        fX *= 128.0f;
+        fX -= 64.0f;
+
+        
+        fY = fY / 128.0f;
+        fY = floorf( fY + 0.5f );
+        fY = (float)((int)fY);
+        fY *= 128.0f;
+        fY -= 64.0f;
+
+        pTile->m_fXPos = fX;
+        pTile->m_fYPos = fY;
+        
+        sint nX;
+        sint nY;
+        for( fX = pTile->m_fXPos-64.0f, nX = 0; fX <= pTile->m_fXPos+64.0f; fX += 1.0f, ++nX  )
+        {
+            for( fY = pTile->m_fYPos-64.0f, nY = 0; fY <= pTile->m_fXPos+64.0f; fY += 1.0f, ++nY )
+            {
+                float fAbsoluteX = pTile->m_fXPos + fX;
+                float fAbsoluteY = pTile->m_fYPos + fY;
+
+                //pTile->m_fHeight[nX][nY] = m_PerlinDetail.GetHeight( fAbsoluteX, fAbsoluteY );// + m_PerlinShape.GetHeight( i, j );
+                pTile->m_fHeight[nX][nY] = m_PerlinDetail.GetHeight( fAbsoluteX, fAbsoluteY );// + m_PerlinShape.GetHeight( i, j );
+
+                VPosNormalTex vert = { RVector3( fX, m_PerlinDetail.GetHeight( fAbsoluteX, fAbsoluteY ), fY ), RVector3( 0.0f, 0.0f, 0.0f ), RVector2( 0.0f, 0.0f ) };
+                pTile->m_pVertices[ nX + nY * TERRAIN_WIDTH ] = vert;
+            }
+        }
+
+        pTile->CreateMesh();
+
+        return pTile;
+    }
+
 
     /*************************************************************************\
     \*************************************************************************/
@@ -152,9 +163,9 @@ namespace Riot
         sint nY;
         float fX;
         float fY;
-        for( fX = m_fXPos, nX = 0; nX < TERRAIN_WIDTH+1; fX += 1.0f, ++nX  )
+        for( fX = m_fXPos-64.0f, nX = 0; fX <= m_fXPos+64.0f; fX += 1.0f, ++nX  )
         {
-            for( fY = m_fYPos, nY = 0; nY < TERRAIN_HEIGHT+1; fY += 1.0f, ++nY )
+            for( fY = m_fYPos-64.0f, nY = 0; fY <= m_fXPos+64.0f; fY += 1.0f, ++nY )
             {
                 VPosNormalTex vert = { RVector3( fX, m_fHeight[nX][nY], fY ), RVector3( 0.0f, 0.0f, 0.0f ), RVector2( 0.0f, 0.0f ) };
                 m_pVertices[ nVertex++ ] = vert;

@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/4/2011 2:01:25 PM
+Modified:       5/4/2011 10:16:52 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -53,64 +53,6 @@ namespace Riot
 
         double persistence, frequency, amplitude;
         int octaves, randomseed;
-    };
-
-    class CTerrain : public IRefCounted
-    {
-        // Allow the graphics engine to make the mesh
-        friend class CRenderer;
-        friend class CTerrainTile;
-    public:
-        // CTerrain constructor
-        CTerrain();
-
-        // CTerrain destructor
-        ~CTerrain();
-        /***************************************\
-        | class methods                         |
-        \***************************************/
-
-        //-----------------------------------------------------------------------------
-        //  Render
-        //  Renders the terrain
-        //-----------------------------------------------------------------------------
-        void Render( void );
-
-        //-----------------------------------------------------------------------------
-        //  GenerateTerrain
-        //  Generates the terrain
-        //-----------------------------------------------------------------------------
-        void GenerateTerrain( void );
-
-        //-----------------------------------------------------------------------------
-        //  CreateMesh
-        //  Creates the terrain mesh
-        //-----------------------------------------------------------------------------
-        void CreateMesh( void );
-
-    public:
-        enum
-        {
-            TERRAIN_WIDTH = 128,
-            TERRAIN_HEIGHT = 128,
-        };
-
-    private:
-
-        /***************************************\
-        | class members                         |
-        \***************************************/
-        static const uint nPolysWidth = TERRAIN_WIDTH;
-        static const uint nPolysHeight = TERRAIN_HEIGHT;
-        static const uint nPolysTotal = nPolysWidth * nPolysHeight;
-        static const uint nVertsTotal = (nPolysWidth+1) * (nPolysHeight+1);
-        static const uint nIndices = nPolysTotal * 6;
-        static const uint nTerrainTiles = 4;
-
-        CTerrainTile*   m_pTerrainTiles[4][4];
-
-        PerlinNoise     m_PerlinShape;
-        PerlinNoise     m_PerlinDetail;
     };
     
     class CTerrainTile : public IRefCounted
@@ -171,6 +113,70 @@ namespace Riot
         IGfxTexture2D*  m_pTexture;
     };
 
+    class CTerrain : public IRefCounted
+    {
+        // Allow the graphics engine to make the mesh
+        friend class CRenderer;
+        friend class CTerrainTile;
+    public:
+        // CTerrain constructor
+        CTerrain();
+
+        // CTerrain destructor
+        ~CTerrain();
+        /***************************************\
+        | class methods                         |
+        \***************************************/
+
+        //-----------------------------------------------------------------------------
+        //  Render
+        //  Renders the terrain
+        //-----------------------------------------------------------------------------
+        void Render( void );
+
+        //-----------------------------------------------------------------------------
+        //  GenerateTerrain
+        //  Generates the terrain
+        //  Generates or returns the tile holding the specified X and Y values
+        //-----------------------------------------------------------------------------
+        void GenerateTerrain( void );
+        CTerrainTile* GenerateTerrain( float fX, float fY );
+
+        //-----------------------------------------------------------------------------
+        //  CreateMesh
+        //  Creates the terrain mesh
+        //-----------------------------------------------------------------------------
+        void CreateMesh( void );
+
+
+
+    public:
+        enum
+        {
+            TERRAIN_WIDTH = 128,
+            TERRAIN_HEIGHT = 128,
+        };
+
+    private:
+
+        /***************************************\
+        | class members                         |
+        \***************************************/
+        static const uint nPolysWidth = TERRAIN_WIDTH;
+        static const uint nPolysHeight = TERRAIN_HEIGHT;
+        static const uint nPolysTotal = nPolysWidth * nPolysHeight;
+        static const uint nVertsTotal = (nPolysWidth+1) * (nPolysHeight+1);
+        static const uint nIndices = nPolysTotal * 6;
+        static const uint nTerrainTiles = 128;
+
+        CTerrainTile    m_pTerrainTiles[nTerrainTiles];
+
+        PerlinNoise     m_PerlinShape;
+        PerlinNoise     m_PerlinDetail;
+
+        uint            m_nNumTiles;
+    };
+    
 
 } //namespace Riot
 
