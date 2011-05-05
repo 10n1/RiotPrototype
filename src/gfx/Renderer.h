@@ -136,6 +136,12 @@ namespace Riot
         //-----------------------------------------------------------------------------
         void DrawDebugBox( const RAABB& box, const RVector3& vColor );
 
+        //-----------------------------------------------------------------------------
+        //  DrawText
+        //  Renders a string of text on screen at (nLeft, nTop)
+        //-----------------------------------------------------------------------------
+        void DrawString( uint nLeft, uint nTop, const char* szText );
+
     private:
         /***************************************\
         | class members                         |

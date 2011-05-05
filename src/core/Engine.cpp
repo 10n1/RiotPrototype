@@ -134,12 +134,15 @@ namespace Riot
 
             if( gnShowFPS )
             {
+                static char szFPS[ 255 ] = "FPS: 0";
                 if( fFPSTime > 1.0f )
                 {
+                    sprintf( szFPS, "FPS: %d", nFPSFrames );
                     printf( "FPS: %d\n", nFPSFrames );
                     fFPSTime -= 1.0f;
                     nFPSFrames = 0;
                 }
+                m_pRenderer->DrawString( 10, 10, szFPS );
             }
 
             if( m_fElapsedTime > 1.0f/60.0f )

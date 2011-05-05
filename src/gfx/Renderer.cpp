@@ -360,7 +360,7 @@ namespace Riot
 
         // Draw text
         //UI::DrawString( m_pDevice, 10, 10, "Hi Kyle...this is Omar :)" );
-        UI::AddString( 10, 10, "Hi Kyle...this is Omar" );
+        //UI::AddString( 10, 10, "Hi Kyle...this is Omar" );
         UI::Draw( m_pDevice );
 
         // Set default states
@@ -758,5 +758,15 @@ namespace Riot
         m_DebugBoxes[nIndex] = box;
         m_DebugBoxesColor[nIndex] = vColor;
     }
+
+    //-----------------------------------------------------------------------------
+    //  DrawText
+    //  Renders a string of text on screen at (nLeft, nTop)
+    //-----------------------------------------------------------------------------
+    void CRenderer::DrawString( uint nLeft, uint nTop, const char* szText )
+    {
+        UI::AddString( nLeft, nTop, szText );
+    }
+
 
 } // namespace Riot
