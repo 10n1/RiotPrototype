@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/5/2011 2:38:36 PM
+Modified:       5/5/2011 2:40:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -97,12 +97,7 @@ namespace Riot
                 float fAbsoluteX = pTile->m_fXPos + fX;
                 float fAbsoluteY = pTile->m_fYPos + fY;
 
-                VPosNormalTex vert = { RVector3( fX, m_PerlinDetail.GetHeight( fAbsoluteX, fAbsoluteY ), fY ), RVector3( 0.0f, 0.0f, 0.0f ), RVector2( 0.0f, 0.0f ) };
-                pTile->m_pVertices[ nVertex ] = vert;
-
-                pTile->m_pVertexPositions[ nVertex ] = RVector3( fX, m_PerlinDetail.GetHeight( fAbsoluteX, fAbsoluteY ), fY );
-
-                nVertex++;
+                pTile->m_pVertexPositions[ nVertex++ ] = RVector3( fX, m_PerlinDetail.GetHeight( fAbsoluteX, fAbsoluteY ), fY );
             }
         }
 
@@ -141,11 +136,6 @@ namespace Riot
         TRenderCommand cmd = { m_pMesh, m_pTexture };
         RTransform t = RTransform();
         pRender->AddCommand( cmd, t );
-
-        for( int i = 0; i < 32*32; ++i )
-        {
-            pRender->DrawDebugRay( m_pVertices[i].Pos, m_pVertices[i].Normal );
-        }
     }
 
     //-----------------------------------------------------------------------------
@@ -161,7 +151,7 @@ namespace Riot
         byte* pData = new byte[ sizeof( VPosNormalTex ) * nVertsTotal + sizeof(uint16) * nIndices];
 
         VPosNormalTex* pVertices = (VPosNormalTex*)pData;
-        sint16* pIndices = (sint16*)(pData + (sizeof( VPosNormalTex ) * nVertsTotal));
+        uint16* pIndices = (uint16*)(pData + (sizeof( VPosNormalTex ) * nVertsTotal));
 
         // Create the vertices
         sint nVertex = 0;
@@ -175,15 +165,6 @@ namespace Riot
             for( nY = 0; nY < nPolysHeight; ++nY )
             {
                 uint nStart = nX * nPolysWidth;
-                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 0 );
-                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 );
-                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth );
-
-                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth );
-                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 );
-                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth + 1 );
-
-                nIndex -= 6;
                 
                 pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 0 );
                 pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 );
@@ -197,18 +178,14 @@ namespace Riot
 
         // Calculate the face normals
         for( int i = 0; i < nIndices; i += 3 )
-        {
-            //VPosNormalTex& v0 = m_pVertices[ m_pIndices[i + 0] ];
-            //VPosNormalTex& v1 = m_pVertices[ m_pIndices[i + 1] ];
-            //VPosNormalTex& v2 = m_pVertices[ m_pIndices[i + 2] ];
-            
-            VPosNormalTex& v0 = pVertices[ m_pIndices[i + 0] ];
-            VPosNormalTex& v1 = pVertices[ m_pIndices[i + 1] ];
-            VPosNormalTex& v2 = pVertices[ m_pIndices[i + 2] ];
+        {            
+            VPosNormalTex& v0 = pVertices[ pIndices[i + 0] ];
+            VPosNormalTex& v1 = pVertices[ pIndices[i + 1] ];
+            VPosNormalTex& v2 = pVertices[ pIndices[i + 2] ];
 
-            v0.Pos = m_pVertexPositions[ m_pIndices[i + 0] ];
-            v1.Pos = m_pVertexPositions[ m_pIndices[i + 1] ];
-            v2.Pos = m_pVertexPositions[ m_pIndices[i + 2] ];
+            v0.Pos = m_pVertexPositions[ pIndices[i + 0] ];
+            v1.Pos = m_pVertexPositions[ pIndices[i + 1] ];
+            v2.Pos = m_pVertexPositions[ pIndices[i + 2] ];
 
             v0.Normal = RVector3Zero();
             v1.Normal = RVector3Zero();
@@ -231,7 +208,6 @@ namespace Riot
         // Then normalize them
         for( uint i = 0; i < nVertsTotal; ++i )
         {
-            //m_pVertices[i].Normal = Normalize( m_pVertices[i].Normal );
             pVertices[i].Normal = Normalize( pVertices[i].Normal );
         }
 
@@ -245,8 +221,7 @@ namespace Riot
         SAFE_RELEASE( m_pTexture );
         m_pTexture = Engine::GetRenderer()->LoadTexture2D( "Assets/Textures/grass.png" );
 
-        //m_pMesh->m_nIndexCount /= 2;
-        CComponentCollidable::SetTerrainData( m_pVertices, nVertsTotal, m_pIndices, nIndices );
+        CComponentCollidable::SetTerrainData( pVertices, nVertsTotal, pIndices, nIndices );
 
         SAFE_DELETE_ARRAY( pData );
     }
