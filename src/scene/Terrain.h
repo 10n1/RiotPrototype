@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/4/2011 10:16:52 PM
+Modified:       5/5/2011 2:33:10 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -100,8 +100,9 @@ namespace Riot
         static const uint nVertsTotal = (nPolysWidth+1) * (nPolysHeight+1);
         static const uint nIndices = nPolysTotal * 6;
 
-        float           m_fHeight[TERRAIN_WIDTH+1][TERRAIN_HEIGHT+1];
+        //float           m_fHeight[TERRAIN_WIDTH+1][TERRAIN_HEIGHT+1];
         VPosNormalTex   m_pVertices[ nVertsTotal ];
+        RVector3        m_pVertexPositions[ nVertsTotal ];
         uint16          m_pIndices[nIndices];
 
         CTerrain*       m_pParentTerrain;

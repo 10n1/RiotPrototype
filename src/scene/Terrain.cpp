@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/4/2011 10:39:06 PM
+Modified:       5/5/2011 2:38:36 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -89,6 +89,7 @@ namespace Riot
         
         sint nX;
         sint nY;
+        sint nVertex = 0;
         for( fX = pTile->m_fXPos-64.0f, nX = 0; fX <= pTile->m_fXPos+64.0f; fX += 1.0f, ++nX  )
         {
             for( fY = pTile->m_fYPos-64.0f, nY = 0; fY <= pTile->m_fXPos+64.0f; fY += 1.0f, ++nY )
@@ -96,11 +97,12 @@ namespace Riot
                 float fAbsoluteX = pTile->m_fXPos + fX;
                 float fAbsoluteY = pTile->m_fYPos + fY;
 
-                //pTile->m_fHeight[nX][nY] = m_PerlinDetail.GetHeight( fAbsoluteX, fAbsoluteY );// + m_PerlinShape.GetHeight( i, j );
-                pTile->m_fHeight[nX][nY] = m_PerlinDetail.GetHeight( fAbsoluteX, fAbsoluteY );// + m_PerlinShape.GetHeight( i, j );
-
                 VPosNormalTex vert = { RVector3( fX, m_PerlinDetail.GetHeight( fAbsoluteX, fAbsoluteY ), fY ), RVector3( 0.0f, 0.0f, 0.0f ), RVector2( 0.0f, 0.0f ) };
-                pTile->m_pVertices[ nX + nY * TERRAIN_WIDTH ] = vert;
+                pTile->m_pVertices[ nVertex ] = vert;
+
+                pTile->m_pVertexPositions[ nVertex ] = RVector3( fX, m_PerlinDetail.GetHeight( fAbsoluteX, fAbsoluteY ), fY );
+
+                nVertex++;
             }
         }
 
@@ -156,21 +158,16 @@ namespace Riot
 
         static CRenderer* pRender = Engine::GetRenderer();
 
+        byte* pData = new byte[ sizeof( VPosNormalTex ) * nVertsTotal + sizeof(uint16) * nIndices];
+
+        VPosNormalTex* pVertices = (VPosNormalTex*)pData;
+        sint16* pIndices = (sint16*)(pData + (sizeof( VPosNormalTex ) * nVertsTotal));
+
         // Create the vertices
         sint nVertex = 0;
         sint nIndex = 0;
         sint nX;
         sint nY;
-        float fX;
-        float fY;
-        for( fX = m_fXPos-64.0f, nX = 0; fX <= m_fXPos+64.0f; fX += 1.0f, ++nX  )
-        {
-            for( fY = m_fYPos-64.0f, nY = 0; fY <= m_fXPos+64.0f; fY += 1.0f, ++nY )
-            {
-                VPosNormalTex vert = { RVector3( fX, m_fHeight[nX][nY], fY ), RVector3( 0.0f, 0.0f, 0.0f ), RVector2( 0.0f, 0.0f ) };
-                m_pVertices[ nVertex++ ] = vert;
-            }
-        }
 
         // Index them
         for( nX = 0; nX < nPolysWidth; ++nX )
@@ -185,15 +182,41 @@ namespace Riot
                 m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth );
                 m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 );
                 m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth + 1 );
+
+                nIndex -= 6;
+                
+                pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 0 );
+                pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 );
+                pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth );
+
+                pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth );
+                pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 );
+                pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth + 1 );
             }
         }
 
         // Calculate the face normals
         for( int i = 0; i < nIndices; i += 3 )
         {
-            VPosNormalTex& v0 = m_pVertices[ m_pIndices[i + 0] ];
-            VPosNormalTex& v1 = m_pVertices[ m_pIndices[i + 1] ];
-            VPosNormalTex& v2 = m_pVertices[ m_pIndices[i + 2] ];
+            //VPosNormalTex& v0 = m_pVertices[ m_pIndices[i + 0] ];
+            //VPosNormalTex& v1 = m_pVertices[ m_pIndices[i + 1] ];
+            //VPosNormalTex& v2 = m_pVertices[ m_pIndices[i + 2] ];
+            
+            VPosNormalTex& v0 = pVertices[ m_pIndices[i + 0] ];
+            VPosNormalTex& v1 = pVertices[ m_pIndices[i + 1] ];
+            VPosNormalTex& v2 = pVertices[ m_pIndices[i + 2] ];
+
+            v0.Pos = m_pVertexPositions[ m_pIndices[i + 0] ];
+            v1.Pos = m_pVertexPositions[ m_pIndices[i + 1] ];
+            v2.Pos = m_pVertexPositions[ m_pIndices[i + 2] ];
+
+            v0.Normal = RVector3Zero();
+            v1.Normal = RVector3Zero();
+            v2.Normal = RVector3Zero();
+
+            v0.TexCoord = RVector2( 0.0f, 0.0f );
+            v1.TexCoord = RVector2( 0.0f, 0.0f );
+            v2.TexCoord = RVector2( 0.0f, 0.0f );
 
             RVector3 s0 = v0.Pos - v1.Pos;
             RVector3 s1 = v1.Pos - v2.Pos;
@@ -208,12 +231,13 @@ namespace Riot
         // Then normalize them
         for( uint i = 0; i < nVertsTotal; ++i )
         {
-            m_pVertices[i].Normal = Normalize( m_pVertices[i].Normal );
+            //m_pVertices[i].Normal = Normalize( m_pVertices[i].Normal );
+            pVertices[i].Normal = Normalize( pVertices[i].Normal );
         }
 
         //////////////////////////////////////////
         // Create our mesh
-        m_pMesh = pRender->CreateMesh( VPosNormalTex::VertexStride, nVertsTotal, 2, nIndices, m_pVertices, m_pIndices );
+        m_pMesh = pRender->CreateMesh( VPosNormalTex::VertexStride, nVertsTotal, 2, nIndices, pVertices, pIndices );
 
         
         //////////////////////////////////////////
@@ -223,6 +247,8 @@ namespace Riot
 
         //m_pMesh->m_nIndexCount /= 2;
         CComponentCollidable::SetTerrainData( m_pVertices, nVertsTotal, m_pIndices, nIndices );
+
+        SAFE_DELETE_ARRAY( pData );
     }
 
     /*************************************************************************\
