@@ -2,7 +2,7 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       5/2/2011 7:25:46 PM
+Modified:       5/4/2011 6:57:27 PM
 Modified by:    Kyle Weicht
 
 TODO:           Add alignment support? Should be ultra easy
@@ -140,7 +140,7 @@ void* __cdecl operator new[](size_t nSize, const char* szFile, unsigned int nLin
 
     // Increment the counters
     AtomicAdd( &gs_nActiveMemory, nSize );
-    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<sint>(&pNewAlloc) );
+    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<sint>(pNewAlloc) );
     AtomicExchange( &gs_nPrevAllocSize, nSize );
 
     AddAllocation( pNewAlloc, (uint)nSize, szFile, nLine );

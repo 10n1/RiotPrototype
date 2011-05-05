@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/4/2011 4:16:00 PM
+Modified:       5/4/2011 7:00:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -12,19 +12,37 @@ Modified by:    Kyle Weicht
 #include "ComponentCollidable.h"
 
 namespace Riot
-{
+{    
+    static float fPersistance = 0.25f;
+    static float fFrequency = 0.0625f / 2.0f;
+    static float fAmplitude = 150.0f;
+    static uint  nOctaves = 6;
+    static uint  nSeed = 10000;//RandShort();
+
     // CTerrain constructor
     CTerrain::CTerrain()
-        : m_pMesh( NULL )
-        , m_pTexture( NULL )
+        : m_PerlinDetail( fPersistance, fFrequency, 150.0f, nOctaves, nSeed )
+        , m_PerlinShape( fPersistance, fFrequency, 150.0f, nOctaves, nSeed << 1 )
     {
+        for( uint i = 0; i < 4; ++i )
+        {
+            for( uint j = 0; j < 4; ++j )
+            {
+                m_pTerrainTiles[i][j] = new CTerrainTile;
+            }
+        }
     }
 
     // CTerrain destructor
     CTerrain::~CTerrain()
     {
-        SAFE_RELEASE( m_pTexture );
-        SAFE_RELEASE( m_pMesh );
+        for( uint i = 0; i < 4; ++i )
+        {
+            for( uint j = 0; j < 4; ++j )
+            {
+                SAFE_DELETE( m_pTerrainTiles[i][j] );
+            }
+        }
     }
 
 
@@ -33,6 +51,76 @@ namespace Riot
     //  Renders the terrain
     //-----------------------------------------------------------------------------
     void CTerrain::Render( void )
+    {
+        for( uint i = 0; i < 4; ++i )
+        {
+            for( uint j = 0; j < 4; ++j )
+            {
+                m_pTerrainTiles[i][j]->Render();
+            }
+        }
+    }
+
+    //-----------------------------------------------------------------------------
+    //  GenerateTerrain
+    //  Generates the terrain
+    //-----------------------------------------------------------------------------
+    void CTerrain::GenerateTerrain( void )
+    {
+        sint nX;
+        sint nY;
+        float fX;
+        float fY;
+
+        sint nDims = (sint)nTerrainTiles >> 1;
+
+        for( sint i = 0; i < nTerrainTiles; ++i )
+        {
+            for( sint j = 0; j < nTerrainTiles; ++j )
+            {
+                m_pTerrainTiles[i][j]->m_fXPos = (float)( i - nDims) * CTerrainTile::TERRAIN_WIDTH;
+                m_pTerrainTiles[i][j]->m_fYPos = (float)( j - nDims) * CTerrainTile::TERRAIN_WIDTH;
+
+                for( fX = -(nPolysWidth/2.0f), nX = 0; fX <= (nPolysWidth/2.0f); fX += 1.0f, ++nX  )
+                {
+                    for( fY = -(nPolysHeight/2.0f), nY = 0; fY <= (nPolysHeight/2.0f); fY += 1.0f, ++nY )
+                    {
+                        float fAbsoluteX = m_pTerrainTiles[i][j]->m_fXPos + fX;
+                        float fAbsoluteY = m_pTerrainTiles[i][j]->m_fYPos + fY;
+
+                        m_pTerrainTiles[i][j]->m_fHeight[nX][nY] = m_PerlinDetail.GetHeight( fAbsoluteX, fAbsoluteY );// + m_PerlinShape.GetHeight( i, j );
+                    }
+                }
+
+                m_pTerrainTiles[i][j]->CreateMesh();
+            }
+        }
+    }
+
+    
+
+    /*************************************************************************\
+    \*************************************************************************/
+    // CTerrainTile constructor
+    CTerrainTile::CTerrainTile()
+        : m_pTexture( NULL )
+        , m_pMesh( NULL )
+    {
+    }
+
+    // CTerrainTile destructor
+    CTerrainTile::~CTerrainTile()
+    {
+        SAFE_RELEASE( m_pMesh );
+        SAFE_RELEASE( m_pTexture );
+    }
+
+
+    //-----------------------------------------------------------------------------
+    //  Render
+    //  Renders the terrain
+    //-----------------------------------------------------------------------------
+    void CTerrainTile::Render( void )
     {
         static CRenderer* pRender = Engine::GetRenderer();
 
@@ -48,56 +136,10 @@ namespace Riot
     }
 
     //-----------------------------------------------------------------------------
-    //  GenerateTerrain
-    //  Generates the terrain
-    //-----------------------------------------------------------------------------
-    void CTerrain::GenerateTerrain( void )
-    {
-        m_fXPos = 0.0f;
-        m_fYPos = 0.0f;
-
-        float fPersistance = 0.5f;
-        float fFrequency = 0.0625f / 8.0f;
-        float fAmplitude = 150.0f;
-        uint  nOctaves = 6;
-        uint  nSeed = 10000;//RandShort();
-
-        PerlinNoise pDetail( fPersistance, fFrequency, fAmplitude, nOctaves, nSeed );
-        PerlinNoise pTerrain( fPersistance, fFrequency, fAmplitude, nOctaves, nSeed<<1 );
-        
-        sint nX;
-        sint nY;
-        float fX;
-        float fY;
-        for( fX = -(nPolysWidth/2.0f), nX = 0; fX <= (nPolysWidth/2.0f); fX += 1.0f, ++nX  )
-        {
-            for( fY = -(nPolysHeight/2.0f), nY = 0; fY <= (nPolysHeight/2.0f); fY += 1.0f, ++nY )
-            {
-                m_fHeight[nX][nY] = pDetail.GetHeight( fX, fY ) + pTerrain.GetHeight( m_fXPos, m_fYPos );
-            }
-        }
-        
-
-        //////////////////////////////////////////
-        // Create a mesh from the new data
-        CreateMesh();
-
-        //////////////////////////////////////////
-        // Load the texture
-        SAFE_RELEASE( m_pTexture );
-        m_pTexture = Engine::GetRenderer()->LoadTexture2D( "Assets/Textures/grass.png" );
-
-        
-        //////////////////////////////////////////
-        // Notify the collidable about the new Terrain data
-        CComponentCollidable::SetTerrainData( m_pVertices, nVertsTotal, m_pIndices, nIndices );
-    }
-
-    //-----------------------------------------------------------------------------
     //  CreateMesh
     //  Creates the terrain mesh
     //-----------------------------------------------------------------------------
-    void CTerrain::CreateMesh( void )
+    void CTerrainTile::CreateMesh( void )
     {
         SAFE_RELEASE( m_pMesh );
 
@@ -158,12 +200,22 @@ namespace Riot
             m_pVertices[i].Normal = Normalize( m_pVertices[i].Normal );
         }
 
+        //////////////////////////////////////////
         // Create our mesh
         m_pMesh = pRender->CreateMesh( VPosNormalTex::VertexStride, nVertsTotal, 2, nIndices, m_pVertices, m_pIndices );
 
+        
+        //////////////////////////////////////////
+        // Load the texture
+        SAFE_RELEASE( m_pTexture );
+        m_pTexture = Engine::GetRenderer()->LoadTexture2D( "Assets/Textures/grass.png" );
+
         //m_pMesh->m_nIndexCount /= 2;
+        CComponentCollidable::SetTerrainData( m_pVertices, nVertsTotal, m_pIndices, nIndices );
     }
 
+    /*************************************************************************\
+    \*************************************************************************/
     PerlinNoise::PerlinNoise()
     {
         persistence = 0;

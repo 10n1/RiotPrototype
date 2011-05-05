@@ -15,71 +15,8 @@ namespace Riot
 {
     class CMesh;
     class IGfxTexture2D;
-
-    class CTerrain : public IRefCounted
-    {
-        // Allow the graphics engine to make the mesh
-        friend class CRenderer;
-
-    public:
-        // CTerrain constructor
-        CTerrain();
-
-        // CTerrain destructor
-        ~CTerrain();
-        /***************************************\
-        | class methods                         |
-        \***************************************/
-
-        //-----------------------------------------------------------------------------
-        //  Render
-        //  Renders the terrain
-        //-----------------------------------------------------------------------------
-        void Render( void );
-
-
-        //-----------------------------------------------------------------------------
-        //  GenerateTerrain
-        //  Generates the terrain
-        //-----------------------------------------------------------------------------
-        void GenerateTerrain( void );
-
-        //-----------------------------------------------------------------------------
-        //  CreateMesh
-        //  Creates the terrain mesh
-        //-----------------------------------------------------------------------------
-        void CreateMesh( void );
-
-    public:
-        enum
-        {
-            TERRAIN_WIDTH = 128,
-            TERRAIN_HEIGHT = 128,
-        };
-
-    private:
-
-        /***************************************\
-        | class members                         |
-        \***************************************/
-        static const uint nPolysWidth = TERRAIN_WIDTH;
-        static const uint nPolysHeight = TERRAIN_HEIGHT;
-        static const uint nPolysTotal = nPolysWidth * nPolysHeight;
-        static const uint nVertsTotal = (nPolysWidth+1) * (nPolysHeight+1);
-        static const uint nIndices = nPolysTotal * 6;
-
-        float           m_fHeight[TERRAIN_WIDTH+1][TERRAIN_HEIGHT+1];
-        VPosNormalTex   m_pVertices[ nVertsTotal ];
-        uint16          m_pIndices[nIndices];
-
-        float           m_fXPos;
-        float           m_fYPos;
-
-        CMesh*          m_pMesh;
-        IGfxTexture2D*  m_pTexture;
-    };
-
-
+    class CTerrainTile;
+    
     class PerlinNoise
     {
     public:
@@ -117,6 +54,123 @@ namespace Riot
         double persistence, frequency, amplitude;
         int octaves, randomseed;
     };
+
+    class CTerrain : public IRefCounted
+    {
+        // Allow the graphics engine to make the mesh
+        friend class CRenderer;
+        friend class CTerrainTile;
+    public:
+        // CTerrain constructor
+        CTerrain();
+
+        // CTerrain destructor
+        ~CTerrain();
+        /***************************************\
+        | class methods                         |
+        \***************************************/
+
+        //-----------------------------------------------------------------------------
+        //  Render
+        //  Renders the terrain
+        //-----------------------------------------------------------------------------
+        void Render( void );
+
+        //-----------------------------------------------------------------------------
+        //  GenerateTerrain
+        //  Generates the terrain
+        //-----------------------------------------------------------------------------
+        void GenerateTerrain( void );
+
+        //-----------------------------------------------------------------------------
+        //  CreateMesh
+        //  Creates the terrain mesh
+        //-----------------------------------------------------------------------------
+        void CreateMesh( void );
+
+    public:
+        enum
+        {
+            TERRAIN_WIDTH = 128,
+            TERRAIN_HEIGHT = 128,
+        };
+
+    private:
+
+        /***************************************\
+        | class members                         |
+        \***************************************/
+        static const uint nPolysWidth = TERRAIN_WIDTH;
+        static const uint nPolysHeight = TERRAIN_HEIGHT;
+        static const uint nPolysTotal = nPolysWidth * nPolysHeight;
+        static const uint nVertsTotal = (nPolysWidth+1) * (nPolysHeight+1);
+        static const uint nIndices = nPolysTotal * 6;
+        static const uint nTerrainTiles = 4;
+
+        CTerrainTile*   m_pTerrainTiles[4][4];
+
+        PerlinNoise     m_PerlinShape;
+        PerlinNoise     m_PerlinDetail;
+    };
+    
+    class CTerrainTile : public IRefCounted
+    {
+        // Allow the graphics engine to make the mesh
+        friend class CRenderer;
+        friend class CTerrain;
+    public:
+        // CTerrainTile constructor
+        CTerrainTile();
+
+        // CTerrainTile destructor
+        ~CTerrainTile();
+        /***************************************\
+        | class methods                         |
+        \***************************************/
+
+        //-----------------------------------------------------------------------------
+        //  Render
+        //  Renders the terrain
+        //-----------------------------------------------------------------------------
+        void Render( void );
+
+        //-----------------------------------------------------------------------------
+        //  CreateMesh
+        //  Creates the terrain mesh
+        //-----------------------------------------------------------------------------
+        void CreateMesh( void );
+
+    public:
+        enum
+        {
+            TERRAIN_WIDTH = 128,
+            TERRAIN_HEIGHT = 128,
+        };
+
+    private:
+
+        /***************************************\
+        | class members                         |
+        \***************************************/
+        static const uint nPolysWidth = TERRAIN_WIDTH;
+        static const uint nPolysHeight = TERRAIN_HEIGHT;
+        static const uint nPolysTotal = nPolysWidth * nPolysHeight;
+        static const uint nVertsTotal = (nPolysWidth+1) * (nPolysHeight+1);
+        static const uint nIndices = nPolysTotal * 6;
+
+        float           m_fHeight[TERRAIN_WIDTH+1][TERRAIN_HEIGHT+1];
+        VPosNormalTex   m_pVertices[ nVertsTotal ];
+        uint16          m_pIndices[nIndices];
+
+        CTerrain*       m_pParentTerrain;
+
+        float           m_fXPos;
+        float           m_fYPos;
+
+        CMesh*          m_pMesh;
+        IGfxTexture2D*  m_pTexture;
+    };
+
 
 } //namespace Riot
 

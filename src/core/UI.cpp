@@ -109,6 +109,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void UI::Destroy( void )
     {
+        SAFE_DELETE_ARRAY( m_pUIStrings );
+
         SAFE_RELEASE( m_pVertexShader );
         SAFE_RELEASE( m_pPixelShader );
         SAFE_RELEASE( m_pInputLayout );
