@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/4/2011 12:16:41 PM
+Modified:       5/4/2011 4:16:00 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -47,143 +47,23 @@ namespace Riot
         }
     }
 
-    void GenerateSmoothNoise( uint nWidth, uint nHeight, float* fBase, float* fBlend, uint nOctave )
-    {
-        sint    nSamplePeriod = 1 << nOctave;
-        float   fSampleFrequency = 1.0f / nSamplePeriod;
-            
-        for( sint x = 0; x < nWidth; ++x )
-        {
-            // Calculate horizontal sampling
-            sint nSamplex0 = (1 / nSamplePeriod) * nSamplePeriod;
-            sint nSamplex1 = (nSamplex0 + nSamplePeriod) % nWidth;
-
-            float fHorizBlend = (x - nSamplex0) * fSampleFrequency;
-
-            for( sint y = 0; y < nHeight; ++y )
-            {
-                sint nSampley0 = (1 / nSamplePeriod) * nSamplePeriod;
-                sint nSampley1 = (nSampley0 + nSamplePeriod) % nHeight;
-                
-                float fVertBlend = (y - nSampley0) * fSampleFrequency;
-
-                float fTop = Interpolate( fBase[nSamplex0 + nSampley0*nWidth ], fBase[nSamplex1 + nSampley0*nWidth], fHorizBlend );
-                float fBottom = Interpolate( fBase[nSamplex0 + nSampley1*nWidth], fBase[nSamplex1 + nSampley1*nWidth], fHorizBlend );
-
-                fBlend[x + y*nWidth] = Interpolate( fTop, fBottom, fVertBlend );
-            }
-        }
-    }
-
-    void GenerateRandomNoise( uint nWidth, uint nHeight, float* f )
-    {        
-        for( uint x = 0; x < nWidth; ++x )
-        {
-            for( uint y = 0; y < nHeight; ++y )
-            {
-                f[x + y*nWidth]  = RandFloat( 1.0f );
-            }
-        }
-    }
-
-    //void PerlinNoise( void )
-    //{
-    //    const uint nWidth = 64;
-    //    const uint nHeight = 64;
-    //    const uint nOctaveCount = 6;
-
-    //    float fPersistance = 0.5f;
-
-    //    float fBase[nWidth][nHeight] = { 0.0f };
-
-    //    float fSmooth[nOctaveCount][nWidth][nHeight] = { 0.0f };
-
-    //    // Generate the base pass
-    //    GenerateRandomNoise( nWidth, nHeight, &fBase[0][0] );
-
-    //    // Generate each octave
-    //    for( uint i = 0; i < nOctaveCount; ++i )
-    //    {
-    //        GenerateSmoothNoise( nWidth, nHeight, &fBase[0][0], &fSmooth[i][0][0], i );
-    //    }
-
-    //    // the final
-    //    float fFinal[nWidth][nHeight] = { 0.0f };
-
-    //    float fAmplitude = 1.0f;
-    //    float fTotalAmplitude = 0.0f;
-    //    float fWeight = 0.5f;
-
-    //    for( uint i = 0; i < nOctaveCount; ++i )
-    //    {
-    //        fAmplitude *= fPersistance;
-    //        fTotalAmplitude += fAmplitude;
-
-    //        for( uint x = 0; x < nWidth; ++x )
-    //        {
-    //            for( uint y = 0; y < nHeight; ++y )
-    //            {
-    //                fFinal[x][y] += fSmooth[i][x][y] * fWeight;
-    //            }
-    //        }
-
-    //        fWeight *= 0.5f;
-    //    }
-
-    //    // Normalize it
-    //    //for( uint i = 0; i < nOctaveCount; ++i )
-    //    //{
-    //    //    
-    //    //    for( uint x = 0; x < nWidth; ++x )
-    //    //    {
-    //    //        for( uint y = 0; y < nHeight; ++y )
-    //    //        {
-    //    //            fFinal[x][y] /= fTotalAmplitude;
-    //    //        }
-    //    //    }
-    //    //}
-
-    //    int x = 0;
-    //}
-
-    float GetNoise( float x, float y )
-    {
-        int n=(int)x+(int)y*57;
-        n=(n<<13)^n;
-        int nn=(n*(n*n*60493+19990303)+1376312589)&0x7fffffff;
-        return 1.0f-((float)nn/1073741824.0f);
-    }
-
-    float Noise( float x, float y )
-    {
-        float fFloorX = (float)((int)x);
-        float fFloorY = (float)((int)y);
-
-        float s, t, u, v;
-        s = GetNoise( fFloorX, fFloorY );
-        t = GetNoise( fFloorX+1, fFloorY );
-        u = GetNoise( fFloorX, fFloorY+1 );
-        v = GetNoise( fFloorX+1, fFloorY+1 );
-
-        float f1 = CosInterpolate( s, t, x - fFloorX );
-        float f2 = CosInterpolate( u, v, x - fFloorX );
-
-        return CosInterpolate( f1, f2, y - fFloorY );
-    }
-
     //-----------------------------------------------------------------------------
     //  GenerateTerrain
     //  Generates the terrain
     //-----------------------------------------------------------------------------
     void CTerrain::GenerateTerrain( void )
     {
+        m_fXPos = 0.0f;
+        m_fYPos = 0.0f;
+
         float fPersistance = 0.5f;
         float fFrequency = 0.0625f / 8.0f;
         float fAmplitude = 150.0f;
         uint  nOctaves = 6;
-        uint  nSeed = 10000;
+        uint  nSeed = 10000;//RandShort();
 
-        PerlinNoise p( fPersistance, fFrequency, fAmplitude, nOctaves, nSeed );
+        PerlinNoise pDetail( fPersistance, fFrequency, fAmplitude, nOctaves, nSeed );
+        PerlinNoise pTerrain( fPersistance, fFrequency, fAmplitude, nOctaves, nSeed<<1 );
         
         sint nX;
         sint nY;
@@ -193,7 +73,7 @@ namespace Riot
         {
             for( fY = -(nPolysHeight/2.0f), nY = 0; fY <= (nPolysHeight/2.0f); fY += 1.0f, ++nY )
             {
-                m_fHeight[nX][nY] = p.GetHeight( fX, fY );
+                m_fHeight[nX][nY] = pDetail.GetHeight( fX, fY ) + pTerrain.GetHeight( m_fXPos, m_fYPos );
             }
         }
         
@@ -230,9 +110,9 @@ namespace Riot
         sint nY;
         float fX;
         float fY;
-        for( fX = -(nPolysWidth/2.0f), nX = 0; fX <= (nPolysWidth/2.0f); fX += 1.0f, ++nX  )
+        for( fX = m_fXPos, nX = 0; nX < TERRAIN_WIDTH+1; fX += 1.0f, ++nX  )
         {
-            for( fY = -(nPolysHeight/2.0f), nY = 0; fY <= (nPolysHeight/2.0f); fY += 1.0f, ++nY )
+            for( fY = m_fYPos, nY = 0; nY < TERRAIN_HEIGHT+1; fY += 1.0f, ++nY )
             {
                 VPosNormalTex vert = { RVector3( fX, m_fHeight[nX][nY], fY ), RVector3( 0.0f, 0.0f, 0.0f ), RVector2( 0.0f, 0.0f ) };
                 m_pVertices[ nVertex++ ] = vert;
@@ -384,6 +264,8 @@ namespace Riot
         double fac2 = 3.0 * aSqr - 2.0 * (aSqr * a);
 
         return x * fac1 + y * fac2; //add the weighted factors
+
+        return CosInterpolate( x, y, a );
     }
 
     double PerlinNoise::Noise(int x, int y) const

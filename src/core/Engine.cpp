@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/4/2011 11:49:56 AM
+Modified:       5/4/2011 1:26:10 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -408,7 +408,7 @@ namespace Riot
 
         //////////////////////////////////////////
         // Add a light
-        t = RTransform( orientation, RVector3( 0.0f, 50.0f, 0.0f ), 0.1f );
+        t = RTransform( orientation, RVector3( 0.0f, 200.0f, 0.0f ), 0.1f );
 
         uint nObject = m_pObjectManager->CreateObject();
         m_pObjectManager->AddComponent( nObject, eComponentLight );

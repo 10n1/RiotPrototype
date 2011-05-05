@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       4/28/2011 4:07:18 PM
+Modified:       5/4/2011 2:01:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -71,6 +71,9 @@ namespace Riot
         float           m_fHeight[TERRAIN_WIDTH+1][TERRAIN_HEIGHT+1];
         VPosNormalTex   m_pVertices[ nVertsTotal ];
         uint16          m_pIndices[nIndices];
+
+        float           m_fXPos;
+        float           m_fYPos;
 
         CMesh*          m_pMesh;
         IGfxTexture2D*  m_pTexture;
