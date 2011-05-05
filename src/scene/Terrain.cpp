@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/5/2011 2:40:58 PM
+Modified:       5/5/2011 4:03:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -13,11 +13,11 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {    
-    static float fPersistance = 0.25f;
-    static float fFrequency = 0.0625f / 2.0f;
+    static float fPersistance = 0.5f;
+    static float fFrequency = 0.0625f / 16.0f;
     static float fAmplitude = 150.0f;
     static uint  nOctaves = 6;
-    static uint  nSeed = 10000;//RandShort();
+    static uint  nSeed = 100;//RandShort();
 
     // CTerrain constructor
     CTerrain::CTerrain()
@@ -51,18 +51,34 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CTerrain::GenerateTerrain( void )
     {
-        GenerateTerrain( 0.0f, 0.0f );
+        float fTileDimensions = (float)CTerrainTile::nTileDimensions;
+        float fTileHalfDimensions = (float)CTerrainTile::nTileHalfDimensions;
+        //GenerateTerrain( 1.0f, 1.0f );
+        //GenerateTerrain( -1.0f, -1.0f );
+        //GenerateTerrain( 1.0f, -1.0f );
+        //GenerateTerrain( -1.0f, 1.0f );
+
+        for( sint i = -4; i < 4; ++i )
+        {
+            for( sint j = -4; j < 4; ++j )
+            {
+                GenerateTerrain( i*fTileDimensions, j*fTileDimensions );
+            }
+        }
     }
 
     CTerrainTile* CTerrain::GenerateTerrain( float fX, float fY )
     {
+        float fTileDimensions = (float)CTerrainTile::nTileDimensions;
+        float fTileHalfDimensions = (float)CTerrainTile::nTileHalfDimensions;
+
         // See if this tile already exists
         for( uint i = 0; i < m_nNumTiles; ++i )
         {
-            if(    (fX > m_pTerrainTiles[i].m_fXPos - 64.0f)
-                && (fY > m_pTerrainTiles[i].m_fYPos - 64.0f)
-                && (fX < m_pTerrainTiles[i].m_fXPos + 64.0f)
-                && (fY < m_pTerrainTiles[i].m_fYPos + 64.0f) )
+            if(    (fX > m_pTerrainTiles[i].m_fXPos - fTileHalfDimensions)
+                && (fY > m_pTerrainTiles[i].m_fYPos - fTileHalfDimensions)
+                && (fX < m_pTerrainTiles[i].m_fXPos + fTileHalfDimensions)
+                && (fY < m_pTerrainTiles[i].m_fYPos + fTileHalfDimensions) )
             {
                 return &m_pTerrainTiles[i];
             }
@@ -70,19 +86,43 @@ namespace Riot
 
         // It doesn't
         CTerrainTile* pTile = &m_pTerrainTiles[ m_nNumTiles++ ];
+        pTile->m_pParentTerrain = this;
 
-        fX = fX / 128.0f;
-        fX = floorf( fX + 0.5f );
-        fX = (float)((int)fX);
-        fX *= 128.0f;
-        fX -= 64.0f;
+        bool bLessThanZero = false;
+        if( fX < 0.0f )
+            bLessThanZero = true;
+
+        fX = fX / fTileDimensions;
+        if( bLessThanZero )
+        {
+            fX = floorf( fX ) + 1.0f;
+        }
+        else
+        {
+            fX = ceilf( fX );
+        }
+        //fX = (float)((int)fX) + 1.0;
+        fX *= fTileDimensions;
+        fX -= fTileHalfDimensions;
 
         
-        fY = fY / 128.0f;
-        fY = floorf( fY + 0.5f );
-        fY = (float)((int)fY);
-        fY *= 128.0f;
-        fY -= 64.0f;
+        if( fY < 0.0f )
+            bLessThanZero = true;
+        else
+            bLessThanZero = false;
+
+        fY = fY / fTileDimensions;
+        if( bLessThanZero )
+        {
+            fY = floorf( fY ) + 1.0f;
+        }
+        else
+        {
+            fY = ceilf( fY );
+        }
+        //fY = (float)((int)fY) + 1.0f;
+        fY *= fTileDimensions;
+        fY -= fTileHalfDimensions;
 
         pTile->m_fXPos = fX;
         pTile->m_fYPos = fY;
@@ -90,14 +130,11 @@ namespace Riot
         sint nX;
         sint nY;
         sint nVertex = 0;
-        for( fX = pTile->m_fXPos-64.0f, nX = 0; fX <= pTile->m_fXPos+64.0f; fX += 1.0f, ++nX  )
+        for( fX = pTile->m_fXPos-fTileHalfDimensions, nX = 0; fX <= pTile->m_fXPos+fTileHalfDimensions; fX += 1.0f, ++nX  )
         {
-            for( fY = pTile->m_fYPos-64.0f, nY = 0; fY <= pTile->m_fXPos+64.0f; fY += 1.0f, ++nY )
+            for( fY = pTile->m_fYPos-fTileHalfDimensions, nY = 0; fY <= pTile->m_fYPos+fTileHalfDimensions; fY += 1.0f, ++nY )
             {
-                float fAbsoluteX = pTile->m_fXPos + fX;
-                float fAbsoluteY = pTile->m_fYPos + fY;
-
-                pTile->m_pVertexPositions[ nVertex++ ] = RVector3( fX, m_PerlinDetail.GetHeight( fAbsoluteX, fAbsoluteY ), fY );
+                pTile->m_pVertexPositions[ nVertex++ ] = RVector3( fX, m_PerlinDetail.GetHeight( fX, fY ), fY );
             }
         }
 
@@ -160,19 +197,19 @@ namespace Riot
         sint nY;
 
         // Index them
-        for( nX = 0; nX < nPolysWidth; ++nX )
+        for( nX = 0; nX < nTileDimensions; ++nX )
         {
-            for( nY = 0; nY < nPolysHeight; ++nY )
+            for( nY = 0; nY < nTileDimensions; ++nY )
             {
-                uint nStart = nX * nPolysWidth;
+                uint nStart = nX * nTileDimensions;
                 
                 pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 0 );
                 pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 );
-                pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth );
+                pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nTileDimensions );
 
-                pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth );
+                pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nTileDimensions );
                 pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 );
-                pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nPolysWidth + 1 );
+                pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nTileDimensions + 1 );
             }
         }
 
@@ -312,14 +349,14 @@ namespace Riot
         double x1y1 = 0.0625*(n09+n16+n28+n34) + 0.125*(n08+n14+n06+n24) + 0.25*(n04);  
 
         //interpolate between those values according to the x and y fractions
-        double v1 = Interpolate(x0y0, x1y0, Xfrac); //interpolate in x direction (y)
-        double v2 = Interpolate(x0y1, x1y1, Xfrac); //interpolate in x direction (y+1)
-        double fin = Interpolate(v1, v2, Yfrac);  //interpolate in y direction
+        double v1 = PerlinInterpolate(x0y0, x1y0, Xfrac); //interpolate in x direction (y)
+        double v2 = PerlinInterpolate(x0y1, x1y1, Xfrac); //interpolate in x direction (y+1)
+        double fin = PerlinInterpolate(v1, v2, Yfrac);  //interpolate in y direction
 
         return fin;
     }
 
-    double PerlinNoise::Interpolate(double x, double y, double a) const
+    double PerlinNoise::PerlinInterpolate(double x, double y, double a) const
     {
         double negA = 1.0 - a;
         double negASqr = negA * negA;
@@ -327,7 +364,7 @@ namespace Riot
         double aSqr = a * a;
         double fac2 = 3.0 * aSqr - 2.0 * (aSqr * a);
 
-        return x * fac1 + y * fac2; //add the weighted factors
+        //return x * fac1 + y * fac2; //add the weighted factors
 
         return CosInterpolate( x, y, a );
     }

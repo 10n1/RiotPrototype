@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/4/2011 11:39:54 AM
+Modified:       5/5/2011 4:02:17 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -229,10 +229,10 @@ namespace Riot
             }
 
             // Check against the ground first
-            if( pComponent->SphereTerrainCollision( pComponent->m_pTerrainGraph, pComponent->m_Volume[i] ) )
+            //if( pComponent->SphereTerrainCollision( pComponent->m_pTerrainGraph, pComponent->m_Volume[i] ) )
             {
                 int x = 0;
-                pManager->PostMessage( eComponentMessageTerrainCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
+                //pManager->PostMessage( eComponentMessageTerrainCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
             }
 
             // Then against other objects
@@ -270,6 +270,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CComponentCollidable::SetTerrainData( const VPosNormalTex* pTerrainVerts, uint nNumVerts, const uint16* pIndices, uint nNumIndices )
     {
+        return;
+
         // Calculate the tree's depth
         uint nTotalLeaves = (nNumIndices/3) >> 1;
         uint nTotalParents = 0;
@@ -293,8 +295,8 @@ namespace Riot
 
         // Make the tree
         m_pInstance->m_pTerrainGraph = m_pInstance->m_pParentNodes + m_pInstance->m_nNumParentNodes++;
-        m_pInstance->m_pTerrainGraph->min = RVector3( -(CTerrain::TERRAIN_WIDTH >> 1), -30000.0f, -(CTerrain::TERRAIN_HEIGHT >> 1) );
-        m_pInstance->m_pTerrainGraph->max = RVector3( (CTerrain::TERRAIN_WIDTH >> 1), 30000.0f, (CTerrain::TERRAIN_HEIGHT >> 1) );
+        m_pInstance->m_pTerrainGraph->min = RVector3( -(CTerrainTile::TERRAIN_WIDTH >> 1), -30000.0f, -(CTerrainTile::TERRAIN_HEIGHT >> 1) );
+        m_pInstance->m_pTerrainGraph->max = RVector3( (CTerrainTile::TERRAIN_WIDTH >> 1), 30000.0f, (CTerrainTile::TERRAIN_HEIGHT >> 1) );
         m_pInstance->BuildParentNodes( m_pInstance->m_pTerrainGraph, 0 );
 
         for( uint i = 0; i < nNumIndices/3; ++i )

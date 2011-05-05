@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/5/2011 2:40:23 PM
+Modified:       5/5/2011 3:49:35 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -48,7 +48,7 @@ namespace Riot
 
         double Total(double i, double j) const;
         double GetValue(double x, double y) const;
-        double Interpolate(double x, double y, double a) const;
+        double PerlinInterpolate(double x, double y, double a) const;
         double Noise(int x, int y) const;
 
         double persistence, frequency, amplitude;
@@ -94,11 +94,16 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        static const uint nPolysWidth = TERRAIN_WIDTH;
-        static const uint nPolysHeight = TERRAIN_HEIGHT;
-        static const uint nPolysTotal = nPolysWidth * nPolysHeight;
-        static const uint nVertsTotal = (nPolysWidth+1) * (nPolysHeight+1);
-        static const uint nIndices = nPolysTotal * 6;
+       //static const uint nPolysWidth = TERRAIN_WIDTH;
+       //static const uint nPolysHeight = TERRAIN_HEIGHT;
+       //static const uint nPolysTotal = nPolysWidth * nPolysHeight;
+       //static const uint nIndices = nPolysTotal * 6;
+
+        static const uint   nTileDimensions = 16;
+        static const uint   nTileHalfDimensions = nTileDimensions >> 1;
+        static const uint   nVertsTotal = (nTileDimensions+1) * (nTileDimensions+1);
+        static const uint   nPolysTotal = nTileDimensions * nTileDimensions;
+        static const uint   nIndices = nPolysTotal * 6;
 
         RVector3        m_pVertexPositions[ nVertsTotal ];
 
@@ -146,26 +151,12 @@ namespace Riot
         //-----------------------------------------------------------------------------
         void CreateMesh( void );
 
-
-
-    public:
-        enum
-        {
-            TERRAIN_WIDTH = 128,
-            TERRAIN_HEIGHT = 128,
-        };
-
     private:
 
         /***************************************\
         | class members                         |
         \***************************************/
-        static const uint nPolysWidth = TERRAIN_WIDTH;
-        static const uint nPolysHeight = TERRAIN_HEIGHT;
-        static const uint nPolysTotal = nPolysWidth * nPolysHeight;
-        static const uint nVertsTotal = (nPolysWidth+1) * (nPolysHeight+1);
-        static const uint nIndices = nPolysTotal * 6;
-        static const uint nTerrainTiles = 128;
+        static const uint nTerrainTiles = 64;
 
         CTerrainTile    m_pTerrainTiles[nTerrainTiles];
 

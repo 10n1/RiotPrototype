@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/2/2011 7:23:52 PM
+Modified:       5/5/2011 3:46:32 PM
 Modified by:    Kyle Weicht
 
 210fps 4k objects
@@ -510,7 +510,7 @@ namespace Riot
         \***************************************/
         static CComponentCollidable* m_pInstance;
 
-        static const uint nNumTriangles = CTerrain::TERRAIN_HEIGHT * CTerrain::TERRAIN_WIDTH * 2;
+        static const uint nNumTriangles = CTerrainTile::TERRAIN_HEIGHT * CTerrainTile::TERRAIN_WIDTH * 2;
         
         RSphere         m_Volume[MaxComponents];
         TObjectLeafNode m_ObjectSceneNodes[MaxComponents];
