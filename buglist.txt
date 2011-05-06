@@ -1,0 +1,3 @@
+Adding and removing a ton of objects over and over ends up with some objects getting "lost" by the object manager. The components think the object exists but it doesn't.
+
+The edges of terrain tiles normals don't quite line up. You can see a small line on the edge of tiles if you look closely.

@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/5/2011 3:49:35 PM
+Modified:       5/5/2011 5:42:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -82,13 +82,6 @@ namespace Riot
         //-----------------------------------------------------------------------------
         void CreateMesh( void );
 
-    public:
-        enum
-        {
-            TERRAIN_WIDTH = 128,
-            TERRAIN_HEIGHT = 128,
-        };
-
     private:
 
         /***************************************\
@@ -98,12 +91,14 @@ namespace Riot
        //static const uint nPolysHeight = TERRAIN_HEIGHT;
        //static const uint nPolysTotal = nPolysWidth * nPolysHeight;
        //static const uint nIndices = nPolysTotal * 6;
+    public:
 
-        static const uint   nTileDimensions = 16;
-        static const uint   nTileHalfDimensions = nTileDimensions >> 1;
-        static const uint   nVertsTotal = (nTileDimensions+1) * (nTileDimensions+1);
-        static const uint   nPolysTotal = nTileDimensions * nTileDimensions;
-        static const uint   nIndices = nPolysTotal * 6;
+        static const sint   nTileDimensions = 16;
+        static const sint   nTileHalfDimensions = nTileDimensions >> 1;
+        static const sint   nVertsTotal = (nTileDimensions+1) * (nTileDimensions+1);
+        static const sint   nPolysTotal = nTileDimensions * nTileDimensions;
+        static const sint   nIndices = nPolysTotal * 6;
+    private:
 
         RVector3        m_pVertexPositions[ nVertsTotal ];
 
@@ -156,14 +151,14 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        static const uint nTerrainTiles = 64;
+        static const uint nTerrainTiles = 8*8;
 
         CTerrainTile    m_pTerrainTiles[nTerrainTiles];
 
         PerlinNoise     m_PerlinShape;
         PerlinNoise     m_PerlinDetail;
 
-        uint            m_nNumTiles;
+        atomic_t        m_nNumTiles;
     };
     
 

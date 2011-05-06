@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/5/2011 4:03:37 PM
+Modified:       5/5/2011 5:51:37 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -84,10 +84,7 @@ namespace Riot
             }
         }
 
-        // It doesn't
-        CTerrainTile* pTile = &m_pTerrainTiles[ m_nNumTiles++ ];
-        pTile->m_pParentTerrain = this;
-
+        // It doesn't, calculate the tiles center
         bool bLessThanZero = false;
         if( fX < 0.0f )
             bLessThanZero = true;
@@ -124,6 +121,10 @@ namespace Riot
         fY *= fTileDimensions;
         fY -= fTileHalfDimensions;
 
+        // Now grab a tile from the list
+        uint nIndex = AtomicIncrement( &m_nNumTiles ) - 1;
+        CTerrainTile* pTile = &m_pTerrainTiles[ nIndex ];
+        pTile->m_pParentTerrain = this;
         pTile->m_fXPos = fX;
         pTile->m_fYPos = fY;
         
@@ -150,6 +151,8 @@ namespace Riot
     CTerrainTile::CTerrainTile()
         : m_pTexture( NULL )
         , m_pMesh( NULL )
+        , m_fXPos( 0.0f )
+        , m_fYPos( 0.0f )
     {
     }
 
@@ -258,7 +261,12 @@ namespace Riot
         SAFE_RELEASE( m_pTexture );
         m_pTexture = Engine::GetRenderer()->LoadTexture2D( "Assets/Textures/grass.png" );
 
-        CComponentCollidable::SetTerrainData( pVertices, nVertsTotal, pIndices, nIndices );
+        static uint x = 0;
+        if( x == 0 )
+        {
+            CComponentCollidable::SetTerrainData( pVertices, nVertsTotal, pIndices, nIndices, m_fXPos, m_fYPos );
+            x = 1;
+        }
 
         SAFE_DELETE_ARRAY( pData );
     }

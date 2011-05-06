@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/5/2011 3:46:32 PM
+Modified:       5/5/2011 5:51:27 PM
 Modified by:    Kyle Weicht
 
 210fps 4k objects
@@ -449,7 +449,7 @@ namespace Riot
         //  SetTerrainData
         //  Sets the terrain data so objects can collide with it
         //-----------------------------------------------------------------------------
-        static void SetTerrainData( const VPosNormalTex* pTerrainVerts, uint nNumVerts, const uint16* pIndices, uint nNumIndices );
+        static void SetTerrainData( const VPosNormalTex* pTerrainVerts, uint nNumVerts, const uint16* pIndices, uint nNumIndices, float fX, float fY );
 
         //-----------------------------------------------------------------------------
         //  BuildSceneGraph
@@ -510,7 +510,7 @@ namespace Riot
         \***************************************/
         static CComponentCollidable* m_pInstance;
 
-        static const uint nNumTriangles = CTerrainTile::TERRAIN_HEIGHT * CTerrainTile::TERRAIN_WIDTH * 2;
+        static const uint nNumTriangles = CTerrainTile::nTileDimensions * CTerrainTile::nTileDimensions * 2;
         
         RSphere         m_Volume[MaxComponents];
         TObjectLeafNode m_ObjectSceneNodes[MaxComponents];
