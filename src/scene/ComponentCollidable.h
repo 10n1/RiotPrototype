@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/5/2011 5:51:27 PM
+Modified:       5/5/2011 8:40:11 PM
 Modified by:    Kyle Weicht
 
 210fps 4k objects
@@ -13,7 +13,7 @@ Modified by:    Kyle Weicht
 #define _COMPONENTCOLLIDABLE_H_
 #include "IComponent.h"
 #include "VertexFormats.h"
-#include "Terrain.h"
+//#include "Terrain.h"
 #include "Renderer.h"
 #include "Thread.h"
 
@@ -27,6 +27,7 @@ VolumeType m_nVolumeType
 
 namespace Riot
 {
+    class CTerrainTile;
 
     class CComponentCollidable : public IComponent
     {
@@ -351,70 +352,6 @@ namespace Riot
             uint    m_nObject;
         };
         
-        //-----------------------------------------------------------------------------
-        //  TTerrainParentNode
-        //  The non-terrain nodes. All this parent node does is hold them
-        //-----------------------------------------------------------------------------
-        struct TTerrainParentNode : public TSceneNode
-        {
-            TSceneNode* m_pChildren[4];
-            uint16      m_nNumChildren;
-            uint16      m_nLowestParent;
-
-            TTerrainParentNode()
-                : TSceneNode()
-            {
-                m_pChildren[0] = NULL;
-                m_pChildren[1] = NULL;
-                m_pChildren[2] = NULL;
-                m_pChildren[3] = NULL;
-
-                m_nNumChildren  = 0;
-                m_nLowestParent = 0;
-            }
-        };
-        
-        //-----------------------------------------------------------------------------
-        //  TTerrainLeafNode
-        //  Holds the terrain triangle data
-        //-----------------------------------------------------------------------------
-        struct TTerrainLeafNode : public TSceneNode
-        {
-            Triangle*   m_pTri[2];
-            uint        m_nNumTri;
-            TTerrainLeafNode()
-            {
-                m_pTri[0] = NULL;
-                m_pTri[1] = NULL;
-                m_nNumTri = 0;
-            }
-
-            bool SphereTriangleCollision( const RSphere& s )
-            {
-                for( uint i = 0; i < 2; ++i )
-                {
-                    RPlane trianglePlane( m_pTri[i]->vVerts[0], m_pTri[i]->vVerts[1], m_pTri[i]->vVerts[2] );
-
-                    float fDistance = DistanceFromPlane( trianglePlane, s.position );
-
-                    if( fDistance > s.radius )
-                    {
-                        // The sphere doesn't interact the triangles plane
-                        continue;
-                    }
-                
-                    RVector3 planeCollisionPoint = s.position - trianglePlane.normal;
-                    if( CComponentCollidable::IsPointInTriangle( planeCollisionPoint, *m_pTri[i] ) )
-                    {
-                        // we collided, break
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        };
-        
         friend class CObjectManager;
     public:
         // CComponentCollidable constructor
@@ -446,40 +383,10 @@ namespace Riot
         static void CalculateBoundingSphere( const VPosNormalTex* pVerts, uint nNumVerts, uint nIndex );
         
         //-----------------------------------------------------------------------------
-        //  SetTerrainData
-        //  Sets the terrain data so objects can collide with it
-        //-----------------------------------------------------------------------------
-        static void SetTerrainData( const VPosNormalTex* pTerrainVerts, uint nNumVerts, const uint16* pIndices, uint nNumIndices, float fX, float fY );
-
-        //-----------------------------------------------------------------------------
-        //  BuildSceneGraph
-        //  Builds the scene graph
-        //-----------------------------------------------------------------------------
-        static void BuildSceneGraph( void );
-
-        //-----------------------------------------------------------------------------
-        //  BuildParentNodes
-        //  Constructs the top of the tree
-        //-----------------------------------------------------------------------------
-        void BuildParentNodes( TTerrainParentNode* pNode, TTerrainParentNode* pParent );
-
-        //-----------------------------------------------------------------------------
-        //  AddTriangleToGraph
-        //  Adds a triangle to the graph
-        //-----------------------------------------------------------------------------
-        void AddTriangleToGraph( TSceneNode* pNode, Triangle* pTriangle, bool bLeaf = false );
-
-        //-----------------------------------------------------------------------------
-        //  RecomputeSceneGraphBounds
-        //  Recomputes the bounds of the top of the tree
-        //-----------------------------------------------------------------------------
-        void RecomputeSceneGraphBounds( CComponentCollidable::TSceneNode* pNode );
-        
-        //-----------------------------------------------------------------------------
         //  SphereTerrainCollision
         //  Determines if a tree hits any triangles within the node
         //-----------------------------------------------------------------------------
-        bool SphereTerrainCollision( TSceneNode* pNode, const RSphere& s );
+        bool SphereTerrainCollision( const RSphere& s );
         
         //-----------------------------------------------------------------------------
         //  ObjectObjectCollision
@@ -488,44 +395,27 @@ namespace Riot
         void ObjectObjectCollision( TSceneNode* pGraph, TSceneNode* pNode );
         
         //-----------------------------------------------------------------------------
-        //  DrawNodes
-        //  Draws all nodes down to a specific depth
+        //  AddTerrainTile
+        //  Adds a terrain tile to the component
         //-----------------------------------------------------------------------------
-        void DrawNodes( TTerrainParentNode* pNode, uint nDepth );
+        static void AddTerrainTile( CTerrainTile* pTile );
 
     private:
-        static void ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount );
-        
-        //-----------------------------------------------------------------------------
-        //  IsPointInTriangle
-        //  Determines if a point is inside a particular triangle
-        //-----------------------------------------------------------------------------
-        // Reference: http://www.peroxide.dk/papers/collision/collision.pdf
-        static bool IsPointInTriangle( const RVector3& point, const Triangle& triangle );
-        
+        static void ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount );        
 
     private:
         /***************************************\
         | class members                         |
         \***************************************/
         static CComponentCollidable* m_pInstance;
-
-        static const uint nNumTriangles = CTerrainTile::nTileDimensions * CTerrainTile::nTileDimensions * 2;
         
-        RSphere         m_Volume[MaxComponents];
-        TObjectLeafNode m_ObjectSceneNodes[MaxComponents];
+        RSphere             m_Volume[MaxComponents];
+        TObjectLeafNode     m_ObjectSceneNodes[MaxComponents];
 
-        Triangle        m_pTerrainTriangles[nNumTriangles];
+        CTerrainTile*       m_pTerrainTiles[ 1024 ];
+        uint                m_nNumTerrainTiles;
 
-        TTerrainParentNode* m_pTerrainGraph;
-        TTerrainParentNode* m_pParentNodes;
-        TTerrainLeafNode*   m_pTerrainLeaves;
-
-        TObjectParentNode*  m_pObjectGraph;
-
-        uint                m_nNumParentNodes;
-        uint                m_nNumTerrainLeaves;
-     
+        TObjectParentNode*  m_pObjectGraph;     
     };
 
 } // namespace Riot
