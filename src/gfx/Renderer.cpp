@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/5/2011 8:57:58 PM
+Modified:       5/5/2011 10:29:38 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -108,6 +108,18 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Shutdown( void )
     {
+        for( uint i = 0; i < m_nNumCommands; ++i )
+        {
+            SAFE_RELEASE( m_pCurrCommands[i].pMesh );
+            SAFE_RELEASE( m_pCurrCommands[i].pTexture );
+        }
+        
+        for( uint i = 0; i < m_nPrevNumCommands; ++i )
+        {
+            SAFE_RELEASE( m_pPrevCommands[i].pMesh );
+            SAFE_RELEASE( m_pPrevCommands[i].pTexture );
+        }
+
         SAFE_RELEASE( m_pLineBuffer );
 
         SAFE_RELEASE( m_pWireframeVLayout );
@@ -307,7 +319,11 @@ namespace Riot
             }
 
             m_pDevice->SetPSTexture( 0, pTexture );
+
             m_pPrevCommands[i].pMesh->DrawMesh();
+
+            SAFE_RELEASE( pTexture );
+            SAFE_RELEASE( m_pPrevCommands[i].pMesh );
         }
 
 
@@ -695,6 +711,11 @@ namespace Riot
 
         uint nIndex = AtomicIncrement( &m_nNumCommands ) - 1;
         m_pCurrCommands[nIndex] = cmd;
+        cmd.pMesh->AddRef();
+        if( cmd.pTexture )
+        {
+            cmd.pTexture->AddRef();
+        }
 
         m_pCurrTransforms[nIndex] = transform;
     }

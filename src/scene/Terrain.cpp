@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/5/2011 10:03:46 PM
+Modified:       5/5/2011 10:33:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -45,14 +45,6 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CTerrain::Render( void )
     {
-        //for( sint i = m_nNumFreeTiles - 1; i >= 0; --i )
-        //{
-        //    // This doesn't work because Tile X could be freed one because its too far away
-        //    // and a new tile can get created in it's place...
-        //    SAFE_RELEASE( m_pTerrainTiles[ m_nFreeTiles[i] ].m_pMesh );
-        //    SAFE_RELEASE( m_pTerrainTiles[ m_nFreeTiles[i] ].m_pTexture);
-        //}
-
         for( uint i = 0; i < m_nNumTiles; ++i )
         {
             m_pTerrainTiles[ m_pActiveTiles[i] ].Render();
@@ -181,8 +173,10 @@ namespace Riot
                 // Remove it
                 // TODO: This needs to happen here, but this tile is already queued in the
                 //  renderers buffer....
-                //SAFE_RELEASE( m_pTerrainTiles[ m_pActiveTiles[i] ].m_pMesh );
-                //SAFE_RELEASE( m_pTerrainTiles[ m_pActiveTiles[i] ].m_pTexture );
+                SAFE_RELEASE( m_pTerrainTiles[ m_pActiveTiles[i] ].m_pMesh );
+                SAFE_RELEASE( m_pTerrainTiles[ m_pActiveTiles[i] ].m_pTexture );
+
+                CComponentCollidable::RemoveTerrainTile( &m_pTerrainTiles[ m_pActiveTiles[i] ] );
 
                 m_nFreeTiles[ m_nNumFreeTiles++ ] = m_pActiveTiles[i];
                 m_pActiveTiles[i] = m_pActiveTiles[ --m_nNumTiles ];
@@ -553,7 +547,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CTerrainTile::CreateMesh( void )
     {
-        //SAFE_RELEASE( m_pMesh );
+        SAFE_RELEASE( m_pMesh );
 
         static CRenderer* pRender = Engine::GetRenderer();
 
@@ -626,7 +620,7 @@ namespace Riot
         
         //////////////////////////////////////////
         // Load the texture
-        //SAFE_RELEASE( m_pTexture );
+        SAFE_RELEASE( m_pTexture );
         m_pTexture = Engine::GetRenderer()->LoadTexture2D( "Assets/Textures/grass.png" );
 
         SAFE_DELETE_ARRAY( pData );
