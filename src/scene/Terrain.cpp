@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/5/2011 11:10:28 PM
+Modified:       5/6/2011 11:38:44 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -50,7 +50,7 @@ namespace Riot
             m_pTerrainTiles[ m_pActiveTiles[i] ].Render();
         }
 
-        m_pTerrainTiles[1].RenderGraph( m_pTerrainTiles[1].m_pTerrainGraph, 4 );
+        //m_pTerrainTiles[1].RenderGraph( m_pTerrainTiles[1].m_pTerrainGraph, 4 );
     }
 
     //-----------------------------------------------------------------------------
@@ -160,7 +160,7 @@ namespace Riot
         pTile->CreateMesh();
 
         // Now create the scene graph
-        pTile->BuildSceneGraph();
+        //pTile->BuildSceneGraph();
 
         // Add it to the component
         CComponentCollidable::AddTerrainTile( pTile );
@@ -652,7 +652,7 @@ namespace Riot
         randomseed = 0;
     }
 
-    PerlinNoise::PerlinNoise(double _persistence, double _frequency, double _amplitude, int _octaves, int _randomseed)
+    PerlinNoise::PerlinNoise(float _persistence, float _frequency, float _amplitude, int _octaves, int _randomseed)
     {
         persistence = _persistence;
         frequency = _frequency;
@@ -661,7 +661,7 @@ namespace Riot
         randomseed = 2 + _randomseed * _randomseed;
     }
 
-    void PerlinNoise::Set(double _persistence, double _frequency, double _amplitude, int _octaves, int _randomseed)
+    void PerlinNoise::Set(float _persistence, float _frequency, float _amplitude, int _octaves, int _randomseed)
     {
         persistence = _persistence;
         frequency = _frequency;
@@ -670,17 +670,17 @@ namespace Riot
         randomseed = 2 + _randomseed * _randomseed;
     }
 
-    double PerlinNoise::GetHeight(double x, double y) const
+    float PerlinNoise::GetHeight(float x, float y) const
     {
         return amplitude * Total(x, y);
     }
 
-    double PerlinNoise::Total(double i, double j) const
+    float PerlinNoise::Total(float i, float j) const
     {
         //properties of one octave (changing each loop)
-        double t = 0.0f;
-        double _amplitude = 1;
-        double freq = frequency;
+        float t = 0.0f;
+        float _amplitude = 1;
+        float freq = frequency;
 
         for(int k = 0; k < octaves; k++) 
         {
@@ -692,67 +692,67 @@ namespace Riot
         return t;
     }
 
-    double PerlinNoise::GetValue(double x, double y) const
+    float PerlinNoise::GetValue(float x, float y) const
     {
         int Xint = (int)x;
         int Yint = (int)y;
-        double Xfrac = x - Xint;
-        double Yfrac = y - Yint;
+        float Xfrac = x - Xint;
+        float Yfrac = y - Yint;
 
         //noise values
-        double n01 = Noise(Xint-1, Yint-1);
-        double n02 = Noise(Xint+1, Yint-1);
-        double n03 = Noise(Xint-1, Yint+1);
-        double n04 = Noise(Xint+1, Yint+1);
-        double n05 = Noise(Xint-1, Yint);
-        double n06 = Noise(Xint+1, Yint);
-        double n07 = Noise(Xint, Yint-1);
-        double n08 = Noise(Xint, Yint+1);
-        double n09 = Noise(Xint, Yint);
+        float n01 = Noise(Xint-1, Yint-1);
+        float n02 = Noise(Xint+1, Yint-1);
+        float n03 = Noise(Xint-1, Yint+1);
+        float n04 = Noise(Xint+1, Yint+1);
+        float n05 = Noise(Xint-1, Yint);
+        float n06 = Noise(Xint+1, Yint);
+        float n07 = Noise(Xint, Yint-1);
+        float n08 = Noise(Xint, Yint+1);
+        float n09 = Noise(Xint, Yint);
 
-        double n12 = Noise(Xint+2, Yint-1);
-        double n14 = Noise(Xint+2, Yint+1);
-        double n16 = Noise(Xint+2, Yint);
+        float n12 = Noise(Xint+2, Yint-1);
+        float n14 = Noise(Xint+2, Yint+1);
+        float n16 = Noise(Xint+2, Yint);
 
-        double n23 = Noise(Xint-1, Yint+2);
-        double n24 = Noise(Xint+1, Yint+2);
-        double n28 = Noise(Xint, Yint+2);
+        float n23 = Noise(Xint-1, Yint+2);
+        float n24 = Noise(Xint+1, Yint+2);
+        float n28 = Noise(Xint, Yint+2);
 
-        double n34 = Noise(Xint+2, Yint+2);
+        float n34 = Noise(Xint+2, Yint+2);
 
         //find the noise values of the four corners
-        double x0y0 = 0.0625*(n01+n02+n03+n04) + 0.125*(n05+n06+n07+n08) + 0.25*(n09);  
-        double x1y0 = 0.0625*(n07+n12+n08+n14) + 0.125*(n09+n16+n02+n04) + 0.25*(n06);  
-        double x0y1 = 0.0625*(n05+n06+n23+n24) + 0.125*(n03+n04+n09+n28) + 0.25*(n08);  
-        double x1y1 = 0.0625*(n09+n16+n28+n34) + 0.125*(n08+n14+n06+n24) + 0.25*(n04);  
+        float x0y0 = 0.0625*(n01+n02+n03+n04) + 0.125*(n05+n06+n07+n08) + 0.25*(n09);  
+        float x1y0 = 0.0625*(n07+n12+n08+n14) + 0.125*(n09+n16+n02+n04) + 0.25*(n06);  
+        float x0y1 = 0.0625*(n05+n06+n23+n24) + 0.125*(n03+n04+n09+n28) + 0.25*(n08);  
+        float x1y1 = 0.0625*(n09+n16+n28+n34) + 0.125*(n08+n14+n06+n24) + 0.25*(n04);  
 
         //interpolate between those values according to the x and y fractions
-        double v1 = PerlinInterpolate(x0y0, x1y0, Xfrac); //interpolate in x direction (y)
-        double v2 = PerlinInterpolate(x0y1, x1y1, Xfrac); //interpolate in x direction (y+1)
-        double fin = PerlinInterpolate(v1, v2, Yfrac);  //interpolate in y direction
+        float v1 = PerlinInterpolate(x0y0, x1y0, Xfrac); //interpolate in x direction (y)
+        float v2 = PerlinInterpolate(x0y1, x1y1, Xfrac); //interpolate in x direction (y+1)
+        float fin = PerlinInterpolate(v1, v2, Yfrac);  //interpolate in y direction
 
         return fin;
     }
 
-    double PerlinNoise::PerlinInterpolate(double x, double y, double a) const
+    float PerlinNoise::PerlinInterpolate(float x, float y, float a) const
     {
-        double negA = 1.0 - a;
-        double negASqr = negA * negA;
-        double fac1 = 3.0 * (negASqr) - 2.0 * (negASqr * negA);
-        double aSqr = a * a;
-        double fac2 = 3.0 * aSqr - 2.0 * (aSqr * a);
+        float negA = 1.0 - a;
+        float negASqr = negA * negA;
+        float fac1 = 3.0 * (negASqr) - 2.0 * (negASqr * negA);
+        float aSqr = a * a;
+        float fac2 = 3.0 * aSqr - 2.0 * (aSqr * a);
 
         //return x * fac1 + y * fac2; //add the weighted factors
 
         return CosInterpolate( x, y, a );
     }
 
-    double PerlinNoise::Noise(int x, int y) const
+    float PerlinNoise::Noise(int x, int y) const
     {
         int n = x + y * 57;
         n = (n << 13) ^ n;
         int t = (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff;
-        return 1.0 - double(t) * 0.931322574615478515625e-9;/// 1073741824.0);
+        return 1.0 - float(t) * 0.931322574615478515625e-9;/// 1073741824.0);
     }
 
 } // namespace Riot
