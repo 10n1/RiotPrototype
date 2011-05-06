@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/5/2011 9:22:39 PM
+Modified:       5/6/2011 11:50:51 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -25,7 +25,7 @@ VolumeType m_nVolumeType
 
 namespace Riot
 {
-    class CTerrainTile;
+    class CTerrain;
 
     class CComponentCollidable : public IComponent
     {
@@ -391,13 +391,11 @@ namespace Riot
         //  Performs object-object collision
         //-----------------------------------------------------------------------------
         void ObjectObjectCollision( TSceneNode* pGraph, TSceneNode* pNode );
-        
+
         //-----------------------------------------------------------------------------
-        //  *TerrainTile
-        //  Adds or removes a terrain tile to/from the component
+        //  Accessors/mutators
         //-----------------------------------------------------------------------------
-        static void AddTerrainTile( CTerrainTile* pTile );
-        static void RemoveTerrainTile( CTerrainTile* pTile );
+        static inline void SetTerrain( CTerrain* pTerrain );
 
     private:
         static void ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount );        
@@ -407,15 +405,21 @@ namespace Riot
         | class members                         |
         \***************************************/
         static CComponentCollidable* m_pInstance;
-        
+
         RSphere             m_Volume[MaxComponents];
         TObjectLeafNode     m_ObjectSceneNodes[MaxComponents];
-
-        CTerrainTile*       m_pTerrainTiles[ 1024 ];
-        uint                m_nNumTerrainTiles;
-
         TObjectParentNode*  m_pObjectGraph;     
+
+        CTerrain*           m_pTerrain;
     };
+
+    //-----------------------------------------------------------------------------
+    //  Accessors/mutators
+    //-----------------------------------------------------------------------------
+    void CComponentCollidable::SetTerrain( CTerrain* pTerrain )
+    {
+        m_pInstance->m_pTerrain = pTerrain;
+    }
 
 } // namespace Riot
 

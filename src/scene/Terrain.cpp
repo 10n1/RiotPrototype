@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/6/2011 11:44:23 AM
+Modified:       5/6/2011 11:51:01 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -157,9 +157,6 @@ namespace Riot
 
         pTile->CreateMesh();
 
-        // Add it to the component
-        CComponentCollidable::AddTerrainTile( pTile );
-
         return pTile;
     }       
 
@@ -186,8 +183,6 @@ namespace Riot
                 SAFE_RELEASE( m_pTerrainTiles[ m_pActiveTiles[i] ].m_pMesh );
                 SAFE_RELEASE( m_pTerrainTiles[ m_pActiveTiles[i] ].m_pTexture );
         
-                CComponentCollidable::RemoveTerrainTile( &m_pTerrainTiles[ m_pActiveTiles[i] ] );
-        
                 m_nFreeTiles[ m_nNumFreeTiles++ ] = m_pActiveTiles[i];
                 m_pActiveTiles[i] = m_pActiveTiles[ --m_nNumTiles ];
                 --i;
@@ -202,6 +197,21 @@ namespace Riot
                 GenerateTerrain( fX, fY );
             }
         }
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  SphereTerrainCollision
+    //  Determines if a tree hits any triangles within the node
+    //-----------------------------------------------------------------------------
+    bool CTerrain::SphereTerrainCollision( const RSphere& s )
+    {
+        float fGround = m_PerlinDetail.GetHeight( s.position.x, s.position.z );
+
+        if( s.position.y - fGround < s.radius )
+        {
+            return true;
+        }
+        return false;
     }
 
     /*************************************************************************\
@@ -220,21 +230,6 @@ namespace Riot
     {
         SAFE_RELEASE( m_pMesh );
         SAFE_RELEASE( m_pTexture );
-    }
-
-    //-----------------------------------------------------------------------------
-    //  SphereTerrainCollision
-    //  Determines if a tree hits any triangles within the node
-    //-----------------------------------------------------------------------------
-    bool CTerrainTile::SphereTerrainCollision( const RSphere& s )
-    {
-        float fGround = m_pParentTerrain->m_PerlinDetail.GetHeight( s.position.x, s.position.z );
-
-        if( s.position.y - fGround < s.radius )
-        {
-            return true;
-        }
-        return false;
     }
 
     //-----------------------------------------------------------------------------

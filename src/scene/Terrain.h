@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/6/2011 11:44:23 AM
+Modified:       5/6/2011 11:50:16 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -84,12 +84,6 @@ namespace Riot
         //-----------------------------------------------------------------------------
         void CreateMesh( void );
         
-        //-----------------------------------------------------------------------------
-        //  SphereTerrainCollision
-        //  Determines if a tree hits any triangles within the node
-        //-----------------------------------------------------------------------------
-        bool SphereTerrainCollision( const RSphere& s );
-
     private:
 
         /***************************************\
@@ -102,8 +96,6 @@ namespace Riot
         static const sint   nVertsTotal = (nTileDimensions+1) * (nTileDimensions+1);
         static const sint   nPolysTotal = nTileDimensions * nTileDimensions;
         static const sint   nIndices = nPolysTotal * 6;
-        static const sint   nNumParentNodes = 85; // 1 + 4 + 16 + 64 + 256
-        static const sint   nNumLeafNodes = nTileDimensions * nTileDimensions; 
 
     private:
 
@@ -162,6 +154,12 @@ namespace Riot
         //  Calculates a tiles center
         //-----------------------------------------------------------------------------
         void CalculateTileCenter( float& fX, float& fY );
+        
+        //-----------------------------------------------------------------------------
+        //  SphereTerrainCollision
+        //  Determines if a tree hits any triangles within the node
+        //-----------------------------------------------------------------------------
+        bool SphereTerrainCollision( const RSphere& s );
 
     private:
 

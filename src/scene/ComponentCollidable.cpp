@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/5/2011 9:22:39 PM
+Modified:       5/6/2011 11:50:15 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -55,7 +55,7 @@ namespace Riot
         m_nNumActiveComponents = 0;
 
         // Make sure we don't have any leaves
-        m_nNumTerrainTiles = 0;
+        m_pTerrain = NULL;
 
         // Create the head of the object graph
         m_pObjectGraph  = new TObjectParentNode;
@@ -223,7 +223,7 @@ namespace Riot
             }
 
             // Check against the ground first
-            if( pComponent->SphereTerrainCollision( pComponent->m_Volume[i] ) )
+            if( pComponent->m_pTerrain->SphereTerrainCollision( pComponent->m_Volume[i] ) )
             {
                 int x = 0;
                 pManager->PostMessage( eComponentMessageTerrainCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
@@ -312,47 +312,6 @@ namespace Riot
             break;
         default:
             {
-            }
-        }
-    }
-
-    //-----------------------------------------------------------------------------
-    //  SphereTerrainCollision
-    //  Determines if a tree hits any triangles within the node
-    //-----------------------------------------------------------------------------
-    bool CComponentCollidable::SphereTerrainCollision( const RSphere& s )
-    {
-        for( uint i = 0; i < m_nNumTerrainTiles; ++i )
-        {
-            if( m_pTerrainTiles[i]->SphereTerrainCollision( s ) )
-                return true;
-        }
-
-        return false;
-    }
-
-    //-----------------------------------------------------------------------------
-    //  AddTerrainTile
-    //  Adds a terrain tile to the component
-    //-----------------------------------------------------------------------------
-    void CComponentCollidable::AddTerrainTile( CTerrainTile* pTile )
-    {
-        ASSERT( m_pInstance->m_nNumTerrainTiles < 1024 );
-        m_pInstance->m_pTerrainTiles[ m_pInstance->m_nNumTerrainTiles++ ] = pTile;
-    }
-    
-    //-----------------------------------------------------------------------------
-    //  RemoveTerrainTile
-    //  Removes a terrain tile from the component
-    //-----------------------------------------------------------------------------
-    void CComponentCollidable::RemoveTerrainTile( CTerrainTile* pTile )
-    {
-        for( uint i = 0; i < m_pInstance->m_nNumTerrainTiles; ++i )
-        {
-            if( m_pInstance->m_pTerrainTiles[i] == pTile )
-            {
-                m_pInstance->m_pTerrainTiles[i] = m_pInstance->m_pTerrainTiles[ --m_pInstance->m_nNumTerrainTiles ];
-                return;
             }
         }
     }
