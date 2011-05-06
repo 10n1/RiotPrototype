@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/5/2011 8:48:35 PM
+Modified:       5/5/2011 9:42:30 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -310,12 +310,12 @@ namespace Riot
         //-----------------------------------------------------------------------------
         void GenerateTerrain( void );
         CTerrainTile* GenerateTerrain( float fX, float fY );
-
+        
         //-----------------------------------------------------------------------------
-        //  CreateMesh
-        //  Creates the terrain mesh
+        //  CenterTerrain
+        //  Centers the active portion of the terrain around a point
         //-----------------------------------------------------------------------------
-        void CreateMesh( void );
+        void CenterTerrain( const RVector3& pos, float fRadius );
 
     private:
 
@@ -325,11 +325,14 @@ namespace Riot
         enum { MAX_TERRAIN_TILES = 1024 };
 
         CTerrainTile    m_pTerrainTiles[MAX_TERRAIN_TILES];
+        uint            m_nFreeTiles[MAX_TERRAIN_TILES];
+        uint            m_pActiveTiles[MAX_TERRAIN_TILES];
 
         PerlinNoise     m_PerlinShape;
         PerlinNoise     m_PerlinDetail;
 
         atomic_t        m_nNumTiles;
+        uint            m_nNumFreeTiles;
     };
     
 

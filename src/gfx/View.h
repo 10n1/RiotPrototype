@@ -4,7 +4,7 @@ Purpose:        Interface for anything in the engine that
                 can "view", aka, a camera
 Author:         Kyle Weicht
 Created:        4/14/2011
-Modified:       4/30/2011 12:57:23 PM
+Modified:       5/5/2011 9:30:16 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VIEW_H_
@@ -60,11 +60,11 @@ namespace Riot
         void SetPerspective( float fFoV, float fAspectRatio, float fNear, float fFar );
 
         //-----------------------------------------------------------------------------
-        //  GetView/ProjMatrix
-        //  Returns the view/proj matrix
+        //  Accessors/mutators
         //-----------------------------------------------------------------------------
         const RMatrix4& GetViewMatrix( void );
         const RMatrix4& GetProjMatrix( void );
+        inline const RVector3& GetPosition( void );
 
     private:
         /***************************************\
@@ -80,6 +80,14 @@ namespace Riot
 
         //RTransform  m_Transform;
     };
+
+    //-----------------------------------------------------------------------------
+    //  Accessors/mutators
+    //-----------------------------------------------------------------------------
+    const RVector3& CView::GetPosition( void )
+    {
+        return m_vPosition.xyz();
+    }
 
 } // namespace Riot
 

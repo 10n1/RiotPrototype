@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/5/2011 8:44:31 PM
+Modified:       5/5/2011 10:03:46 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -24,7 +24,13 @@ namespace Riot
         : m_PerlinDetail( fPersistance, fFrequency, 150.0f, nOctaves, nSeed )
         , m_PerlinShape( fPersistance, fFrequency, 150.0f, nOctaves, nSeed << 1 )
         , m_nNumTiles( 0 )
-    {
+    {        
+        for( sint i = MAX_TERRAIN_TILES - 1, j = 0; i >= 0; --i, ++j )
+        {
+            m_nFreeTiles[j] = i;
+        }
+
+        m_nNumFreeTiles = MAX_TERRAIN_TILES;
     }
 
     // CTerrain destructor
@@ -39,9 +45,17 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CTerrain::Render( void )
     {
+        //for( sint i = m_nNumFreeTiles - 1; i >= 0; --i )
+        //{
+        //    // This doesn't work because Tile X could be freed one because its too far away
+        //    // and a new tile can get created in it's place...
+        //    SAFE_RELEASE( m_pTerrainTiles[ m_nFreeTiles[i] ].m_pMesh );
+        //    SAFE_RELEASE( m_pTerrainTiles[ m_nFreeTiles[i] ].m_pTexture);
+        //}
+
         for( uint i = 0; i < m_nNumTiles; ++i )
         {
-            m_pTerrainTiles[i].Render();
+            m_pTerrainTiles[ m_pActiveTiles[i] ].Render();
         }
 
         m_pTerrainTiles[1].RenderGraph( m_pTerrainTiles[1].m_pTerrainGraph, 4 );
@@ -73,12 +87,12 @@ namespace Riot
         // See if this tile already exists
         for( uint i = 0; i < m_nNumTiles; ++i )
         {
-            if(    (fX > m_pTerrainTiles[i].m_fXPos - fTileHalfDimensions)
-                && (fY > m_pTerrainTiles[i].m_fYPos - fTileHalfDimensions)
-                && (fX < m_pTerrainTiles[i].m_fXPos + fTileHalfDimensions)
-                && (fY < m_pTerrainTiles[i].m_fYPos + fTileHalfDimensions) )
+            if(    (fX > m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos - fTileHalfDimensions)
+                && (fY > m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos - fTileHalfDimensions)
+                && (fX < m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos + fTileHalfDimensions)
+                && (fY < m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos + fTileHalfDimensions) )
             {
-                return &m_pTerrainTiles[i];
+                return &m_pTerrainTiles[ m_pActiveTiles[i] ];
             }
         }
 
@@ -118,8 +132,12 @@ namespace Riot
         fY -= fTileHalfDimensions;
 
         // Now grab a tile from the list
+        uint nFreeIndex = --m_nNumFreeTiles;
         uint nIndex = AtomicIncrement( &m_nNumTiles ) - 1;
-        CTerrainTile* pTile = &m_pTerrainTiles[ nIndex ];
+
+        CTerrainTile* pTile = &m_pTerrainTiles[ m_nFreeTiles[nFreeIndex] ];
+        m_pActiveTiles[ nIndex ] = m_nFreeTiles[ nFreeIndex ];
+
         pTile->m_pParentTerrain = this;
         pTile->m_fXPos = fX;
         pTile->m_fYPos = fY;
@@ -144,8 +162,43 @@ namespace Riot
         CComponentCollidable::AddTerrainTile( pTile );
 
         return pTile;
-    }
+    }       
 
+    //-----------------------------------------------------------------------------
+    //  CenterTerrain
+    //  Centers the active portion of the terrain around a point
+    //-----------------------------------------------------------------------------
+    void CTerrain::CenterTerrain( const RVector3& pos, float fRadius )
+    {
+        // First remove tiles that aren't in range.
+        for( uint i = 0; i < m_nNumTiles; ++i )
+        {
+            if(    m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos < (pos.x - fRadius)
+                || m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos < (pos.z - fRadius)
+                || m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos > (pos.x + fRadius)
+                || m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos > (pos.z + fRadius) )
+            {
+                // Remove it
+                // TODO: This needs to happen here, but this tile is already queued in the
+                //  renderers buffer....
+                //SAFE_RELEASE( m_pTerrainTiles[ m_pActiveTiles[i] ].m_pMesh );
+                //SAFE_RELEASE( m_pTerrainTiles[ m_pActiveTiles[i] ].m_pTexture );
+
+                m_nFreeTiles[ m_nNumFreeTiles++ ] = m_pActiveTiles[i];
+                m_pActiveTiles[i] = m_pActiveTiles[ --m_nNumTiles ];
+                --i;
+            }
+        }
+
+        // Now build the radius
+        for( float fX = pos.x - fRadius; fX <= pos.x + fRadius; fX += 12.0f )
+        {
+            for( float fY = pos.z - fRadius; fY <= pos.z + fRadius; fY += 12.0f )
+            {
+                GenerateTerrain( fX, fY );
+            }
+        }
+    }
 
     /*************************************************************************\
     \*************************************************************************/
@@ -493,14 +546,14 @@ namespace Riot
             }
         }
     }
-
+    
     //-----------------------------------------------------------------------------
     //  CreateMesh
     //  Creates the terrain mesh
     //-----------------------------------------------------------------------------
     void CTerrainTile::CreateMesh( void )
     {
-        SAFE_RELEASE( m_pMesh );
+        //SAFE_RELEASE( m_pMesh );
 
         static CRenderer* pRender = Engine::GetRenderer();
 
@@ -573,7 +626,7 @@ namespace Riot
         
         //////////////////////////////////////////
         // Load the texture
-        SAFE_RELEASE( m_pTexture );
+        //SAFE_RELEASE( m_pTexture );
         m_pTexture = Engine::GetRenderer()->LoadTexture2D( "Assets/Textures/grass.png" );
 
         SAFE_DELETE_ARRAY( pData );

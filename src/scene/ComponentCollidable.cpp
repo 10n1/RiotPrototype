@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/5/2011 8:40:38 PM
+Modified:       5/5/2011 9:22:39 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -339,6 +339,22 @@ namespace Riot
     {
         ASSERT( m_pInstance->m_nNumTerrainTiles < 1024 );
         m_pInstance->m_pTerrainTiles[ m_pInstance->m_nNumTerrainTiles++ ] = pTile;
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  RemoveTerrainTile
+    //  Removes a terrain tile from the component
+    //-----------------------------------------------------------------------------
+    void CComponentCollidable::RemoveTerrainTile( CTerrainTile* pTile )
+    {
+        for( uint i = 0; i < m_pInstance->m_nNumTerrainTiles; ++i )
+        {
+            if( m_pInstance->m_pTerrainTiles[i] == pTile )
+            {
+                m_pInstance->m_pTerrainTiles[i] = m_pInstance->m_pTerrainTiles[ --m_pInstance->m_nNumTerrainTiles ];
+                return;
+            }
+        }
     }
 
     //-----------------------------------------------------------------------------

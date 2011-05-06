@@ -2,7 +2,7 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       5/4/2011 10:20:03 PM
+Modified:       5/5/2011 9:10:24 PM
 Modified by:    Kyle Weicht
 
 TODO:           Add alignment support? Should be ultra easy
@@ -280,7 +280,7 @@ void RemoveAllocation(void* pData)
     {
         if(g_pAllocations[i].nAddress == nAddress)
         {
-            AtomicAdd( &g_nCurrentMemoryUsage, g_pAllocations[i].nSize );
+            AtomicAdd( &g_nCurrentMemoryUsage, -g_pAllocations[i].nSize );
             //g_nCurrentMemoryUsage -= g_pAllocations[i].nSize;
             g_pAllocations[i] = g_pAllocations[ AtomicDecrement(&g_nCurrentAllocations) ];
             break;

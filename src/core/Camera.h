@@ -3,13 +3,14 @@ File:           Camera.h
 Purpose:        An interface for the main camera
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       5/5/2011 8:49:26 PM
+Modified:       5/5/2011 9:30:29 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
 #include "common.h"
 #include "IListener.h"
+#include "View.h"
 
 #define AVERAGE_WALK_SPEED 1.4f * 10.0f
 #define AVERAGE_RUN_SPEED  6.7f * 10.0f
@@ -48,6 +49,7 @@ namespace Riot
         //-----------------------------------------------------------------------------
         CView*  GetView( void );
         void    SetView( CView* pView );
+        inline const RVector3& GetPosition( void );
 
     private:
         /***************************************\
@@ -60,6 +62,14 @@ namespace Riot
         float   m_fMovementSpeed;
         bool    m_bMouseControlled;
     };
+
+    //-----------------------------------------------------------------------------
+    //  Accessors/mutators
+    //-----------------------------------------------------------------------------
+    const RVector3& CCamera::GetPosition( void )
+    {
+        return m_pView->GetPosition();
+    }
 
 } // namespace Riot
 

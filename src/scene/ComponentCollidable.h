@@ -4,10 +4,8 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/5/2011 8:40:11 PM
+Modified:       5/5/2011 9:22:39 PM
 Modified by:    Kyle Weicht
-
-210fps 4k objects
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
 #define _COMPONENTCOLLIDABLE_H_
@@ -395,10 +393,11 @@ namespace Riot
         void ObjectObjectCollision( TSceneNode* pGraph, TSceneNode* pNode );
         
         //-----------------------------------------------------------------------------
-        //  AddTerrainTile
-        //  Adds a terrain tile to the component
+        //  *TerrainTile
+        //  Adds or removes a terrain tile to/from the component
         //-----------------------------------------------------------------------------
         static void AddTerrainTile( CTerrainTile* pTile );
+        static void RemoveTerrainTile( CTerrainTile* pTile );
 
     private:
         static void ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount );        

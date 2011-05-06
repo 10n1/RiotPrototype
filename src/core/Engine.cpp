@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/5/2011 9:03:32 PM
+Modified:       5/5/2011 10:00:52 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -107,18 +107,22 @@ namespace Riot
             CObjectManager::PipelineObjectUpdate( m_pObjectManager, 0, 0, 1 )
 #endif // #if PIPELINED_RENDER
 
-            // Make sure terrain is the last thing drawn
-            m_pTerrain->Render();
-
             //////////////////////////////////////////
             // Render
             m_pRenderer->Render();
+
+            //////////////////////////////////////////
+            // Make sure terrain is the last thing drawn
+            m_pTerrain->Render();
 
 #if PIPELINED_RENDER
             m_pTaskManager->WaitForCompletion( nObjectUpdateHandle );
 #endif // #if PIPELINED_RENDER
 
             //m_pRenderer->DrawDebugRay( RVector3( 0.0f, 0.0f, 0.0f ), RVector3( 0.0f, 10.0f, 0.0f ) );
+
+            //////////////////////////////////////////
+            // Update terrain
 
             //////////////////////////////////////////
             //  Process OS messages
@@ -219,7 +223,10 @@ namespace Riot
                     break;
                 case KEY_R:
                     gnRenderOn = !gnRenderOn;
-                    break;                    
+                    break;     
+                case KEY_T:
+                    m_pTerrain->CenterTerrain( m_pCamera->GetPosition(), 100.0f );
+                    break;               
                 case KEY_X:
                     static uint nCount = 1;
                     static CMesh* pBox = m_pRenderer->CreateMesh();
