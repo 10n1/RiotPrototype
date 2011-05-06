@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/5/2011 10:00:52 PM
+Modified:       5/5/2011 10:50:18 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -123,6 +123,7 @@ namespace Riot
 
             //////////////////////////////////////////
             // Update terrain
+            m_pTerrain->CenterTerrain( m_pCamera->GetPosition(), 100.0f );
 
             //////////////////////////////////////////
             //  Process OS messages

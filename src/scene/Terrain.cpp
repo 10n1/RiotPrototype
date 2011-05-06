@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/5/2011 10:33:33 PM
+Modified:       5/5/2011 11:10:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -54,6 +54,51 @@ namespace Riot
     }
 
     //-----------------------------------------------------------------------------
+    //  CalculateTileCenter
+    //  Calculates a tiles center
+    //-----------------------------------------------------------------------------
+    void CTerrain::CalculateTileCenter( float& fX, float& fY )
+    {
+        float fTileDimensions = (float)CTerrainTile::nTileDimensions;
+        float fTileHalfDimensions = (float)CTerrainTile::nTileHalfDimensions;
+
+        // Calculate the tiles center
+        bool bLessThanZero = false;
+        if( fX < 0.0f )
+            bLessThanZero = true;
+
+        fX = fX / fTileDimensions;
+        if( bLessThanZero )
+        {
+            fX = floorf( fX ) + 1.0f;
+        }
+        else
+        {
+            fX = ceilf( fX );
+        }
+        fX *= fTileDimensions;
+        fX -= fTileHalfDimensions;
+
+
+        if( fY < 0.0f )
+            bLessThanZero = true;
+        else
+            bLessThanZero = false;
+
+        fY = fY / fTileDimensions;
+        if( bLessThanZero )
+        {
+            fY = floorf( fY ) + 1.0f;
+        }
+        else
+        {
+            fY = ceilf( fY );
+        }
+        fY *= fTileDimensions;
+        fY -= fTileHalfDimensions;
+    }
+
+    //-----------------------------------------------------------------------------
     //  GenerateTerrain
     //  Generates the terrain
     //-----------------------------------------------------------------------------
@@ -75,53 +120,20 @@ namespace Riot
     {
         float fTileDimensions = (float)CTerrainTile::nTileDimensions;
         float fTileHalfDimensions = (float)CTerrainTile::nTileHalfDimensions;
+        
+        // Calculate the center
+        CalculateTileCenter( fX, fY );
 
         // See if this tile already exists
         for( uint i = 0; i < m_nNumTiles; ++i )
         {
-            if(    (fX > m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos - fTileHalfDimensions)
-                && (fY > m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos - fTileHalfDimensions)
-                && (fX < m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos + fTileHalfDimensions)
-                && (fY < m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos + fTileHalfDimensions) )
+            if(    (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos == fX )
+                && (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos == fY ) )
             {
                 return &m_pTerrainTiles[ m_pActiveTiles[i] ];
             }
         }
 
-        // It doesn't, calculate the tiles center
-        bool bLessThanZero = false;
-        if( fX < 0.0f )
-            bLessThanZero = true;
-
-        fX = fX / fTileDimensions;
-        if( bLessThanZero )
-        {
-            fX = floorf( fX ) + 1.0f;
-        }
-        else
-        {
-            fX = ceilf( fX );
-        }
-        fX *= fTileDimensions;
-        fX -= fTileHalfDimensions;
-
-        
-        if( fY < 0.0f )
-            bLessThanZero = true;
-        else
-            bLessThanZero = false;
-
-        fY = fY / fTileDimensions;
-        if( bLessThanZero )
-        {
-            fY = floorf( fY ) + 1.0f;
-        }
-        else
-        {
-            fY = ceilf( fY );
-        }
-        fY *= fTileDimensions;
-        fY -= fTileHalfDimensions;
 
         // Now grab a tile from the list
         uint nFreeIndex = --m_nNumFreeTiles;
@@ -162,32 +174,35 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CTerrain::CenterTerrain( const RVector3& pos, float fRadius )
     {
+        float fX = pos.x;
+        float fY = pos.z;
+
         // First remove tiles that aren't in range.
         for( uint i = 0; i < m_nNumTiles; ++i )
         {
-            if(    m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos < (pos.x - fRadius)
-                || m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos < (pos.z - fRadius)
-                || m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos > (pos.x + fRadius)
-                || m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos > (pos.z + fRadius) )
+            if(    (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos + 16.0f) < (pos.x - fRadius)
+                || (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos + 16.0f) < (pos.z - fRadius)
+                || (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos - 16.0f) > (pos.x + fRadius)
+                || (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos - 16.0f) > (pos.z + fRadius) )
             {
                 // Remove it
                 // TODO: This needs to happen here, but this tile is already queued in the
                 //  renderers buffer....
                 SAFE_RELEASE( m_pTerrainTiles[ m_pActiveTiles[i] ].m_pMesh );
                 SAFE_RELEASE( m_pTerrainTiles[ m_pActiveTiles[i] ].m_pTexture );
-
+        
                 CComponentCollidable::RemoveTerrainTile( &m_pTerrainTiles[ m_pActiveTiles[i] ] );
-
+        
                 m_nFreeTiles[ m_nNumFreeTiles++ ] = m_pActiveTiles[i];
                 m_pActiveTiles[i] = m_pActiveTiles[ --m_nNumTiles ];
                 --i;
             }
         }
-
+        
         // Now build the radius
-        for( float fX = pos.x - fRadius; fX <= pos.x + fRadius; fX += 12.0f )
+        for( float fX = pos.x - fRadius; fX <= pos.x + fRadius; fX += 16.0f )
         {
-            for( float fY = pos.z - fRadius; fY <= pos.z + fRadius; fY += 12.0f )
+            for( float fY = pos.z - fRadius; fY <= pos.z + fRadius; fY += 16.0f )
             {
                 GenerateTerrain( fX, fY );
             }

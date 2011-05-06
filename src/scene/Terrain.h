@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/5/2011 9:42:30 PM
+Modified:       5/5/2011 11:06:31 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -316,6 +316,12 @@ namespace Riot
         //  Centers the active portion of the terrain around a point
         //-----------------------------------------------------------------------------
         void CenterTerrain( const RVector3& pos, float fRadius );
+        
+        //-----------------------------------------------------------------------------
+        //  CalculateTileCenter
+        //  Calculates a tiles center
+        //-----------------------------------------------------------------------------
+        void CalculateTileCenter( float& fX, float& fY );
 
     private:
 
