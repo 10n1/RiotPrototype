@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/4/2011 1:26:10 PM
+Modified:       5/5/2011 9:03:32 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -154,7 +154,7 @@ namespace Riot
                     fFPSTime -= 1.0f;
                     nFPSFrames = 0;
                 }
-                m_pRenderer->DrawString( 10, 10, szFPS );
+                m_pRenderer->DrawString( 0, 0, szFPS );
             }
 
             if( m_fElapsedTime > 1.0f/60.0f )
@@ -369,8 +369,8 @@ namespace Riot
         // Create the terrain
         m_pTerrain = new CTerrain();
         m_pTerrain->GenerateTerrain();
-        //m_pTerrain->CreateMesh();
 
+        m_pTerrain->GenerateTerrain( 256.0f, 256.0f );
 
         //////////////////////////////////////////
         // Create an object
@@ -379,35 +379,6 @@ namespace Riot
         static RQuaternion orientation = RQuatFromAxisAngle( RVector3( RandFloat(1.0f), RandFloat(1.0f), RandFloat(1.0f) ), RandFloat( gs_2PI ) );
         orientation = RQuaternionZero();
         RTransform t = RTransform( orientation, RVector3( 0.0f, 50.0f, 0.0f ) );
-
-        // Add box 1
-        //uint nObject = m_pObjectManager->CreateObject();
-        //
-        //m_pObjectManager->AddComponent( nObject, eComponentRigidBody );
-        //m_pObjectManager->AddComponent( nObject, eComponentRender );
-        //m_pObjectManager->AddComponent( nObject, eComponentCollidable );
-        //CComponentCollidable::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nObject );
-        //
-        //m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
-        //m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
-
-
-        // Add more boxes
-        //for( uint i = 1; i < 1; ++i )
-        //{
-        //    t.position = RVector3( RandFloat(128.0f) - 64.0f, i * 20.0f + 20.0f, RandFloat(128.0f) - 64.0f );
-        //    //t.position = RVector3( 0.0f, i * 30.0f + 20.0f, 0.0f );
-        //    nObject = m_pObjectManager->CreateObject();
-        //
-        //    m_pObjectManager->AddComponent( nObject, eComponentRigidBody );
-        //    m_pObjectManager->AddComponent( nObject, eComponentRender );
-        //    m_pObjectManager->AddComponent( nObject, eComponentCollidable );
-        //
-        //    m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
-        //    m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
-        //    CComponentCollidable::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nObject );
-        //}
-
 
         //////////////////////////////////////////
         // Add a light

@@ -32,9 +32,12 @@ namespace Riot
     IGfxBuffer*            UI::m_pVertexBuffer = NULL;
     static const uint      gs_nMaxNumChars     = 255 * 6;
 
-    static const uint      gs_nMaxNumStrings   = 100;
-    UIString*              UI::m_pUIStrings    = NULL;//new UIString[ gs_nMaxNumStrings ];
-    atomic_t               UI::m_nNumStrings   = 0;
+    static const uint   gs_nMaxNumStrings   = 100;
+    UIString*           UI::m_pUIStrings[2] = { 0 };//new UIString[ gs_nMaxNumStrings ];
+    atomic_t            UI::m_nNumStrings   = 0;
+    uint                UI::m_nNumPrevStrings = 0;
+    UIString*           UI::m_pCurrStrings = NULL;
+    UIString*           UI::m_pPrevStrings = NULL;
 
     //-----------------------------------------------------------------------------
     //  Initialize
@@ -42,7 +45,15 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void UI::Initialize( IGraphicsDevice* pDevice )
     {
-        m_pUIStrings = new UIString[ gs_nMaxNumStrings ];
+        m_pUIStrings[0] = new UIString[ gs_nMaxNumStrings ];
+        m_pUIStrings[1] = new UIString[ gs_nMaxNumStrings ];
+
+        m_pPrevStrings = m_pUIStrings[0];
+        m_pCurrStrings = m_pUIStrings[1];
+
+        m_nNumStrings = 0;
+        m_nNumPrevStrings = 0;
+
         //////////////////////////////////////////
         // Load vertex shader
         pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/UI.hlsl",
@@ -109,7 +120,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void UI::Destroy( void )
     {
-        SAFE_DELETE_ARRAY( m_pUIStrings );
+        SAFE_DELETE_ARRAY( m_pUIStrings[0] );
+        SAFE_DELETE_ARRAY( m_pUIStrings[1] );
 
         SAFE_RELEASE( m_pVertexShader );
         SAFE_RELEASE( m_pPixelShader );
@@ -120,15 +132,26 @@ namespace Riot
     }
 
     //-----------------------------------------------------------------------------
+    //  SwapBuffers
+    //  Swaps last and previous frames buffers
+    //-----------------------------------------------------------------------------
+    void UI::SwapBuffers( void )
+    {
+        Swap( m_pPrevStrings, m_pCurrStrings );
+        m_nNumPrevStrings = m_nNumStrings;
+        m_nNumStrings = 0;
+    }
+
+    //-----------------------------------------------------------------------------
     //  AddText
     //  Add some text to the list of strings
     //-----------------------------------------------------------------------------
     void UI::AddString( uint nLeft, uint nTop, const char* szText )
     {
         sint nIndex = AtomicIncrement( &m_nNumStrings ) - 1;
-        m_pUIStrings[ nIndex ].nLeft = nLeft;
-        m_pUIStrings[ nIndex ].nTop = nTop;
-        strcpy( m_pUIStrings[ nIndex ].szText, szText );
+        m_pCurrStrings[ nIndex ].nLeft = nLeft;
+        m_pCurrStrings[ nIndex ].nTop = nTop;
+        strcpy( m_pCurrStrings[ nIndex ].szText, szText );
     }
 
     //-----------------------------------------------------------------------------
@@ -138,12 +161,12 @@ namespace Riot
     void UI::Draw( IGraphicsDevice* pDevice )
     {
         // draw all strings
-        for( sint i = 0; i < m_nNumStrings; ++i )
+        for( sint i = 0; i < m_nNumPrevStrings; ++i )
         {
-            DrawString( pDevice, m_pUIStrings[ i ].nLeft, m_pUIStrings[ i ].nTop, m_pUIStrings[ i ].szText );
+            DrawString( pDevice, m_pPrevStrings[ i ].nLeft, m_pPrevStrings[ i ].nTop, m_pPrevStrings[ i ].szText );
         }
 
-        AtomicExchange( &m_nNumStrings, 0 );
+        //AtomicExchange( &m_nNumStrings, 0 );
     }
 
     //-----------------------------------------------------------------------------

@@ -2,11 +2,14 @@
 File:           View.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       5/4/2011 10:27:44 PM
+Modified:       5/5/2011 9:03:02 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "View.h"
 #include "memory.h"
+#include "Renderer.h"
+#include "Engine.h"
+#include <string>
 
 namespace Riot
 {
@@ -118,6 +121,13 @@ namespace Riot
         //m_mView = Transpose( m_mView );
         //
         //m_mView.r3 = RVector4( -DotProduct( x, m_Transform.position), -DotProduct( y, m_Transform.position), -DotProduct( z, m_Transform.position), 1.0f );
+    
+        char szCameraData[256] = { 0 };
+
+        sprintf( szCameraData, "Pos:  %f, %f, %f", m_vPosition.x, m_vPosition.y, m_vPosition.z );
+        Engine::GetRenderer()->DrawString( 0, 16, szCameraData );
+        sprintf( szCameraData, "Look: %f, %f, %f", m_vLook.x, m_vLook.y, m_vLook.z );
+        Engine::GetRenderer()->DrawString( 0, 32, szCameraData );
     }
 
     //-----------------------------------------------------------------------------

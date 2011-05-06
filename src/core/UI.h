@@ -52,6 +52,12 @@ namespace Riot
         //  Release the memory allocated on Init
         //-----------------------------------------------------------------------------
         static void Destroy( void );
+        
+        //-----------------------------------------------------------------------------
+        //  SwapBuffers
+        //  Swaps last and previous frames buffers
+        //-----------------------------------------------------------------------------
+        static void SwapBuffers( void );
 
         //---------------------------------------------------------------------------------
         //  Members
@@ -68,8 +74,11 @@ namespace Riot
         static IGfxBlendState* m_pFontBlend;
         static IGfxBuffer* m_pVertexBuffer;
 
-        static UIString* m_pUIStrings;
+        static UIString* m_pUIStrings[2];
+        static UIString* m_pCurrStrings;
+        static UIString* m_pPrevStrings;
         static atomic_t m_nNumStrings;
+        static uint     m_nNumPrevStrings;
     };
 
 } // namespace Riot

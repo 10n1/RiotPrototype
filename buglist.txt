@@ -3,3 +3,5 @@ Adding and removing a ton of objects over and over ends up with some objects get
 The edges of terrain tiles normals don't quite line up. You can see a small line on the edge of tiles if you look closely.
 
 The object scene graph doesn't correctly prune empty nodes if objects leave the graph from the bottom. Probably related to bug 1.
+
+Lighting is still incorrect. Adding a light technically works, but the hacked way it was being done doesn't work now that the renderer is pipelined. It's not worth fixing the hacked way, it needs to be rewritten anyway.

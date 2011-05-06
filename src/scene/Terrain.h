@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/5/2011 8:44:31 PM
+Modified:       5/5/2011 8:48:35 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -322,9 +322,9 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        static const uint nTerrainTiles = 8*8;
+        enum { MAX_TERRAIN_TILES = 1024 };
 
-        CTerrainTile    m_pTerrainTiles[nTerrainTiles];
+        CTerrainTile    m_pTerrainTiles[MAX_TERRAIN_TILES];
 
         PerlinNoise     m_PerlinShape;
         PerlinNoise     m_PerlinDetail;

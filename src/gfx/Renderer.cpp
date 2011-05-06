@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/4/2011 11:16:15 AM
+Modified:       5/5/2011 8:57:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -845,6 +845,8 @@ namespace Riot
         m_nNumSpheres   = 0;
         m_nNumCommands  = 0;
         m_nNumRays      = 0;
+
+        UI::SwapBuffers();
     }
 
     //  DrawText
