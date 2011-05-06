@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/6/2011 11:38:44 AM
+Modified:       5/6/2011 11:44:23 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -49,8 +49,6 @@ namespace Riot
         {
             m_pTerrainTiles[ m_pActiveTiles[i] ].Render();
         }
-
-        //m_pTerrainTiles[1].RenderGraph( m_pTerrainTiles[1].m_pTerrainGraph, 4 );
     }
 
     //-----------------------------------------------------------------------------
@@ -159,9 +157,6 @@ namespace Riot
 
         pTile->CreateMesh();
 
-        // Now create the scene graph
-        //pTile->BuildSceneGraph();
-
         // Add it to the component
         CComponentCollidable::AddTerrainTile( pTile );
 
@@ -227,273 +222,18 @@ namespace Riot
         SAFE_RELEASE( m_pTexture );
     }
 
-    
-    //-----------------------------------------------------------------------------
-    //  BuildParentNodes
-    //  Constructs the top of the tree
-    //-----------------------------------------------------------------------------
-    void CTerrainTile::BuildParentNodes( TTerrainParentNode* pNode, TTerrainParentNode* pParent )
-    {
-        pNode->m_pParent = pParent;
-        pNode->m_pTile = this;
-        float fNewX = (pNode->max.x + pNode->min.x) / 2.0f;
-        float fNewZ = (pNode->max.z + pNode->min.z) / 2.0f;
-
-        if( Abs(pNode->max.x - pNode->min.x) > 2.0f )
-        {
-            TTerrainParentNode* pNewNode = NULL;
-
-            pNewNode = &m_pParentNodes[m_nNumParents++];
-            pNewNode->min = pNode->min;
-            pNewNode->max = pNode->max;
-            pNewNode->max.x = fNewX;
-            pNewNode->max.z = fNewZ;
-            pNode->m_pChildren[0] = pNewNode;
-
-            BuildParentNodes( pNewNode, pNode );
-
-            pNewNode = &m_pParentNodes[m_nNumParents++];
-            pNewNode->min = pNode->min;
-            pNewNode->max = pNode->max;
-            pNewNode->min.z = fNewZ;
-            pNewNode->max.x = fNewX;
-            pNode->m_pChildren[1] = pNewNode;
-
-            BuildParentNodes( pNewNode, pNode );
-
-            pNewNode = &m_pParentNodes[m_nNumParents++];
-            pNewNode->min = pNode->min;
-            pNewNode->max = pNode->max;
-            pNewNode->min.x = fNewX;
-            pNewNode->min.z = fNewZ;
-            pNode->m_pChildren[2] = pNewNode;
-
-            BuildParentNodes( pNewNode, pNode );
-
-            pNewNode = &m_pParentNodes[m_nNumParents++];
-            pNewNode->min = pNode->min;
-            pNewNode->max = pNode->max;
-            pNewNode->min.x = fNewX;
-            pNewNode->max.z = fNewZ;
-            pNode->m_pChildren[3] = pNewNode;
-
-            BuildParentNodes( pNewNode, pNode );
-        }
-        else
-        {
-            TTerrainLeafNode* pLeafNode = NULL;
-            pNode->m_nLowestParent = 1;
-
-            pLeafNode = &m_pLeafNodes[m_nNumLeaves++];
-            pLeafNode->min = pNode->min;
-            pLeafNode->max = pNode->max;
-            pLeafNode->max.x = fNewX;
-            pLeafNode->max.z = fNewZ;
-            pLeafNode->m_pTile = this;
-            pNode->m_pChildren[0] = pLeafNode;
-
-            pLeafNode = &m_pLeafNodes[m_nNumLeaves++];
-            pLeafNode->min = pNode->min;
-            pLeafNode->max = pNode->max;
-            pLeafNode->min.z = fNewZ;
-            pLeafNode->max.x = fNewX;
-            pLeafNode->m_pTile = this;
-            pNode->m_pChildren[1] = pLeafNode;
-
-            pLeafNode = &m_pLeafNodes[m_nNumLeaves++];
-            pLeafNode->min = pNode->min;
-            pLeafNode->max = pNode->max;
-            pLeafNode->min.x = fNewX;
-            pLeafNode->min.z = fNewZ;
-            pLeafNode->m_pTile = this;
-            pNode->m_pChildren[2] = pLeafNode;
-
-            pLeafNode = &m_pLeafNodes[m_nNumLeaves++];
-            pLeafNode->min = pNode->min;
-            pLeafNode->max = pNode->max;
-            pLeafNode->min.x = fNewX;
-            pLeafNode->max.z = fNewZ;
-            pLeafNode->m_pTile = this;
-            pNode->m_pChildren[3] = pLeafNode;
-        }
-    }
-
-
-    //-----------------------------------------------------------------------------
-    //  BuildSceneGraph
-    //  Builds the scene graph
-    //-----------------------------------------------------------------------------
-    void CTerrainTile::BuildSceneGraph( void )
-    {
-        // Initialize the graph
-        m_nNumLeaves = 0;
-        m_nNumParents = 1;
-
-        m_pTerrainGraph = &m_pParentNodes[ 0 ];
-        m_pTerrainGraph->min = RVector3( m_fXPos - nTileHalfDimensions, -300000.0f, m_fYPos - nTileHalfDimensions );
-        m_pTerrainGraph->max = RVector3( m_fXPos + nTileHalfDimensions, 300000.0f, m_fYPos + nTileHalfDimensions );
-        m_pTerrainGraph->m_pTile = this;
-
-        // Build the parent nodes
-        BuildParentNodes( m_pTerrainGraph, NULL );
-        
-        // Add the triangles
-        for( uint i = 0; i < nIndices; i += 3 )
-        {
-            AddTriangleToGraph( m_pTerrainGraph, m_pIndices + i, false );
-        }
-
-        // Rebalance the top of the tree
-        RecomputeSceneGraphBounds( m_pTerrainGraph );
-    }
-
-    //-----------------------------------------------------------------------------
-    //  RecomputeSceneGraphBounds
-    //  Recomputes the bounds of the top of the tree
-    //-----------------------------------------------------------------------------
-    void CTerrainTile::RecomputeSceneGraphBounds( TSceneNode* pNode )
-    {
-        TTerrainParentNode* pParentNode = (TTerrainParentNode*)pNode;
-
-        pParentNode->max = RVector3( -10000.0f, -10000.0f, -10000.0f );
-        pParentNode->min = RVector3( 10000.0f, 10000.0f, 10000.0f );
-        for( uint i = 0; i < 4; ++i )
-        {
-            if( !pParentNode->m_nLowestParent )
-            {
-                // We're a grandparent, calculate the children
-                RecomputeSceneGraphBounds( pParentNode->m_pChildren[i] );
-            }
-
-            pNode->max.x = Max( pParentNode->m_pChildren[i]->max.x, pNode->max.x );
-            pNode->max.y = Max( pParentNode->m_pChildren[i]->max.y, pNode->max.y );
-            pNode->max.z = Max( pParentNode->m_pChildren[i]->max.z, pNode->max.z );
-
-            pNode->min.x = Min( pParentNode->m_pChildren[i]->min.x, pNode->min.x );
-            pNode->min.y = Min( pParentNode->m_pChildren[i]->min.y, pNode->min.y );
-            pNode->min.z = Min( pParentNode->m_pChildren[i]->min.z, pNode->min.z );
-        }
-    }
-
-    //-----------------------------------------------------------------------------
-    //  AddTriangleToGraph
-    //  Adds a triangle to the graph
-    //-----------------------------------------------------------------------------
-    void CTerrainTile::AddTriangleToGraph( TSceneNode* pNode, uint16* pIndices, bool bLeaf )
-    {        
-        for( int i = 0; i < 3; ++i )
-        {
-            if(    m_pVertexPositions[ pIndices[i] ].x > pNode->max.x
-                || m_pVertexPositions[ pIndices[i] ].y > pNode->max.y
-                || m_pVertexPositions[ pIndices[i] ].z > pNode->max.z
-                || m_pVertexPositions[ pIndices[i] ].x < pNode->min.x
-                || m_pVertexPositions[ pIndices[i] ].y < pNode->min.y
-                || m_pVertexPositions[ pIndices[i] ].z < pNode->min.z )
-            {
-                return;
-            }
-        }
-
-        if( !bLeaf )
-        {
-            // There are still children below us, add it
-            TTerrainParentNode* pParentNode = (TTerrainParentNode*)pNode;
-            if( !pParentNode->m_nLowestParent )
-            {
-                for( int i = 0; i < 4; ++i )
-                {
-                    AddTriangleToGraph( pParentNode->m_pChildren[i], pIndices, false );
-                }
-                return;
-            }
-            else
-            {
-                for( int i = 0; i < 4; ++i )
-                {
-                    AddTriangleToGraph( pParentNode->m_pChildren[i], pIndices, true );
-                }
-                return;
-            }
-        }
-
-        // This is a leaf, see which child the triangle goes in
-        TTerrainLeafNode* pLeaf = (TTerrainLeafNode*)pNode;
-        if( pLeaf->m_nNumAdded == 0 )
-        {
-            pLeaf->m_pCornerIndices[0] = pIndices[0];
-            pLeaf->m_pCornerIndices[1] = pIndices[1];
-            pLeaf->m_pCornerIndices[2] = pIndices[2];
-
-            pLeaf->m_nNumAdded++;
-        }
-        else
-        {
-            // Add the missing index
-            for( uint i = 0; i < 3; ++i )
-            {
-                bool bFound = false;
-                for( uint j = 0; j < 3; ++j )
-                {
-                    if( pLeaf->m_pCornerIndices[j] == pIndices[i] )
-                    {
-                        bFound = true;
-                        break;
-                    }
-                }
-
-                if( !bFound )
-                {
-                    pLeaf->m_pCornerIndices[3] = pIndices[i];
-                }
-            }
-
-            // Now recalculate the leaf bounds
-            pLeaf->max = RVector3( -10000.0f, -10000.0f, -10000.0f );
-            pLeaf->min = RVector3( 10000.0f, 10000.0f, 10000.0f );
-            for( uint i = 0; i < 4; ++i )
-            {
-                pLeaf->max.x = Max( m_pVertexPositions[ pLeaf->m_pCornerIndices[i] ].x, pLeaf->max.x );
-                pLeaf->max.y = Max( m_pVertexPositions[ pLeaf->m_pCornerIndices[i] ].y, pLeaf->max.y );
-                pLeaf->max.z = Max( m_pVertexPositions[ pLeaf->m_pCornerIndices[i] ].z, pLeaf->max.z );
-                pLeaf->min.x = Min( m_pVertexPositions[ pLeaf->m_pCornerIndices[i] ].x, pLeaf->min.x );
-                pLeaf->min.y = Min( m_pVertexPositions[ pLeaf->m_pCornerIndices[i] ].y, pLeaf->min.y );
-                pLeaf->min.z = Min( m_pVertexPositions[ pLeaf->m_pCornerIndices[i] ].z, pLeaf->min.z );
-            }
-        }
-    }
-
     //-----------------------------------------------------------------------------
     //  SphereTerrainCollision
     //  Determines if a tree hits any triangles within the node
     //-----------------------------------------------------------------------------
     bool CTerrainTile::SphereTerrainCollision( const RSphere& s )
     {
-        return SphereTerrainCollision( m_pTerrainGraph, s );
-    }
-    bool CTerrainTile::SphereTerrainCollision( TSceneNode* pNode, const RSphere& s )
-    {
-        TTerrainParentNode* pParentNode = (TTerrainParentNode*)pNode;
-        if( SphereAABBCollision( *pNode, s ) )
-        {
-            if( !pParentNode->m_nLowestParent )
-            {
-                for( uint i = 0; i < 4; ++i )
-                {
-                    if( SphereTerrainCollision( pParentNode->m_pChildren[i], s ) )
-                        return true;
-                }
-            }
-            else
-            {
-                for( uint i = 0; i < 4; ++i )
-                {
-                    TTerrainLeafNode* pLeaf = (TTerrainLeafNode*)pParentNode->m_pChildren[i];
-                    if( pLeaf->SphereTriangleCollision( s ) )
-                        return true;
-                }
-            }
-        }
+        float fGround = m_pParentTerrain->m_PerlinDetail.GetHeight( s.position.x, s.position.z );
 
+        if( s.position.y - fGround < s.radius )
+        {
+            return true;
+        }
         return false;
     }
 
@@ -511,51 +251,6 @@ namespace Riot
         pRender->AddCommand( cmd, t );
     }
 
-
-    //-----------------------------------------------------------------------------
-    //  RenderGraph
-    //  Renders the terrain
-    //-----------------------------------------------------------------------------
-    void CTerrainTile::RenderGraph( TTerrainParentNode* pNode, uint nDepth )
-    {
-        CRenderer*  pRenderer = Engine::GetRenderer();
-        static const RVector3    vColors[] =
-        {
-            RVector3( 1.0f, 1.0f, 1.0f ),
-            RVector3( 0.0f, 1.0f, 1.0f ),
-            RVector3( 1.0f, 0.0f, 1.0f ),
-            RVector3( 1.0f, 1.0f, 0.0f ),
-            RVector3( 0.0f, 1.0f, 0.0f ),
-            RVector3( 0.0f, 0.0f, 1.0f ),
-            RVector3( 1.0f, 0.0f, 0.0f ),
-            RVector3( 0.0f, 0.0f, 0.0f ),
-            RVector3( 0.5f, 0.5f, 0.5f ),
-            RVector3( 1.0f, 0.5f, 0.0f ),
-            RVector3( 0.0f, 1.0f, 0.5f ),
-            RVector3( 0.5f, 0.0f, 1.0f ),
-        };
-
-        if( nDepth )
-        {
-            ((TSceneNode*)pNode)->DrawNode( pRenderer, vColors[nDepth] );
-
-            if( !pNode->m_nLowestParent )
-            {
-                for( uint i = 0; i < 4; ++i )
-                {
-                    RenderGraph( (TTerrainParentNode*)pNode->m_pChildren[i], nDepth-1 );
-                }
-            }
-            else
-            {
-                for( uint i = 0; i < 4; ++i )
-                {
-                    pNode->m_pChildren[i]->DrawNode( pRenderer, vColors[nDepth-1] );
-                }
-            }
-        }
-    }
-    
     //-----------------------------------------------------------------------------
     //  CreateMesh
     //  Creates the terrain mesh
