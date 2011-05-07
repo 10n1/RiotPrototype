@@ -2,7 +2,7 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       5/5/2011 9:10:24 PM
+Modified:       5/7/2011 9:39:26 AM
 Modified by:    Kyle Weicht
 
 TODO:           Add alignment support? Should be ultra easy
@@ -27,7 +27,7 @@ using namespace Riot;
 #include <stdio.h>
 #include <string.h>
 
-enum { GLOBAL_MEMORY_ALLOCATION = 256*1024*1024 };
+enum { GLOBAL_MEMORY_ALLOCATION = 512*1024*1024 };
 
 static const byte* AllocateGlobalMemory( void );
 

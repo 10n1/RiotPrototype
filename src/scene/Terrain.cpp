@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/6/2011 11:51:01 AM
+Modified:       5/7/2011 9:47:38 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -102,16 +102,18 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CTerrain::GenerateTerrain( void )
     {
-        float fTileDimensions = (float)CTerrainTile::nTileDimensions;
-        float fTileHalfDimensions = (float)CTerrainTile::nTileHalfDimensions;
+        //float fTileDimensions = (float)CTerrainTile::nTileDimensions;
+        //float fTileHalfDimensions = (float)CTerrainTile::nTileHalfDimensions;
+        //
+        //for( sint i = -4; i < 4; ++i )
+        //{
+        //    for( sint j = -4; j < 4; ++j )
+        //    {
+        //        GenerateTerrain( i*fTileDimensions, j*fTileDimensions );
+        //    }
+        //}
 
-        for( sint i = -4; i < 4; ++i )
-        {
-            for( sint j = -4; j < 4; ++j )
-            {
-                GenerateTerrain( i*fTileDimensions, j*fTileDimensions );
-            }
-        }
+        //GenerateTerrain( 64.0f, 64.0f );
     }
 
     CTerrainTile* CTerrain::GenerateTerrain( float fX, float fY )
@@ -132,6 +134,7 @@ namespace Riot
             }
         }
 
+        ASSERT( m_nNumFreeTiles );
 
         // Now grab a tile from the list
         uint nFreeIndex = --m_nNumFreeTiles;
@@ -172,10 +175,10 @@ namespace Riot
         // First remove tiles that aren't in range.
         for( uint i = 0; i < m_nNumTiles; ++i )
         {
-            if(    (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos + 16.0f) < (pos.x - fRadius)
-                || (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos + 16.0f) < (pos.z - fRadius)
-                || (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos - 16.0f) > (pos.x + fRadius)
-                || (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos - 16.0f) > (pos.z + fRadius) )
+            if(    (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos + CTerrainTile::nTileDimensions) < (pos.x - fRadius)
+                || (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos + CTerrainTile::nTileDimensions) < (pos.z - fRadius)
+                || (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fXPos - CTerrainTile::nTileDimensions) > (pos.x + fRadius)
+                || (m_pTerrainTiles[ m_pActiveTiles[i] ].m_fYPos - CTerrainTile::nTileDimensions) > (pos.z + fRadius) )
             {
                 // Remove it
                 // TODO: This needs to happen here, but this tile is already queued in the
@@ -190,9 +193,9 @@ namespace Riot
         }
         
         // Now build the radius
-        for( float fX = pos.x - fRadius; fX <= pos.x + fRadius; fX += 16.0f )
+        for( float fX = pos.x - fRadius; fX <= pos.x + fRadius; fX += CTerrainTile::nTileDimensions )
         {
-            for( float fY = pos.z - fRadius; fY <= pos.z + fRadius; fY += 16.0f )
+            for( float fY = pos.z - fRadius; fY <= pos.z + fRadius; fY += CTerrainTile::nTileDimensions )
             {
                 GenerateTerrain( fX, fY );
             }
@@ -273,13 +276,13 @@ namespace Riot
             {
                 uint nStart = nX * nTileDimensions;
                 
-                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 0 );
-                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 );
-                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nTileDimensions );
+                m_pIndices[ nIndex++ ] = (uint32)(nX + nY + nStart + 0 );
+                m_pIndices[ nIndex++ ] = (uint32)(nX + nY + nStart + 1 );
+                m_pIndices[ nIndex++ ] = (uint32)(nX + nY + nStart + 1 + nTileDimensions );
 
-                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nTileDimensions );
-                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 );
-                m_pIndices[ nIndex++ ] = (uint16)(nX + nY + nStart + 1 + nTileDimensions + 1 );
+                m_pIndices[ nIndex++ ] = (uint32)(nX + nY + nStart + 1 + nTileDimensions );
+                m_pIndices[ nIndex++ ] = (uint32)(nX + nY + nStart + 1 );
+                m_pIndices[ nIndex++ ] = (uint32)(nX + nY + nStart + 1 + nTileDimensions + 1 );
             }
         }
 
@@ -320,7 +323,7 @@ namespace Riot
 
         //////////////////////////////////////////
         // Create our mesh
-        m_pMesh = pRender->CreateMesh( VPosNormalTex::VertexStride, nVertsTotal, 2, nIndices, pVertices, m_pIndices );
+        m_pMesh = pRender->CreateMesh( VPosNormalTex::VertexStride, nVertsTotal, sizeof( uint32 ), nIndices, pVertices, m_pIndices );
 
         
         //////////////////////////////////////////
