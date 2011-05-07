@@ -2,7 +2,7 @@
 File:           memory.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       5/7/2011 9:39:26 AM
+Modified:       5/7/2011 10:27:56 AM
 Modified by:    Kyle Weicht
 
 TODO:           Add alignment support? Should be ultra easy
@@ -27,7 +27,7 @@ using namespace Riot;
 #include <stdio.h>
 #include <string.h>
 
-enum { GLOBAL_MEMORY_ALLOCATION = 512*1024*1024 };
+enum { GLOBAL_MEMORY_ALLOCATION = 1024*1024*1024 };
 
 static const byte* AllocateGlobalMemory( void );
 
@@ -240,8 +240,8 @@ void __cdecl operator delete[](void* pVoid)
 struct MemoryAllocation
 {
     char        szFile[128];
-    uint        nSize;
-    uint        nLine;
+    sint        nSize;
+    sint        nLine;
     nativeuint  nAddress;
 };
 
@@ -276,7 +276,7 @@ void AddAllocation(void* pData, uint nSize, const char* szFile, uint nLine)
 void RemoveAllocation(void* pData)
 {
     nativeuint nAddress = reinterpret_cast<nativeuint>(pData);
-    for(uint i = 0; i < g_nCurrentAllocations; ++i)
+    for(sint i = 0; i < g_nCurrentAllocations; ++i)
     {
         if(g_pAllocations[i].nAddress == nAddress)
         {

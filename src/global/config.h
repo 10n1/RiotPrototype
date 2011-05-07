@@ -3,7 +3,7 @@ File:           config.h
 Purpose:        Includes platform and build configurations
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       5/2/2011 6:42:29 PM
+Modified:       5/7/2011 10:11:12 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _CONFIG_H_
@@ -142,7 +142,7 @@ extern const uint8  gs_nSIMDWidth;
 #define MULTITHREADED           1
 #define MAX_THREADS             32
 #define MAX_TASKS_PER_THREAD    2048
-#define MAX_TASKS               256
+#define MAX_TASKS               1024
 #define MAX_SUB_TASKS           (1024*32)
 #define MAX_OBJECTS             (16*1024)
 #define MAX_LIGHTS              8

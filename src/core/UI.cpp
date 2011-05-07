@@ -161,7 +161,7 @@ namespace Riot
     void UI::Draw( IGraphicsDevice* pDevice )
     {
         // draw all strings
-        for( sint i = 0; i < m_nNumPrevStrings; ++i )
+        for( uint i = 0; i < m_nNumPrevStrings; ++i )
         {
             DrawString( pDevice, m_pPrevStrings[ i ].nLeft, m_pPrevStrings[ i ].nTop, m_pPrevStrings[ i ].szText );
         }

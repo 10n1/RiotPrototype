@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/6/2011 11:50:51 AM
+Modified:       5/7/2011 10:13:33 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -69,7 +69,7 @@ namespace Riot
             void DrawNode(  CRenderer* pRenderer, const RVector3& vColor )
             {
                 TSceneNode::DrawNode( pRenderer, vColor );
-                for( uint i = 0; i < m_nNumChildren; ++i )
+                for( sint i = 0; i < m_nNumChildren; ++i )
                 {
                     m_pChildren[i]->DrawNode( pRenderer, vColor );
                 }
@@ -93,7 +93,7 @@ namespace Riot
 
             ~TObjectParentNode()
             {
-                for( uint i = 0; i < m_nNumChildren; ++i )
+                for( sint i = 0; i < m_nNumChildren; ++i )
                 {
                     SAFE_DELETE( m_pChildren[i] );
                 }
@@ -113,7 +113,7 @@ namespace Riot
                 {
                     uint nLowestChildren = 0;
 
-                    for( uint i = 0; i < m_nNumChildren; ++i )
+                    for( sint i = 0; i < m_nNumChildren; ++i )
                     {
                         TObjectParentNode* pChild = (TObjectParentNode*)m_pChildren[i];
 
@@ -132,7 +132,7 @@ namespace Riot
                     // All our children are empty and the lowest level
                     if( nLowestChildren == 8 )
                     {
-                        for( uint i = 0; i < m_nNumChildren; ++i )
+                        for( sint i = 0; i < m_nNumChildren; ++i )
                         {
                             delete m_pChildren[i];
                             m_pChildren[i] = NULL;

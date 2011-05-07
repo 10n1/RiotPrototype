@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/7/2011 9:45:26 AM
+Modified:       5/7/2011 10:36:55 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -91,7 +91,7 @@ namespace Riot
         \***************************************/
     public:
 
-        static const sint   nTileDimensions = 512;
+        static const sint   nTileDimensions = 128;
         static const sint   nTileHalfDimensions = nTileDimensions >> 1;
         static const sint   nVertsTotal = (nTileDimensions+1) * (nTileDimensions+1);
         static const sint   nPolysTotal = nTileDimensions * nTileDimensions;
@@ -166,7 +166,7 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        enum { MAX_TERRAIN_TILES = 4*4 };
+        enum { MAX_TERRAIN_TILES = 8*8 };
 
         CTerrainTile    m_pTerrainTiles[MAX_TERRAIN_TILES];
         uint            m_nFreeTiles[MAX_TERRAIN_TILES];

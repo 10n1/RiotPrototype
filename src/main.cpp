@@ -2,7 +2,7 @@
 File:           main.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       5/5/2011 9:05:52 PM
+Modified:       5/7/2011 10:26:48 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "common.h"
@@ -18,6 +18,7 @@ int main( int argc, char* argv[] )
     atexit( Riot::Memory::ReleasePool );
 
     int x = sizeof( Riot::CTerrain );
+    x = sizeof( Riot::CTerrainTile );
 
     //////////////////////////////////////////
     // Run the engine

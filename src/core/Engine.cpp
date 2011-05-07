@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/7/2011 9:46:02 AM
+Modified:       5/7/2011 12:33:25 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -123,7 +123,7 @@ namespace Riot
 
             //////////////////////////////////////////
             // Update terrain
-            m_pTerrain->CenterTerrain( m_pCamera->GetPosition(), 10.0f );
+            m_pTerrain->CenterTerrain( m_pCamera->GetPosition(), 250.0f );
 
             //////////////////////////////////////////
             //  Process OS messages
@@ -261,7 +261,7 @@ namespace Riot
 
                     for( uint i = 0; i < 24; ++i )
                     {
-                        t.position = RVector3( RandFloat(128.0f) - 64.0f, RandFloat( 256.0f ) + 65.0f, RandFloat(128.0f) - 64.0f );
+                        t.position = RVector3( RandFloat(1024.0f) - 64.0f, RandFloat( 1024.0f ) + 65.0f, RandFloat(1024.0f) - 64.0f );
                         //t.position = RVector3( 0.0f, i * 30.0f + 20.0f, 0.0f );
                         uint nObject = m_pObjectManager->CreateObject();
 
