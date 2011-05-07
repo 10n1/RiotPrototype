@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/7/2011 9:47:38 AM
+Modified:       5/7/2011 9:53:14 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -154,9 +154,12 @@ namespace Riot
         {
             for( fY = pTile->m_fYPos-fTileHalfDimensions, nY = 0; fY <= pTile->m_fYPos+fTileHalfDimensions; fY += 1.0f, ++nY )
             {
-                pTile->m_pVertexPositions[ nVertex++ ] = RVector3( fX, m_PerlinDetail.GetHeight( fX, fY ), fY );
+                //pTile->m_pVertexPositions[ nVertex++ ] = RVector3( fX, m_PerlinDetail.GetHeight( fX, fY ), fY );
+                pTile->m_pVertexPositions[ nVertex++ ] = RVector3( fX, 0.0f, fY );
             }
         }
+
+        //Memset( pTile->m_pVertexPositions, 0, sizeof( pTile->m_pVertexPositions ) );
 
         pTile->CreateMesh();
 
