@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/7/2011 7:18:14 PM
+Modified:       5/8/2011 2:12:19 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -482,120 +482,417 @@ namespace Riot
         m_nCurrX = nX;
         m_nCurrY = nY;
 
-        // Theres updating to do. Worst case is we just exactly crossed a corner and have a lot of tiles to update
-        sint nIndex = 0;
+        // Update the terrain in each direction
+        if( nXDir > 0 )
+            UpdatePosX();
+        else if( nXDir < 0 )
+            UpdateNegX();
+        
+        if( nYDir > 0 )
+            UpdatePosY();
+        else if( nYDir < 0 )
+            UpdateNegY();
+    }
+
+
+    //-----------------------------------------------------------------------------
+    //  Update*
+    //  Updates the terrain in either direction
+    //-----------------------------------------------------------------------------
+    void CTerrain::UpdatePosX( void )
+    {
+        sint nOldX;
+        sint nNewX;
+        
+        sint nOldFrontX;
+        sint nOldBackX;
+        sint nNewFrontX;
+        sint nNewBackX;
+
+        sint nTopY;
+        sint nBottomY;
 
         //////////////////////////////////////////
-        // Low
-        sint nMinX = nX - ( nTileDimensions * nTerrainTileDimensionsPerSide );
-        sint nMaxX = nX + ( nTileDimensions * nTerrainTileDimensionsPerSide );        
-        sint nMinY = nY - ( nTileDimensions * nTerrainTileDimensionsPerSide );
-        sint nMaxY = nY + ( nTileDimensions * nTerrainTileDimensionsPerSide );
-        
-        sint nNewX = nMinX;
-        sint nNewY = nMinY;
-
-        if( nXDir )
-        {
-            if( nXDir > 0 )
-                nNewX = nMaxX;
-        }
-        else
-        {
-            if( nYDir > 0 )
-                nNewY = nMaxY;
-        }
-
-        for( sint i = 0; i < nNumLowTiles; ++i )
-        {
-            if(     m_pLowTiles[i].m_nXPos < nMinX
-                ||  m_pLowTiles[i].m_nXPos > nMaxX
-                ||  m_pLowTiles[i].m_nYPos < nMinY
-                ||  m_pLowTiles[i].m_nYPos > nMaxY )
-            {
-                // This tile is outside the bounds
-                BuildLowTile( i, nNewX, nNewY );
-
-                if( nXDir )
-                    nNewY += nTileDimensions;
-                else
-                    nNewX += nTileDimensions;
-            }
-        }
-        
-        //////////////////////////////////////////
-        //// Medium
-        nMinX = nX - ( nTileDimensions * 2 );
-        nMaxX = nX + ( nTileDimensions * 2 );
-        nMinY = nY - ( nTileDimensions * 2 );
-        nMaxY = nY + ( nTileDimensions * 2 );
-        
-        nNewX = nMinX;
-        nNewY = nMinY;
-
-        if( nXDir )
-        {
-            if( nXDir > 0 )
-                nNewX = nMaxX;
-        }
-        else
-        {
-            if( nYDir > 0 )
-                nNewY = nMaxY;
-        }
-
-        for( sint i = 0; i < nNumMedTiles; ++i )
-        {
-            if(     m_pMedTiles[i].m_nXPos < nMinX
-                ||  m_pMedTiles[i].m_nXPos > nMaxX
-                ||  m_pMedTiles[i].m_nYPos < nMinY
-                ||  m_pMedTiles[i].m_nYPos > nMaxY )
-            {
-                // This tile is outside the bounds
-                BuildMedTile( i, nNewX, nNewY );
-
-                if( nXDir )
-                    nNewY += nTileDimensions;
-                else
-                    nNewX += nTileDimensions;
-            }
-        }
-
-        //////////////////////////////////////////
-        // High
-        nMinX = nX - ( nTileDimensions * 1 );
-        nMaxX = nX + ( nTileDimensions * 1 );
-        nMinY = nY - ( nTileDimensions * 1 );
-        nMaxY = nY + ( nTileDimensions * 1 );
-        
-        nNewX = nMinX;
-        nNewY = nMinY;
-
-        if( nXDir )
-        {
-            if( nXDir > 0 )
-                nNewX = nMaxX;
-        }
-        else
-        {
-            if( nYDir > 0 )
-                nNewY = nMaxY;
-        }
+        // First update the High detail
+        nOldX = m_nCurrX - nTileDimensions * 2;
+        nNewX = m_nCurrX + nTileDimensions;
 
         for( sint i = 0; i < nNumHighTiles; ++i )
         {
-            if(     m_pHighTiles[i].m_nXPos < nMinX
-                ||  m_pHighTiles[i].m_nXPos > nMaxX
-                ||  m_pHighTiles[i].m_nYPos < nMinY
-                ||  m_pHighTiles[i].m_nYPos > nMaxY )
+            if( m_pHighTiles[i].m_nXPos == nOldX )
             {
                 // This tile is outside the bounds
-                BuildHighTile( i, nNewX, nNewY );
+                BuildHighTile( i, nNewX, m_pHighTiles[i].m_nYPos );
+            }
+        }
+        
+        //////////////////////////////////////////
+        // Then medium
+        nOldBackX = nOldX - nTileDimensions;
+        nNewBackX = nOldX;
+        
+        nOldFrontX = nNewX;
+        nNewFrontX = nNewX + nTileDimensions;
 
-                if( nXDir )
-                    nNewY += nTileDimensions;
+        nTopY = m_nCurrY + nTileDimensions * 2;
+        nBottomY = m_nCurrY - nTileDimensions * 2;
+
+        for( sint i = 0; i < nNumMedTiles; ++i )
+        {
+            if(    m_pMedTiles[i].m_nXPos == nOldBackX )
+            {
+                if(    m_pMedTiles[i].m_nYPos == nTopY 
+                    || m_pMedTiles[i].m_nYPos == nBottomY)
+                {
+                    // These are the corner tiles
+                    BuildMedTile( i, nNewFrontX, m_pMedTiles[i].m_nYPos );
+                }
                 else
-                    nNewX += nTileDimensions;
+                {
+                    // The middle tiles
+                    BuildMedTile( i, nNewBackX, m_pMedTiles[i].m_nYPos );
+                }
+            }
+            else if( m_pMedTiles[i].m_nXPos == nOldFrontX )
+            {
+                if(    m_pMedTiles[i].m_nYPos == nTopY 
+                    || m_pMedTiles[i].m_nYPos == nBottomY)
+                {
+                    // Ignore these corners
+                    continue;
+                }
+
+                BuildMedTile( i, nNewFrontX, m_pMedTiles[i].m_nYPos );
+            }
+        }
+
+        //////////////////////////////////////////
+        // Then low
+        nOldX = (m_nCurrX - nTileDimensions) - (nTerrainTileDimensionsPerSide*nTileDimensions);
+        nNewX = m_nCurrX + (nTerrainTileDimensionsPerSide*nTileDimensions);
+
+        nOldBackX = nOldBackX - nTileDimensions;
+        nNewBackX = nNewBackX - nTileDimensions;
+        
+        nOldFrontX = nOldFrontX + nTileDimensions;
+        nNewFrontX = nNewFrontX + nTileDimensions;
+
+        nTopY = m_nCurrY + nTileDimensions * 3;
+        nBottomY = m_nCurrY - nTileDimensions * 3;
+        
+        for( sint i = 0; i < nNumLowTiles; ++i )
+        {
+            // First the inside edges
+            if(    m_pLowTiles[i].m_nXPos == nOldFrontX 
+                && m_pLowTiles[i].m_nYPos < nTopY
+                && m_pLowTiles[i].m_nYPos > nBottomY )
+            {
+                // The middle tiles
+                BuildLowTile( i, nNewBackX, m_pLowTiles[i].m_nYPos );
+            }
+            // then the outsides
+            else if( m_pLowTiles[i].m_nXPos == nOldX )
+            {
+                // This tile is outside the bounds
+                BuildLowTile( i, nNewX, m_pLowTiles[i].m_nYPos );
+            }
+        }
+    }
+    void CTerrain::UpdateNegX( void )
+    {
+        sint nOldX;
+        sint nNewX;
+
+        sint nOldFrontX;
+        sint nOldBackX;
+        sint nNewFrontX;
+        sint nNewBackX;
+
+        sint nTopY;
+        sint nBottomY;
+
+        //////////////////////////////////////////
+        // First update the High detail
+        nOldX = m_nCurrX + nTileDimensions * 2;
+        nNewX = m_nCurrX - nTileDimensions;
+
+        for( sint i = 0; i < nNumHighTiles; ++i )
+        {
+            if( m_pHighTiles[i].m_nXPos == nOldX )
+            {
+                // This tile is outside the bounds
+                BuildHighTile( i, nNewX, m_pHighTiles[i].m_nYPos );
+            }
+        }
+
+        //////////////////////////////////////////
+        // Then medium
+        nOldBackX = nOldX + nTileDimensions;
+        nNewBackX = nOldX;
+        
+        nOldFrontX = nNewX;
+        nNewFrontX = nNewX - nTileDimensions;
+
+        nTopY = m_nCurrY + nTileDimensions * 2;
+        nBottomY = m_nCurrY - nTileDimensions * 2;
+
+        for( sint i = 0; i < nNumMedTiles; ++i )
+        {
+            if(    m_pMedTiles[i].m_nXPos == nOldBackX )
+            {
+                if(    m_pMedTiles[i].m_nYPos == nTopY 
+                    || m_pMedTiles[i].m_nYPos == nBottomY)
+                {
+                    // These are the corner tiles
+                    BuildMedTile( i, nNewFrontX, m_pMedTiles[i].m_nYPos );
+                }
+                else
+                {
+                    // The middle tiles
+                    BuildMedTile( i, nNewBackX, m_pMedTiles[i].m_nYPos );
+                }
+            }
+            else if( m_pMedTiles[i].m_nXPos == nOldFrontX )
+            {
+                if(    m_pMedTiles[i].m_nYPos == nTopY 
+                    || m_pMedTiles[i].m_nYPos == nBottomY)
+                {
+                    // Ignore these corners
+                    continue;
+                }
+
+                BuildMedTile( i, nNewFrontX, m_pMedTiles[i].m_nYPos );
+            }
+        }
+        
+        //////////////////////////////////////////
+        // Then low        
+        nOldX = (m_nCurrX + nTileDimensions) + (nTerrainTileDimensionsPerSide*nTileDimensions);
+        nNewX = m_nCurrX - (nTerrainTileDimensionsPerSide*nTileDimensions);
+        
+        nOldBackX = nOldBackX + nTileDimensions;
+        nNewBackX = nNewBackX + nTileDimensions;
+        
+        nOldFrontX = nOldFrontX - nTileDimensions;
+        nNewFrontX = nNewFrontX - nTileDimensions;
+
+        nTopY = m_nCurrY + nTileDimensions * 3;
+        nBottomY = m_nCurrY - nTileDimensions * 3;
+        
+        for( sint i = 0; i < nNumLowTiles; ++i )
+        {
+            // First the inside edges
+            if(    m_pLowTiles[i].m_nXPos == nOldFrontX 
+                && m_pLowTiles[i].m_nYPos < nTopY
+                && m_pLowTiles[i].m_nYPos > nBottomY )
+            {
+                // The middle tiles
+                BuildLowTile( i, nNewBackX, m_pLowTiles[i].m_nYPos );
+            }
+            // then the outsides
+            else if( m_pLowTiles[i].m_nXPos == nOldX )
+            {
+                // This tile is outside the bounds
+                BuildLowTile( i, nNewX, m_pLowTiles[i].m_nYPos );
+            }
+        }
+    }
+    void CTerrain::UpdatePosY( void )
+    {
+        sint nOldY;
+        sint nNewY;
+
+        sint nOldFrontY;
+        sint nOldBackY;
+        sint nNewFrontY;
+        sint nNewBackY;
+
+        sint nTopX;
+        sint nBottomX;
+
+        //////////////////////////////////////////
+        // First update the High detail
+        nOldY = m_nCurrY - nTileDimensions * 2;
+        nNewY = m_nCurrY + nTileDimensions;
+
+        for( sint i = 0; i < nNumHighTiles; ++i )
+        {
+            if( m_pHighTiles[i].m_nYPos == nOldY )
+            {
+                // This tile is outside the bounds
+                BuildHighTile( i, m_pHighTiles[i].m_nXPos, nNewY );
+            }
+        }
+
+        //////////////////////////////////////////
+        // Then medium
+        nOldBackY = nOldY - nTileDimensions;
+        nNewBackY = nOldY;
+        
+        nOldFrontY = nNewY;
+        nNewFrontY = nNewY + nTileDimensions;
+
+        nTopX = m_nCurrX + nTileDimensions * 2;
+        nBottomX = m_nCurrX - nTileDimensions * 2;
+
+        for( sint i = 0; i < nNumMedTiles; ++i )
+        {
+            if(    m_pMedTiles[i].m_nYPos == nOldBackY )
+            {
+                if(    m_pMedTiles[i].m_nXPos == nTopX 
+                    || m_pMedTiles[i].m_nXPos == nBottomX)
+                {
+                    // These are the corner tiles
+                    BuildMedTile( i, m_pMedTiles[i].m_nXPos, nNewFrontY );
+                }
+                else
+                {
+                    // The middle tiles
+                    BuildMedTile( i, m_pMedTiles[i].m_nXPos, nNewBackY );
+                }
+            }
+            else if( m_pMedTiles[i].m_nYPos == nOldFrontY )
+            {
+                if(    m_pMedTiles[i].m_nXPos == nTopX 
+                    || m_pMedTiles[i].m_nXPos == nBottomX)
+                {
+                    // Ignore these corners
+                    continue;
+                }
+
+                BuildMedTile( i, m_pMedTiles[i].m_nXPos, nNewFrontY );
+            }
+        }
+
+        //////////////////////////////////////////
+        // Then low
+        nOldY = (m_nCurrY - nTileDimensions) - (nTerrainTileDimensionsPerSide*nTileDimensions);
+        nNewY = m_nCurrY + (nTerrainTileDimensionsPerSide*nTileDimensions);
+
+        nOldBackY = nOldBackY - nTileDimensions;
+        nNewBackY = nNewBackY - nTileDimensions;
+        
+        nOldFrontY = nOldFrontY + nTileDimensions;
+        nNewFrontY = nNewFrontY + nTileDimensions;
+
+        nTopX = m_nCurrX + nTileDimensions * 3;
+        nBottomX = m_nCurrX - nTileDimensions * 3;
+        
+        for( sint i = 0; i < nNumLowTiles; ++i )
+        {
+            // First the inside edges
+            if(    m_pLowTiles[i].m_nYPos == nOldFrontY 
+                && m_pLowTiles[i].m_nXPos < nTopX
+                && m_pLowTiles[i].m_nXPos > nBottomX )
+            {
+                // The middle tiles
+                BuildLowTile( i, m_pLowTiles[i].m_nXPos, nNewBackY );
+            }
+            // then the outsides
+            else if( m_pLowTiles[i].m_nYPos == nOldY )
+            {
+                // This tile is outside the bounds
+                BuildLowTile( i, m_pLowTiles[i].m_nXPos, nNewY );
+            }
+        }
+    }
+    void CTerrain::UpdateNegY( void )
+    {
+        sint nOldY;
+        sint nNewY;
+
+        sint nOldFrontY;
+        sint nOldBackY;
+        sint nNewFrontY;
+        sint nNewBackY;
+
+        sint nTopX;
+        sint nBottomX;
+
+        //////////////////////////////////////////
+        // First update the High detail
+        nOldY = m_nCurrY + nTileDimensions * 2;
+        nNewY = m_nCurrY - nTileDimensions;
+
+        for( sint i = 0; i < nNumHighTiles; ++i )
+        {
+            if( m_pHighTiles[i].m_nYPos == nOldY )
+            {
+                // This tile is outside the bounds
+                BuildHighTile( i, m_pHighTiles[i].m_nXPos, nNewY );
+            }
+        }
+
+        
+        //////////////////////////////////////////
+        // Then medium
+        nOldBackY = nOldY + nTileDimensions;
+        nNewBackY = nOldY;
+        
+        nOldFrontY = nNewY;
+        nNewFrontY = nNewY - nTileDimensions;
+
+        nTopX = m_nCurrX + nTileDimensions * 2;
+        nBottomX = m_nCurrX - nTileDimensions * 2;
+
+        for( sint i = 0; i < nNumMedTiles; ++i )
+        {
+            if(    m_pMedTiles[i].m_nYPos == nOldBackY )
+            {
+                if(    m_pMedTiles[i].m_nXPos == nTopX 
+                    || m_pMedTiles[i].m_nXPos == nBottomX)
+                {
+                    // These are the corner tiles
+                    BuildMedTile( i, m_pMedTiles[i].m_nXPos, nNewFrontY );
+                }
+                else
+                {
+                    // The middle tiles
+                    BuildMedTile( i, m_pMedTiles[i].m_nXPos, nNewBackY );
+                }
+            }
+            else if( m_pMedTiles[i].m_nYPos == nOldFrontY )
+            {
+                if(    m_pMedTiles[i].m_nXPos == nTopX 
+                    || m_pMedTiles[i].m_nXPos == nBottomX)
+                {
+                    // Ignore these corners
+                    continue;
+                }
+
+                BuildMedTile( i, m_pMedTiles[i].m_nXPos, nNewFrontY );
+            }
+        }
+        
+        //////////////////////////////////////////
+        // Then low
+        nOldY = (m_nCurrY + nTileDimensions) + (nTerrainTileDimensionsPerSide*nTileDimensions);
+        nNewY = m_nCurrY - (nTerrainTileDimensionsPerSide*nTileDimensions);
+
+        nOldBackY = nOldBackY + nTileDimensions;
+        nNewBackY = nNewBackY + nTileDimensions;
+        
+        nOldFrontY = nOldFrontY - nTileDimensions;
+        nNewFrontY = nNewFrontY - nTileDimensions;
+
+        nTopX = m_nCurrX + nTileDimensions * 3;
+        nBottomX = m_nCurrX - nTileDimensions * 3;
+        
+        for( sint i = 0; i < nNumLowTiles; ++i )
+        {
+            // First the inside edges
+            if(    m_pLowTiles[i].m_nYPos == nOldFrontY 
+                && m_pLowTiles[i].m_nXPos < nTopX
+                && m_pLowTiles[i].m_nXPos > nBottomX )
+            {
+                // The middle tiles
+                BuildLowTile( i, m_pLowTiles[i].m_nXPos, nNewBackY );
+            }
+            // then the outsides
+            else if( m_pLowTiles[i].m_nYPos == nOldY )
+            {
+                // This tile is outside the bounds
+                BuildLowTile( i, m_pLowTiles[i].m_nXPos, nNewY );
             }
         }
     }

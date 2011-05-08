@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/7/2011 6:32:12 PM
+Modified:       5/8/2011 1:01:16 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -158,7 +158,15 @@ namespace Riot
         //  Determines if a tree hits any triangles within the node
         //-----------------------------------------------------------------------------
         bool SphereTerrainCollision( const RSphere& s );
-
+        
+        //-----------------------------------------------------------------------------
+        //  Update*
+        //  Updates the terrain in either direction
+        //-----------------------------------------------------------------------------
+        void UpdatePosX( void );
+        void UpdateNegX( void );
+        void UpdatePosY( void );
+        void UpdateNegY( void );
         
         //-----------------------------------------------------------------------------
         //  BuildTile
@@ -195,7 +203,7 @@ namespace Riot
         static const sint   nLowPolysTotal = nLowTileDimensions * nLowTileDimensions;
         static const sint   nLowIndices = nLowPolysTotal * 6;
 
-        static const sint   nMaxTerrainDistance = 2 * 1024;
+        static const sint   nMaxTerrainDistance = 8 * 1024;
         //static const sint   nMaxTerrainDistance = 4 * 128;
         static const sint   nTerrainTileDimensions = (nMaxTerrainDistance / nTileDimensions) + 1;
         static const sint   nTerrainTileDimensionsPerSide = (nMaxTerrainDistance / nTileDimensions) / 2;

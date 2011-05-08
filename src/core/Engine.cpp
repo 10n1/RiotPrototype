@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/7/2011 5:53:34 PM
+Modified:       5/8/2011 2:11:53 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -68,7 +68,7 @@ namespace Riot
     | class methods                         |
     \***************************************/
 
-    static bool bUpdateTerrain = false;
+    static bool bUpdateTerrain = true;
 
     //-----------------------------------------------------------------------------
     //  GetInstance
