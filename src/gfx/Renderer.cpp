@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/7/2011 4:52:52 PM
+Modified:       5/7/2011 5:45:39 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -21,6 +21,7 @@ Modified by:    Kyle Weicht
 #include "View.h"
 #include "TaskManager.h"
 #include "UI.h"
+#include "Terrain.h"
 
 
 namespace Riot
@@ -254,7 +255,7 @@ namespace Riot
     //  Render
     //  Performs rendering
     //-----------------------------------------------------------------------------
-    void CRenderer::Render( void )
+    void CRenderer::Render( CTerrain* pTerrain )
     {
         if( !gnRenderOn )
         {   // Don't render if we shouldn't
@@ -280,7 +281,7 @@ namespace Riot
             m_pDevice->SetPSConstantBuffer( 0, m_pLightCB );
             m_bUpdateLighting = false;
         }
-
+        
         // Clear
         m_pDevice->Clear();
 
@@ -326,6 +327,7 @@ namespace Riot
             SAFE_RELEASE( m_pPrevCommands[i].pMesh );
         }
 
+        pTerrain->Render();
 
         mView = m_pCurrentView->GetViewMatrix();
         mProj = m_pCurrentView->GetProjMatrix();
@@ -446,9 +448,9 @@ namespace Riot
     //  UpdateMesh
     //  Updates a meshes data
     //-----------------------------------------------------------------------------
-    void CRenderer::UpdateMesh( CMesh* pMesh, void* pData )
+    void CRenderer::UpdateBuffer( IGfxBuffer* pBuffer, void* pData )
     {
-        m_pDevice->UpdateBuffer( pMesh->m_pVertexBuffer, pData );
+        m_pDevice->UpdateBuffer( pBuffer, pData );
     }
 
     //-----------------------------------------------------------------------------

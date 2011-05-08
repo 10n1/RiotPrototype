@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/7/2011 5:12:22 PM
+Modified:       5/7/2011 5:45:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -18,6 +18,7 @@ namespace Riot
     class CWindow;
     class CMesh;
     class CView;
+    class CTerrain;
 
     class CRenderer : public IListener
     {
@@ -58,7 +59,7 @@ namespace Riot
         //  Render
         //  Performs rendering
         //-----------------------------------------------------------------------------
-        void Render( void );
+        void Render( CTerrain* pTerrain );
 
         //-----------------------------------------------------------------------------
         //  ProcessMessage
@@ -86,7 +87,7 @@ namespace Riot
         //  UpdateBuffer
         //  Updates a buffers data
         //-----------------------------------------------------------------------------
-        void UpdateBuffer( IGfxBuffer* pMesh, void* pData );
+        void UpdateBuffer( IGfxBuffer* pBuffer, void* pData );
 
         //-----------------------------------------------------------------------------
         //  LoadTextureXD

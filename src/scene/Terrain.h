@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/7/2011 5:12:22 PM
+Modified:       5/7/2011 6:32:12 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -101,48 +101,13 @@ namespace Riot
         void CreateMesh( void );
         
     private:
-
         /***************************************\
         | class members                         |
         \***************************************/
-    public:
-
-        static const sint   nTileDimensions = 128;
-        static const sint   nTileHalfDimensions = nTileDimensions >> 1;
-
-        static const sint   nHighGranularity = 1;
-        static const sint   nHighVertsTotal = (nTileDimensions+1) * (nTileDimensions+1);
-        static const sint   nHighPolysTotal = nTileDimensions * nTileDimensions;
-        static const sint   nHighIndices = nHighPolysTotal * 6;
-        
-        static const sint   nMedGranularity = 2;
-        static const sint   nMedTileDimensions = nTileDimensions / nMedGranularity;
-        static const sint   nMedVertsTotal = (nMedTileDimensions+1) * (nMedTileDimensions+1);
-        static const sint   nMedPolysTotal = nMedTileDimensions * nMedTileDimensions;
-        static const sint   nMedIndices = nMedPolysTotal * 6;
-        
-        static const sint   nLowGranularity = 4;
-        static const sint   nLowTileDimensions = nTileDimensions / nLowGranularity;
-        static const sint   nLowVertsTotal = (nLowTileDimensions+1) * (nLowTileDimensions+1);
-        static const sint   nLowPolysTotal = nLowTileDimensions * nLowTileDimensions;
-        static const sint   nLowIndices = nLowPolysTotal * 6;
-
-    private:
-
-        static VPosNormalTex    m_pVertices[ nHighVertsTotal ];
-        static uint16           m_pHighIndices[ nHighIndices ];
-        static uint16           m_pMedIndices[ nMedIndices ];
-        static uint16           m_pLowIndices[ nLowIndices ];
-
-        static IGfxBuffer*      m_pLowIndexBuffer;
-        static IGfxBuffer*      m_pMedIndexBuffer;
-        static IGfxBuffer*      m_pHighIndexBuffer;
-
-        IGfxTexture2D*  m_pTexture;
         IGfxBuffer*     m_pVertexBuffer;
 
-        float           m_fXPos;
-        float           m_fYPos;
+        sint    m_nXPos;
+        sint    m_nYPos;
     };
 
     class CTerrain : public IRefCounted
@@ -186,7 +151,7 @@ namespace Riot
         //  CalculateTileCenter
         //  Calculates a tiles center
         //-----------------------------------------------------------------------------
-        void CalculateTileCenter( float& fX, float& fY );
+        void CalculateTileCenter( float fX, float fY, sint& nX, sint& nY );
         
         //-----------------------------------------------------------------------------
         //  SphereTerrainCollision
@@ -199,18 +164,41 @@ namespace Riot
         //  BuildTile
         //  Converts tile index nIndex into the tile with the specified center
         //-----------------------------------------------------------------------------
-        void BuildLowTile( sint nIndex, float fX, float fY );
-        void BuildMedTile( sint nIndex, float fX, float fY );
-        void BuildHighTile( sint nIndex, float fX, float fY );
+        void BuildLowTile( sint nIndex,  sint nX, sint nY );
+        void BuildMedTile( sint nIndex,  sint nX, sint nY );
+        void BuildHighTile( sint nIndex, sint nX, sint nY );
 
     public:
 
         /***************************************\
         | class members                         |
         \***************************************/
-        static const sint   nMaxTerrainDistance = 8 * 1024;
-        static const sint   nTerrainTileDimensions = (nMaxTerrainDistance / CTerrainTile::nTileDimensions) + 1;
-        static const sint   nTerrainTileDimensionsPerSide = (nMaxTerrainDistance / CTerrainTile::nTileDimensions) / 2;
+        
+        static const sint   nTileDimensions = 64;
+        static const sint   nTileHalfDimensions = nTileDimensions >> 1;
+
+        static const sint   nHighGranularity = 1;
+        static const sint   nHighTileDimensions = nTileDimensions / nHighGranularity;
+        static const sint   nHighVertsTotal = (nTileDimensions+1) * (nTileDimensions+1);
+        static const sint   nHighPolysTotal = nTileDimensions * nTileDimensions;
+        static const sint   nHighIndices = nHighPolysTotal * 6;
+        
+        static const sint   nMedGranularity = 2;
+        static const sint   nMedTileDimensions = nTileDimensions / nMedGranularity;
+        static const sint   nMedVertsTotal = (nMedTileDimensions+1) * (nMedTileDimensions+1);
+        static const sint   nMedPolysTotal = nMedTileDimensions * nMedTileDimensions;
+        static const sint   nMedIndices = nMedPolysTotal * 6;
+        
+        static const sint   nLowGranularity = 8;
+        static const sint   nLowTileDimensions = nTileDimensions / nLowGranularity;
+        static const sint   nLowVertsTotal = (nLowTileDimensions+1) * (nLowTileDimensions+1);
+        static const sint   nLowPolysTotal = nLowTileDimensions * nLowTileDimensions;
+        static const sint   nLowIndices = nLowPolysTotal * 6;
+
+        static const sint   nMaxTerrainDistance = 2 * 1024;
+        //static const sint   nMaxTerrainDistance = 4 * 128;
+        static const sint   nTerrainTileDimensions = (nMaxTerrainDistance / nTileDimensions) + 1;
+        static const sint   nTerrainTileDimensionsPerSide = (nMaxTerrainDistance / nTileDimensions) / 2;
         // There is an odd number of tiles because the center is one tile                                                                                                                
 
         static const sint   nNumHighTiles = 9;
@@ -218,13 +206,26 @@ namespace Riot
         static const sint   nNumLowTiles = (nTerrainTileDimensions*nTerrainTileDimensions) - 25;
 
     private:
+        static VPosNormalTex    m_pVertices[ nHighVertsTotal ];
+        static uint16           m_pHighIndices[ nHighIndices ];
+        static uint16           m_pMedIndices[ nMedIndices ];
+        static uint16           m_pLowIndices[ nLowIndices ];
+
+        static IGfxBuffer*      m_pLowIndexBuffer;
+        static IGfxBuffer*      m_pMedIndexBuffer;
+        static IGfxBuffer*      m_pHighIndexBuffer;
 
         CTerrainTile    m_pLowTiles[ nNumLowTiles ];
         CTerrainTile    m_pMedTiles[ nNumMedTiles ];
         CTerrainTile    m_pHighTiles[ nNumMedTiles ];
 
-        float           m_fCurrX;
-        float           m_fCurrY;
+        PerlinNoise     m_PerlinDetail;
+        PerlinNoise     m_PerlinShape;
+
+        sint            m_nCurrX;
+        sint            m_nCurrY;
+
+        IGfxTexture2D*  m_pTexture;
     };
     
 

@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/7/2011 12:33:25 PM
+Modified:       5/7/2011 5:53:34 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -68,6 +68,8 @@ namespace Riot
     | class methods                         |
     \***************************************/
 
+    static bool bUpdateTerrain = false;
+
     //-----------------------------------------------------------------------------
     //  GetInstance
     //  Returns the global instance
@@ -104,16 +106,16 @@ namespace Riot
 #if PIPELINED_RENDER
             task_handle_t nObjectUpdateHandle =  m_pTaskManager->PushTask( CObjectManager::PipelineObjectUpdate, m_pObjectManager, 1, 1 );
 #else
-            CObjectManager::PipelineObjectUpdate( m_pObjectManager, 0, 0, 1 )
+            m_pObjectManager->PipelineObjectUpdate( m_pObjectManager, 0, 0, 1 );
 #endif // #if PIPELINED_RENDER
 
             //////////////////////////////////////////
             // Render
-            m_pRenderer->Render();
+            m_pRenderer->Render( m_pTerrain );
 
             //////////////////////////////////////////
             // Make sure terrain is the last thing drawn
-            m_pTerrain->Render();
+            //m_pTerrain->Render();
 
 #if PIPELINED_RENDER
             m_pTaskManager->WaitForCompletion( nObjectUpdateHandle );
@@ -123,7 +125,11 @@ namespace Riot
 
             //////////////////////////////////////////
             // Update terrain
-            m_pTerrain->CenterTerrain( m_pCamera->GetPosition(), 250.0f );
+
+            if( bUpdateTerrain )
+            {
+                m_pTerrain->CenterTerrain( m_pCamera->GetPosition(), 250.0f );
+            }
 
             //////////////////////////////////////////
             //  Process OS messages
@@ -226,7 +232,7 @@ namespace Riot
                     gnRenderOn = !gnRenderOn;
                     break;     
                 case KEY_T:
-                    m_pTerrain->CenterTerrain( m_pCamera->GetPosition(), 100.0f );
+                    bUpdateTerrain = !bUpdateTerrain;
                     break;               
                 case KEY_X:
                     static uint nCount = 1;
