@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/7/2011 6:30:20 PM
+Modified:       5/7/2011 7:18:14 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -237,6 +237,9 @@ namespace Riot
         sint nLow = 0;
 
         CalculateTileCenter( 0.0f, 0.0f, nCenterX, nCenterY );
+
+        m_nCurrX = nCenterX;
+        m_nCurrY = nCenterY;
 
         for( sint nX = nCenterX - (nTerrainTileDimensionsPerSide*nTileDimensions); nX <= nCenterX + (nTerrainTileDimensionsPerSide*nTileDimensions); nX += nTileDimensions )
         {
@@ -480,13 +483,6 @@ namespace Riot
         m_nCurrY = nY;
 
         // Theres updating to do. Worst case is we just exactly crossed a corner and have a lot of tiles to update
-        sint nLowNeedsUpdating[ nNumLowTiles ];
-        sint nMedNeedsUpdating[ nNumMedTiles ];
-        sint nHighNeedsUpdating[ nNumHighTiles ];
-
-        sint nNumLow = 0;
-        sint nNumMed = 0;
-        sint nNumHigh = 0;
         sint nIndex = 0;
 
         //////////////////////////////////////////
@@ -495,8 +491,21 @@ namespace Riot
         sint nMaxX = nX + ( nTileDimensions * nTerrainTileDimensionsPerSide );        
         sint nMinY = nY - ( nTileDimensions * nTerrainTileDimensionsPerSide );
         sint nMaxY = nY + ( nTileDimensions * nTerrainTileDimensionsPerSide );
+        
+        sint nNewX = nMinX;
+        sint nNewY = nMinY;
 
-        // First figure out which low needs updating
+        if( nXDir )
+        {
+            if( nXDir > 0 )
+                nNewX = nMaxX;
+        }
+        else
+        {
+            if( nYDir > 0 )
+                nNewY = nMaxY;
+        }
+
         for( sint i = 0; i < nNumLowTiles; ++i )
         {
             if(     m_pLowTiles[i].m_nXPos < nMinX
@@ -505,97 +514,52 @@ namespace Riot
                 ||  m_pLowTiles[i].m_nYPos > nMaxY )
             {
                 // This tile is outside the bounds
-                nLowNeedsUpdating[ nNumLow++ ] = i;
-            }
-        }
-        
-        // Now build our new X tiles
-        if( nXDir < 0 )
-        {
-            sint nNewX = nMinX;
-            for( sint nNewY = nMinY; nNewY <= nMaxY; nNewY += nTileDimensions )
-            {
-                BuildLowTile( nLowNeedsUpdating[ nIndex++ ], nNewX, nNewY );
-            }
-        }
-        else if( nXDir > 0 )
-        {
-            sint nNewX = nMaxX;
-            for( sint nNewY = nMinY; nNewY <= nMaxY; nNewY += nTileDimensions )
-            {
-                BuildLowTile( nLowNeedsUpdating[ nIndex++ ], nNewX, nNewY );
-            }
-        }
-        // Then the Y
-        if( nYDir < 0 )
-        {
-            sint nNewY = nMinY;
-            for( sint nNewX = nMinX; nNewX <= nMaxX; nNewX += nTileDimensions )
-            {
-                BuildLowTile( nLowNeedsUpdating[ nIndex++ ], nNewX, nNewY );
-            }
-        }
-        else if( nYDir > 0 )
-        {
-            sint nNewY = nMaxY;
-            for( sint nNewX = nMinX; nNewX <= nMaxX; nNewX += nTileDimensions )
-            {
-                BuildLowTile( nLowNeedsUpdating[ nIndex++ ], nNewX, nNewY );
+                BuildLowTile( i, nNewX, nNewY );
+
+                if( nXDir )
+                    nNewY += nTileDimensions;
+                else
+                    nNewX += nTileDimensions;
             }
         }
         
         //////////////////////////////////////////
         //// Medium
-        //fMinX = fX - ( fTileDimensions * 2 );
-        //fMaxX = fX + ( fTileDimensions * 2 );
-        //fMinY = fY - ( fTileDimensions * 2 );
-        //fMaxY = fY + ( fTileDimensions * 2 );
-        //for( sint i = 0; i < nNumMedTiles; ++i )
-        //{
-        //    if(     m_pMedTiles[i].m_fXPos < fMinX
-        //        ||  m_pMedTiles[i].m_fXPos > fMaxX
-        //        ||  m_pMedTiles[i].m_fYPos < fMinY
-        //        ||  m_pMedTiles[i].m_fYPos > fMaxY )
-        //    {
-        //        // This tile is outside the bounds
-        //        nMedNeedsUpdating[ nNumMed++ ] = i;
-        //    }
-        //}
-        // Now build our new X tiles
-        //nIndex = 0;
-        //if( fXDir < 0.0f )
-        //{
-        //    float fNewX = fMinX;
-        //    for( float fNewY = fMinY; fNewY <= fMaxY; fNewY += fTileDimensions )
-        //    {
-        //        BuildMedTile( nMedNeedsUpdating[ nIndex++ ], fNewX, fNewY );
-        //    }
-        //}
-        //else if( fXDir > 0.0f )
-        //{
-        //    float fNewX = fMaxX;
-        //    for( float fNewY = fMinY; fNewY <= fMaxY; fNewY += fTileDimensions )
-        //    {
-        //        BuildMedTile( nMedNeedsUpdating[ nIndex++ ], fNewX, fNewY );
-        //    }
-        //}
-        //// Then the Y
-        //if( fYDir < 0.0f )
-        //{
-        //    float fNewY = fMinY;
-        //    for( float fNewX = fMinX; fNewX <= fMaxX; fNewX += fTileDimensions )
-        //    {
-        //        BuildMedTile( nMedNeedsUpdating[ nIndex++ ], fNewX, fNewY );
-        //    }
-        //}
-        //else if( fYDir > 0.0f )
-        //{
-        //    float fNewY = fMaxY;
-        //    for( float fNewX = fMinX; fNewX <= fMaxX; fNewX += fTileDimensions )
-        //    {
-        //        BuildMedTile( nMedNeedsUpdating[ nIndex++ ], fNewX, fNewY );
-        //    }
-        //}
+        nMinX = nX - ( nTileDimensions * 2 );
+        nMaxX = nX + ( nTileDimensions * 2 );
+        nMinY = nY - ( nTileDimensions * 2 );
+        nMaxY = nY + ( nTileDimensions * 2 );
+        
+        nNewX = nMinX;
+        nNewY = nMinY;
+
+        if( nXDir )
+        {
+            if( nXDir > 0 )
+                nNewX = nMaxX;
+        }
+        else
+        {
+            if( nYDir > 0 )
+                nNewY = nMaxY;
+        }
+
+        for( sint i = 0; i < nNumMedTiles; ++i )
+        {
+            if(     m_pMedTiles[i].m_nXPos < nMinX
+                ||  m_pMedTiles[i].m_nXPos > nMaxX
+                ||  m_pMedTiles[i].m_nYPos < nMinY
+                ||  m_pMedTiles[i].m_nYPos > nMaxY )
+            {
+                // This tile is outside the bounds
+                BuildMedTile( i, nNewX, nNewY );
+
+                if( nXDir )
+                    nNewY += nTileDimensions;
+                else
+                    nNewX += nTileDimensions;
+            }
+        }
 
         //////////////////////////////////////////
         // High
@@ -603,6 +567,21 @@ namespace Riot
         nMaxX = nX + ( nTileDimensions * 1 );
         nMinY = nY - ( nTileDimensions * 1 );
         nMaxY = nY + ( nTileDimensions * 1 );
+        
+        nNewX = nMinX;
+        nNewY = nMinY;
+
+        if( nXDir )
+        {
+            if( nXDir > 0 )
+                nNewX = nMaxX;
+        }
+        else
+        {
+            if( nYDir > 0 )
+                nNewY = nMaxY;
+        }
+
         for( sint i = 0; i < nNumHighTiles; ++i )
         {
             if(     m_pHighTiles[i].m_nXPos < nMinX
@@ -611,42 +590,12 @@ namespace Riot
                 ||  m_pHighTiles[i].m_nYPos > nMaxY )
             {
                 // This tile is outside the bounds
-                nHighNeedsUpdating[ nNumHigh++ ] = i;
-            }
-        }
-        // Now build our new X tiles
-        nIndex = 0;
-        if( nXDir < 0 )
-        {
-            sint nNewX = nMinX;
-            for( sint nNewY = nMinY; nNewY <= nMaxY; nNewY += nTileDimensions )
-            {
-                BuildHighTile( nHighNeedsUpdating[ nIndex++ ], nNewX, nNewY );
-            }
-        }
-        else if( nXDir > 0 )
-        {
-            sint nNewX = nMaxX;
-            for( sint nNewY = nMinY; nNewY <= nMaxY; nNewY += nTileDimensions )
-            {
-                BuildHighTile( nHighNeedsUpdating[ nIndex++ ], nNewX, nNewY );
-            }
-        }
-        // Then the Y
-        if( nYDir < 0 )
-        {
-            sint nNewY = nMinY;
-            for( sint nNewX = nMinX; nNewX <= nMaxX; nNewX += nTileDimensions )
-            {
-                BuildHighTile( nHighNeedsUpdating[ nIndex++ ], nNewX, nNewY );
-            }
-        }
-        else if( nYDir > 0 )
-        {
-            sint nNewY = nMaxY;
-            for( sint nNewX = nMinX; nNewX <= nMaxX; nNewX += nTileDimensions )
-            {
-                BuildHighTile( nHighNeedsUpdating[ nIndex++ ], nNewX, nNewY );
+                BuildHighTile( i, nNewX, nNewY );
+
+                if( nXDir )
+                    nNewY += nTileDimensions;
+                else
+                    nNewX += nTileDimensions;
             }
         }
     }
