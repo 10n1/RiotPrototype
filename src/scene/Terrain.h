@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/7/2011 10:36:55 AM
+Modified:       5/7/2011 5:12:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -11,6 +11,28 @@ Modified by:    Kyle Weicht
 #include "IRefCounted.h"
 #include "VertexFormats.h"
 #include "Renderer.h"
+
+/*********************************************************\
+
+
+
+                   ---------------------
+                   | M | M | M | M | M |
+                   ---------------------
+                   | M | H | H | H | M |
+                   ---------------------
+                   | M | H | P | H | M |
+                   ---------------------
+                   | M | H | H | H | M |
+                   ---------------------
+                   | M | M | M | M | M |
+                   ---------------------
+
+                   9 High
+                   16 Medium
+
+
+\*********************************************************/
 
 namespace Riot
 {
@@ -73,12 +95,6 @@ namespace Riot
         \***************************************/        
         
         //-----------------------------------------------------------------------------
-        //  Render
-        //  Renders the terrain
-        //-----------------------------------------------------------------------------
-        void Render( void );
-        
-        //-----------------------------------------------------------------------------
         //  CreateMesh
         //  Creates the terrain mesh
         //-----------------------------------------------------------------------------
@@ -93,23 +109,40 @@ namespace Riot
 
         static const sint   nTileDimensions = 128;
         static const sint   nTileHalfDimensions = nTileDimensions >> 1;
-        static const sint   nVertsTotal = (nTileDimensions+1) * (nTileDimensions+1);
-        static const sint   nPolysTotal = nTileDimensions * nTileDimensions;
-        static const sint   nIndices = nPolysTotal * 6;
+
+        static const sint   nHighGranularity = 1;
+        static const sint   nHighVertsTotal = (nTileDimensions+1) * (nTileDimensions+1);
+        static const sint   nHighPolysTotal = nTileDimensions * nTileDimensions;
+        static const sint   nHighIndices = nHighPolysTotal * 6;
+        
+        static const sint   nMedGranularity = 2;
+        static const sint   nMedTileDimensions = nTileDimensions / nMedGranularity;
+        static const sint   nMedVertsTotal = (nMedTileDimensions+1) * (nMedTileDimensions+1);
+        static const sint   nMedPolysTotal = nMedTileDimensions * nMedTileDimensions;
+        static const sint   nMedIndices = nMedPolysTotal * 6;
+        
+        static const sint   nLowGranularity = 4;
+        static const sint   nLowTileDimensions = nTileDimensions / nLowGranularity;
+        static const sint   nLowVertsTotal = (nLowTileDimensions+1) * (nLowTileDimensions+1);
+        static const sint   nLowPolysTotal = nLowTileDimensions * nLowTileDimensions;
+        static const sint   nLowIndices = nLowPolysTotal * 6;
 
     private:
 
-        RVector3        m_pVertexPositions[ nVertsTotal ];
+        static VPosNormalTex    m_pVertices[ nHighVertsTotal ];
+        static uint16           m_pHighIndices[ nHighIndices ];
+        static uint16           m_pMedIndices[ nMedIndices ];
+        static uint16           m_pLowIndices[ nLowIndices ];
 
-        uint32          m_pIndices[ nIndices ];
+        static IGfxBuffer*      m_pLowIndexBuffer;
+        static IGfxBuffer*      m_pMedIndexBuffer;
+        static IGfxBuffer*      m_pHighIndexBuffer;
 
-        CTerrain*       m_pParentTerrain;
+        IGfxTexture2D*  m_pTexture;
+        IGfxBuffer*     m_pVertexBuffer;
 
         float           m_fXPos;
         float           m_fYPos;
-
-        CMesh*          m_pMesh;
-        IGfxTexture2D*  m_pTexture;
     };
 
     class CTerrain : public IRefCounted
@@ -161,22 +194,37 @@ namespace Riot
         //-----------------------------------------------------------------------------
         bool SphereTerrainCollision( const RSphere& s );
 
-    private:
+        
+        //-----------------------------------------------------------------------------
+        //  BuildTile
+        //  Converts tile index nIndex into the tile with the specified center
+        //-----------------------------------------------------------------------------
+        void BuildLowTile( sint nIndex, float fX, float fY );
+        void BuildMedTile( sint nIndex, float fX, float fY );
+        void BuildHighTile( sint nIndex, float fX, float fY );
+
+    public:
 
         /***************************************\
         | class members                         |
         \***************************************/
-        enum { MAX_TERRAIN_TILES = 8*8 };
+        static const sint   nMaxTerrainDistance = 8 * 1024;
+        static const sint   nTerrainTileDimensions = (nMaxTerrainDistance / CTerrainTile::nTileDimensions) + 1;
+        static const sint   nTerrainTileDimensionsPerSide = (nMaxTerrainDistance / CTerrainTile::nTileDimensions) / 2;
+        // There is an odd number of tiles because the center is one tile                                                                                                                
 
-        CTerrainTile    m_pTerrainTiles[MAX_TERRAIN_TILES];
-        uint            m_nFreeTiles[MAX_TERRAIN_TILES];
-        uint            m_pActiveTiles[MAX_TERRAIN_TILES];
+        static const sint   nNumHighTiles = 9;
+        static const sint   nNumMedTiles = 16;
+        static const sint   nNumLowTiles = (nTerrainTileDimensions*nTerrainTileDimensions) - 25;
 
-        PerlinNoise     m_PerlinShape;
-        PerlinNoise     m_PerlinDetail;
+    private:
 
-        atomic_t        m_nNumTiles;
-        uint            m_nNumFreeTiles;
+        CTerrainTile    m_pLowTiles[ nNumLowTiles ];
+        CTerrainTile    m_pMedTiles[ nNumMedTiles ];
+        CTerrainTile    m_pHighTiles[ nNumMedTiles ];
+
+        float           m_fCurrX;
+        float           m_fCurrY;
     };
     
 

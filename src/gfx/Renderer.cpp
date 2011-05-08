@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/5/2011 10:29:38 PM
+Modified:       5/7/2011 4:52:52 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -442,6 +442,14 @@ namespace Riot
         m_pDevice->Present();
     }
 
+    //-----------------------------------------------------------------------------
+    //  UpdateMesh
+    //  Updates a meshes data
+    //-----------------------------------------------------------------------------
+    void CRenderer::UpdateMesh( CMesh* pMesh, void* pData )
+    {
+        m_pDevice->UpdateBuffer( pMesh->m_pVertexBuffer, pData );
+    }
 
     //-----------------------------------------------------------------------------
     //  CreateMesh

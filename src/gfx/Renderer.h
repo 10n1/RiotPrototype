@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/3/2011 2:23:02 PM
+Modified:       5/7/2011 5:12:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -83,6 +83,12 @@ namespace Riot
         CMesh* CreateDynamicBox( void );
 
         //-----------------------------------------------------------------------------
+        //  UpdateBuffer
+        //  Updates a buffers data
+        //-----------------------------------------------------------------------------
+        void UpdateBuffer( IGfxBuffer* pMesh, void* pData );
+
+        //-----------------------------------------------------------------------------
         //  LoadTextureXD
         //  Loads a texture
         //-----------------------------------------------------------------------------
@@ -153,6 +159,11 @@ namespace Riot
         //  Renders a string of text on screen at (nLeft, nTop)
         //-----------------------------------------------------------------------------
         void DrawString( uint nLeft, uint nTop, const char* szText );
+
+        //-----------------------------------------------------------------------------
+        //  Accessors/Mutators
+        //-----------------------------------------------------------------------------
+        inline IGraphicsDevice* GetGraphicsDevice( void );
 
     private:
         /***************************************\
@@ -235,6 +246,13 @@ namespace Riot
         CMesh*      m_pDebugBox;
     };
 
+    //-----------------------------------------------------------------------------
+    //  Accessors/Mutators
+    //-----------------------------------------------------------------------------
+    IGraphicsDevice* CRenderer::GetGraphicsDevice( void )
+    {
+        return m_pDevice;
+    }
 
 } // namespace Riot
 

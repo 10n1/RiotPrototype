@@ -20,6 +20,13 @@ int main( int argc, char* argv[] )
     int x = sizeof( Riot::CTerrain );
     x = sizeof( Riot::CTerrainTile );
 
+    x = Riot::CTerrain::nMaxTerrainDistance;
+    x = Riot::CTerrain::nTerrainTileDimensions;
+    
+    x = Riot::CTerrain::nNumHighTiles;
+    x = Riot::CTerrain::nNumMedTiles;
+    x = Riot::CTerrain::nNumLowTiles;
+
     //////////////////////////////////////////
     // Run the engine
     Riot::Engine::GetInstance()->Run();
