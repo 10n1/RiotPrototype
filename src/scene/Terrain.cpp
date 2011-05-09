@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/8/2011 2:12:19 AM
+Modified:       5/8/2011 7:56:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -43,6 +43,29 @@ namespace Riot
     // CTerrain destructor
     CTerrain::~CTerrain()
     {
+        SAFE_RELEASE( m_pLowIndexBuffer );
+        SAFE_RELEASE( m_pMedIndexBuffer );
+        SAFE_RELEASE( m_pHighIndexBuffer );
+
+        SAFE_RELEASE( m_pTexture );
+
+        // Low
+        for( uint i = 0; i < nNumLowTiles; ++i )
+        {
+            SAFE_RELEASE( m_pLowTiles[i].m_pVertexBuffer );
+        }
+        
+        // Medium
+        for( uint i = 0; i < nNumMedTiles; ++i )
+        {
+            SAFE_RELEASE( m_pMedTiles[i].m_pVertexBuffer );
+        }
+
+        // High
+        for( uint i = 0; i < nNumHighTiles; ++i )
+        {
+            SAFE_RELEASE( m_pHighTiles[i].m_pVertexBuffer );
+        }
     }
 
 

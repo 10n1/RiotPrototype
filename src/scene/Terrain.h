@@ -3,7 +3,7 @@ File:           Terrain.h
 Purpose:        The terrain
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/8/2011 7:54:07 PM
+Modified:       5/8/2011 7:56:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TERRAIN_H_
@@ -204,7 +204,6 @@ namespace Riot
         static const sint   nLowIndices = nLowPolysTotal * 6;
 
         static const sint   nMaxTerrainDistance = 8 * 1024;
-        //static const sint   nMaxTerrainDistance = 4 * 128;
         static const sint   nTerrainTileDimensions = (nMaxTerrainDistance / nTileDimensions) + 1;
         static const sint   nTerrainTileDimensionsPerSide = (nMaxTerrainDistance / nTileDimensions) / 2;
         // There is an odd number of tiles because the center is one tile                                                                                                                
