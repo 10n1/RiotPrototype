@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/7/2011 10:13:33 AM
+Modified:       5/8/2011 8:12:23 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -30,10 +30,23 @@ namespace Riot
     class CComponentCollidable : public IComponent
     {
     public:
-        struct Triangle
+        enum eBSPPartitionAxis
         {
-            RVector3    vVerts[3];
-            RVector3    vNormal;
+            BSPPartitionX,
+            BSPPartitionY,
+            BSPPartitionZ,
+
+            BSPPartitionNone, // For nodes that haven't been split yet
+        };
+
+        struct TBSPNode
+        {
+            TBSPNode*           pMin;
+            TBSPNode*           pMax;
+            uint                nObjects[8];
+            uint                nNumObjects;
+            float               fPartitionValue;
+            eBSPPartitionAxis   nAxis;
         };
 
         //-----------------------------------------------------------------------------

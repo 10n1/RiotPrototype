@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/8/2011 2:11:53 AM
+Modified:       5/8/2011 8:05:40 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -130,6 +130,8 @@ namespace Riot
             {
                 m_pTerrain->CenterTerrain( m_pCamera->GetPosition(), 250.0f );
             }
+
+            m_pRenderer->DrawDebugBox( RAABB( RVector3( -10.0f, 0.0f, 0.0f ), RVector3( 10.0f, 10.0f, 0.0f ) ), RVector3( 0.4f, 1.0f, 0.7f ) );
 
             //////////////////////////////////////////
             //  Process OS messages
