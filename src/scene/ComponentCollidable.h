@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/8/2011 8:12:23 PM
+Modified:       5/8/2011 9:51:35 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -29,6 +29,7 @@ namespace Riot
 
     class CComponentCollidable : public IComponent
     {
+        friend struct TBSPNode;
     public:
         enum eBSPPartitionAxis
         {
@@ -47,6 +48,161 @@ namespace Riot
             uint                nNumObjects;
             float               fPartitionValue;
             eBSPPartitionAxis   nAxis;
+            CMutex              Mutex;
+
+            TBSPNode()
+                : nAxis( BSPPartitionNone )
+                , pMin( NULL )
+                , pMax( NULL )
+                , nNumObjects( 0 )
+                , fPartitionValue( 0.0f )
+            {
+            }
+
+            void RenderNode( CRenderer* pRenderer )
+            {
+                if( nAxis != BSPPartitionNone )
+                {
+                    if( nAxis == BSPPartitionX )
+                    {
+                        pRenderer->DrawDebugBox( RAABB( RVector3( fPartitionValue, -20.0f, -20.0f ), RVector3( fPartitionValue, 20.0f, 20.0f ) ), RVector3( 1.0f, 0.0f, 0.0f ) ); 
+                    }
+                    else if( nAxis == BSPPartitionY )
+                    {
+                        pRenderer->DrawDebugBox( RAABB( RVector3( -20.0f, fPartitionValue, -20.0f ), RVector3( 20.0f, fPartitionValue,  20.0f ) ), RVector3( 0.0f, 1.0f, 0.0f ) ); 
+                    }
+                    else
+                    {
+                        pRenderer->DrawDebugBox( RAABB( RVector3( -20.0f, -20.0f , fPartitionValue), RVector3( 20.0f,  20.0f, fPartitionValue ) ), RVector3( 0.0f, 0.0f, 1.0f ) ); 
+                    }
+                }
+            }
+
+            void AddObject( CComponentCollidable* pComponent, uint nObject )
+            {
+                Mutex.Lock();
+
+                // This node hasn't been split yet
+                if( nAxis != BSPPartitionNone )
+                {
+                    nObjects[ nNumObjects++ ] = nObject;
+
+                    if( nNumObjects == 8 )
+                    {
+                        SplitNode( pComponent );
+                    }
+                }
+                else
+                {
+                    float fPos = pComponent->m_Volume[ nObject ].position.x;
+                    
+                    if( nAxis == BSPPartitionY )
+                        fPos = pComponent->m_Volume[ nObject ].position.y;
+                    else if( nAxis == BSPPartitionZ )
+                        fPos = pComponent->m_Volume[ nObject ].position.z;
+
+                    if( fPos < fPartitionValue )
+                        pMin->AddObject( pComponent, nObject );
+                    else
+                        pMax->AddObject( pComponent, nObject );
+                }
+
+                Mutex.Unlock();
+            }
+
+            void SplitNode( CComponentCollidable* pComponent )
+            {
+                // First make our leaves
+                pMin = new TBSPNode;
+                pMax = new TBSPNode;
+
+                // Then add the objects
+                float fMinX, fMaxX;
+                float fAvgX = 0.0f;
+                fMinX = fMaxX = pComponent->m_Volume[ nObjects[0] ].position.x;
+                
+                float fMinY, fMaxY;
+                float fAvgY = 0.0f;
+                fMinY = fMaxY = pComponent->m_Volume[ nObjects[0] ].position.y;
+                
+                float fMinZ, fMaxZ;
+                float fAvgZ = 0.0f;
+                fMinZ = fMaxZ = pComponent->m_Volume[ nObjects[0] ].position.z;
+
+                for( uint i = 1; i < 8; ++i )
+                {
+                    float fX = pComponent->m_Volume[ nObjects[i] ].position.x;
+                    float fY = pComponent->m_Volume[ nObjects[i] ].position.y;
+                    float fZ = pComponent->m_Volume[ nObjects[i] ].position.z;
+
+                    fAvgX += fX;
+                    fAvgY += fY;
+                    fAvgZ += fZ;
+
+                    if( fX < fMinX ) fMinX = fX;
+                    else if( fX > fMaxX ) fMaxX = fX;
+                    
+                    if( fY < fMinY ) fMinY = fY;
+                    else if( fY > fMaxY ) fMaxY = fY;
+                    
+                    if( fZ < fMinZ ) fMinZ = fZ;
+                    else if( fZ > fMaxZ ) fMaxZ = fZ;
+                }
+
+                fAvgX /= 8.0f;
+                fAvgY /= 8.0f;
+                fAvgZ /= 8.0f;
+
+                float fAbsX = abs( fMaxX - fMinX );
+                float fAbsY = abs( fMaxY - fMinY );
+                float fAbsZ = abs( fMaxZ - fMinZ );
+
+                if( fAbsX > fAbsY && fAbsX > fAbsZ )
+                {
+                    // Split on the X
+                    nAxis = BSPPartitionX;
+                    fPartitionValue = fAvgX;
+
+                    for( uint i = 0; i < 8; ++i )
+                    {
+                        float fX = pComponent->m_Volume[ nObjects[i] ].position.x;
+                        if( fX < fPartitionValue )
+                            pMin->AddObject( pComponent, nObjects[i] );
+                        else
+                            pMax->AddObject( pComponent, nObjects[i] );
+                    }
+                }
+                else if( fAbsY > fAbsY && fAbsY > fAbsZ )
+                {
+                    // Split on the Y
+                    nAxis = BSPPartitionY;
+                    fPartitionValue = fAvgY;
+
+                    for( uint i = 0; i < 8; ++i )
+                    {
+                        float fY = pComponent->m_Volume[ nObjects[i] ].position.y;
+                        if( fY < fPartitionValue )
+                            pMin->AddObject( pComponent, nObjects[i] );
+                        else
+                            pMax->AddObject( pComponent, nObjects[i] );
+                    }
+                }
+                else
+                {
+                    // Split on the Z
+                    nAxis = BSPPartitionZ;
+                    fPartitionValue = fAvgZ;
+
+                    for( uint i = 0; i < 8; ++i )
+                    {
+                        float fZ = pComponent->m_Volume[ nObjects[i] ].position.z;
+                        if( fZ < fPartitionValue )
+                            pMin->AddObject( pComponent, nObjects[i] );
+                        else
+                            pMax->AddObject( pComponent, nObjects[i] );
+                    }
+                }
+            }
         };
 
         //-----------------------------------------------------------------------------
