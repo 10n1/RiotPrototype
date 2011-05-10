@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/9/2011 11:03:09 PM
+Modified:       5/10/2011 3:07:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -85,6 +85,7 @@ namespace Riot
 
     uint CComponentCollidable::AddObject( const RAABB& box, uint nObject )
     {
+        return 0;
     }
 
     void CComponentCollidable::UpdateObject( const RAABB& box, uint nBox )
