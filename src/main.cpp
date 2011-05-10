@@ -2,7 +2,7 @@
 File:           main.cpp
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       5/7/2011 10:26:48 AM
+Modified:       5/9/2011 10:45:06 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "common.h"
@@ -16,16 +16,6 @@ int main( int argc, char* argv[] )
     //////////////////////////////////////////
     // Free our memory last
     atexit( Riot::Memory::ReleasePool );
-
-    int x = sizeof( Riot::CTerrain );
-    x = sizeof( Riot::CTerrainTile );
-
-    x = Riot::CTerrain::nMaxTerrainDistance;
-    x = Riot::CTerrain::nTerrainTileDimensions;
-    
-    x = Riot::CTerrain::nNumHighTiles;
-    x = Riot::CTerrain::nNumMedTiles;
-    x = Riot::CTerrain::nNumLowTiles;
 
     //////////////////////////////////////////
     // Run the engine

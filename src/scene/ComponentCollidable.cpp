@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/8/2011 9:40:28 PM
+Modified:       5/9/2011 11:03:09 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -11,6 +11,7 @@ Modified by:    Kyle Weicht
 #include "TaskManager.h"
 #include "Renderer.h"
 #include "Terrain.h"
+#include <float.h>
 
 /*
 TODO:   Fix messaging threading issue
@@ -62,6 +63,231 @@ namespace Riot
         m_pObjectGraph->max = RVector3(  64.0f,  64.0f,  64.0f );
         m_pObjectGraph->min = RVector3( -64.0f, -64.0f, -64.0f );
         m_pObjectGraph->m_pParent = NULL;
+
+        // Initialize the end points with min and max values
+        m_EndPointsX[0].fValue = -FLT_MAX;
+        m_EndPointsX[0].nIndex |= 0x7FFFFFFF;
+        m_EndPointsX[1].fValue =  FLT_MAX;
+        m_EndPointsX[1].nIndex |= 0xFFFFFFFF;
+
+        m_EndPointsY[0].fValue = -FLT_MAX;
+        m_EndPointsY[0].nIndex |= 0x7FFFFFFF;
+        m_EndPointsY[1].fValue =  FLT_MAX;
+        m_EndPointsY[1].nIndex |= 0xFFFFFFFF;
+
+        m_EndPointsZ[0].fValue = -FLT_MAX;
+        m_EndPointsZ[0].nIndex |= 0x7FFFFFFF;
+        m_EndPointsZ[1].fValue =  FLT_MAX;
+        m_EndPointsZ[1].nIndex |= 0xFFFFFFFF;
+
+        m_nNumPairs = 0;
+    }
+
+    uint CComponentCollidable::AddObject( const RAABB& box, uint nObject )
+    {
+    }
+
+    void CComponentCollidable::UpdateObject( const RAABB& box, uint nBox )
+    {
+        TEndPoint& endA = m_EndPointsX[0];
+        TEndPoint& endB = m_EndPointsX[1];
+
+        //////////////////////////////////////////
+        // X Axis first
+        float fMinX = box.min.x;
+        float fMaxX = box.max.x;
+        uint  nMinXIndex = m_Boxes[ nBox ].nMin[0];
+        uint  nMaxXIndex = m_Boxes[ nBox ].nMax[0];
+        uint  nIndex;
+
+        // Update the values
+        m_EndPointsX[ nMinXIndex ].fValue = fMinX;
+        m_EndPointsX[ nMaxXIndex ].fValue = fMaxX;
+
+        // Now sort
+        //////////////////////////////////////////
+        // Mins first
+        nIndex = nMinXIndex;
+
+        endA = m_EndPointsX[ nIndex ];
+        endB = m_EndPointsX[ nIndex-1 ];
+        // First move left
+        while( endA.fValue < endB.fValue )
+        {
+            if( !IsMin( endB.nIndex ) )
+            {
+                // The min passed a max, report a collision
+                AddPair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+            }
+            Swap( endA, endB );
+            --nIndex;
+
+            endA = m_EndPointsX[ nIndex ];
+            endB = m_EndPointsX[ nIndex-1 ];
+        }
+        // Then right
+        endA = m_EndPointsX[ nIndex ];
+        endB = m_EndPointsX[ nIndex+1 ];
+
+        while( endA.fValue > endB.fValue )
+        {
+            if( !IsMin( endB.nIndex ) )
+            {
+                // The min passed a max, remove the collision
+                RemovePair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+            }
+            Swap( endA, endB );
+            ++nIndex;
+
+            endA = m_EndPointsX[ nIndex ];
+            endB = m_EndPointsX[ nIndex+1 ];
+        }
+
+        m_Boxes[ nBox ].nMin[0] = nIndex;
+        
+        //////////////////////////////////////////
+        // Then maxes
+        nIndex = nMaxXIndex;
+
+        endA = m_EndPointsX[ nIndex ];
+        endB = m_EndPointsX[ nIndex-1 ];
+        // First move left
+        while( endA.fValue < endB.fValue )
+        {
+            if( IsMin( endB.nIndex ) )
+            {
+                // The max passed a max, report a collision
+                RemovePair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+            }
+            Swap( endA, endB );
+            --nIndex;
+
+            endA = m_EndPointsX[ nIndex ];
+            endB = m_EndPointsX[ nIndex-1 ];
+        }
+        // Then right
+        endA = m_EndPointsX[ nIndex ];
+        endB = m_EndPointsX[ nIndex+1 ];
+
+        while( endA.fValue > endB.fValue )
+        {
+            if( IsMin( endB.nIndex ) )
+            {
+                // The max passed a max, remove the collision
+                AddPair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+            }
+            Swap( endA, endB );
+            ++nIndex;
+
+            endA = m_EndPointsX[ nIndex ];
+            endB = m_EndPointsX[ nIndex+1 ];
+        }
+
+        m_Boxes[ nBox ].nMax[0] = nIndex;
+
+        
+        //////////////////////////////////////////
+        // Y Axis first
+        float fMinY = box.min.x;
+        float fMaxY = box.max.x;
+        uint  nMinYIndex = m_Boxes[ nBox ].nMin[1];
+        uint  nMaxYIndex = m_Boxes[ nBox ].nMax[1];
+
+        // Update the values
+        m_EndPointsY[ nMinYIndex ].fValue = fMinY;
+        m_EndPointsY[ nMaxYIndex ].fValue = fMaxY;
+
+        // Now sort
+        nIndex = nMinYIndex;
+
+        // First move left
+        while( m_EndPointsY[ nIndex ].fValue < m_EndPointsY[ nIndex-1 ].fValue )
+        {
+            Swap( m_EndPointsY[ nIndex ], m_EndPointsY[ nIndex-1 ] );
+            nIndex--;
+        }
+        // Then right
+        while( m_EndPointsY[ nIndex ].fValue > m_EndPointsY[ nIndex+1 ].fValue )
+        {
+            Swap( m_EndPointsY[ nIndex ], m_EndPointsY[ nIndex+1 ] );
+            nIndex++;
+        }
+        m_Boxes[ nBox ].nMin[1] = nIndex;
+        
+
+        // First move left
+        nIndex = nMaxYIndex;
+        while( m_EndPointsY[ nIndex ].fValue < m_EndPointsY[ nIndex-1 ].fValue )
+        {
+            Swap( m_EndPointsY[ nIndex ], m_EndPointsY[ nIndex-1 ] );
+            nIndex--;
+        }
+        // Then right
+        while( m_EndPointsY[ nIndex ].fValue > m_EndPointsY[ nIndex+1 ].fValue )
+        {
+            Swap( m_EndPointsY[ nIndex ], m_EndPointsY[ nIndex+1 ] );
+            nIndex++;
+        }
+        m_Boxes[ nBox ].nMax[1] = nIndex;
+        
+        
+        //////////////////////////////////////////
+        // Z Axis first
+        float fMinZ = box.min.x;
+        float fMaxZ = box.max.x;
+        uint  nMinZIndex = m_Boxes[ nBox ].nMin[2];
+        uint  nMaxZIndex = m_Boxes[ nBox ].nMax[2];
+
+        // Update the values
+        m_EndPointsZ[ nMinZIndex ].fValue = fMinZ;
+        m_EndPointsZ[ nMaxZIndex ].fValue = fMaxZ;
+
+        // Now sort
+        nIndex = nMinZIndex;
+
+        // First move left
+        while( m_EndPointsZ[ nIndex ].fValue < m_EndPointsZ[ nIndex-1 ].fValue )
+        {
+            Swap( m_EndPointsZ[ nIndex ], m_EndPointsZ[ nIndex-1 ] );
+            nIndex--;
+        }
+        // Then right
+        while( m_EndPointsZ[ nIndex ].fValue > m_EndPointsZ[ nIndex+1 ].fValue )
+        {
+            Swap( m_EndPointsZ[ nIndex ], m_EndPointsZ[ nIndex+1 ] );
+            nIndex++;
+        }
+        m_Boxes[ nBox ].nMin[2] = nIndex;
+
+
+        // First move left
+        nIndex = nMaxZIndex;
+        while( m_EndPointsZ[ nIndex ].fValue < m_EndPointsZ[ nIndex-1 ].fValue )
+        {
+            Swap( m_EndPointsZ[ nIndex ], m_EndPointsZ[ nIndex-1 ] );
+            nIndex--;
+        }
+        // Then right
+        while( m_EndPointsZ[ nIndex ].fValue > m_EndPointsZ[ nIndex+1 ].fValue )
+        {
+            Swap( m_EndPointsZ[ nIndex ], m_EndPointsZ[ nIndex+1 ] );
+            nIndex++;
+        }
+        m_Boxes[ nBox ].nMax[2] = nIndex;
+    }
+
+    void CComponentCollidable::RemoveObject( uint nBox )
+    {
+    }
+
+    void CComponentCollidable::AddPair( uint nObject0, uint nObject1 )
+    {
+        uint64 nPair = (nObject0 << 32) & nObject1;
+    }
+
+    void CComponentCollidable::RemovePair( uint nObject0, uint nObject1 )
+    {
+        uint64 nPair = (nObject0 << 32) & nObject1;
     }
 
     CComponentCollidable::~CComponentCollidable() 
@@ -191,7 +417,7 @@ namespace Riot
         // Build the scene graph
 
         // Draw the graphs
-        if( gnShowBoundingVolumes == true )
+        if( gnShowBoundingVolumes )
         {
             m_pObjectGraph->DrawNode( Engine::GetRenderer(), RVector3( 1.0f, 1.0f, 1.0f ) );
         }
