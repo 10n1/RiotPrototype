@@ -6,7 +6,7 @@ ipch
 obj
 *.suo
 *.DS_Store
-copy.bat
 *.exe
 *.xcbkptlist
 *.xcuserstate
+projects
