@@ -10,3 +10,6 @@ obj
 *.xcbkptlist
 *.xcuserstate
 projects
+*.lik
+*.pdb
+*.ilk

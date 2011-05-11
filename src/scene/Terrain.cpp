@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/8/2011 7:56:50 PM
+Modified:       5/10/2011 6:21:59 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -259,7 +259,7 @@ namespace Riot
         sint nMed = 0;
         sint nLow = 0;
 
-        CalculateTileCenter( 0.0f, 0.0f, nCenterX, nCenterY );
+        CalculateTileCenter( 10.0f, 10.0f, nCenterX, nCenterY );
 
         m_nCurrX = nCenterX;
         m_nCurrY = nCenterY;

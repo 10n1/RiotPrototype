@@ -2,7 +2,7 @@
 File:           Thread.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       5/7/2011 10:11:12 AM
+Modified:       5/10/2011 9:36:21 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Thread.h"
@@ -117,7 +117,7 @@ namespace Riot
                 AtomicDecrement( pTask->pCompletion );
 
                 // Make sure it can't get run again
-                pTask->pFunc = NULL;
+               // pTask->pFunc = NULL;
 
                 if( AtomicCompareAndSwap( pCompletion, 0, 0 ) == 0 )
                     break;

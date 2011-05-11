@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/9/2011 10:53:24 PM
+Modified:       5/10/2011 9:59:42 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -34,16 +34,16 @@ namespace Riot
         enum
         {
             eSAPBit = 0x80000000,
-            eSAPMaxMask = 0x80000000,
-            eSAPMinMask = 0x7FFFFFFF,
+            eSAPMinMask = 0x80000000,
+            eSAPMaxMask = 0x7FFFFFFF,
             eSAPClearMask = 0x7FFFFFFF,
         };
 
         inline uint IsMin( uint nIndex ) 
         {
             if( nIndex & eSAPBit )
-                return 0;
-            return 1;
+                return 1;
+            return 0;
         }
         //-----------------------------------------------------------------------------
         //  TEndPoint
@@ -73,6 +73,8 @@ namespace Riot
         struct TSAPPair
         {
             uint64 nPair;   // Left 32 bits are object 1, right 32 are object 2
+            uint   nObject0;
+            uint   nObject1;
             uint   nCount;  // Overlap count. Only actually overlapping when this is 3
         };
 
@@ -83,13 +85,19 @@ namespace Riot
         TEndPoint   m_EndPointsZ[ MaxComponents * 2 ];
 
         uint        m_nNumPairs;
+        uint        m_nNumBoxes;
 
         uint AddObject( const RAABB& box, uint nObject );
         void UpdateObject( const RAABB& box, uint nBox );
+        void UpdateXAxis( float fMin, float fMax, uint nBox );
+        void UpdateYAxis( float fMin, float fMax, uint nBox );
+        void UpdateZAxis( float fMin, float fMax, uint nBox );
         void RemoveObject( uint nBox );
 
         void AddPair( uint nObject0, uint nObject1 );
         void RemovePair( uint nObject0, uint nObject1 );
+
+        bool Overlap( uint nObject0, uint nObject1 );
 
         //-----------------------------------------------------------------------------
         //  TSceneNode
