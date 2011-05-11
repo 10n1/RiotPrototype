@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/10/2011 9:56:42 PM
+Modified:       5/10/2011 11:06:44 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -64,6 +64,14 @@ namespace Riot
         m_pObjectGraph->min = RVector3( -64.0f, -64.0f, -64.0f );
         m_pObjectGraph->m_pParent = NULL;
 
+        m_nNumPairs = 0;
+        m_nNumBoxes = 1;
+
+        Memset( m_EndPointsX, 0, sizeof( m_EndPointsX ) );
+        Memset( m_EndPointsY, 0, sizeof( m_EndPointsY ) );
+        Memset( m_EndPointsZ, 0, sizeof( m_EndPointsZ ) );
+        Memset( m_Boxes, 0, sizeof( m_Boxes ) );
+
         // Initialize the end points with min and max values
         m_EndPointsX[0].fValue = -FLT_MAX;
         m_EndPointsX[0].nIndex |= 0x7FFFFFFF;
@@ -79,9 +87,6 @@ namespace Riot
         m_EndPointsZ[0].nIndex |= 0x7FFFFFFF;
         m_EndPointsZ[1].fValue =  FLT_MAX;
         m_EndPointsZ[1].nIndex |= 0xFFFFFFFF;
-
-        m_nNumPairs = 0;
-        m_nNumBoxes = 1;
     }
 
     uint CComponentCollidable::AddObject( const RAABB& box, uint nObject )
@@ -92,19 +97,19 @@ namespace Riot
         // Add the box to the axes
         m_EndPointsX[ nArrayEnd + 1 ] = m_EndPointsX[ nArrayEnd - 1]; // Bump the end two away
         m_EndPointsX[ nArrayEnd - 1 ].fValue = box.min.x;
-        m_EndPointsX[ nArrayEnd - 1 ].nIndex = nObject & eSAPMinMask;
+        m_EndPointsX[ nArrayEnd - 1 ].nIndex = nObject | eSAPMinMask;
         m_EndPointsX[ nArrayEnd     ].fValue = box.max.x;
         m_EndPointsX[ nArrayEnd     ].nIndex = nObject;
         
         m_EndPointsY[ nArrayEnd + 1 ] = m_EndPointsY[ nArrayEnd - 1]; // Bump the end two away
         m_EndPointsY[ nArrayEnd - 1 ].fValue = box.min.y;
-        m_EndPointsY[ nArrayEnd - 1 ].nIndex = nObject & eSAPMinMask;
+        m_EndPointsY[ nArrayEnd - 1 ].nIndex = nObject | eSAPMinMask;
         m_EndPointsY[ nArrayEnd     ].fValue = box.max.y;
         m_EndPointsY[ nArrayEnd     ].nIndex = nObject;
         
         m_EndPointsZ[ nArrayEnd + 1 ] = m_EndPointsZ[ nArrayEnd - 1]; // Bump the end two away
         m_EndPointsZ[ nArrayEnd - 1 ].fValue = box.min.z;
-        m_EndPointsZ[ nArrayEnd - 1 ].nIndex = nObject & eSAPMinMask;
+        m_EndPointsZ[ nArrayEnd - 1 ].nIndex = nObject | eSAPMinMask;
         m_EndPointsZ[ nArrayEnd     ].fValue = box.max.z;
         m_EndPointsZ[ nArrayEnd     ].nIndex = nObject;
 
@@ -137,9 +142,6 @@ namespace Riot
 
     void CComponentCollidable::UpdateXAxis( float fMin, float fMax, uint nBox )
     {
-        TEndPoint& endA = m_EndPointsX[0];
-        TEndPoint& endB = m_EndPointsX[1];
-
         //////////////////////////////////////////
         // X Axis first
         sint  nMinIndex = m_Boxes[ nBox ].nMin[0];
@@ -155,38 +157,28 @@ namespace Riot
         // Mins first
         nIndex = nMinIndex;
 
-        endA = m_EndPointsX[ nIndex ];
-        endB = m_EndPointsX[ nIndex-1 ];
         // First move left
-        while( endA.fValue < endB.fValue )
+        while( m_EndPointsX[ nIndex ].fValue < m_EndPointsX[ nIndex-1 ].fValue )
         {
-            if( !IsMin( endB.nIndex ) )
+            if( !IsMin( m_EndPointsX[ nIndex-1 ].nIndex ) )
             {
                 // The min passed a max, report a collision
-                AddPair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+                AddPair( m_EndPointsX[ nIndex ].nIndex & eSAPClearMask, m_EndPointsX[ nIndex-1 ].nIndex & eSAPClearMask );
             }
-            Swap( endA, endB );
+            Swap( m_EndPointsX[ nIndex ], m_EndPointsX[ nIndex-1 ] );
             --nIndex;
-
-            endA = m_EndPointsX[ nIndex ];
-            endB = m_EndPointsX[ nIndex-1 ];
         }
-        // Then right
-        endA = m_EndPointsX[ nIndex ];
-        endB = m_EndPointsX[ nIndex+1 ];
 
-        while( endA.fValue > endB.fValue )
+        // Then right
+        while( m_EndPointsX[ nIndex ].fValue > m_EndPointsX[ nIndex+1 ].fValue )
         {
-            if( !IsMin( endB.nIndex ) )
+            if( !IsMin( m_EndPointsX[ nIndex+1 ].nIndex ) )
             {
                 // The min passed a max, remove the collision
-                RemovePair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+                RemovePair( m_EndPointsX[ nIndex ].nIndex & eSAPClearMask, m_EndPointsX[ nIndex+1 ].nIndex & eSAPClearMask );
             }
-            Swap( endA, endB );
+            Swap( m_EndPointsX[ nIndex ], m_EndPointsX[ nIndex+1 ] );
             ++nIndex;
-
-            endA = m_EndPointsX[ nIndex ];
-            endB = m_EndPointsX[ nIndex+1 ];
         }
 
         m_Boxes[ nBox ].nMin[0] = nIndex;
@@ -195,38 +187,28 @@ namespace Riot
         // Then maxes
         nIndex = nMaxIndex;
 
-        endA = m_EndPointsX[ nIndex ];
-        endB = m_EndPointsX[ nIndex-1 ];
         // First move left
-        while( endA.fValue < endB.fValue )
+        while( m_EndPointsX[ nIndex ].fValue < m_EndPointsX[ nIndex-1 ].fValue )
         {
-            if( IsMin( endB.nIndex ) )
+            if( IsMin( m_EndPointsX[ nIndex-1 ].nIndex ) )
             {
-                // The max passed a max, report a collision
-                RemovePair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+                // The min passed a max, report a collision
+                RemovePair( m_EndPointsX[ nIndex ].nIndex & eSAPClearMask, m_EndPointsX[ nIndex-1 ].nIndex & eSAPClearMask );
             }
-            Swap( endA, endB );
+            Swap( m_EndPointsX[ nIndex ], m_EndPointsX[ nIndex-1 ] );
             --nIndex;
-
-            endA = m_EndPointsX[ nIndex ];
-            endB = m_EndPointsX[ nIndex-1 ];
         }
+
         // Then right
-        endA = m_EndPointsX[ nIndex ];
-        endB = m_EndPointsX[ nIndex+1 ];
-
-        while( endA.fValue > endB.fValue )
+        while( m_EndPointsX[ nIndex ].fValue > m_EndPointsX[ nIndex+1 ].fValue )
         {
-            if( IsMin( endB.nIndex ) )
+            if( IsMin( m_EndPointsX[ nIndex+1 ].nIndex ) )
             {
-                // The max passed a max, remove the collision
-                AddPair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+                // The min passed a max, remove the collision
+                AddPair( m_EndPointsX[ nIndex ].nIndex & eSAPClearMask, m_EndPointsX[ nIndex+1 ].nIndex & eSAPClearMask );
             }
-            Swap( endA, endB );
+            Swap( m_EndPointsX[ nIndex ], m_EndPointsX[ nIndex+1 ] );
             ++nIndex;
-
-            endA = m_EndPointsX[ nIndex ];
-            endB = m_EndPointsX[ nIndex+1 ];
         }
 
         m_Boxes[ nBox ].nMax[0] = nIndex;
@@ -234,9 +216,6 @@ namespace Riot
 
     void CComponentCollidable::UpdateYAxis( float fMin, float fMax, uint nBox )
     {
-        TEndPoint& endA = m_EndPointsY[0];
-        TEndPoint& endB = m_EndPointsY[1];
-
         //////////////////////////////////////////
         // Y Axis first
         sint  nMinIndex = m_Boxes[ nBox ].nMin[1];
@@ -252,38 +231,28 @@ namespace Riot
         // Mins first
         nIndex = nMinIndex;
 
-        endA = m_EndPointsY[ nIndex ];
-        endB = m_EndPointsY[ nIndex-1 ];
         // First move left
-        while( endA.fValue < endB.fValue )
+        while( m_EndPointsY[ nIndex ].fValue < m_EndPointsY[ nIndex-1 ].fValue )
         {
-            if( !IsMin( endB.nIndex ) )
+            if( !IsMin( m_EndPointsY[ nIndex-1 ].nIndex ) )
             {
                 // The min passed a max, report a collision
-                AddPair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+                AddPair( m_EndPointsY[ nIndex ].nIndex & eSAPClearMask, m_EndPointsY[ nIndex-1 ].nIndex & eSAPClearMask );
             }
-            Swap( endA, endB );
+            Swap( m_EndPointsY[ nIndex ], m_EndPointsY[ nIndex-1 ] );
             --nIndex;
-
-            endA = m_EndPointsY[ nIndex ];
-            endB = m_EndPointsY[ nIndex-1 ];
         }
-        // Then right
-        endA = m_EndPointsY[ nIndex ];
-        endB = m_EndPointsY[ nIndex+1 ];
 
-        while( endA.fValue > endB.fValue )
+        // Then right
+        while( m_EndPointsY[ nIndex ].fValue > m_EndPointsY[ nIndex+1 ].fValue )
         {
-            if( !IsMin( endB.nIndex ) )
+            if( !IsMin( m_EndPointsY[ nIndex+1 ].nIndex ) )
             {
                 // The min passed a max, remove the collision
-                RemovePair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+                RemovePair( m_EndPointsY[ nIndex ].nIndex & eSAPClearMask, m_EndPointsY[ nIndex+1 ].nIndex & eSAPClearMask );
             }
-            Swap( endA, endB );
+            Swap( m_EndPointsY[ nIndex ], m_EndPointsY[ nIndex+1 ] );
             ++nIndex;
-
-            endA = m_EndPointsY[ nIndex ];
-            endB = m_EndPointsY[ nIndex+1 ];
         }
 
         m_Boxes[ nBox ].nMin[1] = nIndex;
@@ -292,38 +261,28 @@ namespace Riot
         // Then maxes
         nIndex = nMaxIndex;
 
-        endA = m_EndPointsY[ nIndex ];
-        endB = m_EndPointsY[ nIndex-1 ];
         // First move left
-        while( endA.fValue < endB.fValue )
+        while( m_EndPointsY[ nIndex ].fValue < m_EndPointsY[ nIndex-1 ].fValue )
         {
-            if( IsMin( endB.nIndex ) )
+            if( IsMin( m_EndPointsY[ nIndex-1 ].nIndex ) )
             {
-                // The max passed a max, report a collision
-                RemovePair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+                // The min passed a max, report a collision
+                RemovePair( m_EndPointsY[ nIndex ].nIndex & eSAPClearMask, m_EndPointsY[ nIndex-1 ].nIndex & eSAPClearMask );
             }
-            Swap( endA, endB );
+            Swap( m_EndPointsY[ nIndex ], m_EndPointsY[ nIndex-1 ] );
             --nIndex;
-
-            endA = m_EndPointsY[ nIndex ];
-            endB = m_EndPointsY[ nIndex-1 ];
         }
+
         // Then right
-        endA = m_EndPointsY[ nIndex ];
-        endB = m_EndPointsY[ nIndex+1 ];
-
-        while( endA.fValue > endB.fValue )
+        while( m_EndPointsY[ nIndex ].fValue > m_EndPointsY[ nIndex+1 ].fValue )
         {
-            if( IsMin( endB.nIndex ) )
+            if( IsMin( m_EndPointsY[ nIndex+1 ].nIndex ) )
             {
-                // The max passed a max, remove the collision
-                AddPair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+                // The min passed a max, remove the collision
+                AddPair( m_EndPointsY[ nIndex ].nIndex & eSAPClearMask, m_EndPointsY[ nIndex+1 ].nIndex & eSAPClearMask );
             }
-            Swap( endA, endB );
+            Swap( m_EndPointsY[ nIndex ], m_EndPointsY[ nIndex+1 ] );
             ++nIndex;
-
-            endA = m_EndPointsY[ nIndex ];
-            endB = m_EndPointsY[ nIndex+1 ];
         }
 
         m_Boxes[ nBox ].nMax[1] = nIndex;
@@ -331,9 +290,6 @@ namespace Riot
 
     void CComponentCollidable::UpdateZAxis( float fMin, float fMax, uint nBox )
     {
-        TEndPoint& endA = m_EndPointsZ[0];
-        TEndPoint& endB = m_EndPointsZ[1];
-
         //////////////////////////////////////////
         // Z Axis first
         sint  nMinIndex = m_Boxes[ nBox ].nMin[2];
@@ -349,38 +305,28 @@ namespace Riot
         // Mins first
         nIndex = nMinIndex;
 
-        endA = m_EndPointsZ[ nIndex ];
-        endB = m_EndPointsZ[ nIndex-1 ];
         // First move left
-        while( endA.fValue < endB.fValue )
+        while( m_EndPointsZ[ nIndex ].fValue < m_EndPointsZ[ nIndex-1 ].fValue )
         {
-            if( !IsMin( endB.nIndex ) )
+            if( !IsMin( m_EndPointsZ[ nIndex-1 ].nIndex ) )
             {
                 // The min passed a max, report a collision
-                AddPair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+                AddPair( m_EndPointsZ[ nIndex ].nIndex & eSAPClearMask, m_EndPointsZ[ nIndex-1 ].nIndex & eSAPClearMask );
             }
-            Swap( endA, endB );
+            Swap( m_EndPointsZ[ nIndex ], m_EndPointsZ[ nIndex-1 ] );
             --nIndex;
-
-            endA = m_EndPointsZ[ nIndex ];
-            endB = m_EndPointsZ[ nIndex-1 ];
         }
-        // Then right
-        endA = m_EndPointsZ[ nIndex ];
-        endB = m_EndPointsZ[ nIndex+1 ];
 
-        while( endA.fValue > endB.fValue )
+        // Then right
+        while( m_EndPointsZ[ nIndex ].fValue > m_EndPointsZ[ nIndex+1 ].fValue )
         {
-            if( !IsMin( endB.nIndex ) )
+            if( !IsMin( m_EndPointsZ[ nIndex+1 ].nIndex ) )
             {
                 // The min passed a max, remove the collision
-                RemovePair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+                RemovePair( m_EndPointsZ[ nIndex ].nIndex & eSAPClearMask, m_EndPointsZ[ nIndex+1 ].nIndex & eSAPClearMask );
             }
-            Swap( endA, endB );
+            Swap( m_EndPointsZ[ nIndex ], m_EndPointsZ[ nIndex+1 ] );
             ++nIndex;
-
-            endA = m_EndPointsZ[ nIndex ];
-            endB = m_EndPointsZ[ nIndex+1 ];
         }
 
         m_Boxes[ nBox ].nMin[2] = nIndex;
@@ -389,38 +335,28 @@ namespace Riot
         // Then maxes
         nIndex = nMaxIndex;
 
-        endA = m_EndPointsZ[ nIndex ];
-        endB = m_EndPointsZ[ nIndex-1 ];
         // First move left
-        while( endA.fValue < endB.fValue )
+        while( m_EndPointsZ[ nIndex ].fValue < m_EndPointsZ[ nIndex-1 ].fValue )
         {
-            if( IsMin( endB.nIndex ) )
+            if( IsMin( m_EndPointsZ[ nIndex-1 ].nIndex ) )
             {
-                // The max passed a max, report a collision
-                RemovePair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+                // The min passed a max, report a collision
+                RemovePair( m_EndPointsZ[ nIndex ].nIndex & eSAPClearMask, m_EndPointsZ[ nIndex-1 ].nIndex & eSAPClearMask );
             }
-            Swap( endA, endB );
+            Swap( m_EndPointsZ[ nIndex ], m_EndPointsZ[ nIndex-1 ] );
             --nIndex;
-
-            endA = m_EndPointsZ[ nIndex ];
-            endB = m_EndPointsZ[ nIndex-1 ];
         }
+
         // Then right
-        endA = m_EndPointsZ[ nIndex ];
-        endB = m_EndPointsZ[ nIndex+1 ];
-
-        while( endA.fValue > endB.fValue )
+        while( m_EndPointsZ[ nIndex ].fValue > m_EndPointsZ[ nIndex+1 ].fValue )
         {
-            if( IsMin( endB.nIndex ) )
+            if( IsMin( m_EndPointsZ[ nIndex+1 ].nIndex ) )
             {
-                // The max passed a max, remove the collision
-                AddPair( endA.nIndex & eSAPClearMask, endB.nIndex & eSAPClearMask );
+                // The min passed a max, remove the collision
+                AddPair( m_EndPointsZ[ nIndex ].nIndex & eSAPClearMask, m_EndPointsZ[ nIndex+1 ].nIndex & eSAPClearMask );
             }
-            Swap( endA, endB );
+            Swap( m_EndPointsZ[ nIndex ], m_EndPointsZ[ nIndex+1 ] );
             ++nIndex;
-
-            endA = m_EndPointsZ[ nIndex ];
-            endB = m_EndPointsZ[ nIndex+1 ];
         }
 
         m_Boxes[ nBox ].nMax[2] = nIndex;
@@ -444,12 +380,14 @@ namespace Riot
 
     void CComponentCollidable::AddPair( uint nObject0, uint nObject1 )
     {
-        uint64 nPairA = (nObject0 << 32) | nObject1;
-        uint64 nPairB = (nObject1 << 32) | nObject0;
+        uint64 nPairA = nObject0;
+        nPairA = ( nPairA << 32) | nObject1;
+        uint64 nPairB = nObject1;
+        nPairB = ( nPairB << 32) | nObject0;
 
         // XOR them together so that A colliding with B is the same as
         //  B colliding with A
-        uint64 nPair = nPairA ^ nPairB;
+        uint64 nPair = nPairA;
 
         // See if the collision already exists
         for( uint i = 0; i < m_nNumPairs; ++i )
@@ -472,12 +410,14 @@ namespace Riot
 
     void CComponentCollidable::RemovePair( uint nObject0, uint nObject1 )
     {
-        uint64 nPairA = (nObject0 << 32) | nObject1;
-        uint64 nPairB = (nObject1 << 32) | nObject0;
+        uint64 nPairA = nObject0;
+        nPairA = ( nPairA << 32) | nObject1;
+        uint64 nPairB = nObject1;
+        nPairB = ( nPairB << 32) | nObject0;
 
         // XOR them together so that A colliding with B is the same as
         //  B colliding with A
-        uint64 nPair = nPairA ^ nPairB;
+        uint64 nPair = nPairA;
 
         // Make sure the collision already exists
         for( uint i = 0; i < m_nNumPairs; ++i )
@@ -496,7 +436,7 @@ namespace Riot
         }
 
         // It doesn't, assert for now
-        ASSERT( false );
+        //ASSERT( false );
     }
 
         //bool Overlap( uint nObject0, uint nObject1 );
@@ -525,9 +465,9 @@ namespace Riot
         // the graph
         m_ObjectSceneNodes[m_nIndex].m_pParent = NULL;
 
-        RAABB inf( RVector3( FLT_MAX - 2.0f, FLT_MAX - 2.0f, FLT_MAX - 2.0f ), RVector3( FLT_MAX - 1.0f, FLT_MAX - 1.0f, FLT_MAX - 1.0f ) );
+        static const RAABB inf( RVector3( FLT_MAX - 2.0f, FLT_MAX - 2.0f, FLT_MAX - 2.0f ), RVector3( FLT_MAX - 1.0f, FLT_MAX - 1.0f, FLT_MAX - 1.0f ) );
 
-        AddObject( inf, nObject );
+        AddObject( inf, m_nIndex );
 
         /********************************/
         PostAttach( nObject );
@@ -754,7 +694,7 @@ namespace Riot
                     }
                 }
 
-                UpdateObject( RAABB( pThisNode->min, pThisNode->max ), m_pObjectIndices[ nSlot ] );
+                UpdateObject( RAABB( pThisNode->min, pThisNode->max ), nSlot );
             }
             break;
         case eComponentMessageBoundingVolumeType:

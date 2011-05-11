@@ -3,7 +3,7 @@ File:           utility.h
 Purpose:        Various stdlib functions
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       4/27/2011 6:14:40 PM
+Modified:       5/10/2011 10:39:55 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _UTILITY_H_
@@ -11,7 +11,7 @@ Modified by:    Kyle Weicht
 #include "types.h"
 #include "config.h"
 
-#include <xmmintrin.h>
+#include <immintrin.h>
 
 //-----------------------------------------------------------------------------
 //  C standard library replacement functions
