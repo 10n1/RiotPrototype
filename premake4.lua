@@ -1,7 +1,7 @@
 -- A solution contains projects, and defines the available configurations
 solution "Riot"
    configurations { "Debug", "Release" }
-   platforms { "native", "x32", "x64" }
+   platforms { "x32", "x64" }
    location "projects"
  
    -- A project defines one build target
@@ -11,8 +11,9 @@ solution "Riot"
       files { "**.h", "**.cpp", "**.hlsl", "**.png", "**.dds" }
 	  location "projects"
 	  includedirs { "src/core", "src/global", "src/gfx", "src/platform", "src/scene", "src", "src/gfx/ogl" }
-	  flags { "unicode", "floatfast", "extrawarnings", "enableSSE", "enableSSE2" }
-	  debugdir "/"
+	  flags { "unicode", "floatfast", "enableSSE", "enableSSE2" }
+      debugdir "/"
+      excludes "ExternalDependencies/**"
  
       configuration "Debug"
          defines { "DEBUG", "_DEBUG" }
@@ -31,7 +32,10 @@ solution "Riot"
 		buildoptions "/MP"
 		
 	configuration "macosx"
+		files { "**.m", "**.mm", "**.xib" }
 		excludes "**Win32**"
 		includedirs { "src/platform/osx" }
+		links { "Cocoa.framework", "OpenGL.framework", "AppKit.framework", "Foundation.framework", "CoreData.framework" }
+		buildoptions "-x objective-c++"
 		
 		
