@@ -11,7 +11,7 @@ Modified by:    Kyle Weicht
 #include "types.h"
 #include "config.h"
 
-#include <immintrin.h>
+#include <xmmintrin.h>
 
 //-----------------------------------------------------------------------------
 //  C standard library replacement functions

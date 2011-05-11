@@ -10,3 +10,4 @@ obj
 *.xcbkptlist
 *.xcuserstate
 projects
+*.app
