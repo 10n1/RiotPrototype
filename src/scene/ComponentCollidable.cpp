@@ -2,7 +2,7 @@
 File:           ComponentCollidable.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/11/2011 10:28:11 PM
+Modified:       5/11/2011 10:34:57 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentCollidable.h"
@@ -57,12 +57,6 @@ namespace Riot
 
         // Make sure we don't have any leaves
         m_pTerrain = NULL;
-
-        // Create the head of the object graph
-        m_pObjectGraph  = new TObjectParentNode;
-        m_pObjectGraph->max = RVector3(  64.0f,  64.0f,  64.0f );
-        m_pObjectGraph->min = RVector3( -64.0f, -64.0f, -64.0f );
-        m_pObjectGraph->m_pParent = NULL;
 
         m_nNumPairs = 0;
         m_nNumBoxes = 1;
@@ -577,15 +571,11 @@ namespace Riot
         {
             if( CheckPair( m_Pairs[i], nObject0, nObject1 ) )
             {
-                //m_Pairs[i].nCount++;
-                //
-                //ASSERT( m_Pairs[i].nCount <= 3 );
                 return;
             }
         }
 
         // It doesn't, add it
-        //m_Pairs[ m_nNumPairs ].nCount = 1;
         m_Pairs[ m_nNumPairs ].nPair = nPair;
         m_Pairs[ m_nNumPairs ].nObject0 = nObject0;
         m_Pairs[ m_nNumPairs ].nObject1 = nObject1;
@@ -609,13 +599,7 @@ namespace Riot
         {
             if( CheckPair( m_Pairs[i], nObject0, nObject1 ) )
             {
-                //--m_Pairs[i].nCount;
-
-                // Theres no more collision on any axis
-                //if( m_Pairs[i].nCount == 0 )
-                {
-                    Swap( m_Pairs[i], m_Pairs[ --m_nNumPairs ] );
-                }
+                Swap( m_Pairs[i], m_Pairs[ --m_nNumPairs ] );
                 return;
             }
         }
@@ -624,11 +608,8 @@ namespace Riot
         //ASSERT( false );
     }
 
-        //bool Overlap( uint nObject0, uint nObject1 );
-
     CComponentCollidable::~CComponentCollidable() 
     {
-        SAFE_DELETE( m_pObjectGraph );
     } 
 
     //-----------------------------------------------------------------------------
@@ -642,13 +623,6 @@ namespace Riot
 
         // Now initialize this component
         Memset( &m_Volume[m_nIndex], 0, sizeof(RSphere) );
-
-        // Add it to the node
-        m_ObjectSceneNodes[m_nIndex].m_nObject = m_nIndex;
-        // Set its parent to null, we don't
-        // want to add uninitialized objects to
-        // the graph
-        m_ObjectSceneNodes[m_nIndex].m_pParent = NULL;
 
         static const RAABB inf( RVector3( FLT_MAX - 2.0f, FLT_MAX - 2.0f, FLT_MAX - 2.0f ), RVector3( FLT_MAX - 1.0f, FLT_MAX - 1.0f, FLT_MAX - 1.0f ) );
 
@@ -669,10 +643,8 @@ namespace Riot
         
         // Now reorder the data
         COMPONENT_USE_PREV_DATA( m_Volume );
-        COMPONENT_USE_PREV_DATA( m_ObjectSceneNodes );
 
         // Perform any custom reattchment
-        m_ObjectSceneNodes[m_nIndex].m_pParent = NULL;
 
         /********************************/
         PostReattach( nObject );
@@ -688,17 +660,10 @@ namespace Riot
         /********************************/
 
         // Perform any custom detachment stuff
-        TObjectParentNode* pParent = (TObjectParentNode*)m_ObjectSceneNodes[m_nIndex].m_pParent;
-        if( pParent )
-        {
-            pParent->RemoveObject( &m_ObjectSceneNodes[m_nIndex] );
-        }
-
         RemoveObject( nObject );
 
         // Now reorder the data
         COMPONENT_REORDER_DATA( m_Volume );
-        COMPONENT_REORDER_DATA( m_ObjectSceneNodes );
 
         /********************************/
         PostDetach( nObject );
@@ -714,15 +679,9 @@ namespace Riot
         /********************************/
 
         // Perform any custom detachment stuff
-        TObjectParentNode* pParent = (TObjectParentNode*)m_ObjectSceneNodes[m_nIndex].m_pParent;
-        if( pParent )
-        {
-            pParent->RemoveObject( &m_ObjectSceneNodes[m_nIndex] );
-        }
 
         // Now reorder the data
         COMPONENT_REORDER_SAVE_DATA( m_Volume );
-        COMPONENT_REORDER_SAVE_DATA( m_ObjectSceneNodes );
 
         /********************************/
         PostDetachAndSave( nObject );
@@ -741,7 +700,6 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REMOVE_PREV_DATA( m_Volume );
-        COMPONENT_REMOVE_PREV_DATA( m_ObjectSceneNodes );
 
         /********************************/
         PostRemoveInactive( nObject );
@@ -756,19 +714,7 @@ namespace Riot
         CTaskManager*   pTaskManager = CTaskManager::GetInstance();
 
         //////////////////////////////////////////
-        // Build the scene graph
-
-        // Draw the graphs
-        if( gnShowBoundingVolumes )
-        {
-            m_pObjectGraph->DrawNode( Engine::GetRenderer(), RVector3( 1.0f, 1.0f, 1.0f ) );
-        }
-
-        // Remove dead leaves
-        m_pObjectGraph->Prune();
-
-        //////////////////////////////////////////
-        // Now process them
+        // Process pairs
         for( uint i = 0; i < m_nNumPairs; ++i )
         {
             //if( m_Pairs[i].nCount == 3 )
@@ -806,9 +752,6 @@ namespace Riot
                 int x = 0;
                 pManager->PostMessage( eComponentMessageTerrainCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
             }
-
-            // Then against other objects
-            //pComponent->ObjectObjectCollision( pComponent->m_pObjectGraph, &pComponent->m_ObjectSceneNodes[i] );
         }
     }
 
@@ -847,7 +790,6 @@ namespace Riot
         case eComponentMessageTransform:
             {
                 RTransform&         newTransform = *((RTransform*)msg.m_pData);
-                TObjectLeafNode*    pThisNode = &m_ObjectSceneNodes[nSlot];
 
                 m_Volume[nSlot].position = newTransform.position;  
                 float fRad = m_Volume[nSlot].radius;
@@ -855,34 +797,10 @@ namespace Riot
                 RVector3 vMax = RVector3(  fRad,  fRad,  fRad );
                 RVector3 vMin = RVector3( -fRad, -fRad, -fRad );
 
-                pThisNode->max = vMax + newTransform.position;
-                pThisNode->min = vMin + newTransform.position;
+                vMax = vMax + newTransform.position;
+                vMin = vMin + newTransform.position;
 
-
-                // If we don't have a parent, see if we can go in the graph
-                if( pThisNode->m_pParent == NULL )
-                {
-                    if( AABBCollision( *m_pObjectGraph, *pThisNode ) )
-                    {
-                        m_pObjectGraph->AddObjectLeaf( pThisNode );
-                    }
-                }
-                else if( !AABBCollision( *pThisNode->m_pParent, *pThisNode ) )
-                {
-                    TObjectParentNode* pParent = (TObjectParentNode*)pThisNode->m_pParent;
-                    // We're no longer in our parent, remove ourself and
-                    //  readd to the list
-                    if( pParent->RemoveObject( pThisNode ) )
-                    {
-                        // We were successfully removed, readd ourselves
-                        m_pObjectGraph->AddObjectLeaf( pThisNode );
-                    }
-                }
-
-                if( nSlot == 2 )
-                    int x = 0;
-
-                UpdateObject( RAABB( pThisNode->min, pThisNode->max ), nSlot );
+                UpdateObject( RAABB( vMin, vMax ), nSlot );
             }
             break;
         case eComponentMessageBoundingVolumeType:
@@ -898,47 +816,5 @@ namespace Riot
             }
         }
     }
-
-    //-----------------------------------------------------------------------------
-    //  ObjectObjectCollision
-    //  Performs object-object collision
-    //-----------------------------------------------------------------------------
-    void CComponentCollidable::ObjectObjectCollision( TSceneNode* pGraph, TSceneNode* pNode )
-    {
-        TObjectParentNode* pParentNode = ((TObjectParentNode*)pGraph);
-
-        if( AABBCollision( *pParentNode, *pNode ) )
-        {
-            if( !pParentNode->m_nLowestParent )
-            {
-                for( uint i = 0; i < pParentNode->m_nNumChildren; ++i )
-                {
-                    ObjectObjectCollision( pParentNode->m_pChildren[i], pNode );
-                }
-            }
-            else
-            {
-                for( uint i = 0; i < pParentNode->m_nNumChildren; ++i )
-                {
-                    // Don't check against yourself
-                    if( pParentNode->m_pChildren[i] == pNode ) continue;
-
-                    // The two objects leaf nodes collide, perform "real" object
-                    //   collision between them
-                    if( AABBCollision( *pParentNode->m_pChildren[i], *pNode ) )
-                    {
-                        uint nThisObject = ((TObjectLeafNode*)pNode)->m_nObject;
-                        uint nThatObject = ((TObjectLeafNode*)pParentNode->m_pChildren[i])->m_nObject;
-
-                        if( SphereSphereCollision( m_Volume[nThisObject], m_Volume[nThatObject] ) )
-                        {
-                            Engine::GetObjectManager()->PostMessage( eComponentMessageObjectCollision, m_pObjectIndices[ nThisObject ], nThatObject, ComponentType );
-                        }
-                    }
-                }
-            }
-        }
-    }
-
 
 } // namespace Riot
