@@ -4,7 +4,7 @@ Purpose:        Allows an object to collide with others or
                 be collided with
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/10/2011 9:59:42 PM
+Modified:       5/11/2011 10:26:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTCOLLIDABLE_H_
@@ -39,12 +39,6 @@ namespace Riot
             eSAPClearMask = 0x7FFFFFFF,
         };
 
-        inline uint IsMin( uint nIndex ) 
-        {
-            if( nIndex & eSAPBit )
-                return 1;
-            return 0;
-        }
         //-----------------------------------------------------------------------------
         //  TEndPoint
         //  An end point for the SAP algorithm
@@ -75,7 +69,7 @@ namespace Riot
             uint64 nPair;   // Left 32 bits are object 1, right 32 are object 2
             uint   nObject0;
             uint   nObject1;
-            uint   nCount;  // Overlap count. Only actually overlapping when this is 3
+            //uint   nCount;  // Overlap count. Only actually overlapping when this is 3
         };
 
         TSAPPair    m_Pairs[ MaxComponents ];
@@ -97,7 +91,55 @@ namespace Riot
         void AddPair( uint nObject0, uint nObject1 );
         void RemovePair( uint nObject0, uint nObject1 );
 
-        bool Overlap( uint nObject0, uint nObject1 );
+        inline bool Overlap( uint nObject0, uint nObject1 )
+        {
+            //for( uint j = 0; j < 3; ++j )
+            //{
+            //    uint i = 1;
+            //    if( m_Boxes[nObject0].nMax[i] < m_Boxes[nObject1].nMin[i] )
+            //        return false;
+            //    
+            //    if( m_Boxes[nObject1].nMax[i] < m_Boxes[nObject0].nMin[i] )
+            //        return false;
+            //}
+            if( m_EndPointsX[ m_Boxes[nObject0].nMax[0] ].fValue < m_EndPointsX[ m_Boxes[nObject1].nMin[0] ].fValue )
+                return false;
+            if( m_EndPointsX[ m_Boxes[nObject1].nMax[0] ].fValue < m_EndPointsX[ m_Boxes[nObject0].nMin[0] ].fValue )
+                return false;
+
+            if( m_EndPointsY[ m_Boxes[nObject0].nMax[1] ].fValue < m_EndPointsY[ m_Boxes[nObject1].nMin[1] ].fValue )
+                return false;
+            if( m_EndPointsY[ m_Boxes[nObject1].nMax[1] ].fValue < m_EndPointsY[ m_Boxes[nObject0].nMin[1] ].fValue )
+                return false;
+
+            if( m_EndPointsZ[ m_Boxes[nObject0].nMax[2] ].fValue < m_EndPointsZ[ m_Boxes[nObject1].nMin[2] ].fValue )
+                return false;
+            if( m_EndPointsZ[ m_Boxes[nObject1].nMax[2] ].fValue < m_EndPointsZ[ m_Boxes[nObject0].nMin[2] ].fValue )
+                return false;
+
+            return true;
+        }
+
+        inline uint IsMin( uint nIndex ) 
+        {
+            return nIndex & eSAPBit;
+        }
+
+        inline uint IsMax( uint nIndex )
+        {
+            return !IsMin( nIndex );
+        }
+
+        inline bool CheckPair( TSAPPair& pair, uint nObj0, uint nObj1 )
+        {
+            if( (  pair.nObject0 == nObj0 
+                && pair.nObject1 == nObj1 ) ||
+                (  pair.nObject1 == nObj0 
+                && pair.nObject0 == nObj1 ) )
+                return true;
+
+            return false;
+        }
 
         //-----------------------------------------------------------------------------
         //  TSceneNode
