@@ -3,7 +3,7 @@ File:           GraphicsObjects.h
 Purpose:        Interfaces for all the graphics objects in the engine
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/20/2011 8:47:43 PM
+Modified:       5/13/2011 4:23:40 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICSOBJECTS_H_
@@ -40,6 +40,37 @@ namespace Riot
     {
         CMesh*          pMesh;
         IGfxTexture2D*  pTexture;
+    };
+    
+    enum RenderMaterial
+    {
+
+    };
+
+    class CMaterial : public IRefCounted
+    {
+        friend class CRenderer;
+    public:
+        // CMaterial constructor
+        CMaterial();
+
+        // CMaterial destructor
+        ~CMaterial();
+        /***************************************\
+        | class methods                         |
+        \***************************************/
+
+        //-----------------------------------------------------------------------------
+        //  ApplyMaterial
+        //  Applies the material to the pipeline
+        //-----------------------------------------------------------------------------
+        void ApplyMaterial( void );
+
+    private:
+        /***************************************\
+        | class members                         |
+        \***************************************/
+        IGfxPixelShader*    m_pShader;
     };
 
 } // namespace Riot
