@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/8/2011 8:04:49 PM
+Modified:       5/14/2011 11:45:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -63,16 +63,15 @@ namespace Riot
         m_pWorldCB      = NULL;
 
         m_pDefaultMesh      = NULL;        
-        m_pDefaultVShader   = NULL;
-        m_pDefaultVLayout   = NULL;
-        m_pDefaultPShader   = NULL;
+        //m_pDefaultVShader   = NULL;
+        //m_pDefaultVLayout   = NULL;
         m_pDefaultTexture   = NULL;
         m_pLinearSamplerState   = NULL;
         m_pNearestSamplerState  = NULL;
 
-        m_pWireframeVLayout = NULL;
-        m_pWireframeVShader = NULL;
-        m_pWireframePShader = NULL;
+        //m_pWireframeVLayout = NULL;
+        //m_pWireframeVShader = NULL;
+        //m_pWireframePShader = NULL;
 
         m_pCurrentView  = NULL;
 
@@ -102,6 +101,9 @@ namespace Riot
 
         m_pPrevDebugRays = m_DebugRays[0];
         m_pCurrDebugRays = m_DebugRays[1];
+
+        Memset( m_ppVertexShaders, 0, sizeof( m_ppVertexShaders ) );
+        Memset( m_ppPixelShaders, 0, sizeof( m_ppPixelShaders ) );
     }
 
     //-----------------------------------------------------------------------------
@@ -109,6 +111,16 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Shutdown( void )
     {
+        for( uint i = 0; i < NUM_VERTEX_SHADERS; ++i )
+        {
+            SAFE_RELEASE( m_ppVertexShaders[i] );
+        }
+
+        for( uint i = 0; i < NUM_PIXEL_SHADERS; ++i )
+        {
+            SAFE_RELEASE( m_ppPixelShaders[i] );
+        }
+
         for( uint i = 0; i < m_nNumCommands; ++i )
         {
             SAFE_RELEASE( m_pCurrCommands[i].pMesh );
@@ -123,9 +135,9 @@ namespace Riot
 
         SAFE_RELEASE( m_pLineBuffer );
 
-        SAFE_RELEASE( m_pWireframeVLayout );
-        SAFE_RELEASE( m_pWireframeVShader );
-        SAFE_RELEASE( m_pWireframePShader );
+        //SAFE_RELEASE( m_pWireframeVLayout );
+        //SAFE_RELEASE( m_pWireframeVShader );
+        //SAFE_RELEASE( m_pWireframePShader );
 
         SAFE_RELEASE( m_pDebugBox );
         SAFE_RELEASE( m_pSphereMesh );
@@ -137,9 +149,8 @@ namespace Riot
         SAFE_RELEASE( m_pDefaultTexture );
         SAFE_RELEASE( m_pLinearSamplerState );
         SAFE_RELEASE( m_pDefaultMesh );
-        SAFE_RELEASE( m_pDefaultVShader );
-        SAFE_RELEASE( m_pDefaultVLayout );
-        SAFE_RELEASE( m_pDefaultPShader );
+        //SAFE_RELEASE( m_pDefaultVShader );
+        //SAFE_RELEASE( m_pDefaultVLayout );
 
         SAFE_RELEASE( m_pWorldCB );
         SAFE_RELEASE( m_pViewProjCB );
@@ -192,22 +203,17 @@ namespace Riot
     {
 #if USE_OPENGL
         const char szVertexShader[] =  "Assets/Shaders/BasicVertexShader.glsl";
-        const char szPixelShader[] =  "Assets/Shaders/BasicPixelShader.glsl";
 #else
         const char szVertexShader[] =  "Assets/Shaders/BasicVertexShader.hlsl";
-        const char szPixelShader[] =  "Assets/Shaders/BasicPixelShader.hlsl";
 #endif
 
         // Create the vertex shader/layout
-        m_pDevice->CreateVertexShaderAndLayout( szVertexShader, 
-            "main", 
-            VPosNormalTex::Layout, 
-            VPosNormalTex::LayoutSize,
-            &m_pDefaultVShader,
-            &m_pDefaultVLayout );
-        
-        // pixel shader
-        m_pDefaultPShader = m_pDevice->CreatePixelShader( szPixelShader, "main" );
+        //m_pDevice->CreateVertexShaderAndLayout( szVertexShader, 
+        //    "main", 
+        //    VPosNormalTex::Layout, 
+        //    VPosNormalTex::LayoutSize,
+        //    &m_pDefaultVShader,
+        //    &m_pDefaultVLayout );
 
         // sampler state
         m_pLinearSamplerState = m_pDevice->CreateSamplerState( GFX_TEXTURE_SAMPLE_LINEAR );
@@ -223,16 +229,9 @@ namespace Riot
         // debug box
         m_pDebugBox = CreateDynamicBox();
         
-        // Create the wireframe vertex shader/layout
-        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/PosColorVertexShader.hlsl", 
-            "main", 
-            VPosColor::Layout, 
-            VPosColor::LayoutSize,
-            &m_pWireframeVShader,
-            &m_pWireframeVLayout );
-        
-        // pixel shader
-        m_pWireframePShader = m_pDevice->CreatePixelShader( "Assets/Shaders/PosColorPixelShader.hlsl", "main" );
+        //////////////////////////////////////////
+        //  Load Shaders
+        LoadShaders();
 
         // a vertex shader for drawing lines
         
@@ -244,11 +243,39 @@ namespace Riot
         m_pLineBuffer = m_pDevice->CreateVertexBuffer( sizeof( pLineVertices ), pLineVertices );
 
         // ...finally, set them
-        m_pDevice->SetVertexLayout( m_pDefaultVLayout );
-        m_pDevice->SetVertexShader( m_pDefaultVShader );
-        m_pDevice->SetPixelShader( m_pDefaultPShader );
+        SetVertexShader( eVS3DPosNorTexStd );
+        SetPixelShader( ePS3DStd );
         m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
         m_pDevice->SetPSSamplerState( m_pLinearSamplerState );
+    }
+
+    //-----------------------------------------------------------------------------
+    //  LoadShaders
+    //  Loads all the shaders
+    //-----------------------------------------------------------------------------
+    void CRenderer::LoadShaders( void )
+    {
+        //////////////////////////////////////////
+        // Load the pixel shaders
+        m_ppPixelShaders[ ePS3DStd ] = m_pDevice->CreatePixelShader( "Assets/Shaders/BasicPixelShader.hlsl", "main" );
+        m_ppPixelShaders[ ePS3DColor ] = m_pDevice->CreatePixelShader( "Assets/Shaders/PosColorPixelShader.hlsl", "main" );
+        m_ppPixelShaders[ ePS2DTex ] = m_pDevice->CreatePixelShader( "Assets/Shaders/UI.hlsl", "PS" );
+
+        //////////////////////////////////////////
+        // Load the vertex shaders/layouts
+        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/BasicVertexShader.hlsl", 
+            "main", 
+            VPosNormalTex::Layout, 
+            VPosNormalTex::LayoutSize,
+            &m_ppVertexShaders[ eVS3DPosNorTexStd ],
+            &m_ppVertexLayouts[ eVS3DPosNorTexStd ] );
+        
+        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/PosColorVertexShader.hlsl", 
+            "main", 
+            VPosColor::Layout, 
+            VPosColor::LayoutSize,
+            &m_ppVertexShaders[ eVS3DPosColStd ],
+            &m_ppVertexLayouts[ eVS3DPosColStd ] );
     }
 
     //-----------------------------------------------------------------------------
@@ -287,10 +314,8 @@ namespace Riot
 
         SetWorldMatrix( RMatrix4Identity() );
 
-        
-        m_pDevice->SetVertexLayout( m_pDefaultVLayout );
-        m_pDevice->SetVertexShader( m_pDefaultVShader );
-        m_pDevice->SetPixelShader( m_pDefaultPShader );
+        SetVertexShader( eVS3DPosNorTexStd );
+        SetPixelShader( ePS3DStd );
         m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
         m_pDevice->SetPSSamplerState( m_pLinearSamplerState );
 
@@ -336,9 +361,8 @@ namespace Riot
         // Draw the debug volumes
         if( gnShowBoundingVolumes )
         {
-            m_pDevice->SetVertexShader( m_pWireframeVShader );
-            m_pDevice->SetVertexLayout( m_pWireframeVLayout );
-            m_pDevice->SetPixelShader(  m_pWireframePShader );
+            SetVertexShader( eVS3DPosColStd );
+            SetPixelShader( ePS3DColor );
 
             // Draw the spheres
             m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
@@ -424,9 +448,8 @@ namespace Riot
 
             m_pDevice->SetFillMode( GFX_FILL_SOLID );
             m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
-            m_pDevice->SetVertexShader( m_pDefaultVShader );
-            m_pDevice->SetVertexLayout( m_pDefaultVLayout );
-            m_pDevice->SetPixelShader( m_pDefaultPShader );
+            SetVertexShader( eVS3DPosNorTexStd );
+            SetPixelShader( ePS3DStd );
         }
 
         // Draw text
@@ -435,10 +458,10 @@ namespace Riot
         UI::Draw( m_pDevice );
 
         // Set default states
-        m_pDevice->SetFillMode( GFX_FILL_SOLID );
-        m_pDevice->SetVertexShader( m_pDefaultVShader );
-        m_pDevice->SetVertexLayout( m_pDefaultVLayout );
-        m_pDevice->SetPixelShader( m_pDefaultPShader );
+        //m_pDevice->SetFillMode( GFX_FILL_SOLID );
+        //m_pDevice->SetVertexShader( m_pDefaultVShader );
+        //m_pDevice->SetVertexLayout( m_pDefaultVLayout );
+        //m_pDevice->SetPixelShader( m_pDefaultPShader );
 
         // Present
         m_pDevice->Present();

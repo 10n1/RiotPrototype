@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/13/2011 4:23:40 PM
+Modified:       5/14/2011 11:45:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -19,6 +19,25 @@ namespace Riot
     class CMesh;
     class CView;
     class CTerrain;
+
+    enum VertexShader
+    {
+        eVS3DPosNorTexStd,
+        eVS3DPosNorTexInst,
+        eVS3DPosColStd,
+        eVS2DPosColTex,
+
+        NUM_VERTEX_SHADERS,
+    };
+
+    enum PixelShader
+    {
+        ePS3DStd,
+        ePS3DColor,
+        ePS2DTex,
+
+        NUM_PIXEL_SHADERS,
+    };
 
     class CRenderer : public IListener
     {
@@ -42,13 +61,13 @@ namespace Riot
         //  Shutdown
         //-----------------------------------------------------------------------------
         void Shutdown( void );
-        
+
         //-----------------------------------------------------------------------------
         //  CreateGraphicsDevice
         //  Creates the device
         //-----------------------------------------------------------------------------
         void CreateGraphicsDevice( CWindow* pWindow );
-        
+
         //-----------------------------------------------------------------------------
         //  CreateDefaultObjects
         //  Creates the default objects
@@ -73,12 +92,12 @@ namespace Riot
         //  No parameters indicates default mesh
         //-----------------------------------------------------------------------------
         CMesh* CreateMesh(  uint nVertexStride, 
-                            uint nVertexCount, 
-                            uint nIndexSize, 
-                            uint nIndexCount, 
-                            void* pVertices, 
-                            void* pIndices,
-                            GFX_BUFFER_USAGE nUsage = GFX_BUFFER_USAGE_DEFAULT );
+            uint nVertexCount, 
+            uint nIndexSize, 
+            uint nIndexCount, 
+            void* pVertices, 
+            void* pIndices,
+            GFX_BUFFER_USAGE nUsage = GFX_BUFFER_USAGE_DEFAULT );
         CMesh* CreateMesh( void ); 
         CMesh* LoadMesh( const char* szFilename );
         CMesh* CreateDynamicBox( void );
@@ -118,37 +137,37 @@ namespace Riot
         //  Adds a renderable object to the command buffer
         //-----------------------------------------------------------------------------
         void AddCommand( const TRenderCommand& cmd, RTransform& transform );
-        
+
         //-----------------------------------------------------------------------------
         //  SetLight
         //  Sets the specific light
         //-----------------------------------------------------------------------------
         void SetLight( const RVector3& vDir, uint nIndex );
-        
+
         //-----------------------------------------------------------------------------
         //  GetDefaultMeshData
         //  Returns the default mesh data
         //-----------------------------------------------------------------------------
         VPosNormalTex* GetDefaultMeshData( void );
-        
+
         //-----------------------------------------------------------------------------
         //  DrawDebugSphere
         //  Renders a wireframe debug sphere
         //-----------------------------------------------------------------------------
         void DrawDebugSphere( const RSphere& s );
-        
+
         //-----------------------------------------------------------------------------
         //  DrawDebugBox
         //  Renders a wireframe debug AABB
         //-----------------------------------------------------------------------------
         void DrawDebugBox( const RAABB& box, const RVector3& vColor );
-        
+
         //-----------------------------------------------------------------------------
         //  DrawDebugRay
         //  Draws a vector from the start point the length of the vector
         //-----------------------------------------------------------------------------
         void DrawDebugRay( const RVector3& start, const RVector3& dir );
-        
+
         //-----------------------------------------------------------------------------
         //  SwapBuffers
         //  Swaps last and previous frames buffers
@@ -165,6 +184,16 @@ namespace Riot
         //  Accessors/Mutators
         //-----------------------------------------------------------------------------
         inline IGraphicsDevice* GetGraphicsDevice( void );
+        //inline IGfxPixelShader* GetPixelShader( PixelShader nShader );
+        inline void SetPixelShader( PixelShader nShader );
+        inline void SetVertexShader( VertexShader nShader );
+
+    private:
+        //-----------------------------------------------------------------------------
+        //  LoadShaders
+        //  Loads all the shaders
+        //-----------------------------------------------------------------------------
+        void LoadShaders( void );
 
     private:
         /***************************************\
@@ -178,7 +207,7 @@ namespace Riot
 
         RTransform*     m_pPrevTransforms;
         RTransform*     m_pCurrTransforms;
-        
+
         TRenderCommand* m_pPrevCommands;
         TRenderCommand* m_pCurrCommands;
 
@@ -188,22 +217,18 @@ namespace Riot
         IGfxBuffer* m_pWorldCB;
         IGfxBuffer* m_pLightCB;
 
-        IGfxVertexShader*   m_pDefaultVShader;
-        IGfxVertexLayout*   m_pDefaultVLayout;
-        IGfxPixelShader*    m_pDefaultPShader;
         CMesh*              m_pDefaultMesh;
+        IGfxBuffer*         m_pLineBuffer;
+        IGfxBuffer*         m_pPlaneBuffer;
+
         IGfxTexture2D*      m_pDefaultTexture;
         IGfxTexture2D*      m_pWhiteTexture;
         IGfxSamplerState*   m_pLinearSamplerState;
         IGfxSamplerState*   m_pNearestSamplerState;
 
-        IGfxVertexLayout*   m_pWireframeVLayout;
-        IGfxVertexShader*   m_pWireframeVShader;
-        IGfxPixelShader*    m_pWireframePShader;
-
-        IGfxBuffer*         m_pLineBuffer;
-
-        IGfxBuffer*         m_pPlaneBuffer;
+        IGfxVertexShader*   m_ppVertexShaders[ NUM_VERTEX_SHADERS ];
+        IGfxVertexLayout*   m_ppVertexLayouts[ NUM_VERTEX_SHADERS ];
+        IGfxPixelShader*    m_ppPixelShaders[ NUM_PIXEL_SHADERS ];
 
         struct TDebugBox
         {
@@ -255,6 +280,22 @@ namespace Riot
     IGraphicsDevice* CRenderer::GetGraphicsDevice( void )
     {
         return m_pDevice;
+    }
+    void CRenderer::SetPixelShader( PixelShader nShader )
+    {
+        ASSERT( nShader >= 0 && nShader < NUM_PIXEL_SHADERS );
+        ASSERT( m_ppPixelShaders[ nShader ] );
+
+        m_pDevice->SetPixelShader( m_ppPixelShaders[ nShader ] );
+    }
+    void CRenderer::SetVertexShader( VertexShader nShader )
+    {
+        ASSERT( nShader >= 0 && nShader < NUM_VERTEX_SHADERS );
+        ASSERT( m_ppVertexLayouts[ nShader ] );
+        ASSERT( m_ppVertexShaders[ nShader ] );
+
+        m_pDevice->SetVertexLayout( m_ppVertexLayouts[ nShader ] );
+        m_pDevice->SetVertexShader( m_ppVertexShaders[ nShader ] );
     }
 
 } // namespace Riot

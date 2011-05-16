@@ -3,7 +3,7 @@ File:           VertexFormats.h
 Purpose:        Stores the basic vertex format information
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/27/2011 9:14:05 PM
+Modified:       5/14/2011 11:35:48 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VERTEXFORMATS_H_
@@ -145,6 +145,10 @@ namespace Riot
         static const uint LayoutSize;
         static const uint VertexStride;// = sizeof( VVertexPosNormal );
     };
+
+    /*
+    Vertex shader and it's layout
+    */
 
 } // namespace Riot
 
