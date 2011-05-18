@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/17/2011 8:54:15 PM
+Modified:       5/17/2011 9:24:49 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -26,6 +26,80 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
+    struct BaseKey
+    {
+        uint32  nValue;
+        float   fDepth;
+    };
+    union Key
+    {
+        uint64  nKey;
+        BaseKey nBase;
+    };
+
+    // CRenderKey constructor
+    CRenderKey::CRenderKey()
+    {
+        m_nVShader = eVS3DPosNorTexStd;
+        m_nPShader = ePS3DStd;
+        m_nTexture = 0;
+        m_nTransparant = 0;
+
+        m_fDepth = 0.0f;
+    }
+
+    // CRenderKey destructor
+    CRenderKey::~CRenderKey()
+    {
+    }
+
+    /***************************************\
+    | class methods                         |
+    \***************************************/
+    void CRenderKey::Clear( void )
+    {
+        m_nVShader = eVS3DPosNorTexStd;
+        m_nPShader = ePS3DStd;
+        m_nTexture = 0;
+        m_nTransparant = 0;
+
+        m_fDepth = 0.0f;
+    }
+    uint64 CRenderKey::Encode( void )
+    {
+        Key k;
+        BaseKey base;
+
+        // Encode the handles
+        base.nValue =     ( m_nVShader << 7 )       // 2 bits for vertex shader
+                        | ( m_nPShader << 5 )       // 2 bits for pixel shader
+                        | ( m_nTexture << 1 )       // 4 bits for texture
+                        | ( m_nTransparant << 0 );  // 1 bit for transparency
+
+        // Then add the depth
+        base.fDepth = m_fDepth;
+
+        // Now return the key
+        k.nBase = base;
+        return k.nKey;
+    }
+    void CRenderKey::Decode( uint64 nKey )
+    {
+        Key k;
+        BaseKey base;
+        k.nKey = nKey;
+        base = k.nBase;
+
+        // Get the depth
+        m_fDepth = k.nBase.fDepth;
+
+        // Now get the handles
+        m_nTransparant  = base.nValue & 0x01;
+        m_nTexture      = ( base.nValue >> 1 ) & 0xF;
+        m_nVShader      = ( base.nValue >> 5 ) & 0x3;
+        m_nPShader      = ( base.nValue >> 7 ) & 0x3;
+    }
+
     /***************************************\
     | class members                         |
     \***************************************/
