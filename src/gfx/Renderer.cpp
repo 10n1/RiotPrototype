@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/14/2011 11:45:33 PM
+Modified:       5/17/2011 8:54:15 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -66,8 +66,8 @@ namespace Riot
         //m_pDefaultVShader   = NULL;
         //m_pDefaultVLayout   = NULL;
         m_pDefaultTexture   = NULL;
-        m_pLinearSamplerState   = NULL;
-        m_pNearestSamplerState  = NULL;
+        //m_pLinearSamplerState   = NULL;
+        //m_pNearestSamplerState  = NULL;
 
         //m_pWireframeVLayout = NULL;
         //m_pWireframeVShader = NULL;
@@ -103,7 +103,9 @@ namespace Riot
         m_pCurrDebugRays = m_DebugRays[1];
 
         Memset( m_ppVertexShaders, 0, sizeof( m_ppVertexShaders ) );
+        Memset( m_ppVertexLayouts, 0, sizeof( m_ppVertexLayouts ) );
         Memset( m_ppPixelShaders, 0, sizeof( m_ppPixelShaders ) );
+        Memset( m_ppSamplerStates, 0, sizeof( m_ppSamplerStates ) );
     }
 
     //-----------------------------------------------------------------------------
@@ -114,6 +116,12 @@ namespace Riot
         for( uint i = 0; i < NUM_VERTEX_SHADERS; ++i )
         {
             SAFE_RELEASE( m_ppVertexShaders[i] );
+            SAFE_RELEASE( m_ppVertexLayouts[i] );
+        }
+
+        for( uint i = 0; i < NUM_SAMPLER_STATES; ++i )
+        {
+            SAFE_RELEASE( m_ppSamplerStates[i] );
         }
 
         for( uint i = 0; i < NUM_PIXEL_SHADERS; ++i )
@@ -145,9 +153,9 @@ namespace Riot
         SAFE_RELEASE( VPosNormalTex::VertexLayoutObject );
 
         SAFE_RELEASE( m_pWhiteTexture );
-        SAFE_RELEASE( m_pNearestSamplerState );
+        //SAFE_RELEASE( m_pNearestSamplerState );
         SAFE_RELEASE( m_pDefaultTexture );
-        SAFE_RELEASE( m_pLinearSamplerState );
+        //SAFE_RELEASE( m_pLinearSamplerState );
         SAFE_RELEASE( m_pDefaultMesh );
         //SAFE_RELEASE( m_pDefaultVShader );
         //SAFE_RELEASE( m_pDefaultVLayout );
@@ -207,18 +215,6 @@ namespace Riot
         const char szVertexShader[] =  "Assets/Shaders/BasicVertexShader.hlsl";
 #endif
 
-        // Create the vertex shader/layout
-        //m_pDevice->CreateVertexShaderAndLayout( szVertexShader, 
-        //    "main", 
-        //    VPosNormalTex::Layout, 
-        //    VPosNormalTex::LayoutSize,
-        //    &m_pDefaultVShader,
-        //    &m_pDefaultVLayout );
-
-        // sampler state
-        m_pLinearSamplerState = m_pDevice->CreateSamplerState( GFX_TEXTURE_SAMPLE_LINEAR );
-        m_pNearestSamplerState = m_pDevice->CreateSamplerState( GFX_TEXTURE_SAMPLE_NEAREST );
-
         // Texture
         m_pDefaultTexture = m_pDevice->LoadTexture( "Assets/Textures/DefaultTexture.png" );
         m_pWhiteTexture = m_pDevice->LoadTexture( "Assets/Textures/white.png" );
@@ -233,8 +229,7 @@ namespace Riot
         //  Load Shaders
         LoadShaders();
 
-        // a vertex shader for drawing lines
-        
+        // a vertex shader for drawing lines        
         VPosColor pLineVertices[] =
         {
             { RVector3(  0.0f,  0.0f,  0.0f ), RVector4( 1.0f, 1.0f, 1.0f, 1.0f ) },
@@ -242,11 +237,11 @@ namespace Riot
         };
         m_pLineBuffer = m_pDevice->CreateVertexBuffer( sizeof( pLineVertices ), pLineVertices );
 
-        // ...finally, set them
+        // Set the defaults
         SetVertexShader( eVS3DPosNorTexStd );
         SetPixelShader( ePS3DStd );
+        SetSamplerState( eSamplerLinear );
         m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
-        m_pDevice->SetPSSamplerState( m_pLinearSamplerState );
     }
 
     //-----------------------------------------------------------------------------
@@ -276,6 +271,11 @@ namespace Riot
             VPosColor::LayoutSize,
             &m_ppVertexShaders[ eVS3DPosColStd ],
             &m_ppVertexLayouts[ eVS3DPosColStd ] );
+
+        //////////////////////////////////////////
+        // Load the sampler states
+        m_ppSamplerStates[ eSamplerLinear ] = m_pDevice->CreateSamplerState( GFX_TEXTURE_SAMPLE_LINEAR );
+        m_ppSamplerStates[ eSamplerNearest ] = m_pDevice->CreateSamplerState( GFX_TEXTURE_SAMPLE_NEAREST );
     }
 
     //-----------------------------------------------------------------------------
@@ -291,6 +291,7 @@ namespace Riot
             m_nPrevNumBoxes     = 0;
 
             m_pDevice->Clear();
+            UI::Draw( m_pDevice );
             m_pDevice->Present();
             return;
         }
@@ -316,8 +317,8 @@ namespace Riot
 
         SetVertexShader( eVS3DPosNorTexStd );
         SetPixelShader( ePS3DStd );
+        SetSamplerState( eSamplerLinear );
         m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
-        m_pDevice->SetPSSamplerState( m_pLinearSamplerState );
 
         // Render
         ASSERT( m_pCurrentView );
@@ -336,12 +337,12 @@ namespace Riot
 
             if( pTexture == NULL )
             {
-                m_pDevice->SetPSSamplerState( m_pNearestSamplerState );
+                SetSamplerState( eSamplerNearest );
                 pTexture = m_pDefaultTexture;
             }
             else
             {
-                m_pDevice->SetPSSamplerState( m_pLinearSamplerState );
+                SetSamplerState( eSamplerLinear );
             }
 
             m_pDevice->SetPSTexture( 0, pTexture );
@@ -366,7 +367,7 @@ namespace Riot
 
             // Draw the spheres
             m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
-            m_pDevice->SetPSSamplerState( m_pNearestSamplerState );
+            SetSamplerState( eSamplerNearest );
             m_pDevice->SetPSTexture( 0, m_pWhiteTexture );
             for( sint i = 0; i < m_nPrevNumSpheres; ++i )
             {

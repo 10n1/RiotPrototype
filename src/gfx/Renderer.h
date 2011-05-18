@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/14/2011 11:45:33 PM
+Modified:       5/17/2011 8:54:15 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -37,6 +37,14 @@ namespace Riot
         ePS2DTex,
 
         NUM_PIXEL_SHADERS,
+    };
+
+    enum SamplerState
+    {
+        eSamplerLinear,
+        eSamplerNearest,
+
+        NUM_SAMPLER_STATES,
     };
 
     class CRenderer : public IListener
@@ -184,9 +192,15 @@ namespace Riot
         //  Accessors/Mutators
         //-----------------------------------------------------------------------------
         inline IGraphicsDevice* GetGraphicsDevice( void );
-        //inline IGfxPixelShader* GetPixelShader( PixelShader nShader );
         inline void SetPixelShader( PixelShader nShader );
         inline void SetVertexShader( VertexShader nShader );
+        inline void SetSamplerState( SamplerState nState );
+
+        //-----------------------------------------------------------------------------
+        //  PackRenderCommand
+        //  
+        //-----------------------------------------------------------------------------
+
 
     private:
         //-----------------------------------------------------------------------------
@@ -213,22 +227,25 @@ namespace Riot
 
         IGraphicsDevice*    m_pDevice;
 
+        // Constant buffers
         IGfxBuffer* m_pViewProjCB;
         IGfxBuffer* m_pWorldCB;
         IGfxBuffer* m_pLightCB;
 
+        // Default and debug meshes
         CMesh*              m_pDefaultMesh;
         IGfxBuffer*         m_pLineBuffer;
         IGfxBuffer*         m_pPlaneBuffer;
 
+        // Textures
         IGfxTexture2D*      m_pDefaultTexture;
         IGfxTexture2D*      m_pWhiteTexture;
-        IGfxSamplerState*   m_pLinearSamplerState;
-        IGfxSamplerState*   m_pNearestSamplerState;
 
+        // The graphics objects, that are referenced by enums
         IGfxVertexShader*   m_ppVertexShaders[ NUM_VERTEX_SHADERS ];
         IGfxVertexLayout*   m_ppVertexLayouts[ NUM_VERTEX_SHADERS ];
         IGfxPixelShader*    m_ppPixelShaders[ NUM_PIXEL_SHADERS ];
+        IGfxSamplerState*   m_ppSamplerStates[ NUM_SAMPLER_STATES ];
 
         struct TDebugBox
         {
@@ -296,6 +313,13 @@ namespace Riot
 
         m_pDevice->SetVertexLayout( m_ppVertexLayouts[ nShader ] );
         m_pDevice->SetVertexShader( m_ppVertexShaders[ nShader ] );
+    }
+    void CRenderer::SetSamplerState( SamplerState nState )
+    {
+        ASSERT( nState >= 0 && nState < NUM_SAMPLER_STATES );
+        ASSERT( m_ppSamplerStates[ nState ] );
+
+        m_pDevice->SetPSSamplerState( m_ppSamplerStates[ nState ] );
     }
 
 } // namespace Riot
