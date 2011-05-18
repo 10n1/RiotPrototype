@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/17/2011 9:23:52 PM
+Modified:       5/17/2011 9:28:48 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -68,6 +68,7 @@ namespace Riot
         \***************************************/
         uint    m_nVShader;
         uint    m_nPShader;
+        uint    m_nSampler;
         uint    m_nTexture;
         uint    m_nTransparant;
 
@@ -223,12 +224,6 @@ namespace Riot
         inline void SetPixelShader( PixelShader nShader );
         inline void SetVertexShader( VertexShader nShader );
         inline void SetSamplerState( SamplerState nState );
-
-        //-----------------------------------------------------------------------------
-        //  PackRenderCommand
-        //  
-        //-----------------------------------------------------------------------------
-
 
     private:
         //-----------------------------------------------------------------------------

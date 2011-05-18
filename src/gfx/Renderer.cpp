@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/17/2011 9:24:49 PM
+Modified:       5/17/2011 9:26:52 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -42,6 +42,7 @@ namespace Riot
     {
         m_nVShader = eVS3DPosNorTexStd;
         m_nPShader = ePS3DStd;
+        m_nSampler = eSamplerLinear;
         m_nTexture = 0;
         m_nTransparant = 0;
 
@@ -60,6 +61,7 @@ namespace Riot
     {
         m_nVShader = eVS3DPosNorTexStd;
         m_nPShader = ePS3DStd;
+        m_nSampler = eSamplerLinear;
         m_nTexture = 0;
         m_nTransparant = 0;
 
@@ -71,8 +73,9 @@ namespace Riot
         BaseKey base;
 
         // Encode the handles
-        base.nValue =     ( m_nVShader << 7 )       // 2 bits for vertex shader
-                        | ( m_nPShader << 5 )       // 2 bits for pixel shader
+        base.nValue =     ( m_nVShader << 9 )       // 2 bits for vertex shader
+                        | ( m_nPShader << 7 )       // 2 bits for pixel shader
+                        | ( m_nSampler << 5 )       // 2 bits for sampler
                         | ( m_nTexture << 1 )       // 4 bits for texture
                         | ( m_nTransparant << 0 );  // 1 bit for transparency
 
@@ -96,8 +99,9 @@ namespace Riot
         // Now get the handles
         m_nTransparant  = base.nValue & 0x01;
         m_nTexture      = ( base.nValue >> 1 ) & 0xF;
-        m_nVShader      = ( base.nValue >> 5 ) & 0x3;
-        m_nPShader      = ( base.nValue >> 7 ) & 0x3;
+        m_nSampler      = ( base.nValue >> 5 ) & 0x3;
+        m_nVShader      = ( base.nValue >> 7 ) & 0x3;
+        m_nPShader      = ( base.nValue >> 9 ) & 0x3;
     }
 
     /***************************************\
