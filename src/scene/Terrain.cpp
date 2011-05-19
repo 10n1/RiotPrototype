@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/10/2011 6:21:59 PM
+Modified:       5/19/2011 4:39:20 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -78,15 +78,14 @@ namespace Riot
         static CRenderer*       pRenderer   = Engine::GetRenderer();
         static IGraphicsDevice* pDevice     = pRenderer->GetGraphicsDevice();
 
-        pRenderer->SetWorldMatrix( RMatrix4Identity() );
         pDevice->SetPSTexture( 0, m_pTexture );
-
-        // First all low
-        pDevice->SetIndexBuffer( m_pLowIndexBuffer, sizeof( uint16 ) );
-        for( uint i = 0; i < nNumLowTiles; ++i )
+        
+        // High
+        pDevice->SetIndexBuffer( m_pHighIndexBuffer, sizeof( uint16 ) );
+        for( uint i = 0; i < nNumHighTiles; ++i )
         {
-            pDevice->SetVertexBuffer( m_pLowTiles[i].m_pVertexBuffer, VPosNormalTex::VertexStride );
-            pDevice->DrawIndexedPrimitive( nLowIndices );
+            pDevice->SetVertexBuffer( m_pHighTiles[i].m_pVertexBuffer, VPosNormalTex::VertexStride );
+            pDevice->DrawIndexedPrimitive( nHighIndices );
         }
         
         // Medium
@@ -97,14 +96,13 @@ namespace Riot
             pDevice->DrawIndexedPrimitive( nMedIndices );
         }
 
-        // High
-        pDevice->SetIndexBuffer( m_pHighIndexBuffer, sizeof( uint16 ) );
-        for( uint i = 0; i < nNumHighTiles; ++i )
+        // Low
+        pDevice->SetIndexBuffer( m_pLowIndexBuffer, sizeof( uint16 ) );
+        for( uint i = 0; i < nNumLowTiles; ++i )
         {
-            pDevice->SetVertexBuffer( m_pHighTiles[i].m_pVertexBuffer, VPosNormalTex::VertexStride );
-            pDevice->DrawIndexedPrimitive( nHighIndices );
+            pDevice->SetVertexBuffer( m_pLowTiles[i].m_pVertexBuffer, VPosNormalTex::VertexStride );
+            pDevice->DrawIndexedPrimitive( nLowIndices );
         }
-
     }
 
     //-----------------------------------------------------------------------------

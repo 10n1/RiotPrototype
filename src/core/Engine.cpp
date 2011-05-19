@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/19/2011 11:11:41 AM
+Modified:       5/19/2011 4:31:55 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -160,9 +160,9 @@ namespace Riot
             if( gnShowFPS )
             {
                 static char szFPS[ 255 ] = "FPS: 0";
-                if( nFPSFrames == 128 )
+                if( nFPSFrames == 32 )
                 {
-                    float fFPS = (1.0f/fFPSTime) * 128.0f;
+                    float fFPS = (1.0f/fFPSTime) * 32.0f;
                     sprintf( szFPS, "FPS: %f", fFPS );
                     printf( "FPS: %f\n", fFPS );
 

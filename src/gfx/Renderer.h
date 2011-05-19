@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/19/2011 1:13:18 PM
+Modified:       5/19/2011 4:41:03 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -12,6 +12,7 @@ Modified by:    Kyle Weicht
 #include "IListener.h"
 #include "Graphics.h"
 #include "Message.h"
+#include "Mesh.h"
 
 namespace Riot
 {
@@ -84,6 +85,18 @@ namespace Riot
         float   m_fDepth;
     };
 
+    inline uint  DecodeTransparant( uint64 nKey ) { return ( nKey >> 0 ) & 0x1;   }
+    inline uint  DecodeTexture    ( uint64 nKey ) { return ( nKey >> 1 ) & 0xF;   }
+    inline uint  DecodeSampler    ( uint64 nKey ) { return ( nKey >> 5 ) & 0x3;   }
+    inline uint  DecodeMaterial   ( uint64 nKey ) { return ( nKey >> 7 ) & 0xF;   }
+    inline uint  DecodeMesh       ( uint64 nKey ) { return ( nKey >> 11 ) & 0xFF; }
+    inline float DecodeDepth      ( uint64 nKey ) 
+    { 
+        uint nFloat = ( nKey >> 32 );
+        float f = (float&)nFloat;
+
+        return f;
+    }
 
     class CRenderer : public IListener
     {
@@ -247,6 +260,12 @@ namespace Riot
         //-----------------------------------------------------------------------------
         void LoadShaders( void );
 
+        //-----------------------------------------------------------------------------
+        //  ProcessCommand
+        //  Processes a render command
+        //-----------------------------------------------------------------------------
+        inline void ProcessCommand( uint64 nCmd, const RTransform& transform );
+       
     private:
         /***************************************\
         | class members                         |
@@ -365,6 +384,32 @@ namespace Riot
         ASSERT( m_ppSamplerStates[ nState ] );
 
         m_pDevice->SetPSSamplerState( m_ppSamplerStates[ nState ] );
+    }
+
+    //-----------------------------------------------------------------------------
+    //  ProcessCommand
+    //  Processes a render command
+    //-----------------------------------------------------------------------------
+    void CRenderer::ProcessCommand( uint64 nCmd, const RTransform& transform )
+    {
+        //////////////////////////////////////////
+        // Set the material
+        switch( DecodeMaterial( nCmd ) )
+        {
+        case eMatStandard:
+            SetVertexShader( eVS3DPosNorTexStd );
+            SetPixelShader( ePS3DStd );
+            break;
+        default:
+            ASSERT( false );
+            break;
+        }
+
+        //////////////////////////////////////////
+        SetSamplerState( (SamplerState)DecodeSampler( nCmd ) );
+        SetWorldMatrix( transform.GetTransformMatrix() );
+        m_pDevice->SetPSTexture( 0, m_ppTextures[ DecodeTexture( nCmd ) ] );
+        m_ppMeshes[ DecodeMesh( nCmd ) ]->DrawMesh();
     }
 
 } // namespace Riot

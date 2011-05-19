@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/19/2011 1:16:22 PM
+Modified:       5/19/2011 4:41:03 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -91,11 +91,11 @@ namespace Riot
         m_fDepth = k.nBase.fDepth;
 
         // Now get the handles
-        m_nTransparant  = ( base.nValue >> 0 ) & 0x1;
-        m_nTexture      = ( base.nValue >> 1 ) & 0xF;
-        m_nSampler      = ( base.nValue >> 5 ) & 0x3;
-        m_nMaterial     = ( base.nValue >> 7 ) & 0xF;
-        m_nMesh         = ( base.nValue >> 11 ) & 0xFF;
+        m_nTransparant  = DecodeTransparant( nKey );
+        m_nTexture      = DecodeTexture( nKey );
+        m_nSampler      = DecodeSampler( nKey );
+        m_nMaterial     = DecodeMaterial( nKey );
+        m_nMesh         = DecodeMesh( nKey );
     }
 
     /***************************************\
@@ -260,20 +260,14 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::CreateDefaultObjects( void )
     {
-#if USE_OPENGL
-        const char szVertexShader[] =  "Assets/Shaders/BasicVertexShader.glsl";
-#else
-        const char szVertexShader[] =  "Assets/Shaders/BasicVertexShader.hlsl";
-#endif
-
-        // Texture7
+        // Texture
         m_nDefaultTexture = LoadTexture2D( "Assets/Textures/DefaultTexture.png" );
+        
+        // Default mesh
+        m_nDefaultMesh = CreateMesh();
 
         // debug sphere
         m_nSphereMesh = LoadMesh( "Assets/meshes/sphere.mesh" );
-
-        // Default mesh
-        m_nDefaultMesh = CreateMesh();
 
         // debug box
         m_nDebugBox = CreateDynamicBox();
@@ -344,6 +338,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Render( CTerrain* pTerrain )
     {
+        //////////////////////////////////////////
+        // Just render the text
         if( !gnRenderOn )
         {   // Don't render if we shouldn't
             m_nPrevNumCommands  = 0;
@@ -356,6 +352,7 @@ namespace Riot
             return;
         }
 
+        //////////////////////////////////////////
         // Restore solid fill mode
         if( gnRenderWireframe )
             m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
@@ -370,57 +367,31 @@ namespace Riot
             m_bUpdateLighting = false;
         }
         
+        //////////////////////////////////////////
         // Clear
         m_pDevice->Clear();
 
-        SetWorldMatrix( RMatrix4Identity() );
-
-        SetVertexShader( eVS3DPosNorTexStd );
-        SetPixelShader( ePS3DStd );
-        SetSamplerState( eSamplerLinear );
-        m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
-
+        //////////////////////////////////////////
         // Render
         ASSERT( m_pCurrentView );
 
-        RMatrix4 mView = m_pCurrentView->GetViewMatrix();
-        RMatrix4 mProj = m_pCurrentView->GetProjMatrix();
+        SetViewProj( m_pCurrentView->GetViewMatrix(), m_pCurrentView->GetProjMatrix() );
 
-        SetViewProj( mView, mProj );
-
-        for( sint i = 0; i < m_nPrevNumCommands; ++i )
-        {
-            RMatrix4 mWorld = m_pPrevTransforms[i].GetTransformMatrix();
-            SetWorldMatrix( mWorld );
-
-            TRenderCommand cmd;
-            cmd.Decode( m_pPrevCommands[i] );
-            sint nTexture = cmd.m_nTexture;
-            sint nMesh = cmd.m_nMesh;
-
-            if( nTexture == INVALID_HANDLE )
-            {
-                SetSamplerState( eSamplerNearest );
-                nTexture = m_nDefaultTexture;
-            }
-            else
-            {
-                SetSamplerState( eSamplerLinear );
-            }
-
-            m_pDevice->SetPSTexture( 0, m_ppTextures[ nTexture ] );
-
-            m_ppMeshes[ nMesh ]->DrawMesh();
-        }
-
+        //////////////////////////////////////////
+        // Render the terrain
         SetVertexShader( eVS3DPosNorTexNoTransform );
+        SetPixelShader( ePS3DStd );
         pTerrain->Render();
         SetVertexShader( eVS3DPosNorTexStd );
 
-        mView = m_pCurrentView->GetViewMatrix();
-        mProj = m_pCurrentView->GetProjMatrix();
-        SetViewProj( mView, mProj );
+        //////////////////////////////////////////
+        // Perform basic object rendering
+        for( sint i = 0; i < m_nPrevNumCommands; ++i )
+        {
+            ProcessCommand( m_pPrevCommands[i], m_pPrevTransforms[i] );
+        }
 
+        //////////////////////////////////////////
         // Draw the debug volumes
         if( gnShowBoundingVolumes )
         {
@@ -514,16 +485,9 @@ namespace Riot
             SetPixelShader( ePS3DStd );
         }
 
-        // Draw text
-        //UI::DrawString( m_pDevice, 10, 10, "Hi Kyle...this is Omar :)" );
-        //UI::AddString( 10, 10, "Hi Kyle...this is Omar" );
+        //////////////////////////////////////////
+        // Draw the UI
         UI::Draw( m_pDevice );
-
-        // Set default states
-        //m_pDevice->SetFillMode( GFX_FILL_SOLID );
-        //m_pDevice->SetVertexShader( m_pDefaultVShader );
-        //m_pDevice->SetVertexLayout( m_pDefaultVLayout );
-        //m_pDevice->SetPixelShader( m_pDefaultPShader );
 
         // Present
         m_pDevice->Present();
@@ -976,6 +940,28 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Sort( void )
     {
+        //////////////////////////////////////////
+        // Transparency sorting
+        sint nStart = 0;
+        sint nEnd = m_nPrevNumCommands - 1;
+
+        while( nStart < m_nPrevNumCommands )
+        {
+            if( DecodeTransparant( m_pPrevCommands[nStart] ) )
+            {
+                while( DecodeTransparant( m_pPrevCommands[ nEnd ] ) )
+                {
+                    --nEnd;
+                }
+
+                Swap( m_pPrevCommands[nStart], m_pPrevCommands[ nEnd ] );
+                Swap( m_pPrevTransforms[nStart], m_pPrevTransforms[nEnd] );
+
+                --nEnd;
+            }
+
+            nStart++;
+        }
     }
 
 
