@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/17/2011 9:26:52 PM
+Modified:       5/19/2011 11:11:56 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -40,11 +40,11 @@ namespace Riot
     // CRenderKey constructor
     CRenderKey::CRenderKey()
     {
-        m_nVShader = eVS3DPosNorTexStd;
-        m_nPShader = ePS3DStd;
+        m_nMaterial = eMatStandard;
         m_nSampler = eSamplerLinear;
         m_nTexture = 0;
         m_nTransparant = 0;
+        m_nMesh = 0;
 
         m_fDepth = 0.0f;
     }
@@ -59,11 +59,11 @@ namespace Riot
     \***************************************/
     void CRenderKey::Clear( void )
     {
-        m_nVShader = eVS3DPosNorTexStd;
-        m_nPShader = ePS3DStd;
+        m_nMaterial = eMatStandard;
         m_nSampler = eSamplerLinear;
         m_nTexture = 0;
         m_nTransparant = 0;
+        m_nMesh = 0;
 
         m_fDepth = 0.0f;
     }
@@ -73,8 +73,8 @@ namespace Riot
         BaseKey base;
 
         // Encode the handles
-        base.nValue =     ( m_nVShader << 9 )       // 2 bits for vertex shader
-                        | ( m_nPShader << 7 )       // 2 bits for pixel shader
+        base.nValue =     ( m_nMesh << 11 )         // 8 bits for Mesh
+                        | ( m_nMaterial << 7 )      // 4 bits for material
                         | ( m_nSampler << 5 )       // 2 bits for sampler
                         | ( m_nTexture << 1 )       // 4 bits for texture
                         | ( m_nTransparant << 0 );  // 1 bit for transparency
@@ -97,11 +97,11 @@ namespace Riot
         m_fDepth = k.nBase.fDepth;
 
         // Now get the handles
-        m_nTransparant  = base.nValue & 0x01;
+        m_nTransparant  = ( base.nValue >> 0 ) & 0x1;
         m_nTexture      = ( base.nValue >> 1 ) & 0xF;
         m_nSampler      = ( base.nValue >> 5 ) & 0x3;
-        m_nVShader      = ( base.nValue >> 7 ) & 0x3;
-        m_nPShader      = ( base.nValue >> 9 ) & 0x3;
+        m_nMaterial     = ( base.nValue >> 7 ) & 0xF;
+        m_nMesh         = ( base.nValue >> 11 ) & 0xFF;
     }
 
     /***************************************\
@@ -140,7 +140,7 @@ namespace Riot
         m_pViewProjCB   = NULL;
         m_pWorldCB      = NULL;
 
-        m_pDefaultMesh      = NULL;        
+        m_nDefaultMesh      = INVALID_HANDLE;        
         //m_pDefaultVShader   = NULL;
         //m_pDefaultVLayout   = NULL;
         m_pDefaultTexture   = NULL;
@@ -162,8 +162,8 @@ namespace Riot
         m_nNumSpheres = 0;
         m_nNumBoxes = 0;
 
-        m_pSphereMesh = NULL;
-        m_pDebugBox = NULL;
+        m_nSphereMesh = INVALID_HANDLE;
+        m_nDebugBox = INVALID_HANDLE;
 
         m_pPrevCommands = m_pRenderCommands[0];
         m_pCurrCommands = m_pRenderCommands[1];
@@ -184,6 +184,9 @@ namespace Riot
         Memset( m_ppVertexLayouts, 0, sizeof( m_ppVertexLayouts ) );
         Memset( m_ppPixelShaders, 0, sizeof( m_ppPixelShaders ) );
         Memset( m_ppSamplerStates, 0, sizeof( m_ppSamplerStates ) );
+
+        Memset( m_ppMeshes, 0, sizeof( m_ppMeshes ) );
+        m_nNumMeshes = 0;
     }
 
     //-----------------------------------------------------------------------------
@@ -191,6 +194,11 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Shutdown( void )
     {
+        for( sint i = 0; i < m_nNumMeshes; ++i )
+        {
+            SAFE_RELEASE( m_ppMeshes[i] );
+        }
+
         for( uint i = 0; i < NUM_VERTEX_SHADERS; ++i )
         {
             SAFE_RELEASE( m_ppVertexShaders[i] );
@@ -207,26 +215,14 @@ namespace Riot
             SAFE_RELEASE( m_ppPixelShaders[i] );
         }
 
-        for( uint i = 0; i < m_nNumCommands; ++i )
-        {
-            SAFE_RELEASE( m_pCurrCommands[i].pMesh );
-            SAFE_RELEASE( m_pCurrCommands[i].pTexture );
-        }
-        
-        for( uint i = 0; i < m_nPrevNumCommands; ++i )
-        {
-            SAFE_RELEASE( m_pPrevCommands[i].pMesh );
-            SAFE_RELEASE( m_pPrevCommands[i].pTexture );
-        }
-
         SAFE_RELEASE( m_pLineBuffer );
 
         //SAFE_RELEASE( m_pWireframeVLayout );
         //SAFE_RELEASE( m_pWireframeVShader );
         //SAFE_RELEASE( m_pWireframePShader );
 
-        SAFE_RELEASE( m_pDebugBox );
-        SAFE_RELEASE( m_pSphereMesh );
+        //SAFE_RELEASE( m_pDebugBox );
+        //SAFE_RELEASE( m_pSphereMesh );
 
         SAFE_RELEASE( VPosNormalTex::VertexLayoutObject );
 
@@ -234,7 +230,7 @@ namespace Riot
         //SAFE_RELEASE( m_pNearestSamplerState );
         SAFE_RELEASE( m_pDefaultTexture );
         //SAFE_RELEASE( m_pLinearSamplerState );
-        SAFE_RELEASE( m_pDefaultMesh );
+        //SAFE_RELEASE( m_pDefaultMesh );
         //SAFE_RELEASE( m_pDefaultVShader );
         //SAFE_RELEASE( m_pDefaultVLayout );
 
@@ -298,10 +294,10 @@ namespace Riot
         m_pWhiteTexture = m_pDevice->LoadTexture( "Assets/Textures/white.png" );
 
         // debug sphere
-        m_pSphereMesh = LoadMesh( "Assets/meshes/sphere.mesh" );
+        m_nSphereMesh = LoadMesh( "Assets/meshes/sphere.mesh" );
 
         // debug box
-        m_pDebugBox = CreateDynamicBox();
+        m_nDebugBox = CreateDynamicBox();
         
         //////////////////////////////////////////
         //  Load Shaders
@@ -425,10 +421,7 @@ namespace Riot
 
             m_pDevice->SetPSTexture( 0, pTexture );
 
-            m_pPrevCommands[i].pMesh->DrawMesh();
-
-            SAFE_RELEASE( pTexture );
-            SAFE_RELEASE( m_pPrevCommands[i].pMesh );
+            m_ppMeshes[ m_pPrevCommands[i].nMesh ]->DrawMesh();
         }
 
         pTerrain->Render();
@@ -453,7 +446,7 @@ namespace Riot
                 mWorld.r3 = Homogonize(m_pPrevDebugSpheres[i].position);
                 mWorld.r3.w = 1.0f;
                 SetWorldMatrix( mWorld );
-                m_pSphereMesh->DrawMesh();
+                m_ppMeshes[ m_nSphereMesh ]->DrawMesh();
             }
 
             // Draw the debug boxes
@@ -499,9 +492,9 @@ namespace Riot
                     { RVector3(  vMin.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
                 };
 
-                m_pDevice->UpdateBuffer( m_pDebugBox->m_pVertexBuffer, vertices );
+                m_pDevice->UpdateBuffer( m_ppMeshes[m_nDebugBox]->m_pVertexBuffer, vertices );
 
-                m_pDebugBox->DrawMesh();
+                m_ppMeshes[m_nDebugBox]->DrawMesh();
             }
 
             // Draw the rays
@@ -559,7 +552,7 @@ namespace Riot
     //  CreateMesh
     //  Creates a mesh from the file
     //-----------------------------------------------------------------------------
-    CMesh* CRenderer::CreateMesh(   uint nVertexStride, 
+    sint CRenderer::CreateMesh(   uint nVertexStride, 
                                     uint nVertexCount, 
                                     uint nIndexSize, 
                                     uint nIndexCount, 
@@ -584,15 +577,19 @@ namespace Riot
 
         pMesh->m_pDevice    = m_pDevice; // Allow the mesh access to the device
 
-        return pMesh;
+        //
+        sint nIndex = AtomicIncrement( &m_nNumMeshes ) - 1;
+        m_ppMeshes[ nIndex ] = pMesh;
+        pMesh->AddRef();
+
+        return nIndex;
     }
-    CMesh* CRenderer::CreateMesh( void )
+    sint CRenderer::CreateMesh( void )
     {
         // If the cube has already been created, return it
-        if( m_pDefaultMesh )
+        if( m_nDefaultMesh != INVALID_HANDLE )
         {
-            m_pDefaultMesh->AddRef();
-            return m_pDefaultMesh;
+            return m_nDefaultMesh;
         }
         
         //////////////////////////////////////////
@@ -653,12 +650,11 @@ namespace Riot
             23,20,22
         };
 
-        m_pDefaultMesh = CreateMesh( VPosNormalTex::VertexStride, ARRAY_LENGTH( vertices ), sizeof(uint16), ARRAY_LENGTH( indices ), vertices, indices, GFX_BUFFER_USAGE_IMMUTABLE );
+        m_nDefaultMesh = CreateMesh( VPosNormalTex::VertexStride, ARRAY_LENGTH( vertices ), sizeof(uint16), ARRAY_LENGTH( indices ), vertices, indices, GFX_BUFFER_USAGE_IMMUTABLE );
 
-        m_pDefaultMesh->AddRef();
-        return m_pDefaultMesh;
+        return m_nDefaultMesh;
     }
-    CMesh* CRenderer::CreateDynamicBox( void )
+    sint CRenderer::CreateDynamicBox( void )
     {
         //////////////////////////////////////////
         // Define vertex buffer
@@ -718,12 +714,12 @@ namespace Riot
             23,20,22
         };
 
-        CMesh* pMesh = CreateMesh( VPosColor::VertexStride, ARRAY_LENGTH( vertices ), sizeof(uint16), ARRAY_LENGTH( indices ), vertices, indices, GFX_BUFFER_USAGE_DEFAULT );
+        sint nMesh = CreateMesh( VPosColor::VertexStride, ARRAY_LENGTH( vertices ), sizeof(uint16), ARRAY_LENGTH( indices ), vertices, indices, GFX_BUFFER_USAGE_DEFAULT );
 
-        return pMesh;
+        return nMesh;
     }
 
-    CMesh* CRenderer::LoadMesh( const char* szFilename )
+    sint CRenderer::LoadMesh( const char* szFilename )
     {        
         /********************* File Format ***********************\
         float   fVertexSize
@@ -737,8 +733,7 @@ namespace Riot
         uint nVertexCount; 
         uint nIndexSize; 
         uint nIndexCount; 
-        byte* pVertices;
-        byte* pIndices;
+        byte* pData;
     
         FILE* pFile = fopen( szFilename, "rb" );
         fread( &nVertexStride, sizeof( nVertexStride ), 1, pFile );
@@ -747,22 +742,17 @@ namespace Riot
         nIndexSize = (nIndexSize == 32 ) ? 4 : 2;
         fread( &nIndexCount, sizeof( nIndexCount ), 1, pFile );
 
-        pVertices   = new byte[nVertexStride * nVertexCount];
-        pIndices    = new byte[nIndexCount * nIndexSize];
+        pData   = new byte[ (nVertexStride * nVertexCount) + (nIndexCount * nIndexSize) ];
 
-        fread( pVertices, nVertexStride, nVertexCount, pFile );
-        fread( pIndices, nIndexSize, nIndexCount, pFile );
+        fread( pData, nVertexStride, nVertexCount, pFile );
+        fread( pData + (nVertexStride * nVertexCount), nIndexSize, nIndexCount, pFile );
         fclose( pFile );
 
-
-        CMesh* pMesh = NULL;
-
-        pMesh = CreateMesh( nVertexStride, nVertexCount, nIndexSize, nIndexCount, pVertices, pIndices );
+        sint nMesh = CreateMesh( nVertexStride, nVertexCount, nIndexSize, nIndexCount, pData, pData + (nVertexStride * nVertexCount) );
         
-        delete [] pIndices;
-        delete [] pVertices;
+        delete [] pData;
         
-        return pMesh;
+        return nMesh;
     }
 
 
@@ -823,11 +813,6 @@ namespace Riot
 
         uint nIndex = AtomicIncrement( &m_nNumCommands ) - 1;
         m_pCurrCommands[nIndex] = cmd;
-        cmd.pMesh->AddRef();
-        if( cmd.pTexture )
-        {
-            cmd.pTexture->AddRef();
-        }
 
         m_pCurrTransforms[nIndex] = transform;
     }

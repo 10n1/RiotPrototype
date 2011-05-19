@@ -3,7 +3,7 @@ File:           ComponentRender.h
 Purpose:        Component used for rendering all basic objects
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/25/2011 9:39:11 PM
+Modified:       5/19/2011 11:08:24 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTRENDER_H_
@@ -55,7 +55,7 @@ namespace Riot
         static CComponentRender* m_pInstance;
 
         RTransform  m_Transform[MaxComponents];
-        CMesh*  m_pMesh[MaxComponents];
+        sint        m_pMesh[MaxComponents];
 
     };
 

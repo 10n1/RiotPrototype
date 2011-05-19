@@ -3,7 +3,7 @@ File:           types.h
 Purpose:        Defining basic types
 Author:         Kyle Weicht
 Created:        4/7/2011
-Modified:       4/26/2011 11:53:19 PM
+Modified:       5/19/2011 10:53:48 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _TYPES_H_
@@ -108,6 +108,8 @@ namespace Riot
         rResultSuccess,
         rResultFailure,    
     };
+
+    enum { INVALID_HANDLE = 0xFFFFFFFF };
 
 } // namespace Riot
 //-----------------------------------------------------------------------------

@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/17/2011 9:28:48 PM
+Modified:       5/19/2011 11:02:59 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -47,6 +47,14 @@ namespace Riot
         NUM_SAMPLER_STATES,
     };
 
+    enum Material
+    {
+        eMatStandard,
+        eMatWireframe,
+
+        NUM_MATERIALS,
+    };
+
     class CRenderKey
     {
     public:
@@ -66,11 +74,11 @@ namespace Riot
         /***************************************\
         | class members                         |
         \***************************************/
-        uint    m_nVShader;
-        uint    m_nPShader;
+        uint    m_nMaterial;
         uint    m_nSampler;
         uint    m_nTexture;
         uint    m_nTransparant;
+        uint    m_nMesh;
 
         float   m_fDepth;
     };
@@ -128,16 +136,16 @@ namespace Riot
         //  Creates a mesh from the data
         //  No parameters indicates default mesh
         //-----------------------------------------------------------------------------
-        CMesh* CreateMesh(  uint nVertexStride, 
+        sint CreateMesh(  uint nVertexStride, 
             uint nVertexCount, 
             uint nIndexSize, 
             uint nIndexCount, 
             void* pVertices, 
             void* pIndices,
             GFX_BUFFER_USAGE nUsage = GFX_BUFFER_USAGE_DEFAULT );
-        CMesh* CreateMesh( void ); 
-        CMesh* LoadMesh( const char* szFilename );
-        CMesh* CreateDynamicBox( void );
+        sint CreateMesh( void ); 
+        sint LoadMesh( const char* szFilename );
+        sint CreateDynamicBox( void );
 
         //-----------------------------------------------------------------------------
         //  UpdateBuffer
@@ -256,7 +264,7 @@ namespace Riot
         IGfxBuffer* m_pLightCB;
 
         // Default and debug meshes
-        CMesh*              m_pDefaultMesh;
+        sint                m_nDefaultMesh;
         IGfxBuffer*         m_pLineBuffer;
         IGfxBuffer*         m_pPlaneBuffer;
 
@@ -269,6 +277,10 @@ namespace Riot
         IGfxVertexLayout*   m_ppVertexLayouts[ NUM_VERTEX_SHADERS ];
         IGfxPixelShader*    m_ppPixelShaders[ NUM_PIXEL_SHADERS ];
         IGfxSamplerState*   m_ppSamplerStates[ NUM_SAMPLER_STATES ];
+
+        // Meshes
+        CMesh*              m_ppMeshes[ MAX_MESHES ];
+        atomic_t            m_nNumMeshes;                
 
         struct TDebugBox
         {
@@ -288,22 +300,22 @@ namespace Riot
         uint32      m_nNumActiveLights;
         uint32      _padding[3];
         atomic_t    m_nNumCommands;
-        uint        m_nPrevNumCommands;
+        sint        m_nPrevNumCommands;
         bool        m_bUpdateLighting;
 
-        CMesh*      m_pSphereMesh;
+        sint        m_nSphereMesh;
 
         RSphere     m_DebugSpheres[2][1024*32];
         RSphere*    m_pPrevDebugSpheres;
         RSphere*    m_pCurrDebugSpheres;
         atomic_t    m_nNumSpheres;
-        uint        m_nPrevNumSpheres;
+        sint        m_nPrevNumSpheres;
 
         TDebugBox   m_DebugBoxes[2][1024*32];
         TDebugBox*  m_pPrevDebugBoxes;
         TDebugBox*  m_pCurrDebugBoxes;
         atomic_t    m_nNumBoxes;
-        uint        m_nPrevNumBoxes;
+        sint        m_nPrevNumBoxes;
 
         TDebugRay   m_DebugRays[2][1024*32];
         TDebugRay*  m_pPrevDebugRays;
@@ -311,7 +323,7 @@ namespace Riot
         atomic_t    m_nNumRays;
         uint        m_nPrevNumRays;
 
-        CMesh*      m_pDebugBox;
+        sint        m_nDebugBox;
     };
 
     //-----------------------------------------------------------------------------

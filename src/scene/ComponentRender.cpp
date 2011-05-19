@@ -2,7 +2,7 @@
 File:           ComponentRender.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/26/2011 3:18:25 PM
+Modified:       5/19/2011 11:09:22 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentRender.h"
@@ -92,9 +92,6 @@ namespace Riot
         PreDetach( nObject );
         /********************************/
 
-        // Perform any custom detachment stuff
-        SAFE_RELEASE( m_pMesh[m_nIndex] );
-
         // Now reorder the data
         COMPONENT_REORDER_DATA( m_Transform );
         COMPONENT_REORDER_DATA( m_pMesh );
@@ -129,9 +126,6 @@ namespace Riot
     {
         PreRemoveInactive( nObject );
         /********************************/
-
-        // Perform any custom removal stuff
-        SAFE_RELEASE( m_pMesh[m_nIndex] );
 
         // Now reorder the data
         COMPONENT_REMOVE_PREV_DATA( m_Transform );
@@ -178,8 +172,7 @@ namespace Riot
             break;
         case eComponentMessageMesh:
             {
-                m_pMesh[nSlot] = (CMesh*)msg.m_pData;
-                m_pMesh[nSlot]->AddRef();
+                m_pMesh[nSlot] = msg.m_nData;
             }
             break;
         default:

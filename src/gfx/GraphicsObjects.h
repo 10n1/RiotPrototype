@@ -3,7 +3,7 @@ File:           GraphicsObjects.h
 Purpose:        Interfaces for all the graphics objects in the engine
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       5/13/2011 4:23:40 PM
+Modified:       5/19/2011 11:10:37 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICSOBJECTS_H_
@@ -38,7 +38,7 @@ namespace Riot
 
     struct TRenderCommand
     {
-        CMesh*          pMesh;
+        sint            nMesh;
         IGfxTexture2D*  pTexture;
     };
     
