@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/19/2011 11:11:56 AM
+Modified:       5/19/2011 1:16:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -37,27 +37,21 @@ namespace Riot
         BaseKey nBase;
     };
 
-    // CRenderKey constructor
-    CRenderKey::CRenderKey()
+    // TRenderCommand constructor
+    TRenderCommand::TRenderCommand()
     {
-        m_nMaterial = eMatStandard;
-        m_nSampler = eSamplerLinear;
-        m_nTexture = 0;
-        m_nTransparant = 0;
-        m_nMesh = 0;
-
-        m_fDepth = 0.0f;
+        Clear();
     }
 
-    // CRenderKey destructor
-    CRenderKey::~CRenderKey()
+    // TRenderCommand destructor
+    TRenderCommand::~TRenderCommand()
     {
     }
 
     /***************************************\
     | class methods                         |
     \***************************************/
-    void CRenderKey::Clear( void )
+    void TRenderCommand::Clear( void )
     {
         m_nMaterial = eMatStandard;
         m_nSampler = eSamplerLinear;
@@ -67,7 +61,7 @@ namespace Riot
 
         m_fDepth = 0.0f;
     }
-    uint64 CRenderKey::Encode( void )
+    uint64 TRenderCommand::Encode( void )
     {
         Key k;
         BaseKey base;
@@ -86,7 +80,7 @@ namespace Riot
         k.nBase = base;
         return k.nKey;
     }
-    void CRenderKey::Decode( uint64 nKey )
+    void TRenderCommand::Decode( uint64 nKey )
     {
         Key k;
         BaseKey base;
@@ -140,16 +134,8 @@ namespace Riot
         m_pViewProjCB   = NULL;
         m_pWorldCB      = NULL;
 
-        m_nDefaultMesh      = INVALID_HANDLE;        
-        //m_pDefaultVShader   = NULL;
-        //m_pDefaultVLayout   = NULL;
-        m_pDefaultTexture   = NULL;
-        //m_pLinearSamplerState   = NULL;
-        //m_pNearestSamplerState  = NULL;
-
-        //m_pWireframeVLayout = NULL;
-        //m_pWireframeVShader = NULL;
-        //m_pWireframePShader = NULL;
+        m_nDefaultMesh      = INVALID_HANDLE;
+        m_nDefaultTexture   = INVALID_HANDLE;
 
         m_pCurrentView  = NULL;
 
@@ -187,6 +173,9 @@ namespace Riot
 
         Memset( m_ppMeshes, 0, sizeof( m_ppMeshes ) );
         m_nNumMeshes = 0;
+
+        Memset( m_ppTextures, 0, sizeof( m_ppTextures ) );
+        m_nNumTextures = 0;
     }
 
     //-----------------------------------------------------------------------------
@@ -215,24 +204,12 @@ namespace Riot
             SAFE_RELEASE( m_ppPixelShaders[i] );
         }
 
+        for( uint i = 0; i < m_nNumTextures; ++i )
+        {
+            SAFE_RELEASE( m_ppTextures[i] );
+        }
+
         SAFE_RELEASE( m_pLineBuffer );
-
-        //SAFE_RELEASE( m_pWireframeVLayout );
-        //SAFE_RELEASE( m_pWireframeVShader );
-        //SAFE_RELEASE( m_pWireframePShader );
-
-        //SAFE_RELEASE( m_pDebugBox );
-        //SAFE_RELEASE( m_pSphereMesh );
-
-        SAFE_RELEASE( VPosNormalTex::VertexLayoutObject );
-
-        SAFE_RELEASE( m_pWhiteTexture );
-        //SAFE_RELEASE( m_pNearestSamplerState );
-        SAFE_RELEASE( m_pDefaultTexture );
-        //SAFE_RELEASE( m_pLinearSamplerState );
-        //SAFE_RELEASE( m_pDefaultMesh );
-        //SAFE_RELEASE( m_pDefaultVShader );
-        //SAFE_RELEASE( m_pDefaultVLayout );
 
         SAFE_RELEASE( m_pWorldCB );
         SAFE_RELEASE( m_pViewProjCB );
@@ -289,12 +266,14 @@ namespace Riot
         const char szVertexShader[] =  "Assets/Shaders/BasicVertexShader.hlsl";
 #endif
 
-        // Texture
-        m_pDefaultTexture = m_pDevice->LoadTexture( "Assets/Textures/DefaultTexture.png" );
-        m_pWhiteTexture = m_pDevice->LoadTexture( "Assets/Textures/white.png" );
+        // Texture7
+        m_nDefaultTexture = LoadTexture2D( "Assets/Textures/DefaultTexture.png" );
 
         // debug sphere
         m_nSphereMesh = LoadMesh( "Assets/meshes/sphere.mesh" );
+
+        // Default mesh
+        m_nDefaultMesh = CreateMesh();
 
         // debug box
         m_nDebugBox = CreateDynamicBox();
@@ -338,6 +317,13 @@ namespace Riot
             VPosNormalTex::LayoutSize,
             &m_ppVertexShaders[ eVS3DPosNorTexStd ],
             &m_ppVertexLayouts[ eVS3DPosNorTexStd ] );
+        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/BasicVertexShaderNoTransform.hlsl", 
+            "main", 
+            VPosNormalTex::Layout, 
+            VPosNormalTex::LayoutSize,
+            &m_ppVertexShaders[ eVS3DPosNorTexNoTransform ],
+            NULL );
+        m_ppVertexLayouts[ eVS3DPosNorTexNoTransform ] = m_ppVertexLayouts[ eVS3DPosNorTexStd ];
         
         m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/PosColorVertexShader.hlsl", 
             "main", 
@@ -407,24 +393,29 @@ namespace Riot
             RMatrix4 mWorld = m_pPrevTransforms[i].GetTransformMatrix();
             SetWorldMatrix( mWorld );
 
-            IGfxTexture2D* pTexture = m_pPrevCommands[i].pTexture;
+            TRenderCommand cmd;
+            cmd.Decode( m_pPrevCommands[i] );
+            sint nTexture = cmd.m_nTexture;
+            sint nMesh = cmd.m_nMesh;
 
-            if( pTexture == NULL )
+            if( nTexture == INVALID_HANDLE )
             {
                 SetSamplerState( eSamplerNearest );
-                pTexture = m_pDefaultTexture;
+                nTexture = m_nDefaultTexture;
             }
             else
             {
                 SetSamplerState( eSamplerLinear );
             }
 
-            m_pDevice->SetPSTexture( 0, pTexture );
+            m_pDevice->SetPSTexture( 0, m_ppTextures[ nTexture ] );
 
-            m_ppMeshes[ m_pPrevCommands[i].nMesh ]->DrawMesh();
+            m_ppMeshes[ nMesh ]->DrawMesh();
         }
 
+        SetVertexShader( eVS3DPosNorTexNoTransform );
         pTerrain->Render();
+        SetVertexShader( eVS3DPosNorTexStd );
 
         mView = m_pCurrentView->GetViewMatrix();
         mProj = m_pCurrentView->GetProjMatrix();
@@ -439,7 +430,6 @@ namespace Riot
             // Draw the spheres
             m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
             SetSamplerState( eSamplerNearest );
-            m_pDevice->SetPSTexture( 0, m_pWhiteTexture );
             for( sint i = 0; i < m_nPrevNumSpheres; ++i )
             {
                 RMatrix4 mWorld = RMatrix4Scale( m_pPrevDebugSpheres[i].radius );
@@ -560,6 +550,8 @@ namespace Riot
                                     void* pIndices,
                                     GFX_BUFFER_USAGE nUsage )
     {
+        ASSERT( m_nNumMeshes < MAX_MESHES );
+
         CMesh* pMesh = new CMesh;
 
         //////////////////////////////////////////
@@ -580,7 +572,6 @@ namespace Riot
         //
         sint nIndex = AtomicIncrement( &m_nNumMeshes ) - 1;
         m_ppMeshes[ nIndex ] = pMesh;
-        pMesh->AddRef();
 
         return nIndex;
     }
@@ -760,9 +751,12 @@ namespace Riot
     //  LoadTextureXD
     //  Loads a texture
     //-----------------------------------------------------------------------------
-    IGfxTexture2D* CRenderer::LoadTexture2D( const char* szFilename )
+    sint CRenderer::LoadTexture2D( const char* szFilename )
     {
-        return m_pDevice->LoadTexture( szFilename );
+        sint nIndex = AtomicIncrement( &m_nNumTextures ) - 1;
+
+        m_ppTextures[ nIndex ] = m_pDevice->LoadTexture( szFilename );
+        return nIndex;
     }
 
     //-----------------------------------------------------------------------------
@@ -807,12 +801,12 @@ namespace Riot
     //  AddCommand
     //  Adds a renderable object to the command buffer
     //-----------------------------------------------------------------------------
-    void CRenderer::AddCommand( const TRenderCommand& cmd, RTransform& transform )
+    void CRenderer::AddCommand( uint64 nCmd, RTransform& transform )
     {
         ASSERT( m_nNumCommands < MAX_RENDER_COMMANDS );
 
         uint nIndex = AtomicIncrement( &m_nNumCommands ) - 1;
-        m_pCurrCommands[nIndex] = cmd;
+        m_pCurrCommands[nIndex] = nCmd;
 
         m_pCurrTransforms[nIndex] = transform;
     }
@@ -967,12 +961,21 @@ namespace Riot
         UI::SwapBuffers();
     }
 
+    //-----------------------------------------------------------------------------
     //  DrawText
     //  Renders a string of text on screen at (nLeft, nTop)
     //-----------------------------------------------------------------------------
     void CRenderer::DrawString( uint nLeft, uint nTop, const char* szText )
     {
         UI::AddString( nLeft, nTop, szText );
+    }
+
+    //-----------------------------------------------------------------------------
+    //  Sort
+    //  Sorts the list of commands for rendering efficiency
+    //-----------------------------------------------------------------------------
+    void CRenderer::Sort( void )
+    {
     }
 
 

@@ -2,7 +2,7 @@
 File:           ComponentRender.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/19/2011 11:09:22 AM
+Modified:       5/19/2011 12:52:31 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentRender.h"
@@ -146,8 +146,9 @@ namespace Riot
         {
             // Update this shit!
             // Pass to the render engine
-            TRenderCommand cmd = { m_pMesh[i], NULL };
-            pRender->AddCommand( cmd, m_Transform[i] );
+            TRenderCommand cmd;
+            cmd.m_nMesh = m_pMesh[i];
+            pRender->AddCommand( cmd.Encode(), m_Transform[i] );
         }
     }
 

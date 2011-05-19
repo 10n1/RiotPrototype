@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/19/2011 11:02:59 AM
+Modified:       5/19/2011 1:13:18 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -24,6 +24,7 @@ namespace Riot
     {
         eVS3DPosNorTexStd,
         eVS3DPosNorTexInst,
+        eVS3DPosNorTexNoTransform,
         eVS3DPosColStd,
         eVS2DPosColTex,
 
@@ -55,14 +56,14 @@ namespace Riot
         NUM_MATERIALS,
     };
 
-    class CRenderKey
+    struct TRenderCommand
     {
     public:
-        // CRenderKey constructor
-        CRenderKey();
+        // TRenderCommand constructor
+        TRenderCommand();
 
-        // CRenderKey destructor
-        ~CRenderKey();
+        // TRenderCommand destructor
+        ~TRenderCommand();
         /***************************************\
         | class methods                         |
         \***************************************/
@@ -157,7 +158,7 @@ namespace Riot
         //  LoadTextureXD
         //  Loads a texture
         //-----------------------------------------------------------------------------
-        IGfxTexture2D* LoadTexture2D( const char* szFilename );
+        sint LoadTexture2D( const char* szFilename );
 
         //-----------------------------------------------------------------------------
         //  SetViewProj
@@ -181,7 +182,7 @@ namespace Riot
         //  AddCommand
         //  Adds a renderable object to the command buffer
         //-----------------------------------------------------------------------------
-        void AddCommand( const TRenderCommand& cmd, RTransform& transform );
+        void AddCommand( uint64 nCmd, RTransform& transform );
 
         //-----------------------------------------------------------------------------
         //  SetLight
@@ -232,6 +233,12 @@ namespace Riot
         inline void SetPixelShader( PixelShader nShader );
         inline void SetVertexShader( VertexShader nShader );
         inline void SetSamplerState( SamplerState nState );
+        
+        //-----------------------------------------------------------------------------
+        //  Sort
+        //  Sorts the list of commands for rendering efficiency
+        //-----------------------------------------------------------------------------
+        void Sort( void );
 
     private:
         //-----------------------------------------------------------------------------
@@ -248,13 +255,13 @@ namespace Riot
         static const uint           NumMessagesReceived;
 
         RTransform      m_pTransforms[2][MAX_RENDER_COMMANDS];
-        TRenderCommand  m_pRenderCommands[2][MAX_RENDER_COMMANDS];
+        uint64          m_pRenderCommands[2][MAX_RENDER_COMMANDS];
 
         RTransform*     m_pPrevTransforms;
         RTransform*     m_pCurrTransforms;
 
-        TRenderCommand* m_pPrevCommands;
-        TRenderCommand* m_pCurrCommands;
+        uint64* m_pPrevCommands;
+        uint64* m_pCurrCommands;
 
         IGraphicsDevice*    m_pDevice;
 
@@ -269,8 +276,7 @@ namespace Riot
         IGfxBuffer*         m_pPlaneBuffer;
 
         // Textures
-        IGfxTexture2D*      m_pDefaultTexture;
-        IGfxTexture2D*      m_pWhiteTexture;
+        sint    m_nDefaultTexture;
 
         // The graphics objects, that are referenced by enums
         IGfxVertexShader*   m_ppVertexShaders[ NUM_VERTEX_SHADERS ];
@@ -280,7 +286,11 @@ namespace Riot
 
         // Meshes
         CMesh*              m_ppMeshes[ MAX_MESHES ];
-        atomic_t            m_nNumMeshes;                
+        atomic_t            m_nNumMeshes;
+
+        // Textures
+        IGfxTexture2D*      m_ppTextures[ MAX_TEXTURES ];
+        atomic_t            m_nNumTextures;
 
         struct TDebugBox
         {

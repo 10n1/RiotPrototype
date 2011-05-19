@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       5/3/2011 2:49:26 PM
+Modified:       5/19/2011 1:13:18 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -393,40 +393,46 @@ namespace Riot
         hr = m_pDevice->CreateVertexShader( pShaderCode, nShaderSize, NULL, &pVertexShader );
         assert( hr == S_OK );
 
-        // and finally create the input layout
-        if( nLayoutCount == 3 )
-        {
-            D3D11_INPUT_ELEMENT_DESC inputLayout[] =
-            {
-                { Layout[0].szSemanticName, 0, (DXGI_FORMAT)Layout[0].nFormat, 0, Layout[0].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-                { Layout[1].szSemanticName, 0, (DXGI_FORMAT)Layout[1].nFormat, 0, Layout[1].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-                { Layout[2].szSemanticName, 0, (DXGI_FORMAT)Layout[2].nFormat, 0, Layout[2].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
-            };
-            hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
-        }
-        else if( nLayoutCount == 2 )
-        {
-            D3D11_INPUT_ELEMENT_DESC inputLayout[] =
-            {
-                { Layout[0].szSemanticName, 0, (DXGI_FORMAT)Layout[0].nFormat, 0, Layout[0].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-                { Layout[1].szSemanticName, 0, (DXGI_FORMAT)Layout[1].nFormat, 0, Layout[1].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
-            };
-            hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
-        }
-        else
-        {
-            ASSERT( 0 );
-        }
-        assert( hr == S_OK );
 
         // Now return them
         CD3DVertexShader* pNewShader = new CD3DVertexShader;
-        CD3DVertexLayout* pNewLayout = new CD3DVertexLayout;
         pNewShader->m_pShader = pVertexShader;
-        pNewLayout->m_pLayout = pInputLayout;
-
         *pShader = pNewShader;
-        *pLayout = pNewLayout;
+
+        if( pLayout != NULL )
+        {
+            // and finally create the input layout
+            if( nLayoutCount == 3 )
+            {
+                D3D11_INPUT_ELEMENT_DESC inputLayout[] =
+                {
+                    { Layout[0].szSemanticName, 0, (DXGI_FORMAT)Layout[0].nFormat, 0, Layout[0].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+                    { Layout[1].szSemanticName, 0, (DXGI_FORMAT)Layout[1].nFormat, 0, Layout[1].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+                    { Layout[2].szSemanticName, 0, (DXGI_FORMAT)Layout[2].nFormat, 0, Layout[2].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
+                };
+                hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
+            }
+            else if( nLayoutCount == 2 )
+            {
+                D3D11_INPUT_ELEMENT_DESC inputLayout[] =
+                {
+                    { Layout[0].szSemanticName, 0, (DXGI_FORMAT)Layout[0].nFormat, 0, Layout[0].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+                    { Layout[1].szSemanticName, 0, (DXGI_FORMAT)Layout[1].nFormat, 0, Layout[1].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
+                };
+                hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
+            }
+            else
+            {
+                ASSERT( 0 );
+            }
+            assert( hr == S_OK );
+
+
+            CD3DVertexLayout* pNewLayout = new CD3DVertexLayout;
+            pNewLayout->m_pLayout = pInputLayout;
+            *pLayout = pNewLayout;
+        }
+
     }
 
     IGfxPixelShader* CD3DDevice::CreatePixelShader( const char* szFilename, const char* szEntryPoint )
