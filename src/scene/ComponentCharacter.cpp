@@ -28,6 +28,7 @@ namespace Riot
 
     const eComponentMessageType CComponentCharacter::MessagesReceived[] =
     {
+        eComponentMessageTransform,
         eComponentMessageTerrainCollision,
     };
     const uint CComponentCharacter::NumMessagesReceived = (MessagesReceived[0] == eNULLCOMPONENTMESSAGE) ? 0 : sizeof( MessagesReceived ) / sizeof( eComponentMessageType );
