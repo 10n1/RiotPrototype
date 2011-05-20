@@ -113,25 +113,16 @@ namespace Riot
             // Render
             m_pRenderer->Render( m_pTerrain );
 
-            //////////////////////////////////////////
-            // Make sure terrain is the last thing drawn
-            //m_pTerrain->Render();
-
 #if PIPELINED_RENDER
             m_pTaskManager->WaitForCompletion( nObjectUpdateHandle );
 #endif // #if PIPELINED_RENDER
 
-            //m_pRenderer->DrawDebugRay( RVector3( 0.0f, 0.0f, 0.0f ), RVector3( 0.0f, 10.0f, 0.0f ) );
-
             //////////////////////////////////////////
             // Update terrain
-
             if( bUpdateTerrain )
             {
                 m_pTerrain->CenterTerrain( m_pCamera->GetPosition(), 250.0f );
             }
-
-            m_pRenderer->DrawDebugBox( RAABB( RVector3( -10.0f, 0.0f, 0.0f ), RVector3( 10.0f, 10.0f, 0.0f ) ), RVector3( 0.4f, 1.0f, 0.7f ) );
 
             //////////////////////////////////////////
             //  Process OS messages

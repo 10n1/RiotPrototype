@@ -2,7 +2,7 @@
 File:           ComponentLight.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/27/2011 10:19:39 AM
+Modified:       5/19/2011 8:30:51 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentLight.h"
@@ -55,7 +55,6 @@ namespace Riot
 
         // Now initialize this component
         m_Transform[m_nIndex] = RTransform();
-        m_bUpdated[m_nIndex]  = true;
 
         /********************************/
         PostAttach( nObject );
@@ -74,7 +73,6 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_USE_PREV_DATA( m_Transform );
-        COMPONENT_USE_PREV_DATA( m_bUpdated );
 
         /********************************/
         PostReattach( nObject );
@@ -93,7 +91,6 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REORDER_DATA( m_Transform );
-        COMPONENT_REORDER_DATA( m_bUpdated );
 
         /********************************/
         PostDetach( nObject );
@@ -112,7 +109,6 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REORDER_SAVE_DATA( m_Transform );
-        COMPONENT_REORDER_SAVE_DATA( m_bUpdated );
 
         /********************************/
         PostDetachAndSave( nObject );
@@ -131,7 +127,6 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REMOVE_PREV_DATA( m_Transform );
-        COMPONENT_REMOVE_PREV_DATA( m_bUpdated );
 
         /********************************/
         PostRemoveInactive( nObject );
@@ -151,16 +146,7 @@ namespace Riot
 
         for( uint i = 0; i < m_nNumActiveComponents; ++i )
         {
-            //m_Transform[i].position.x = sin( fAngle ) * 10.0f;
-            //m_Transform[i].position.z = cos( fAngle ) * 10.0f;
-            //m_bUpdated[i] = true;
-
-            if( m_bUpdated[i] == true )
-            {
-                pRender->SetLight( m_Transform[i].position, i );
-                m_bUpdated[i] = false;
-                pManager->PostMessage( eComponentMessageTransform, m_pObjectIndices[ i ], &m_Transform[i], ComponentType );
-            }
+            pRender->AddPointLight( m_Transform[i].position, 1.0f );
         }
     }
 
@@ -177,7 +163,6 @@ namespace Riot
                 RTransform& transform = *((RTransform*)msg.m_pData);
 
                 m_Transform[nSlot]      = transform;
-                m_bUpdated[nSlot]       = true;
             }
             break;
         default:

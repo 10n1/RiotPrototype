@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/19/2011 4:52:38 PM
+Modified:       5/19/2011 8:30:51 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -198,10 +198,11 @@ namespace Riot
         void AddCommand( uint64 nCmd, RTransform& transform );
 
         //-----------------------------------------------------------------------------
-        //  SetLight
-        //  Sets the specific light
+        //  AddLight
+        //  Adds a light to the scene
         //-----------------------------------------------------------------------------
-        void SetLight( const RVector3& vDir, uint nIndex );
+        void AddPointLight( const RVector3& vPos, float fAtten );
+        void AddDirLight( const RVector3& vDir );
 
         //-----------------------------------------------------------------------------
         //  GetDefaultMeshData
@@ -325,20 +326,22 @@ namespace Riot
 
         CView*  m_pCurrentView;
 
-        RVector4    m_vLights[MAX_LIGHTS];
-        uint32      m_nNumActiveLights;
-        uint32      _padding[3];
+        struct TLights
+        {
+            RVector4    vDirLights[ MAX_LIGHTS ];
+            RVector4    vPointLights[ MAX_LIGHTS ];
+            atomic_t    nNumActivePointLights;
+            atomic_t    nNumActiveDirLights;
+            uint32      _padding[2];
+        };
+        TLights     m_pLights[2];
+        TLights*    m_pCurrLights;
+        TLights*    m_pPrevLights;
+
         atomic_t    m_nNumCommands;
         sint        m_nPrevNumCommands;
-        bool        m_bUpdateLighting;
 
         sint        m_nSphereMesh;
-
-        RSphere     m_DebugSpheres[2][1024*32];
-        RSphere*    m_pPrevDebugSpheres;
-        RSphere*    m_pCurrDebugSpheres;
-        atomic_t    m_nNumSpheres;
-        sint        m_nPrevNumSpheres;
 
         TDebugBox   m_DebugBoxes[2][1024*32];
         TDebugBox*  m_pPrevDebugBoxes;
@@ -394,11 +397,20 @@ namespace Riot
     {
         //////////////////////////////////////////
         // Set the material
+        uint m = DecodeMaterial( nCmd );
         switch( DecodeMaterial( nCmd ) )
         {
         case eMatStandard:
+            m_pDevice->SetFillMode( GFX_FILL_SOLID );
             SetVertexShader( eVS3DPosNorTexStd );
             SetPixelShader( ePS3DStd );
+            SetSamplerState( (SamplerState)DecodeSampler( nCmd ) );
+            m_pDevice->SetPSTexture( 0, m_ppTextures[ DecodeTexture( nCmd ) ] );
+            break;
+        case eMatWireframe:
+            m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
+            SetVertexShader( eVS3DPosColStd );
+            SetPixelShader( ePS3DColor );
             break;
         default:
             ASSERT( false );
@@ -406,9 +418,7 @@ namespace Riot
         }
 
         //////////////////////////////////////////
-        SetSamplerState( (SamplerState)DecodeSampler( nCmd ) );
         SetWorldMatrix( transform.GetTransformMatrix() );
-        m_pDevice->SetPSTexture( 0, m_ppTextures[ DecodeTexture( nCmd ) ] );
         m_ppMeshes[ DecodeMesh( nCmd ) ]->DrawMesh();
     }
 

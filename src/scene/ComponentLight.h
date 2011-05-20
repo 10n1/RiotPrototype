@@ -3,7 +3,7 @@ File:           ComponentLight.h
 Purpose:        Turns an object into a light!
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       4/25/2011 9:40:17 PM
+Modified:       5/19/2011 8:30:51 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTLIGHT_H_
@@ -54,7 +54,6 @@ namespace Riot
         static CComponentLight* m_pInstance;
 
         RTransform  m_Transform[MaxComponents];
-        bool        m_bUpdated[MaxComponents];
 
     };
 

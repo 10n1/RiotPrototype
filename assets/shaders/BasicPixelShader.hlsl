@@ -2,7 +2,7 @@
 File:           BasicPixelShader.hlsl
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       5/4/2011 12:05:50 PM
+Modified:       5/19/2011 8:32:09 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 //--------------------------------------------------------------------------------------
@@ -13,8 +13,10 @@ SamplerState    linearSampler : register( s0 );
 
 cbuffer Lights : register( b0 )
 {
-    float4 vLightPos[8];
-    int    nActiveLights;
+    float4 vDirLightDir[8];
+    float4 vPointLightPos[8];
+    int    nActivePointLights;
+    int    nActiveDirLights;
 }
 
 
@@ -36,9 +38,9 @@ float4 main( PS_INPUT input ) : SV_Target
 
     float4 fTexColor = diffuseTexture.Sample( linearSampler, input.TexCoords );
 
-    for( int i = 0; i < nActiveLights; ++i )
+    for( int i = 0; i < nActivePointLights; ++i )
     {
-        float3 vLightDir = normalize( vLightPos[i] - input.Pos );
+        float3 vLightDir = normalize( vPointLightPos[i] - input.Pos );
         finalColor += fTexColor * saturate( dot( vLightDir, normalize(input.Normal) ) );
     }
 

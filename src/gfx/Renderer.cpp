@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/19/2011 4:52:40 PM
+Modified:       5/19/2011 8:31:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -142,10 +142,6 @@ namespace Riot
         m_nNumCommands  = 0;
         Memset( m_pRenderCommands, 0, sizeof( m_pRenderCommands ) );
 
-        m_nNumActiveLights  = 0;
-        m_bUpdateLighting   = false;
-
-        m_nNumSpheres = 0;
         m_nNumBoxes = 0;
 
         m_nSphereMesh = INVALID_HANDLE;
@@ -160,11 +156,11 @@ namespace Riot
         m_pPrevDebugBoxes = m_DebugBoxes[0];     
         m_pCurrDebugBoxes = m_DebugBoxes[1];
 
-        m_pPrevDebugSpheres = m_DebugSpheres[0];
-        m_pCurrDebugSpheres = m_DebugSpheres[1];
-
         m_pPrevDebugRays = m_DebugRays[0];
         m_pCurrDebugRays = m_DebugRays[1];
+
+        m_pPrevLights    = &m_pLights[0];
+        m_pCurrLights    = &m_pLights[1];
 
         Memset( m_ppVertexShaders, 0, sizeof( m_ppVertexShaders ) );
         Memset( m_ppVertexLayouts, 0, sizeof( m_ppVertexLayouts ) );
@@ -176,6 +172,8 @@ namespace Riot
 
         Memset( m_ppTextures, 0, sizeof( m_ppTextures ) );
         m_nNumTextures = 0;
+
+        Memset( m_pLights, 0, sizeof( m_pLights ) );
     }
 
     //-----------------------------------------------------------------------------
@@ -245,7 +243,7 @@ namespace Riot
         // Create the constant buffers
         m_pViewProjCB = m_pDevice->CreateConstantBuffer( sizeof( RMatrix4 ), NULL );
         m_pWorldCB = m_pDevice->CreateConstantBuffer( sizeof( RMatrix4 ), NULL );
-        m_pLightCB = m_pDevice->CreateConstantBuffer( sizeof( RVector4 ) * MAX_LIGHTS + 16, NULL );
+        m_pLightCB = m_pDevice->CreateConstantBuffer( sizeof( TLights ), NULL );
         
         // Load the defaults
         CreateDefaultObjects();
@@ -343,7 +341,6 @@ namespace Riot
         if( !gnRenderOn )
         {   // Don't render if we shouldn't
             m_nPrevNumCommands  = 0;
-            m_nPrevNumSpheres   = 0;
             m_nPrevNumBoxes     = 0;
 
             m_pDevice->Clear();
@@ -359,14 +356,11 @@ namespace Riot
         else
             m_pDevice->SetFillMode( GFX_FILL_SOLID );
 
+        //////////////////////////////////////////
         // Update lighting
-        if( m_bUpdateLighting )
-        {
-            m_pDevice->UpdateBuffer( m_pLightCB, m_vLights );
-            m_pDevice->SetPSConstantBuffer( 0, m_pLightCB );
-            m_bUpdateLighting = false;
-        }
-        
+        m_pDevice->UpdateBuffer( m_pLightCB, m_pPrevLights );
+        m_pDevice->SetPSConstantBuffer( 0, m_pLightCB );
+
         //////////////////////////////////////////
         // Clear
         m_pDevice->Clear();
@@ -395,20 +389,9 @@ namespace Riot
         // Draw the debug volumes
         if( gnShowBoundingVolumes )
         {
+            m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
             SetVertexShader( eVS3DPosColStd );
             SetPixelShader( ePS3DColor );
-
-            // Draw the spheres
-            m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
-            SetSamplerState( eSamplerNearest );
-            for( sint i = 0; i < m_nPrevNumSpheres; ++i )
-            {
-                RMatrix4 mWorld = RMatrix4Scale( m_pPrevDebugSpheres[i].radius );
-                mWorld.r3 = Homogonize(m_pPrevDebugSpheres[i].position);
-                mWorld.r3.w = 1.0f;
-                SetWorldMatrix( mWorld );
-                m_ppMeshes[ m_nSphereMesh ]->DrawMesh();
-            }
 
             // Draw the debug boxes
             for( sint i = 0; i < m_nPrevNumBoxes; ++i )
@@ -546,41 +529,6 @@ namespace Riot
         {
             return m_nDefaultMesh;
         }
-        
-        //////////////////////////////////////////
-        // Define vertex buffer
-        VPosNormalTex vertices[] =
-        {
-            { RVector3( -1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
-            { RVector3(  1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
-            { RVector3(  1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  1.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
-                                                                        
-            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
-            { RVector3(  1.0f, -1.0f, -1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
-            { RVector3(  1.0f, -1.0f,  1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f, -1.0f,  1.0f ), RVector3(  0.0f, -1.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
-                                                                        
-            { RVector3( -1.0f, -1.0f,  1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
-            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
-            { RVector3( -1.0f,  1.0f, -1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f,  1.0f,  1.0f ), RVector3( -1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
-                                                                        
-            { RVector3(  1.0f, -1.0f,  1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 0.0f ) },
-            { RVector3(  1.0f, -1.0f, -1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 0.0f ) },
-            { RVector3(  1.0f,  1.0f, -1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 1.0f, 1.0f ) },
-            { RVector3(  1.0f,  1.0f,  1.0f ), RVector3(  1.0f,  0.0f,  0.0f ), RVector2( 0.0f, 1.0f ) },
-                                                                 
-            { RVector3( -1.0f, -1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 0.0f, 0.0f ) },
-            { RVector3(  1.0f, -1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 1.0f, 0.0f ) },
-            { RVector3(  1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f,  1.0f, -1.0f ), RVector3(  0.0f,  0.0f, -1.0f ), RVector2( 0.0f, 1.0f ) },
-                                                                 
-            { RVector3( -1.0f, -1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 0.0f, 0.0f ) },
-            { RVector3(  1.0f, -1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 1.0f, 0.0f ) },
-            { RVector3(  1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 1.0f, 1.0f ) },
-            { RVector3( -1.0f,  1.0f,  1.0f ), RVector3(  0.0f,  0.0f,  1.0f ), RVector2( 0.0f, 1.0f ) },
-        };
 
         //////////////////////////////////////////
         // Define the index buffer
@@ -605,7 +553,7 @@ namespace Riot
             23,20,22
         };
 
-        m_nDefaultMesh = CreateMesh( VPosNormalTex::VertexStride, ARRAY_LENGTH( vertices ), sizeof(uint16), ARRAY_LENGTH( indices ), vertices, indices, GFX_BUFFER_USAGE_IMMUTABLE );
+        m_nDefaultMesh = CreateMesh( VPosNormalTex::VertexStride, 24, sizeof(uint16), ARRAY_LENGTH( indices ), GetDefaultMeshData(), indices, GFX_BUFFER_USAGE_IMMUTABLE );
 
         return m_nDefaultMesh;
     }
@@ -776,18 +724,23 @@ namespace Riot
     }
 
     //-----------------------------------------------------------------------------
-    //  SetLight
-    //  Sets the specific light
+    //  AddLight
+    //  Adds a light to the scene
     //-----------------------------------------------------------------------------
-    void CRenderer::SetLight( const RVector3& vPos, uint nIndex )
+    void CRenderer::AddPointLight( const RVector3& vPos, float fAtten )
     {
-        static CMutex mutex;
+        ASSERT( m_pCurrLights->nNumActivePointLights < MAX_LIGHTS );
+        sint nIndex = AtomicIncrement( &m_pCurrLights->nNumActivePointLights ) - 1;
 
-        mutex.Lock();
-        m_bUpdateLighting = true;
-        m_vLights[ nIndex ] = Homogonize(vPos);
-        m_nNumActiveLights = nIndex + 1;
-        mutex.Unlock();
+        m_pCurrLights->vPointLights[ nIndex ] = Homogonize( vPos );
+    }
+
+    void CRenderer::AddDirLight( const RVector3& vDir )
+    {
+        ASSERT( m_pCurrLights->nNumActiveDirLights < MAX_LIGHTS );
+        sint nIndex = AtomicIncrement( &m_pCurrLights->nNumActiveDirLights ) - 1;
+
+        m_pCurrLights->vDirLights[ nIndex ] = Homogonize( vDir );
     }
 
     //-----------------------------------------------------------------------------
@@ -868,9 +821,13 @@ namespace Riot
         if( !gnShowBoundingVolumes )
             return;
 
-        sint nIndex = AtomicIncrement( &m_nNumSpheres ) - 1;
+        TRenderCommand cmd;
+        cmd.m_nMesh = m_nSphereMesh;
+        cmd.m_nMaterial = eMatWireframe;
+        
+        RTransform t( RQuaternionZero(), fSphere.position, fSphere.radius );
 
-        m_pCurrDebugSpheres[nIndex] = fSphere;
+        AddCommand( cmd.Encode(), t );
     }
 
     //-----------------------------------------------------------------------------
@@ -909,18 +866,18 @@ namespace Riot
         Swap( m_pPrevCommands, m_pCurrCommands );
         Swap( m_pPrevTransforms, m_pCurrTransforms );
         Swap( m_pPrevDebugBoxes, m_pCurrDebugBoxes );
-        Swap( m_pPrevDebugSpheres, m_pCurrDebugSpheres );
         Swap( m_pPrevDebugRays, m_pCurrDebugRays );
+        Swap( m_pPrevLights, m_pCurrLights );
 
         m_nPrevNumCommands  = m_nNumCommands;
-        m_nPrevNumSpheres   = m_nNumSpheres;
         m_nPrevNumBoxes     = m_nNumBoxes;
         m_nPrevNumRays      = m_nNumRays;
 
         m_nNumBoxes     = 0;
-        m_nNumSpheres   = 0;
         m_nNumCommands  = 0;
         m_nNumRays      = 0;
+        m_pCurrLights->nNumActivePointLights = 0;
+        m_pCurrLights->nNumActiveDirLights = 0;
 
         UI::SwapBuffers();
     }
