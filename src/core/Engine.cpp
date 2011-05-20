@@ -420,6 +420,21 @@ namespace Riot
 
         SAFE_RELEASE( pBox );
 
+        //////////////////////////////////////////
+        // Add the character
+        t = RTransform();
+        t.position = RVector3( 10.0f, 90.0f, 20.0f );
+        t.scale = 50.0f;
+
+        uint nCharacterID = m_pObjectManager->CreateObject();
+        CMesh* pCharacterMesh = m_pRenderer->LoadMesh( "Assets/Meshes/drone.sdkmesh.mesh" );
+        m_pObjectManager->AddComponent( nCharacterID, Riot::eComponentCharacter );
+        m_pObjectManager->AddComponent( nCharacterID, Riot::eComponentRender );
+        m_pObjectManager->SendMessage( Riot::eComponentMessageMesh, nCharacterID, pCharacterMesh );
+        m_pObjectManager->SendMessage( Riot::eComponentMessageTransform, nCharacterID, &t );
+
+        SAFE_RELEASE( pCharacterMesh );
+
         // Finally reset the timer
         m_MainTimer.Reset();
     }
