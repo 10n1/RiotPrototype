@@ -19,6 +19,7 @@ Modified by:    Kyle Weicht
 #include "Terrain.h"
 #include "Camera.h"
 #include "Console.h"
+#include "Character.h"
 
 #include <stdio.h> // included for printf
 
@@ -47,6 +48,7 @@ namespace Riot
     CCamera*            Engine::m_pCamera               = NULL;
     CObjectManager*     Engine::m_pObjectManager        = NULL;
     CConsole*           Engine::m_pConsole              = NULL;
+    CCharacter*         Engine::m_pCharacters[MAX_CHARACTERS];
 
     CTerrain*           Engine::m_pTerrain              = NULL;
 
@@ -411,6 +413,12 @@ namespace Riot
 
         //SAFE_RELEASE( pBox );
 
+        //////////////////////////////////////////
+        // Add the character
+        m_pCharacters[0] = new CCharacter();
+        m_pRenderer->SetCurrentView( m_pCharacters[0]->GetView() );
+        m_pCamera->SetView( m_pCharacters[0]->GetView() );
+
         // Finally reset the timer
         m_MainTimer.Reset();
     }
@@ -426,6 +434,7 @@ namespace Riot
         SAFE_RELEASE( m_pMainWindow );
         SAFE_DELETE( m_pCamera );
         SAFE_DELETE( m_pTerrain );
+        SAFE_DELETE( m_pCharacters[0] ); // hmmm...
 
         //////////////////////////////////////////
         // ...then shutdown and delete all modules
