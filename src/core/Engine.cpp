@@ -19,6 +19,7 @@ Modified by:    Kyle Weicht
 #include "Terrain.h"
 #include "Camera.h"
 #include "Console.h"
+#include "Character.h"
 
 #include <stdio.h> // included for printf
 
@@ -47,6 +48,7 @@ namespace Riot
     CCamera*            Engine::m_pCamera               = NULL;
     CObjectManager*     Engine::m_pObjectManager        = NULL;
     CConsole*           Engine::m_pConsole              = NULL;
+    CCharacter*         Engine::m_pCharacter            = NULL;  // FIX for multiplayer
 
     CTerrain*           Engine::m_pTerrain              = NULL;
 
@@ -422,18 +424,7 @@ namespace Riot
 
         //////////////////////////////////////////
         // Add the character
-        t = RTransform();
-        t.position = RVector3( 10.0f, 90.0f, 20.0f );
-        t.scale = 50.0f;
-
-        uint nCharacterID = m_pObjectManager->CreateObject();
-        CMesh* pCharacterMesh = m_pRenderer->LoadMesh( "Assets/Meshes/drone.sdkmesh.mesh" );
-        m_pObjectManager->AddComponent( nCharacterID, Riot::eComponentCharacter );
-        m_pObjectManager->AddComponent( nCharacterID, Riot::eComponentRender );
-        m_pObjectManager->SendMessage( Riot::eComponentMessageMesh, nCharacterID, pCharacterMesh );
-        m_pObjectManager->SendMessage( Riot::eComponentMessageTransform, nCharacterID, &t );
-
-        SAFE_RELEASE( pCharacterMesh );
+        m_pCharacter = new CCharacter();
 
         // Finally reset the timer
         m_MainTimer.Reset();
@@ -450,6 +441,7 @@ namespace Riot
         SAFE_RELEASE( m_pMainWindow );
         SAFE_DELETE( m_pCamera );
         SAFE_DELETE( m_pTerrain );
+        SAFE_DELETE( m_pCharacter );
 
         //////////////////////////////////////////
         // ...then shutdown and delete all modules

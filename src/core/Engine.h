@@ -24,6 +24,7 @@ namespace Riot
     class CTerrain;
     class CCamera;
     class CConsole;
+    class CCharacter;
 
     class Engine : public IListener
     {
@@ -113,6 +114,7 @@ namespace Riot
         static CInputManager*       m_pInputManager;
         static CObjectManager*      m_pObjectManager;
         static CConsole*    m_pConsole;
+        static CCharacter*  m_pCharacter;  // FIX for multiplayer
 
         static CWindow*     m_pMainWindow;
         static CRenderer*   m_pRenderer;
