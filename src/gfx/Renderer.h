@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/19/2011 8:30:51 PM
+Modified:       5/20/2011 7:53:57 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -201,7 +201,7 @@ namespace Riot
         //  AddLight
         //  Adds a light to the scene
         //-----------------------------------------------------------------------------
-        void AddPointLight( const RVector3& vPos, float fAtten );
+        void AddPointLight( const RVector3& vPos, float fRange );
         void AddDirLight( const RVector3& vDir );
 
         //-----------------------------------------------------------------------------

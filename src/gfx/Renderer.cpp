@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/19/2011 8:31:22 PM
+Modified:       5/20/2011 7:53:57 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -727,12 +727,12 @@ namespace Riot
     //  AddLight
     //  Adds a light to the scene
     //-----------------------------------------------------------------------------
-    void CRenderer::AddPointLight( const RVector3& vPos, float fAtten )
+    void CRenderer::AddPointLight( const RVector3& vPos, float fRange )
     {
         ASSERT( m_pCurrLights->nNumActivePointLights < MAX_LIGHTS );
         sint nIndex = AtomicIncrement( &m_pCurrLights->nNumActivePointLights ) - 1;
 
-        m_pCurrLights->vPointLights[ nIndex ] = Homogonize( vPos );
+        m_pCurrLights->vPointLights[ nIndex ] = RVector4( vPos, fRange );
     }
 
     void CRenderer::AddDirLight( const RVector3& vDir )
@@ -740,7 +740,7 @@ namespace Riot
         ASSERT( m_pCurrLights->nNumActiveDirLights < MAX_LIGHTS );
         sint nIndex = AtomicIncrement( &m_pCurrLights->nNumActiveDirLights ) - 1;
 
-        m_pCurrLights->vDirLights[ nIndex ] = Homogonize( vDir );
+        m_pCurrLights->vDirLights[ nIndex ] = Homogonize( Normalize( -vDir ) );
     }
 
     //-----------------------------------------------------------------------------

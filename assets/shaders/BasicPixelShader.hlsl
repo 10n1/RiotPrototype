@@ -2,7 +2,7 @@
 File:           BasicPixelShader.hlsl
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       5/19/2011 8:32:09 PM
+Modified:       5/20/2011 8:52:44 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 //--------------------------------------------------------------------------------------
@@ -19,7 +19,6 @@ cbuffer Lights : register( b0 )
     int    nActiveDirLights;
 }
 
-
 //--------------------------------------------------------------------------------------
 struct PS_INPUT
 {
@@ -34,14 +33,36 @@ struct PS_INPUT
 //--------------------------------------------------------------------------------------
 float4 main( PS_INPUT input ) : SV_Target
 {
+    const float4 fAmbientLightColor = float4( 1.0f, 1.0f, 1.0f, 1.0f );
+    const float  fAmbientLightIntensity = 0.1f;
+    const float  fDiffuseLightIntensity = 0.9f;
+
+
     float4 finalColor = 0.0f;
 
     float4 fTexColor = diffuseTexture.Sample( linearSampler, input.TexCoords );
 
+    finalColor += fTexColor * fAmbientLightColor * fAmbientLightIntensity;
+    fTexColor = fTexColor * fDiffuseLightIntensity;
+
+    for( int i = 0; i < nActiveDirLights; ++i )
+    {
+        float3 vLightDir = vDirLightDir[i];
+        finalColor += fTexColor * saturate( dot( vLightDir, normalize(input.Normal) ) );
+    }
+
     for( int i = 0; i < nActivePointLights; ++i )
     {
-        float3 vLightDir = normalize( vPointLightPos[i] - input.Pos );
-        finalColor += fTexColor * saturate( dot( vLightDir, normalize(input.Normal) ) );
+        float3 vLightDir = vPointLightPos[i];
+
+        float fDistance = distance( vLightDir, input.Pos );
+
+        vLightDir = normalize( vLightDir - input.Pos );
+
+        if( fDistance > vPointLightPos[i].w )
+            continue;
+
+        finalColor += fTexColor * saturate( dot( vLightDir, normalize(input.Normal) ) ) * ( 1.0f - (fDistance/vPointLightPos[i].w) );
     }
 
     return finalColor;

@@ -3,7 +3,7 @@ File:           ComponentLight.h
 Purpose:        Turns an object into a light!
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/19/2011 8:30:51 PM
+Modified:       5/20/2011 7:51:44 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _COMPONENTLIGHT_H_
@@ -20,6 +20,12 @@ bool m_bUpdated
 
 namespace Riot
 {
+    enum LightType
+    {
+        eLightDir,
+        eLightPoint,
+        eLightSpot
+    };
 
     class CComponentLight : public IComponent
     {
@@ -54,7 +60,8 @@ namespace Riot
         static CComponentLight* m_pInstance;
 
         RTransform  m_Transform[MaxComponents];
-
+        LightType   m_nType[MaxComponents];
+        float       m_fRange[MaxComponents];
     };
 
 } // namespace Riot

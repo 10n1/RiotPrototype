@@ -8,7 +8,7 @@
 namespace Riot
 {
     CCharacter::CCharacter( void )
-        : m_pMesh( NULL )
+        : m_nMesh( -1 )
         , m_pView( NULL )
     {
         m_tTransform = RTransform();
@@ -16,12 +16,13 @@ namespace Riot
         m_tTransform.scale = 100.0f;
 
         m_nCharacterID = Engine::GetObjectManager()->CreateObject();
-        m_pMesh = Engine::GetRenderer()->LoadMesh( "Assets/Meshes/drone.sdkmesh.mesh" );
+        m_nMesh = Engine::GetRenderer()->LoadMesh( "Assets/Meshes/drone.sdkmesh.mesh" );
         Engine::GetObjectManager()->AddComponent( m_nCharacterID, Riot::eComponentCharacter );
         Engine::GetObjectManager()->AddComponent( m_nCharacterID, Riot::eComponentCollidable );
         Engine::GetObjectManager()->AddComponent( m_nCharacterID, Riot::eComponentRigidBody );
         Engine::GetObjectManager()->AddComponent( m_nCharacterID, Riot::eComponentRender );
-        Engine::GetObjectManager()->SendMessage( Riot::eComponentMessageMesh, m_nCharacterID, m_pMesh );
+        Engine::GetObjectManager()->AddComponent( m_nCharacterID, Riot::eComponentLight );
+        Engine::GetObjectManager()->SendMessage( Riot::eComponentMessageMesh, m_nCharacterID, m_nMesh );
         Engine::GetObjectManager()->SendMessage( Riot::eComponentMessageTransform, m_nCharacterID, &m_tTransform );
 
         m_pView = new CView();
@@ -29,7 +30,6 @@ namespace Riot
 
     CCharacter::~CCharacter( void )
     {
-        SAFE_RELEASE( m_pMesh );
         SAFE_RELEASE( m_pView );
     }
 

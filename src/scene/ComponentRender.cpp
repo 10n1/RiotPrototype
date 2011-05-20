@@ -2,7 +2,7 @@
 File:           ComponentRender.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/19/2011 12:52:31 PM
+Modified:       5/20/2011 7:14:06 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentRender.h"
@@ -59,7 +59,7 @@ namespace Riot
 
         // Now initialize this component
         m_Transform[m_nIndex]  = RTransform();
-        m_pMesh[m_nIndex]  = NULL;
+        m_nMesh[m_nIndex]  = -1;
 
         /********************************/
         PostAttach( nObject );
@@ -77,7 +77,7 @@ namespace Riot
         // Perform any custom reattchment
         // Now reorder the data
         COMPONENT_USE_PREV_DATA( m_Transform );
-        COMPONENT_USE_PREV_DATA( m_pMesh );
+        COMPONENT_USE_PREV_DATA( m_nMesh );
 
         /********************************/
         PostReattach( nObject );
@@ -94,7 +94,7 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REORDER_DATA( m_Transform );
-        COMPONENT_REORDER_DATA( m_pMesh );
+        COMPONENT_REORDER_DATA( m_nMesh );
 
         /********************************/
         PostDetach( nObject );
@@ -112,7 +112,7 @@ namespace Riot
         // Perform any custom detachment stuff
         // Now reorder the data
         COMPONENT_REORDER_SAVE_DATA( m_Transform );
-        COMPONENT_REORDER_SAVE_DATA( m_pMesh );
+        COMPONENT_REORDER_SAVE_DATA( m_nMesh );
 
         /********************************/
         PostDetachAndSave( nObject );
@@ -129,7 +129,7 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REMOVE_PREV_DATA( m_Transform );
-        COMPONENT_REMOVE_PREV_DATA( m_pMesh );
+        COMPONENT_REMOVE_PREV_DATA( m_nMesh );
 
         /********************************/
         PostRemoveInactive( nObject );
@@ -147,7 +147,7 @@ namespace Riot
             // Update this shit!
             // Pass to the render engine
             TRenderCommand cmd;
-            cmd.m_nMesh = m_pMesh[i];
+            cmd.m_nMesh = m_nMesh[i];
             pRender->AddCommand( cmd.Encode(), m_Transform[i] );
         }
     }
@@ -173,7 +173,7 @@ namespace Riot
             break;
         case eComponentMessageMesh:
             {
-                m_pMesh[nSlot] = msg.m_nData;
+                m_nMesh[nSlot] = msg.m_nData;
             }
             break;
         default:

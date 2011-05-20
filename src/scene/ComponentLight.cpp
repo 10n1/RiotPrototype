@@ -2,7 +2,7 @@
 File:           ComponentLight.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/19/2011 8:30:51 PM
+Modified:       5/20/2011 7:52:03 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentLight.h"
@@ -55,6 +55,8 @@ namespace Riot
 
         // Now initialize this component
         m_Transform[m_nIndex] = RTransform();
+        m_nType[m_nIndex] = eLightPoint;
+        m_fRange[m_nIndex] = 10.0f;
 
         /********************************/
         PostAttach( nObject );
@@ -73,6 +75,8 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_USE_PREV_DATA( m_Transform );
+        COMPONENT_USE_PREV_DATA( m_nType );
+        COMPONENT_USE_PREV_DATA( m_fRange );
 
         /********************************/
         PostReattach( nObject );
@@ -91,6 +95,8 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REORDER_DATA( m_Transform );
+        COMPONENT_REORDER_DATA( m_nType );
+        COMPONENT_REORDER_DATA( m_fRange );
 
         /********************************/
         PostDetach( nObject );
@@ -109,6 +115,8 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REORDER_SAVE_DATA( m_Transform );
+        COMPONENT_REORDER_SAVE_DATA( m_nType );
+        COMPONENT_REORDER_SAVE_DATA( m_fRange );
 
         /********************************/
         PostDetachAndSave( nObject );
@@ -127,6 +135,8 @@ namespace Riot
 
         // Now reorder the data
         COMPONENT_REMOVE_PREV_DATA( m_Transform );
+        COMPONENT_REMOVE_PREV_DATA( m_nType );
+        COMPONENT_REMOVE_PREV_DATA( m_fRange );
 
         /********************************/
         PostRemoveInactive( nObject );
@@ -146,7 +156,18 @@ namespace Riot
 
         for( uint i = 0; i < m_nNumActiveComponents; ++i )
         {
-            pRender->AddPointLight( m_Transform[i].position, 1.0f );
+            switch( m_nType[i] )
+            {
+            case eLightDir:
+                pRender->AddDirLight( m_Transform[i].position );
+                break;
+            case eLightPoint:
+                pRender->AddPointLight( m_Transform[i].position, m_fRange[i] );
+                break;
+            default:
+                ASSERT( 0 );
+                false;
+            }
         }
     }
 

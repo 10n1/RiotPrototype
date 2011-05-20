@@ -18,7 +18,7 @@ namespace Riot
         RTransform& GetTransform( void );
 
     private:
-        CMesh* m_pMesh;
+        sint m_nMesh;
         CView* m_pView;
         RTransform m_tTransform;
         uint m_nCharacterID;
