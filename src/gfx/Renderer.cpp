@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/20/2011 7:53:57 AM
+Modified:       5/20/2011 4:48:29 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -348,6 +348,10 @@ namespace Riot
             m_pDevice->Present();
             return;
         }
+
+        //////////////////////////////////////////
+        // Sort the list
+        Sort();
 
         //////////////////////////////////////////
         // Restore solid fill mode
@@ -897,6 +901,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Sort( void )
     {
+        //uint nMeshInstanceCount[ MAX_MESHES ][ 1024 ] = { 0 };
         //////////////////////////////////////////
         // Transparency sorting
         sint nStart = 0;
@@ -914,11 +919,21 @@ namespace Riot
                 Swap( m_pPrevCommands[nStart], m_pPrevCommands[ nEnd ] );
                 Swap( m_pPrevTransforms[nStart], m_pPrevTransforms[nEnd] );
 
+                //uint  nMesh = DecodeMesh( m_pPrevCommands[nStart] );
+                //uint& nCount = nMeshInstanceCount[ nMesh ][0];
+                //nMeshInstanceCount[ nMesh ][ ++nCount ] = nStart;
+
                 --nEnd;
             }
 
+
+
             nStart++;
         }
+
+        //////////////////////////////////////////
+        // Material Sorting
+
     }
 
 

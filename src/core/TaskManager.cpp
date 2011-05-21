@@ -2,7 +2,7 @@
 File:           TaskManager.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       4/27/2011 10:47:53 AM
+Modified:       5/20/2011 4:43:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "TaskManager.h"
@@ -136,13 +136,12 @@ namespace Riot
 
         while( nStart < nCount )
         {
-            nTaskIndex = (AtomicIncrement( &m_nEndTask ) - 1) % MAX_SUB_TASKS;
-
             if( nCount - nStart < nChunkSize )
             {   // We're at the end, don't do a full chunk
                 nNewTaskCount = nCount - nStart;
             }
-
+            
+            nTaskIndex = (AtomicIncrement( &m_nEndTask ) - 1) % MAX_SUB_TASKS;
             m_pTasks[ nTaskIndex ].pFunc        = pFunc;
             m_pTasks[ nTaskIndex ].pData        = pData;
             m_pTasks[ nTaskIndex ].nStart       = nStart;

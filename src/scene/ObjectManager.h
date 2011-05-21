@@ -3,7 +3,7 @@ File:           ObjectManager.h
 Purpose:        Handles allocation of objects
 Author:         Kyle Weicht
 Created:        3/31/2011
-Modified:       5/3/2011 4:28:13 PM
+Modified:       5/20/2011 4:16:57 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OBJECTMANAGER_H_
@@ -148,6 +148,7 @@ namespace Riot
         IComponent* m_pComponents[eNUMCOMPONENTS];
 
         CComponentMessage   m_pMessages[MAX_COMPONENT_MESSAGES];
+
         bool                m_bRegistered[eNUMCOMPONENTMESSAGES][eNUMCOMPONENTS];
 
         uint        m_pFreeSlots[MAX_OBJECTS];

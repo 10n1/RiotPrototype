@@ -2,7 +2,7 @@
 File:           ComponentLight.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/20/2011 7:52:03 AM
+Modified:       5/20/2011 4:09:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentLight.h"
@@ -56,7 +56,7 @@ namespace Riot
         // Now initialize this component
         m_Transform[m_nIndex] = RTransform();
         m_nType[m_nIndex] = eLightPoint;
-        m_fRange[m_nIndex] = 10.0f;
+        m_fRange[m_nIndex] = 10000.0f;
 
         /********************************/
         PostAttach( nObject );

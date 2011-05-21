@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/20/2011 7:53:57 AM
+Modified:       5/20/2011 4:33:43 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -81,6 +81,7 @@ namespace Riot
         uint    m_nTexture;
         uint    m_nTransparant;
         uint    m_nMesh;
+        uint    m_nInstanceCount;
 
         float   m_fDepth;
     };

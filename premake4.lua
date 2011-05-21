@@ -21,7 +21,7 @@ solution "Riot"
  
       configuration "Release"
          defines { "NDEBUG" }
-         flags { "OptimizeSpeed" }
+         flags { "OptimizeSpeed", "Symbols" }
 		 
 	 configuration "windows"
 		defines "WIN32"
