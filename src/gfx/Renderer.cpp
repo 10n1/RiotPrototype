@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/20/2011 4:48:29 PM
+Modified:       5/21/2011 2:46:10 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -317,6 +317,13 @@ namespace Riot
             NULL );
         m_ppVertexLayouts[ eVS3DPosNorTexNoTransform ] = m_ppVertexLayouts[ eVS3DPosNorTexStd ];
         
+        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/BasicVertexShaderInstanced.hlsl", 
+            "main", 
+            VPosNormalTexInst::Layout, 
+            VPosNormalTexInst::LayoutSize,
+            &m_ppVertexShaders[ eVS3DPosNorTexInst ],
+            &m_ppVertexLayouts[ eVS3DPosNorTexInst ] );
+        
         m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/PosColorVertexShader.hlsl", 
             "main", 
             VPosColor::Layout, 
@@ -462,7 +469,7 @@ namespace Riot
 
                 m_pDevice->UpdateBuffer( m_pLineBuffer, vertices );
 
-                m_pDevice->SetVertexBuffer( m_pLineBuffer, VPosColor::VertexStride );
+                m_pDevice->SetVertexBuffer( 0, m_pLineBuffer, VPosColor::VertexStride );
                 m_pDevice->DrawPrimitive( 2 );
             }
 

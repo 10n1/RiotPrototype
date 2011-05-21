@@ -2,7 +2,7 @@
 File:           OGLGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/17/2011 11:40:15 PM
+Modified:       5/21/2011 2:48:12 PM
 Modified by:    Kyle Weicht
  \*********************************************************/
 #include <fstream>
@@ -228,7 +228,7 @@ namespace Riot
     {
     }
 
-    void COGLDevice::SetVertexBuffer( IGfxBuffer* pBuffer, uint nStride )
+    void COGLDevice::SetVertexBuffer( uint nIndex, IGfxBuffer* pBuffer, uint nStride )
     {
     }
     
@@ -267,6 +267,9 @@ namespace Riot
 
     //
     void COGLDevice::DrawIndexedPrimitive( uint nIndexCount )
+    {
+    }
+    void COGLDevice::DrawIndexedPrimitiveInstanced( uint nIndexCount, uint nInstanceCount )
     {
     }
     //

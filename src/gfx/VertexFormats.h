@@ -3,7 +3,7 @@ File:           VertexFormats.h
 Purpose:        Stores the basic vertex format information
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       5/14/2011 11:35:48 AM
+Modified:       5/21/2011 2:16:52 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VERTEXFORMATS_H_
@@ -46,6 +46,7 @@ namespace Riot
     extern GFX_SEMANTIC GFX_SEMANTIC_NORMAL;
     extern GFX_SEMANTIC GFX_SEMANTIC_TEXCOORD;
     extern GFX_SEMANTIC GFX_SEMANTIC_COLOR;
+    extern GFX_SEMANTIC GFX_SEMANTIC_TRANSFORM;
     //-----------------------------------------------------------------------------
         
     //-----------------------------------------------------------------------------
@@ -86,6 +87,28 @@ namespace Riot
     extern GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_IMMUTABLE;
     //-----------------------------------------------------------------------------
 
+    //-----------------------------------------------------------------------------
+    //  GFX_INPUT_DATA
+    //  Defines how the input data is used in the vertex shader (per vertex vs instance)
+    typedef const uint GFX_INPUT_DATA;
+
+    extern GFX_INPUT_DATA   GFX_INPUT_DATA_PER_VERTEX;
+    extern GFX_INPUT_DATA   GFX_INPUT_DATA_PER_INSTANCE;
+    //-----------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------
+    //  GFX_SEMANTIC_INDEX
+    //  Defines which part of a certain semantic this is
+    typedef const uint GFX_SEMANTIC_INDEX;
+    //-----------------------------------------------------------------------------
+    
+    //-----------------------------------------------------------------------------
+    //  GFX_INPUT_SLOT
+    //  Defines which input slot to use
+    typedef const uint GFX_INPUT_SLOT;
+    //-----------------------------------------------------------------------------
+
+
 #ifdef OS_WINDOWS
 #pragma warning(push)
 #pragma warning( disable:4510 ) // Default constructor cannot be implicitly created
@@ -94,9 +117,11 @@ namespace Riot
 #endif // #ifdef OS_WINDOWS
     struct InputElementLayout
     {
-        GFX_SEMANTIC    szSemanticName;
-        GFX_FORMAT      nFormat;
-        uint            nOffset;
+        GFX_SEMANTIC        szSemanticName;
+        GFX_SEMANTIC_INDEX  nIndex;
+        GFX_FORMAT          nFormat;
+        GFX_INPUT_SLOT      nSlot;
+        GFX_INPUT_DATA      nData;
     };
 #ifdef OS_WINDOWS
 #pragma warning( pop )
@@ -145,10 +170,21 @@ namespace Riot
         static const uint LayoutSize;
         static const uint VertexStride;// = sizeof( VVertexPosNormal );
     };
-
+    
     /*
-    Vertex shader and it's layout
+    Standard vertex format instanced
     */
+    struct VPosNormalTexInst
+    {
+        RVector3 Pos;
+        RVector3 Normal;
+        RVector2 TexCoord;
+
+        static InputElementLayout Layout[];
+        static IGfxVertexLayout*  VertexLayoutObject;
+        static const uint LayoutSize;
+        static const uint VertexStride;// = sizeof( VVertexPosNormal );
+    };
 
 } // namespace Riot
 

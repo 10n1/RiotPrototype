@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       5/19/2011 1:13:18 PM
+Modified:       5/21/2011 2:48:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -35,6 +35,7 @@ namespace Riot
     GFX_SEMANTIC GFX_SEMANTIC_NORMAL    = "NORMAL";
     GFX_SEMANTIC GFX_SEMANTIC_TEXCOORD  = "TEXCOORD";
     GFX_SEMANTIC GFX_SEMANTIC_COLOR     = "COLOR";
+    GFX_SEMANTIC GFX_SEMANTIC_TRANSFORM = "Transform";
     //-----------------------------------------------------------------------------
     GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_TRIANGLELIST   = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
     GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_LINELIST       = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
@@ -48,6 +49,9 @@ namespace Riot
     GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DEFAULT    = D3D11_USAGE_DEFAULT;
     GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DYNAMIC    = D3D11_USAGE_DYNAMIC;
     GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_IMMUTABLE  = D3D11_USAGE_IMMUTABLE;
+    //-----------------------------------------------------------------------------
+    GFX_INPUT_DATA  GFX_INPUT_DATA_PER_VERTEX   = D3D11_INPUT_PER_VERTEX_DATA;
+    GFX_INPUT_DATA  GFX_INPUT_DATA_PER_INSTANCE = D3D11_INPUT_PER_INSTANCE_DATA;
     //-----------------------------------------------------------------------------
 
     // CD3DDevice constructor
@@ -401,14 +405,37 @@ namespace Riot
 
         if( pLayout != NULL )
         {
-            // and finally create the input layout
-            if( nLayoutCount == 3 )
+            //static D3D11_INPUT_ELEMENT_DESC inputLayout[ 16 ] = { 0 };
+            //// and finally create the input layout
+            //for( uint i = 0; i < nLayoutCount; ++i )
+            //{
+            //    strcpy( inputLayout[i].SemanticName, Layout[i].szSemanticName );
+            //    inputLayout[i].SemanticIndex = Layout[i].nSlot;
+            //    inputLayout[i].Format = (DXGI_FORMAT)Layout[i].nFormat;
+            //    inputLayout[i].InputSlot = Layout[i].nIndex;
+            //    inputLayout[i].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+            //}
+            if( nLayoutCount == 7 )
             {
                 D3D11_INPUT_ELEMENT_DESC inputLayout[] =
                 {
-                    { Layout[0].szSemanticName, 0, (DXGI_FORMAT)Layout[0].nFormat, 0, Layout[0].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-                    { Layout[1].szSemanticName, 0, (DXGI_FORMAT)Layout[1].nFormat, 0, Layout[1].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-                    { Layout[2].szSemanticName, 0, (DXGI_FORMAT)Layout[2].nFormat, 0, Layout[2].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
+                    { Layout[0].szSemanticName, Layout[0].nIndex, (DXGI_FORMAT)Layout[0].nFormat, Layout[0].nSlot, 0,                            (D3D11_INPUT_CLASSIFICATION)Layout[0].nData, 0 },
+                    { Layout[1].szSemanticName, Layout[1].nIndex, (DXGI_FORMAT)Layout[1].nFormat, Layout[1].nSlot, D3D11_APPEND_ALIGNED_ELEMENT, (D3D11_INPUT_CLASSIFICATION)Layout[1].nData, 0 },
+                    { Layout[2].szSemanticName, Layout[2].nIndex, (DXGI_FORMAT)Layout[2].nFormat, Layout[2].nSlot, D3D11_APPEND_ALIGNED_ELEMENT, (D3D11_INPUT_CLASSIFICATION)Layout[2].nData, 0 },  
+                    { Layout[3].szSemanticName, Layout[3].nIndex, (DXGI_FORMAT)Layout[3].nFormat, Layout[3].nSlot, 0,                            (D3D11_INPUT_CLASSIFICATION)Layout[3].nData, 1 },  
+                    { Layout[4].szSemanticName, Layout[4].nIndex, (DXGI_FORMAT)Layout[4].nFormat, Layout[4].nSlot, D3D11_APPEND_ALIGNED_ELEMENT, (D3D11_INPUT_CLASSIFICATION)Layout[4].nData, 1 },  
+                    { Layout[5].szSemanticName, Layout[5].nIndex, (DXGI_FORMAT)Layout[5].nFormat, Layout[5].nSlot, D3D11_APPEND_ALIGNED_ELEMENT, (D3D11_INPUT_CLASSIFICATION)Layout[5].nData, 1 },  
+                    { Layout[6].szSemanticName, Layout[6].nIndex, (DXGI_FORMAT)Layout[6].nFormat, Layout[6].nSlot, D3D11_APPEND_ALIGNED_ELEMENT, (D3D11_INPUT_CLASSIFICATION)Layout[6].nData, 1 },  
+                };
+                hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
+            }
+            else if( nLayoutCount == 3 )
+            {
+                D3D11_INPUT_ELEMENT_DESC inputLayout[] =
+                {
+                    { Layout[0].szSemanticName, Layout[0].nSlot, (DXGI_FORMAT)Layout[0].nFormat, Layout[0].nIndex, 0,                            (D3D11_INPUT_CLASSIFICATION)Layout[0].nData, 0 },
+                    { Layout[1].szSemanticName, Layout[1].nSlot, (DXGI_FORMAT)Layout[1].nFormat, Layout[1].nIndex, D3D11_APPEND_ALIGNED_ELEMENT, (D3D11_INPUT_CLASSIFICATION)Layout[1].nData, 0 },
+                    { Layout[2].szSemanticName, Layout[2].nSlot, (DXGI_FORMAT)Layout[2].nFormat, Layout[2].nIndex, D3D11_APPEND_ALIGNED_ELEMENT, (D3D11_INPUT_CLASSIFICATION)Layout[2].nData, 0 },  
                 };
                 hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
             }
@@ -416,8 +443,8 @@ namespace Riot
             {
                 D3D11_INPUT_ELEMENT_DESC inputLayout[] =
                 {
-                    { Layout[0].szSemanticName, 0, (DXGI_FORMAT)Layout[0].nFormat, 0, Layout[0].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-                    { Layout[1].szSemanticName, 0, (DXGI_FORMAT)Layout[1].nFormat, 0, Layout[1].nOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 },  
+                    { Layout[0].szSemanticName, Layout[0].nSlot, (DXGI_FORMAT)Layout[0].nFormat, Layout[0].nIndex, 0,                            (D3D11_INPUT_CLASSIFICATION)Layout[0].nData, 0 },
+                    { Layout[1].szSemanticName, Layout[1].nSlot, (DXGI_FORMAT)Layout[1].nFormat, Layout[1].nIndex, D3D11_APPEND_ALIGNED_ELEMENT, (D3D11_INPUT_CLASSIFICATION)Layout[1].nData, 0 },
                 };
                 hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
             }
@@ -605,10 +632,10 @@ namespace Riot
         m_pContext->IASetInputLayout( ((CD3DVertexLayout*)pLayout)->m_pLayout );
     }
     
-    void CD3DDevice::SetVertexBuffer( IGfxBuffer* pBuffer, uint nStride )
+    void CD3DDevice::SetVertexBuffer( uint nIndex, IGfxBuffer* pBuffer, uint nStride )
     {
         uint nOffset = 0;
-        m_pContext->IASetVertexBuffers( 0, 1, &((CD3DBuffer*)pBuffer)->m_pBuffer, &nStride, &nOffset );
+        m_pContext->IASetVertexBuffers( nIndex, 1, &((CD3DBuffer*)pBuffer)->m_pBuffer, &nStride, &nOffset );
     }
     
     void CD3DDevice::SetIndexBuffer( IGfxBuffer* pBuffer, uint nSize )
@@ -662,7 +689,10 @@ namespace Riot
     {
         m_pContext->Draw( nVertexCount, 0 );
     }
-
+    void CD3DDevice::DrawIndexedPrimitiveInstanced( uint nIndexCount, uint nInstanceCount )
+    {
+        m_pContext->DrawIndexedInstanced( nIndexCount, nInstanceCount, 0, 0, 0 );
+    }
     //
 
     Result CompileShader( const char* szFilename, const char* szEntryPoint, const char* szProfile, ID3DBlob** ppBlob )

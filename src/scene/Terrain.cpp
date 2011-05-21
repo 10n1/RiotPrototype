@@ -2,7 +2,7 @@
 File:           Terrain.cpp
 Author:         Kyle Weicht
 Created:        4/6/2011
-Modified:       5/19/2011 4:39:20 PM
+Modified:       5/21/2011 2:46:03 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Terrain.h"
@@ -84,7 +84,7 @@ namespace Riot
         pDevice->SetIndexBuffer( m_pHighIndexBuffer, sizeof( uint16 ) );
         for( uint i = 0; i < nNumHighTiles; ++i )
         {
-            pDevice->SetVertexBuffer( m_pHighTiles[i].m_pVertexBuffer, VPosNormalTex::VertexStride );
+            pDevice->SetVertexBuffer( 0, m_pHighTiles[i].m_pVertexBuffer, VPosNormalTex::VertexStride );
             pDevice->DrawIndexedPrimitive( nHighIndices );
         }
         
@@ -92,7 +92,7 @@ namespace Riot
         pDevice->SetIndexBuffer( m_pMedIndexBuffer, sizeof( uint16 ) );
         for( uint i = 0; i < nNumMedTiles; ++i )
         {
-            pDevice->SetVertexBuffer( m_pMedTiles[i].m_pVertexBuffer, VPosNormalTex::VertexStride );
+            pDevice->SetVertexBuffer( 0, m_pMedTiles[i].m_pVertexBuffer, VPosNormalTex::VertexStride );
             pDevice->DrawIndexedPrimitive( nMedIndices );
         }
 
@@ -100,7 +100,7 @@ namespace Riot
         pDevice->SetIndexBuffer( m_pLowIndexBuffer, sizeof( uint16 ) );
         for( uint i = 0; i < nNumLowTiles; ++i )
         {
-            pDevice->SetVertexBuffer( m_pLowTiles[i].m_pVertexBuffer, VPosNormalTex::VertexStride );
+            pDevice->SetVertexBuffer( 0, m_pLowTiles[i].m_pVertexBuffer, VPosNormalTex::VertexStride );
             pDevice->DrawIndexedPrimitive( nLowIndices );
         }
     }

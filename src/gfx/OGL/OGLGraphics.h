@@ -3,7 +3,7 @@ File:           OGLGraphics.h
 Purpose:        OpenGL graphics interface
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       4/14/2011 10:42:02 PM
+Modified:       5/21/2011 2:48:12 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _OGLGRAPHICS_H_
@@ -88,7 +88,7 @@ namespace Riot
 
         //
         void SetVertexLayout( IGfxVertexLayout* pLayout );
-        void SetVertexBuffer( IGfxBuffer* pBuffer, uint nStride );
+        void SetVertexBuffer( uint nIndex, IGfxBuffer* pBuffer, uint nStride );
         void SetIndexBuffer( IGfxBuffer* pBuffer, uint nSize );
         void SetPrimitiveType( GFX_PRIMITIVE_TYPE nType );
         void SetVertexShader( IGfxVertexShader* pShader );
@@ -101,6 +101,7 @@ namespace Riot
 
         //
         void DrawIndexedPrimitive( uint nIndexCount );
+        void DrawIndexedPrimitiveInstanced( uint nIndexCount, uint nInstanceCount );
         //
 
     private:

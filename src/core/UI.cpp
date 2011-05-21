@@ -251,7 +251,7 @@ namespace Riot
 
         // Draw text
         pDevice->SetVertexLayout( m_pInputLayout );
-        pDevice->SetVertexBuffer( m_pVertexBuffer, sizeof( UIVertex ) );
+        pDevice->SetVertexBuffer( 0, m_pVertexBuffer, sizeof( UIVertex ) );
         pDevice->SetPrimitiveType( Riot::GFX_PRIMITIVE_TRIANGLELIST );
         pDevice->Draw( nNumVertices );
 

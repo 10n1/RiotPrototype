@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Direct3D interface
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/27/2011 3:28:24 PM
+Modified:       5/21/2011 2:48:12 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -90,7 +90,7 @@ namespace Riot
 
         //
         void SetVertexLayout( IGfxVertexLayout* pLayout );
-        void SetVertexBuffer( IGfxBuffer* pBuffer, uint nStride );
+        void SetVertexBuffer( uint nIndex, IGfxBuffer* pBuffer, uint nStride );
         void SetIndexBuffer( IGfxBuffer* pBuffer, uint nSize );
         void SetPrimitiveType( GFX_PRIMITIVE_TYPE nType );
         void SetVertexShader( IGfxVertexShader* pShader );
@@ -104,6 +104,7 @@ namespace Riot
         //
         void Draw( uint nVertexCount );
         void DrawIndexedPrimitive( uint nIndexCount );
+        void DrawIndexedPrimitiveInstanced( uint nIndexCount, uint nInstanceCount );
         void DrawPrimitive( uint nVertexCount );
         //
 
