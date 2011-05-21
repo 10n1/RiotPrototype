@@ -3,7 +3,7 @@ File:           D3DGraphicsObjects.h
 Purpose:        The D3D graphics objects
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       4/20/2011 8:47:42 PM
+Modified:       5/21/2011 4:27:15 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICSOBJECTS_H_
@@ -31,7 +31,6 @@ namespace Riot
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-
     class CD3DRenderTarget : public IGfxRenderTarget
     {
         friend class CD3DDevice;
@@ -43,7 +42,9 @@ namespace Riot
         ~CD3DRenderTarget();
 
     private:
-        ID3D11RenderTargetView* m_pRenderTargetView;
+        ID3D11RenderTargetView*     m_pRT;
+        ID3D11ShaderResourceView*   m_pRV;
+        ID3D11Texture2D*            m_pTexture;
     };
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

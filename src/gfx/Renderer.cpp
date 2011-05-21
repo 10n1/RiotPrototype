@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/21/2011 2:46:10 PM
+Modified:       5/21/2011 4:40:50 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -174,6 +174,10 @@ namespace Riot
         m_nNumTextures = 0;
 
         Memset( m_pLights, 0, sizeof( m_pLights ) );
+
+        m_nWidth = m_nHeight = -1;
+
+        m_pTestRT = NULL;
     }
 
     //-----------------------------------------------------------------------------
@@ -181,6 +185,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Shutdown( void )
     {
+        SAFE_RELEASE( m_pTestRT );
+
         for( sint i = 0; i < m_nNumMeshes; ++i )
         {
             SAFE_RELEASE( m_ppMeshes[i] );
@@ -250,6 +256,7 @@ namespace Riot
 
         // Init UI
         UI::Initialize( m_pDevice );
+
     }
 
     //-----------------------------------------------------------------------------
@@ -376,6 +383,12 @@ namespace Riot
         // Clear
         m_pDevice->Clear();
 
+        if( m_pTestRT )
+        {
+            m_pDevice->ClearRenderTarget( m_pTestRT );
+            m_pDevice->SetRenderTarget( m_pTestRT );
+        }
+
         //////////////////////////////////////////
         // Render
         ASSERT( m_pCurrentView );
@@ -391,7 +404,14 @@ namespace Riot
 
         //////////////////////////////////////////
         // Perform basic object rendering
-        for( sint i = 0; i < m_nPrevNumCommands; ++i )
+        for( sint i = 0; i < m_nPrevNumCommands/2; ++i )
+        {
+            ProcessCommand( m_pPrevCommands[i], m_pPrevTransforms[i] );
+        }
+
+        m_pDevice->SetDefaultRenderDepthTarget();
+        
+        for( sint i = m_nPrevNumCommands/2; i < m_nPrevNumCommands; ++i )
         {
             ProcessCommand( m_pPrevCommands[i], m_pPrevTransforms[i] );
         }
@@ -810,10 +830,14 @@ namespace Riot
             }
         case mResize:
             {
-                uint nWidth = (uint)(msg.nMessage >> 16);
-                uint nHeight = msg.nMessage & 0x0000FFFF;
+                m_nWidth = (uint)(msg.nMessage >> 16);
+                m_nHeight = msg.nMessage & 0x0000FFFF;
 
-                m_pDevice->Resize( nWidth, nHeight );
+                m_pDevice->Resize( m_nWidth, m_nHeight );
+
+                // Create the render target
+                SAFE_RELEASE( m_pTestRT );
+                m_pTestRT = m_pDevice->CreateRenderTarget( GFX_FORMAT_BYTE4, m_nWidth, m_nHeight );
 
                 break;
             }

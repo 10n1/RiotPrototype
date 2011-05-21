@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Direct3D interface
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       5/21/2011 2:48:12 PM
+Modified:       5/21/2011 4:38:52 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -54,6 +54,7 @@ namespace Riot
         void SetClearColor( float fRed, float fGreen, float fBlue, float fAlpha );
         void SetClearDepth( float fDepth );
         void Clear( void );
+        void ClearRenderTarget( IGfxRenderTarget* pRT );
         void Present( void );
         //
 
@@ -70,6 +71,7 @@ namespace Riot
             IGfxVertexShader** pShader,
             IGfxVertexLayout** pLayout );
         IGfxPixelShader* CreatePixelShader( const char* szFilename, const char* szEntryPoint );
+        IGfxRenderTarget* CreateRenderTarget( GFX_FORMAT nFormat, uint nWidth, uint nHeight );
         //
 
         //
@@ -99,6 +101,8 @@ namespace Riot
         void SetPSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer );
         void SetPSSamplerState( IGfxSamplerState* pState );
         void SetPSTexture( uint nIndex, IGfxTexture2D* pTexture );
+        void SetRenderTarget( IGfxRenderTarget* pRenderTarget );
+        void SetPSRenderTarget( uint nIndex, IGfxRenderTarget* pRenderTarget );
         //
 
         //

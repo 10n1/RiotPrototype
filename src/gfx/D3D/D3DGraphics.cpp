@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       5/21/2011 2:48:13 PM
+Modified:       5/21/2011 4:39:00 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -26,6 +26,7 @@ namespace Riot
     GFX_FORMAT GFX_FORMAT_UINT16        = DXGI_FORMAT_R16_UINT;
     GFX_FORMAT GFX_FORMAT_UINT32        = DXGI_FORMAT_R32_UINT;
     GFX_FORMAT GFX_FORMAT_FLOAT2        = DXGI_FORMAT_R32G32_FLOAT;
+    GFX_FORMAT GFX_FORMAT_BYTE4         = DXGI_FORMAT_R8G8B8A8_UNORM;
 
     const uint GFX_FORMAT_FLOAT3_SIZE   = sizeof( RVector3 );
     const uint GFX_FORMAT_UINT16_SIZE   = sizeof( uint16 );
@@ -251,6 +252,7 @@ namespace Riot
         hr = m_pSwapChain->GetBuffer( 0, __uuidof( pBackBuffer ), (void**)(&pBackBuffer) );
         hr = m_pDevice->CreateRenderTargetView( pBackBuffer, NULL, &m_pDefaultRenderTargetView );
 
+        ASSERT( hr == S_OK );
         ASSERT( m_pDefaultRenderTargetView );
         SAFE_RELEASE( pBackBuffer );
 
@@ -262,7 +264,7 @@ namespace Riot
         descDepth.Height             = nHeight;
         descDepth.MipLevels          = 1;
         descDepth.ArraySize          = 1;
-        descDepth.Format             = DXGI_FORMAT_D32_FLOAT;
+        descDepth.Format             = DXGI_FORMAT_D24_UNORM_S8_UINT;
         descDepth.SampleDesc.Count   = nAACount;
         descDepth.SampleDesc.Quality = nAAQuality;
         descDepth.Usage              = D3D11_USAGE_DEFAULT;
@@ -344,6 +346,12 @@ namespace Riot
         m_pContext->ClearRenderTargetView( m_pDefaultRenderTargetView, m_fClearColor );
         m_pContext->ClearDepthStencilView( m_pDefaultDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, m_fDepthClear, 0 ); 
     }
+
+   void CD3DDevice::ClearRenderTarget( IGfxRenderTarget* pRT )
+   {
+       float4 fClearColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+       m_pContext->ClearRenderTargetView( ((CD3DRenderTarget*)pRT)->m_pRT, fClearColor );
+   }
 
     void CD3DDevice::Present( void )
     {
@@ -480,6 +488,38 @@ namespace Riot
         assert( hr == S_OK );
 
         return pShader;
+    }
+
+    IGfxRenderTarget* CD3DDevice::CreateRenderTarget( GFX_FORMAT nFormat, uint nWidth, uint nHeight )
+    {
+        CD3DRenderTarget* pRenderTarget = new CD3DRenderTarget;
+
+        D3D11_TEXTURE2D_DESC desc = { 0 };
+        desc.Width = nWidth;
+        desc.Height = nHeight;
+        desc.MipLevels = 1;
+        desc.ArraySize = 1;
+        desc.Format = (DXGI_FORMAT)nFormat;
+        desc.SampleDesc.Count = 1;
+        desc.SampleDesc.Quality = 0;
+        desc.Usage = D3D11_USAGE_DEFAULT;
+        desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+        desc.CPUAccessFlags = 0;
+        desc.MiscFlags = 0;
+
+        HRESULT hr = S_OK;
+
+        hr = m_pDevice->CreateTexture2D( &desc, NULL, &pRenderTarget->m_pTexture );
+        ASSERT( hr == S_OK );
+
+        hr = m_pDevice->CreateRenderTargetView( pRenderTarget->m_pTexture, NULL, &pRenderTarget->m_pRT );
+        ASSERT( hr == S_OK );
+
+        hr = m_pDevice->CreateShaderResourceView( pRenderTarget->m_pTexture, NULL, &pRenderTarget->m_pRV );
+        ASSERT( hr == S_OK );
+
+
+        return pRenderTarget;
     }
     //
 
@@ -674,6 +714,15 @@ namespace Riot
     {
         m_pContext->PSSetShaderResources( nIndex, 1, &((CD3DTexture2D*)pTexture)->m_pResourceView );
     }
+    void CD3DDevice::SetRenderTarget( IGfxRenderTarget* pRenderTarget )
+    {
+        m_pContext->OMSetRenderTargets( 1, &((CD3DRenderTarget*)pRenderTarget)->m_pRT, m_pDefaultDepthStencilView );
+    }
+    void CD3DDevice::SetPSRenderTarget( uint nIndex, IGfxRenderTarget* pRenderTarget )
+    {
+        m_pContext->PSSetShaderResources( nIndex, 1, &((CD3DRenderTarget*)pRenderTarget)->m_pRV );
+    }
+
     //
 
     //

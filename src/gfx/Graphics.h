@@ -3,7 +3,7 @@ File:           Graphics.h
 Purpose:        Base graphics hardware API
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/21/2011 2:48:13 PM
+Modified:       5/21/2011 4:38:53 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -54,6 +54,7 @@ namespace Riot
         virtual void SetClearColor( float fRed, float fGreen, float fBlue, float fAlpha ) = 0;
         virtual void SetClearDepth( float fDepth ) = 0;
         virtual void Clear( void ) = 0;
+        virtual void ClearRenderTarget( IGfxRenderTarget* pRT ) = 0;
         virtual void Present( void ) = 0;
         //
 
@@ -70,6 +71,7 @@ namespace Riot
             IGfxVertexShader** pShader,
             IGfxVertexLayout** pLayout ) = 0;
         virtual IGfxPixelShader* CreatePixelShader( const char* szFilename, const char* szEntryPoint ) = 0;
+        virtual IGfxRenderTarget* CreateRenderTarget( GFX_FORMAT nFormat, uint nWidth, uint nHeight ) = 0;
         //
 
         //
@@ -101,6 +103,8 @@ namespace Riot
         virtual void SetPSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer ) = 0;
         virtual void SetPSSamplerState( IGfxSamplerState* pState ) = 0;
         virtual void SetPSTexture( uint nIndex, IGfxTexture2D* pTexture ) = 0;
+        virtual void SetPSRenderTarget( uint nIndex, IGfxRenderTarget* pRenderTarget ) = 0;
+        virtual void SetRenderTarget( IGfxRenderTarget* pRenderTarget ) = 0;
         //
 
         //

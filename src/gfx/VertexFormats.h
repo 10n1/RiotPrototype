@@ -3,7 +3,7 @@ File:           VertexFormats.h
 Purpose:        Stores the basic vertex format information
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       5/21/2011 2:16:52 PM
+Modified:       5/21/2011 4:32:30 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VERTEXFORMATS_H_
@@ -29,6 +29,7 @@ namespace Riot
     extern GFX_FORMAT GFX_FORMAT_FLOAT2;
     extern GFX_FORMAT GFX_FORMAT_UINT16;
     extern GFX_FORMAT GFX_FORMAT_UINT32;
+    extern GFX_FORMAT GFX_FORMAT_BYTE4;
     
     // These are handy for index/vertex strides, etc.
     extern const uint GFX_FORMAT_FLOAT3_SIZE;

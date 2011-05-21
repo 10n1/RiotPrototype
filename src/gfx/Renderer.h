@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/20/2011 4:33:43 PM
+Modified:       5/21/2011 3:58:19 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -357,6 +357,11 @@ namespace Riot
         uint        m_nPrevNumRays;
 
         sint        m_nDebugBox;
+
+        uint        m_nWidth;
+        uint        m_nHeight;
+
+        IGfxRenderTarget*   m_pTestRT;
     };
 
     //-----------------------------------------------------------------------------
