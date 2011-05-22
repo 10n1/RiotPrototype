@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/20/2011 4:09:24 PM
+Modified:       5/22/2011 1:48:22 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -415,9 +415,9 @@ namespace Riot
 
         //////////////////////////////////////////
         // Add the character
-        m_pCharacters[0] = new CCharacter();
-        m_pRenderer->SetCurrentView( m_pCharacters[0]->GetView() );
-        m_pCamera->SetView( m_pCharacters[0]->GetView() );
+        //m_pCharacters[0] = new CCharacter();
+        //m_pRenderer->SetCurrentView( m_pCharacters[0]->GetView() );
+        //m_pCamera->SetView( m_pCharacters[0]->GetView() );
 
         // Finally reset the timer
         m_MainTimer.Reset();

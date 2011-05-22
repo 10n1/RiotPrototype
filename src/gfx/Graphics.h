@@ -3,7 +3,7 @@ File:           Graphics.h
 Purpose:        Base graphics hardware API
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/22/2011 12:29:13 PM
+Modified:       5/22/2011 1:26:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -61,6 +61,7 @@ namespace Riot
         //
         virtual void SetFillMode( GFX_FILL_MODE nFill ) = 0;
         virtual void SetDepthTest( bool bTest, bool bWrite ) = 0;
+        virtual void SetColorWrite( bool bEnable ) = 0;
         //
 
         //
@@ -106,6 +107,7 @@ namespace Riot
         virtual void SetPSTexture( uint nIndex, IGfxTexture2D* pTexture ) = 0;
         virtual void SetPSRenderTarget( uint nIndex, IGfxRenderTarget* pRenderTarget ) = 0;
         virtual void SetRenderTarget( IGfxRenderTarget* pRenderTarget ) = 0;
+        virtual void SetNullRenderTarget( void ) = 0;
         //
 
         //

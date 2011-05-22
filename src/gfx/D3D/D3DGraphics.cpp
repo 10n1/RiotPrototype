@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       5/22/2011 12:34:05 PM
+Modified:       5/22/2011 1:45:46 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -71,6 +71,8 @@ namespace Riot
     // CD3DDevice destructor
     CD3DDevice::~CD3DDevice()
     {
+        SAFE_RELEASE( m_pColorEnableBlendState );
+        SAFE_RELEASE( m_pColorDisableBlendState );
         SAFE_RELEASE( m_pDepthWriteTest );
         SAFE_RELEASE( m_pDepthNoWriteTest );   
         SAFE_RELEASE( m_pDepthWriteNoTest );
@@ -220,21 +222,41 @@ namespace Riot
         dsd.DepthEnable = true;
         dsd.StencilEnable = false;
         dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+        dsd.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
         hr = m_pDevice->CreateDepthStencilState( &dsd, &m_pDepthWriteTest );
+        ASSERT( hr == S_OK );
 
         dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 
         hr = m_pDevice->CreateDepthStencilState( &dsd, &m_pDepthNoWriteTest );
+        ASSERT( hr == S_OK );
 
         dsd.DepthEnable = false;
         dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
         hr = m_pDevice->CreateDepthStencilState( &dsd, &m_pDepthWriteNoTest );
+        ASSERT( hr == S_OK );
 
         dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 
         hr = m_pDevice->CreateDepthStencilState( &dsd, &m_pDepthNoWriteNoTest );
+        ASSERT( hr == S_OK );
+
+        //////////////////////////////////////////
+        //  Blend states
+        D3D11_BLEND_DESC bd = { 0 };
+        bd.AlphaToCoverageEnable = false;
+        bd.IndependentBlendEnable = false;
+        bd.RenderTarget[0].RenderTargetWriteMask = 0;
+
+        hr = m_pDevice->CreateBlendState( &bd, &m_pColorDisableBlendState );
+        ASSERT( hr == S_OK );
+
+        bd.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+        hr = m_pDevice->CreateBlendState( &bd, &m_pColorEnableBlendState );
+        ASSERT( hr == S_OK );
+
 
         return rResultSuccess;
     }
@@ -331,6 +353,7 @@ namespace Riot
 
         // Finally restore the default render/depth targets
         m_pContext->OMSetRenderTargets( 1, &m_pDefaultRenderTargetView, m_pDefaultDepthStencilView );
+
     }
 
     //-----------------------------------------------------------------------------
@@ -418,6 +441,14 @@ namespace Riot
             else
                 m_pContext->OMSetDepthStencilState( m_pDepthNoWriteNoTest, 0 );
         }
+    }
+    void CD3DDevice::SetColorWrite( bool bEnable )
+    {
+        float fBlend[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        if( bEnable )
+            m_pContext->OMSetBlendState( m_pColorEnableBlendState, fBlend, 0xFFFFFFFF );
+        else
+            m_pContext->OMSetBlendState( m_pColorDisableBlendState, fBlend, 0xFFFFFFFF );
     }
     //
         
@@ -774,7 +805,10 @@ namespace Riot
     {
         m_pContext->PSSetShaderResources( nIndex, 1, &((CD3DRenderTarget*)pRenderTarget)->m_pRV );
     }
-
+    void CD3DDevice::SetNullRenderTarget( void )
+    {
+        m_pContext->OMSetRenderTargets( 0, NULL, m_pDefaultDepthStencilView );
+    }
     //
 
     //

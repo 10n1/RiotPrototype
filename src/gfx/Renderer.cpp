@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/22/2011 12:34:05 PM
+Modified:       5/22/2011 1:51:00 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -412,11 +412,6 @@ namespace Riot
         m_pDevice->Clear();
         m_pDevice->SetDepthTest( true, true );
 
-        if( m_pTestRT )
-        {
-            m_pDevice->ClearRenderTarget( m_pTestRT );
-            m_pDevice->SetRenderTarget( m_pTestRT );
-        }
 
         //////////////////////////////////////////
         // Render
@@ -424,18 +419,53 @@ namespace Riot
 
         SetViewProj( m_pCurrentView->GetViewMatrix(), m_pCurrentView->GetProjMatrix() );
 
-        //////////////////////////////////////////
-        // Render the terrain
-        SetVertexShader( eVS3DPosNorTexNoTransform );
-        SetPixelShader( ePS3DStd );
-        pTerrain->Render();
-        SetVertexShader( eVS3DPosNorTexStd );
+
+        if( m_pTestRT )
+        {
+            m_pDevice->ClearRenderTarget( m_pTestRT );
+            m_pDevice->SetRenderTarget( m_pTestRT );
+        }
 
         //////////////////////////////////////////
-        // Perform basic object rendering
-        for( sint i = 0; i < m_nPrevNumCommands; ++i )
+        //  Z pre-pass
         {
-            ProcessCommand( m_pPrevCommands[i], m_pPrevTransforms[i] );
+            m_pDevice->SetColorWrite( true );
+            m_pDevice->SetDepthTest( true, true );
+
+            //////////////////////////////////////////
+            // Render the terrain
+            SetVertexShader( eVS3DPosNorTexNoTransform );
+            SetPixelShader( ePS3DStd );
+            pTerrain->Render();
+            SetVertexShader( eVS3DPosNorTexStd );
+
+            //////////////////////////////////////////
+            // Perform basic object rendering
+            for( sint i = 0; i < m_nPrevNumCommands; ++i )
+            {
+                ProcessCommand( m_pPrevCommands[i], m_pPrevTransforms[i] );
+            }
+        }
+
+        //////////////////////////////////////////
+        //  Actual rendering
+        {
+            m_pDevice->SetColorWrite( true );
+            m_pDevice->SetDepthTest( true, false );
+
+            //////////////////////////////////////////
+            // Render the terrain
+            SetVertexShader( eVS3DPosNorTexNoTransform );
+            SetPixelShader( ePS3DStd );
+            pTerrain->Render();
+            SetVertexShader( eVS3DPosNorTexStd );
+
+            //////////////////////////////////////////
+            // Perform basic object rendering
+            for( sint i = 0; i < m_nPrevNumCommands; ++i )
+            {
+                ProcessCommand( m_pPrevCommands[i], m_pPrevTransforms[i] );
+            }
         }
 
         //////////////////////////////////////////
