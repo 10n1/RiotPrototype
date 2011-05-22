@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       5/22/2011 12:07:58 PM
+Modified:       5/22/2011 12:34:05 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -71,6 +71,11 @@ namespace Riot
     // CD3DDevice destructor
     CD3DDevice::~CD3DDevice()
     {
+        SAFE_RELEASE( m_pDepthWriteTest );
+        SAFE_RELEASE( m_pDepthNoWriteTest );   
+        SAFE_RELEASE( m_pDepthWriteNoTest );
+        SAFE_RELEASE( m_pDepthNoWriteNoTest );
+
         SAFE_RELEASE( m_pSolidRasterizerState );
         SAFE_RELEASE( m_pWireframeRasterizerState );
 
@@ -216,12 +221,20 @@ namespace Riot
         dsd.StencilEnable = false;
         dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
-        hr = m_pDevice->CreateDepthStencilState( &dsd, &m_pDepthEnableState );
+        hr = m_pDevice->CreateDepthStencilState( &dsd, &m_pDepthWriteTest );
 
-        dsd.DepthEnable = false;
         dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 
-        hr = m_pDevice->CreateDepthStencilState( &dsd, &m_pDepthDisableState );
+        hr = m_pDevice->CreateDepthStencilState( &dsd, &m_pDepthNoWriteTest );
+
+        dsd.DepthEnable = false;
+        dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+
+        hr = m_pDevice->CreateDepthStencilState( &dsd, &m_pDepthWriteNoTest );
+
+        dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+
+        hr = m_pDevice->CreateDepthStencilState( &dsd, &m_pDepthNoWriteNoTest );
 
         return rResultSuccess;
     }
@@ -389,12 +402,22 @@ namespace Riot
             break;
         }
     }
-    void CD3DDevice::SetDepthTest( bool bTest )
+    void CD3DDevice::SetDepthTest( bool bTest, bool bWrite )
     {
         if( bTest )
-            m_pContext->OMSetDepthStencilState( m_pDepthEnableState, 0 );
+        {
+            if( bWrite )
+                m_pContext->OMSetDepthStencilState( m_pDepthWriteTest, 0 );
+            else
+                m_pContext->OMSetDepthStencilState( m_pDepthNoWriteTest, 0 );
+        }
         else
-            m_pContext->OMSetDepthStencilState( m_pDepthDisableState, 0 );
+        {
+            if( bWrite )
+                m_pContext->OMSetDepthStencilState( m_pDepthWriteNoTest, 0 );
+            else
+                m_pContext->OMSetDepthStencilState( m_pDepthNoWriteNoTest, 0 );
+        }
     }
     //
         

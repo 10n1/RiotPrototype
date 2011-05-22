@@ -3,7 +3,7 @@ File:           Graphics.h
 Purpose:        Base graphics hardware API
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/22/2011 12:07:58 PM
+Modified:       5/22/2011 12:29:13 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _GRAPHICS_H_
@@ -60,7 +60,7 @@ namespace Riot
 
         //
         virtual void SetFillMode( GFX_FILL_MODE nFill ) = 0;
-        virtual void SetDepthTest( bool bTest ) = 0;
+        virtual void SetDepthTest( bool bTest, bool bWrite ) = 0;
         //
 
         //

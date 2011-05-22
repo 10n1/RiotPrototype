@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/22/2011 12:08:30 PM
+Modified:       5/22/2011 12:34:05 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -410,7 +410,7 @@ namespace Riot
         //////////////////////////////////////////
         // Clear
         m_pDevice->Clear();
-        m_pDevice->SetDepthTest( true );
+        m_pDevice->SetDepthTest( true, true );
 
         if( m_pTestRT )
         {
@@ -522,7 +522,7 @@ namespace Riot
         }
 
         m_pDevice->SetDefaultRenderDepthTarget();
-        m_pDevice->SetDepthTest( false );
+        m_pDevice->SetDepthTest( false, false );
 
         SetVertexShader( eVS2DPos );
         SetPixelShader( ePS2DFS );
