@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       5/21/2011 4:56:56 PM
+Modified:       5/22/2011 12:07:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -209,6 +209,20 @@ namespace Riot
 
         hr = m_pDevice->CreateRasterizerState( &rd, &m_pWireframeRasterizerState );
 
+        //////////////////////////////////////////
+        // Create depth states
+        D3D11_DEPTH_STENCIL_DESC dsd;
+        dsd.DepthEnable = true;
+        dsd.StencilEnable = false;
+        dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+
+        hr = m_pDevice->CreateDepthStencilState( &dsd, &m_pDepthEnableState );
+
+        dsd.DepthEnable = false;
+        dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+
+        hr = m_pDevice->CreateDepthStencilState( &dsd, &m_pDepthDisableState );
+
         return rResultSuccess;
     }
 
@@ -374,6 +388,13 @@ namespace Riot
             m_pContext->RSSetState( m_pWireframeRasterizerState );
             break;
         }
+    }
+    void CD3DDevice::SetDepthTest( bool bTest )
+    {
+        if( bTest )
+            m_pContext->OMSetDepthStencilState( m_pDepthEnableState, 0 );
+        else
+            m_pContext->OMSetDepthStencilState( m_pDepthDisableState, 0 );
     }
     //
         

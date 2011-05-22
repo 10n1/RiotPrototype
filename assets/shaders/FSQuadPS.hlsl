@@ -2,7 +2,7 @@
 File:           BasicPixelShader.hlsl
 Author:         Kyle Weicht
 Created:        4/17/2011
-Modified:       5/21/2011 5:26:03 PM
+Modified:       5/22/2011 11:51:11 AM
 Modified by:    Kyle Weicht
 \*********************************************************/
 //--------------------------------------------------------------------------------------
@@ -24,8 +24,6 @@ struct PS_INPUT
 float4 main( PS_INPUT input ) : SV_Target
 {
     float4 fTexColor = diffuseTexture.Sample( linearSampler, input.TexCoords );
-
-    fTexColor.r = 1.0f;
 
     return fTexColor;
 }

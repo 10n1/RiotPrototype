@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/21/2011 5:22:47 PM
+Modified:       5/22/2011 12:08:30 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -410,6 +410,7 @@ namespace Riot
         //////////////////////////////////////////
         // Clear
         m_pDevice->Clear();
+        m_pDevice->SetDepthTest( true );
 
         if( m_pTestRT )
         {
@@ -432,12 +433,7 @@ namespace Riot
 
         //////////////////////////////////////////
         // Perform basic object rendering
-        for( sint i = 0; i < m_nPrevNumCommands/2; ++i )
-        {
-            ProcessCommand( m_pPrevCommands[i], m_pPrevTransforms[i] );
-        }
-
-        for( sint i = m_nPrevNumCommands/2; i < m_nPrevNumCommands; ++i )
+        for( sint i = 0; i < m_nPrevNumCommands; ++i )
         {
             ProcessCommand( m_pPrevCommands[i], m_pPrevTransforms[i] );
         }
@@ -526,7 +522,8 @@ namespace Riot
         }
 
         m_pDevice->SetDefaultRenderDepthTarget();
-        
+        m_pDevice->SetDepthTest( false );
+
         SetVertexShader( eVS2DPos );
         SetPixelShader( ePS2DFS );
         SetSamplerState( eSamplerNearest );
@@ -538,7 +535,7 @@ namespace Riot
         m_pDevice->SetIndexBuffer( m_pFSRectIB, 2 );
 
         m_pDevice->DrawIndexedPrimitive( 6 );
-
+        
         //////////////////////////////////////////
         // Draw the UI
         UI::Draw( m_pDevice );

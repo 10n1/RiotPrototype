@@ -3,7 +3,7 @@ File:           D3DGraphics.h
 Purpose:        Direct3D interface
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       5/21/2011 4:38:52 PM
+Modified:       5/22/2011 12:07:58 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
@@ -60,6 +60,7 @@ namespace Riot
 
         //
         void SetFillMode( GFX_FILL_MODE nFill );
+        void SetDepthTest( bool bTest );
         //
         
         //
@@ -139,6 +140,9 @@ namespace Riot
 
         ID3D11RasterizerState*  m_pSolidRasterizerState;
         ID3D11RasterizerState*  m_pWireframeRasterizerState;
+
+        ID3D11DepthStencilState*    m_pDepthEnableState;
+        ID3D11DepthStencilState*    m_pDepthDisableState;
     };
 
 } // namespace Riot
