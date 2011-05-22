@@ -3,7 +3,7 @@ File:           VertexFormats.h
 Purpose:        Stores the basic vertex format information
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       5/21/2011 4:32:30 PM
+Modified:       5/21/2011 4:52:08 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _VERTEXFORMATS_H_
@@ -165,6 +165,19 @@ namespace Riot
     {
         RVector3 Pos;
         RVector4 Color;
+
+        static InputElementLayout Layout[];
+        static IGfxVertexLayout*  VertexLayoutObject;
+        static const uint LayoutSize;
+        static const uint VertexStride;// = sizeof( VVertexPosNormal );
+    };
+
+    /*
+    Position format (for FS quad)
+    */
+    struct VPos
+    {
+        RVector2 Pos;
 
         static InputElementLayout Layout[];
         static IGfxVertexLayout*  VertexLayoutObject;

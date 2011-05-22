@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/21/2011 4:40:50 PM
+Modified:       5/21/2011 5:22:47 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -185,6 +185,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::Shutdown( void )
     {
+        SAFE_RELEASE( m_pFSRectIB );
+        SAFE_RELEASE( m_pFSRectVB );
         SAFE_RELEASE( m_pTestRT );
 
         for( sint i = 0; i < m_nNumMeshes; ++i )
@@ -294,6 +296,23 @@ namespace Riot
         SetPixelShader( ePS3DStd );
         SetSamplerState( eSamplerLinear );
         m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
+
+
+        static float Vtx[] = 
+        { 
+            -1.0f, -1.0f, 
+            -1.0f,  1.0f, 
+             1.0f,  1.0f, 
+             1.0f, -1.0f, 
+        };
+        static uint16 Idx[] = 
+        { 
+            0, 1, 2, 
+            0, 2, 3,
+        };
+
+        m_pFSRectVB = m_pDevice->CreateVertexBuffer( sizeof( Vtx ), Vtx );
+        m_pFSRectIB = m_pDevice->CreateIndexBuffer ( sizeof( Idx ), Idx );
     }
 
     //-----------------------------------------------------------------------------
@@ -307,6 +326,7 @@ namespace Riot
         m_ppPixelShaders[ ePS3DStd ] = m_pDevice->CreatePixelShader( "Assets/Shaders/BasicPixelShader.hlsl", "main" );
         m_ppPixelShaders[ ePS3DColor ] = m_pDevice->CreatePixelShader( "Assets/Shaders/PosColorPixelShader.hlsl", "main" );
         m_ppPixelShaders[ ePS2DTex ] = m_pDevice->CreatePixelShader( "Assets/Shaders/UI.hlsl", "PS" );
+        m_ppPixelShaders[ ePS2DFS ] = m_pDevice->CreatePixelShader( "Assets/Shaders/FSQuadPS.hlsl", "main" );
 
         //////////////////////////////////////////
         // Load the vertex shaders/layouts
@@ -337,6 +357,14 @@ namespace Riot
             VPosColor::LayoutSize,
             &m_ppVertexShaders[ eVS3DPosColStd ],
             &m_ppVertexLayouts[ eVS3DPosColStd ] );
+
+        
+        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/FSQuadVS.hlsl", 
+            "main", 
+            VPos::Layout, 
+            VPos::LayoutSize,
+            &m_ppVertexShaders[ eVS2DPos ],
+            &m_ppVertexLayouts[ eVS2DPos ] );
 
         //////////////////////////////////////////
         // Load the sampler states
@@ -409,8 +437,6 @@ namespace Riot
             ProcessCommand( m_pPrevCommands[i], m_pPrevTransforms[i] );
         }
 
-        m_pDevice->SetDefaultRenderDepthTarget();
-        
         for( sint i = m_nPrevNumCommands/2; i < m_nPrevNumCommands; ++i )
         {
             ProcessCommand( m_pPrevCommands[i], m_pPrevTransforms[i] );
@@ -498,6 +524,20 @@ namespace Riot
             SetVertexShader( eVS3DPosNorTexStd );
             SetPixelShader( ePS3DStd );
         }
+
+        m_pDevice->SetDefaultRenderDepthTarget();
+        
+        SetVertexShader( eVS2DPos );
+        SetPixelShader( ePS2DFS );
+        SetSamplerState( eSamplerNearest );
+
+        if( m_pTestRT )
+        m_pDevice->SetPSRenderTarget( 0, m_pTestRT );
+
+        m_pDevice->SetVertexBuffer( 0, m_pFSRectVB, VPos::VertexStride );
+        m_pDevice->SetIndexBuffer( m_pFSRectIB, 2 );
+
+        m_pDevice->DrawIndexedPrimitive( 6 );
 
         //////////////////////////////////////////
         // Draw the UI

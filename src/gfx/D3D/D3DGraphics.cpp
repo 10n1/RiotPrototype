@@ -2,7 +2,7 @@
 File:           D3DGraphics.cpp
 Author:         Kyle Weicht
 Created:        4/12/2011
-Modified:       5/21/2011 4:39:00 PM
+Modified:       5/21/2011 4:56:56 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
@@ -456,6 +456,14 @@ namespace Riot
                 };
                 hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
             }
+            else if( nLayoutCount == 1 )
+            {
+                D3D11_INPUT_ELEMENT_DESC inputLayout[] =
+                {
+                    { Layout[0].szSemanticName, Layout[0].nSlot, (DXGI_FORMAT)Layout[0].nFormat, Layout[0].nIndex, 0,                            (D3D11_INPUT_CLASSIFICATION)Layout[0].nData, 0 },
+                };
+                hr = m_pDevice->CreateInputLayout( inputLayout, nLayoutCount, pShaderCode, nShaderSize, &pInputLayout );
+            }
             else
             {
                 ASSERT( 0 );
@@ -774,8 +782,8 @@ namespace Riot
         if( FAILED( hr ) )
         {
             // TODO: Handle error gracefully
-            ASSERT( FALSE );
             const char* szWarnings = (const char*)pErrorBlob->GetBufferPointer();
+            ASSERT( FALSE );
             MessageBox( 0, (wchar_t*)pErrorBlob->GetBufferPointer(), L"Error", 0 );
             SAFE_RELEASE( pErrorBlob );
             return rResultFailure;

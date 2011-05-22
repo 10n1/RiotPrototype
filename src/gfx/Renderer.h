@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/21/2011 3:58:19 PM
+Modified:       5/21/2011 4:55:20 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -28,6 +28,7 @@ namespace Riot
         eVS3DPosNorTexNoTransform,
         eVS3DPosColStd,
         eVS2DPosColTex,
+        eVS2DPos,
 
         NUM_VERTEX_SHADERS,
     };
@@ -37,6 +38,7 @@ namespace Riot
         ePS3DStd,
         ePS3DColor,
         ePS2DTex,
+        ePS2DFS,
 
         NUM_PIXEL_SHADERS,
     };
@@ -295,6 +297,9 @@ namespace Riot
         sint                m_nDefaultMesh;
         IGfxBuffer*         m_pLineBuffer;
         IGfxBuffer*         m_pPlaneBuffer;
+
+        IGfxBuffer*         m_pFSRectVB;
+        IGfxBuffer*         m_pFSRectIB;
 
         // Textures
         sint    m_nDefaultTexture;

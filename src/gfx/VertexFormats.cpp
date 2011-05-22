@@ -2,7 +2,7 @@
 File:           VertexFormats.cpp
 Author:         Kyle Weicht
 Created:        4/14/2011
-Modified:       5/21/2011 2:16:52 PM
+Modified:       5/21/2011 5:25:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "VertexFormats.h"
@@ -50,6 +50,18 @@ namespace Riot
 
     
     /*
+    Position format
+    */        
+    InputElementLayout VPos::Layout[] = 
+    { 
+        { GFX_SEMANTIC_POSITION, 0, GFX_FORMAT_FLOAT2, 0, GFX_INPUT_DATA_PER_VERTEX },
+    };
+    IGfxVertexLayout*   VPos::VertexLayoutObject = NULL;
+    const uint          VPos::LayoutSize = ARRAY_LENGTH(Layout);
+    const uint          VPos::VertexStride = sizeof( VPos );
+
+    
+    /*
     Standard vertex format
     */
     InputElementLayout VPosNormalTexInst::Layout[] = 
@@ -64,6 +76,6 @@ namespace Riot
     };
     IGfxVertexLayout*   VPosNormalTexInst::VertexLayoutObject = NULL;
     const uint          VPosNormalTexInst::LayoutSize = ARRAY_LENGTH(Layout);
-    const uint          VPosNormalTexInst::VertexStride = sizeof( VPosNormalTex );
+    const uint          VPosNormalTexInst::VertexStride = sizeof( VPosNormalTexInst );
 
 } // namespace Riot
