@@ -3,7 +3,7 @@ File:           Renderer.h
 Purpose:        Abstraction between the API and the engine
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/21/2011 4:55:20 PM
+Modified:       5/23/2011 12:46:19 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _RENDERER_H_
@@ -204,8 +204,8 @@ namespace Riot
         //  AddLight
         //  Adds a light to the scene
         //-----------------------------------------------------------------------------
-        void AddPointLight( const RVector3& vPos, float fRange );
-        void AddDirLight( const RVector3& vDir );
+        void AddPointLight( const RVector3& vPos, const RVector3& vColor, float fRange );
+        void AddDirLight( const RVector3& vDir, const RVector3& vColor );
 
         //-----------------------------------------------------------------------------
         //  GetDefaultMeshData
@@ -334,10 +334,10 @@ namespace Riot
 
         struct TLights
         {
-            RVector4    vDirLights[ MAX_LIGHTS ];
-            RVector4    vPointLights[ MAX_LIGHTS ];
-            atomic_t    nNumActivePointLights;
-            atomic_t    nNumActiveDirLights;
+            RVector4    vLight[ MAX_LIGHTS ];
+            RVector4    vColor[ MAX_LIGHTS ];
+            sint32      nLightType;
+            atomic_t    nNumActiveLights;
             uint32      _padding[2];
         };
         TLights     m_pLights[2];

@@ -2,7 +2,7 @@
 File:           Renderer.cpp
 Author:         Kyle Weicht
 Created:        4/11/2011
-Modified:       5/22/2011 1:51:00 PM
+Modified:       5/23/2011 12:46:19 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include <fstream>
@@ -825,20 +825,24 @@ namespace Riot
     //  AddLight
     //  Adds a light to the scene
     //-----------------------------------------------------------------------------
-    void CRenderer::AddPointLight( const RVector3& vPos, float fRange )
+    void CRenderer::AddPointLight( const RVector3& vPos, const RVector3& vColor, float fRange )
     {
-        ASSERT( m_pCurrLights->nNumActivePointLights < MAX_LIGHTS );
-        sint nIndex = AtomicIncrement( &m_pCurrLights->nNumActivePointLights ) - 1;
+        ASSERT( m_pCurrLights->nNumActiveLights < MAX_LIGHTS );
+        sint nIndex = AtomicIncrement( &m_pCurrLights->nNumActiveLights ) - 1;
 
-        m_pCurrLights->vPointLights[ nIndex ] = RVector4( vPos, fRange );
+        m_pCurrLights->vLight[ nIndex ] = RVector4( vPos, fRange );
+        m_pCurrLights->vColor[ nIndex ] = RVector4( vColor, 1.0f );
+        m_pCurrLights->nLightType |= (1 << nIndex);
     }
 
-    void CRenderer::AddDirLight( const RVector3& vDir )
+    void CRenderer::AddDirLight( const RVector3& vDir, const RVector3& vColor )
     {
-        ASSERT( m_pCurrLights->nNumActiveDirLights < MAX_LIGHTS );
-        sint nIndex = AtomicIncrement( &m_pCurrLights->nNumActiveDirLights ) - 1;
+        ASSERT( m_pCurrLights->nNumActiveLights < MAX_LIGHTS );
+        sint nIndex = AtomicIncrement( &m_pCurrLights->nNumActiveLights ) - 1;
 
-        m_pCurrLights->vDirLights[ nIndex ] = Homogonize( Normalize( -vDir ) );
+        m_pCurrLights->vLight[ nIndex ] = Homogonize( Normalize( -vDir ) );
+        m_pCurrLights->vColor[ nIndex ] = RVector4( vColor, 1.0f );
+        m_pCurrLights->nLightType &= ( 0 << nIndex);
     }
 
     //-----------------------------------------------------------------------------
@@ -978,8 +982,7 @@ namespace Riot
         m_nNumBoxes     = 0;
         m_nNumCommands  = 0;
         m_nNumRays      = 0;
-        m_pCurrLights->nNumActivePointLights = 0;
-        m_pCurrLights->nNumActiveDirLights = 0;
+        m_pCurrLights->nNumActiveLights = 0;
 
         UI::SwapBuffers();
     }
