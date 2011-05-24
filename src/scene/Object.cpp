@@ -13,6 +13,9 @@ namespace Riot
 
     TObjectDefinition    CObject::m_pObjectTypes[ 128 ] = { eTypeNull };
     uint32               CObject::m_nNumObjectTypes = 0;
+    uint32               CObject::m_pFuncNameHashs[ 128 ] = { 0 };
+    ObjectFunc*          CObject::m_pFuncs[ 128 ] = { NULL };
+    uint32               CObject::m_nNumFuncs = 0;
 
     inline byte* GetLine( byte* pIn, byte* pOut )
     {
@@ -23,6 +26,8 @@ namespace Riot
 
         if( *pIn == 10 )
             pIn++;
+
+        *pOut = 0;
 
         return pIn;
     }
@@ -62,6 +67,7 @@ namespace Riot
         const uint32 nMaterialHash = StringHash32( "material" );
         const uint32 nTextureHash = StringHash32( "texture" );
         const uint32 nFloatHash = StringHash32( "float" );
+        const uint32 nFuncHash = StringHash32( "func" );
 
         sint nTypeHash = StringHash32( szString );
 
@@ -93,6 +99,11 @@ namespace Riot
         {
             return eTypeFloat;                
         }
+        if( nTypeHash == nFuncHash )
+        {
+            return eTypeFunc;
+        }
+        
 
         //ASSERT( 0 );
         return eTypeNull;
@@ -238,6 +249,7 @@ namespace Riot
         static const sint32     defaultMesh = 0;
         static const sint32     defaultTexture = 0;
         static const sint32     defaultMaterial = 0;
+        static const ObjectFunc*    defaultFunc = NULL;
 
         sint32 nTypeHash = StringHash32( szType );
 
@@ -283,6 +295,9 @@ namespace Riot
                 break;
             case eTypeTexture:
                 nSize += sizeof( DataTexture );
+                break;
+            case eTypeFunc:
+                nSize += sizeof( DataFunc );
                 break;
             case eTypeNull:
                 continue;
@@ -381,6 +396,19 @@ namespace Riot
                     p->nOffset = nSize;
                     break;
                 }
+            case eTypeFunc:
+                {
+                    DataFunc* p = (DataFunc*)pData;
+                    p->nType = eTypeFunc;
+                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->data = defaultFunc;
+
+                    sint nSize = sizeof( DataFunc );
+
+                    pData += nSize;
+                    p->nOffset = nSize;
+                }
+                break;
             case eTypeNull:
                 continue;
             default:
@@ -414,31 +442,65 @@ namespace Riot
         ASSERT( 0 );
     }
 
-    void IntegrateDynamics( RVector3* pos, RVector3* vel, RVector3* acc, float dt )
+    void IntegrateDynamics( CObject* pObject, float dt )
     {
-        RVector3 pos0 = *pos;
-        RVector3 vel0 = *vel;
-        RVector3 acc0 = *acc;
+        RVector3* pos0;
+        RVector3* vel0;
+        RVector3* acc0;
+
+        pObject->GetProperty( "position", (void**)&pos0 );
+        pObject->GetProperty( "velocity", (void**)&vel0 );
+        pObject->GetProperty( "acceleration", (void**)&acc0 );
+
         RVector3 vel05;
         RVector3 pos1;
         RVector3 vel1;
         RVector3 acc1;
 
         //  1. Calcualte new position
-        pos1    = pos0 + vel0*dt + (0.5f * acc0 * Square(dt));
+        pos1    = *pos0 + *vel0*dt + (0.5f * *acc0 * Square(dt));
 
         //  2. Calculate 1/2 of the new velocity
-        vel05   = vel0 + 0.5f * acc0 * dt;
+        vel05   = *vel0 + 0.5f * *acc0 * dt;
 
         //  3. Calculate the new acceleration
-        acc1    = acc0; // force / m;
+        acc1    = *acc0; // force / m;
 
         //  4. Calculate the other half of the new velocity
         vel1    = vel05 + 0.5 * acc1 * dt;
 
-        *pos = pos1;
-        *vel = vel1;
-        *acc = acc1;
+        *pos0 = pos1;
+        *vel0 = vel1;
+        *acc0 = acc1;
+    }
+
+    void CObject::RegisterFunc( const char* szFunc, ObjectFunc* pFunc )
+    {
+        uint32 nFuncHash = StringHash32( szFunc );
+
+        sint32 nIndex = m_nNumFuncs++;
+
+        m_pFuncNameHashs[ nIndex ] = nFuncHash;
+        m_pFuncs[ nIndex ] = pFunc;
+    }
+
+    ObjectFunc* CObject::GetFunction( const char* szFunc )
+    {
+        uint32 nHash = StringHash32( szFunc );
+
+        return GetFunction( nHash );
+    }
+
+    ObjectFunc* CObject::GetFunction( uint32 nHash )
+    {
+        for( sint i = 0; i < m_nNumFuncs; ++i )
+        {
+            if( m_pFuncNameHashs[i] == nHash )
+                return m_pFuncs[i];
+        }
+
+        ASSERT( 0 );
+        return 0;
     }
 
 } // namespace Riot

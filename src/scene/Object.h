@@ -12,6 +12,8 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
+    class CObject;
+
     enum DataType
     {
         eTypeNull = 0,
@@ -22,6 +24,7 @@ namespace Riot
         eTypeMesh,
         eTypeMaterial,
         eTypeTexture,
+        eTypeFunc,
     };
 
     template<class T>
@@ -40,6 +43,9 @@ namespace Riot
     typedef Data<sint32>    DataMesh;
     typedef Data<sint32>    DataTexture;
     typedef Data<sint32>    DataMaterial;
+
+    typedef void (ObjectFunc)(CObject*,float);
+    typedef Data<ObjectFunc*>    DataFunc;
 
     struct TObjectDefinition
     {
@@ -62,6 +68,9 @@ namespace Riot
         \***************************************/
 
         static void CreateObjectTemplate( const char* szFilename );
+        static void RegisterFunc( const char* szFunc, ObjectFunc* pFunc );
+        static ObjectFunc* GetFunction( const char* szFunc );
+        static ObjectFunc* GetFunction( uint32 nHash );
 
         void CreateObjectFromFile( const char* szFilename );
 
@@ -69,19 +78,23 @@ namespace Riot
 
         void GetProperty( const char* szProp, void** pData );
 
+
     private:
         /***************************************\
         | class members                         |
         \***************************************/
         static TObjectDefinition    m_pObjectTypes[ 128 ];
         static uint32               m_nNumObjectTypes;
+        static uint32               m_pFuncNameHashs[ 128 ];
+        static ObjectFunc*          m_pFuncs[ 128 ];
+        static uint32               m_nNumFuncs;
 
         void*   m_pData;
         sint32  m_nNumProperties;
         sint32  m_nNameHash;
     };
 
-    void IntegrateDynamics( RVector3* pos, RVector3* vel, RVector3* acc, float dt );
+    void IntegrateDynamics( CObject* pObject, float dt );
 }
 
 #endif // #ifndef _OBJECT_H_

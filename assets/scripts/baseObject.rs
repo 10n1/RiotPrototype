@@ -7,4 +7,5 @@ mesh			mesh
 material		material
 texture			diffuse
 texture			normalmap
-everyframefunc	NewtonDynamics
+func			updateFunc
+bool			collidable

@@ -422,6 +422,7 @@ namespace Riot
 
         //////////////////////////////////////////
         // Create an object
+        CObject::RegisterFunc( "IntegrateDynamics", IntegrateDynamics );
         CObject::CreateObjectTemplate( "assets/scripts/baseobject.rs" );
 
         CObject o;
@@ -430,11 +431,15 @@ namespace Riot
         RVector3  vAcc = RVector3( 0.0f, -9.8f, 0.0f );
         RVector3* vPos;
         RVector3* vVel;
+        ObjectFunc* pFunc;
 
         o.GetProperty( "position", (void**)&vPos );
         o.GetProperty( "velocity", (void**)&vVel );
+        o.GetProperty( "updateFunc", (void**)&pFunc );
 
-        IntegrateDynamics( vPos, vVel, &vAcc, m_fElapsedTime );
+        pFunc = CObject::GetFunction( "IntegrateDynamics" );
+
+        pFunc( &o, m_fElapsedTime );
 
         // Finally reset the timer
         m_MainTimer.Reset();
