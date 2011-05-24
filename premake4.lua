@@ -8,7 +8,7 @@ solution "Riot"
    project "Riot"
       kind "ConsoleApp"
       language "C++"
-      files { "**.h", "**.cpp", "**.hlsl", "**.png", "**.dds" }
+      files { "**.h", "**.cpp", "**.hlsl", "**.png", "**.dds", "**.rs" }
 	  location "projects"
 	  includedirs { "src/core", "src/global", "src/gfx", "src/platform", "src/scene", "src", "src/gfx/ogl" }
 	  flags { "unicode", "floatfast", "enableSSE", "enableSSE2" }

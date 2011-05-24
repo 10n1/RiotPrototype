@@ -114,7 +114,7 @@ namespace Riot
         void SendMessage( CComponentMessage& msg );
         void SendMessage( eComponentMessageType nType, uint nObject, pvoid pData, eComponentType nOrigin = eNULLCOMPONENT );
         void SendMessage( eComponentMessageType nType, uint nObject, nativeuint nData, eComponentType nOrigin = eNULLCOMPONENT );
-        
+                
     private:
         //-----------------------------------------------------------------------------
         //  Parallel functions

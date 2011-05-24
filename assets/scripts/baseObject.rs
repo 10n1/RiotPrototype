@@ -1,0 +1,10 @@
+name			simpleRigidBody
+float3			position
+float3			velocity
+float3			acceleration
+bool			gravity
+mesh			mesh
+material		material
+texture			diffuse
+texture			normalmap
+everyframefunc	NewtonDynamics

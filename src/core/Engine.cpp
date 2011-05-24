@@ -20,6 +20,7 @@ Modified by:    Kyle Weicht
 #include "Camera.h"
 #include "Console.h"
 #include "Character.h"
+#include "object.h"
 
 #include <stdio.h> // included for printf
 
@@ -418,6 +419,11 @@ namespace Riot
         m_pCharacters[0] = new CCharacter();
         //m_pRenderer->SetCurrentView( m_pCharacters[0]->GetView() );
         //m_pCamera->SetView( m_pCharacters[0]->GetView() );
+
+        //////////////////////////////////////////
+        // Create an object
+        CObject o;
+        o.CreateObjectTemplate( "assets/scripts/baseobject.rs" );
 
         // Finally reset the timer
         m_MainTimer.Reset();
