@@ -25,7 +25,7 @@ namespace Riot
         Engine::GetObjectManager()->SendMessage( Riot::eComponentMessageMesh, m_nCharacterID, m_nMesh );
         Engine::GetObjectManager()->SendMessage( Riot::eComponentMessageTransform, m_nCharacterID, &m_tTransform );
 
-        m_pView = new CView();
+        //m_pView = new CView();
     }
 
     CCharacter::~CCharacter( void )

@@ -2,7 +2,7 @@
 File:           ComponentLight.cpp
 Author:         Kyle Weicht
 Created:        4/25/2011
-Modified:       5/23/2011 12:46:19 PM
+Modified:       5/23/2011 6:27:33 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "ComponentLight.h"
@@ -159,10 +159,10 @@ namespace Riot
             switch( m_nType[i] )
             {
             case eLightDir:
-                pRender->AddDirLight( m_Transform[i].position, RVector3( 0.4f, 0.0f, 0.8f ) );
+                pRender->AddDirLight( m_Transform[i].position, RVector3( 1.0f, 1.0f, 1.0f ) );
                 break;
             case eLightPoint:
-                pRender->AddPointLight( m_Transform[i].position, RVector3( 0.4f, 0.0f, 0.8f ), m_fRange[i] );
+                pRender->AddPointLight( m_Transform[i].position, RVector3( 1.0f, 1.0f, 1.0f ), m_fRange[i] );
                 break;
             default:
                 ASSERT( 0 );

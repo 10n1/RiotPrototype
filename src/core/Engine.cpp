@@ -416,8 +416,8 @@ namespace Riot
         //////////////////////////////////////////
         // Add the character
         m_pCharacters[0] = new CCharacter();
-        m_pRenderer->SetCurrentView( m_pCharacters[0]->GetView() );
-        m_pCamera->SetView( m_pCharacters[0]->GetView() );
+        //m_pRenderer->SetCurrentView( m_pCharacters[0]->GetView() );
+        //m_pCamera->SetView( m_pCharacters[0]->GetView() );
 
         // Finally reset the timer
         m_MainTimer.Reset();
