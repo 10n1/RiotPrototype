@@ -20,3 +20,4 @@ name		torch
 renderable	renderable
 light		flame
 rigidbody	rigidBody
+
