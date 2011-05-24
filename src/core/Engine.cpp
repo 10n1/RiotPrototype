@@ -112,6 +112,8 @@ namespace Riot
             m_pObjectManager->PipelineObjectUpdate( m_pObjectManager, 0, 0, 1 );
 #endif // #if PIPELINED_RENDER
 
+            m_pRenderer->AddPointLight( RVector3( 0.0f, 200.0f, 0.0f ), RVector3( 1.0f, 1.0f, 1.0f ), 2000.0f );
+
             //////////////////////////////////////////
             // Render
             m_pRenderer->Render( m_pTerrain );
@@ -204,20 +206,6 @@ namespace Riot
                     }
                 case KEY_E:
                     {
-                        static bool b = false;
-                        static uint nObject = 0;
-
-                        if( b == false )
-                        {
-                            m_pObjectManager->RemoveComponent( nObject, eComponentRender );
-                            b = !b;
-                        }
-                        else
-                        {
-                            m_pObjectManager->AddComponent( nObject, eComponentRender );
-                            b = !b;
-                            nObject = Rand() % 10;
-                        }
                         break;
                     }
                 case KEY_O:
@@ -233,24 +221,6 @@ namespace Riot
                     bUpdateTerrain = !bUpdateTerrain;
                     break;               
                 case KEY_X:
-                    static uint nCount = 1;
-                    static sint nBox = m_pRenderer->CreateMesh();
-                    RTransform t = RTransform();
-                    t.position = RVector3( RandFloat(16.0f), 150.0f , RandFloat(16.0f) );
-                    //t.position = RVector3( 0.0f, i * 30.0f + 20.0f, 0.0f );
-                    //t.position = RVector3( RandFloat( 2.0f ), 150.0f, RandFloat( 2.0f ) );
-                    uint nObject = m_pObjectManager->CreateObject();
-
-                    m_pObjectManager->AddComponent( nObject, eComponentRigidBody );
-                    m_pObjectManager->AddComponent( nObject, eComponentRender );
-                    m_pObjectManager->AddComponent( nObject, eComponentCollidable );
-                    uint nCollidableIndex = m_pObjectManager->GetComponentIndex( nObject, eComponentCollidable );
-                    CComponentCollidable::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nCollidableIndex );
-
-                    m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
-                    m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, nBox );
-                    nCount++;
-                    printf( "Objects: %d\n", nCount );
                     break;
                 }
             }
@@ -258,46 +228,12 @@ namespace Riot
             switch( msg.nMessage )
             {
             case KEY_G:
-                {
-                    static uint nCount = 1;
-                    static sint nBox = m_pRenderer->CreateMesh();
-                    RTransform t = RTransform();
-
-                    for( uint i = 0; i < 24; ++i )
-                    {
-                        t.position = RVector3( RandFloat(128.0f) - 64.0f, RandFloat( 1024.0f ) + 65.0f, RandFloat(128.0f) - 64.0f );
-                        //t.position = RVector3( 0.0f, i * 30.0f + 20.0f, 0.0f );
-                        uint nObject = m_pObjectManager->CreateObject();
-
-                        if( nObject == -1 )
-                        {
-                            break;
-                        }
-
-                        m_pObjectManager->AddComponent( nObject, eComponentRigidBody );
-                        m_pObjectManager->AddComponent( nObject, eComponentRender );
-                        m_pObjectManager->AddComponent( nObject, eComponentCollidable );
-                        uint nCollidableIndex = m_pObjectManager->GetComponentIndex( nObject, eComponentCollidable );
-                        CComponentCollidable::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, nCollidableIndex );
-
-                        m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t );
-                        m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, nBox );
-                    }
-                    nCount++;
-                    printf( "Objects: %d\n", m_pObjectManager->GetNumObjects() );
+                {                    
                 }
                 break;
 
             case KEY_H:
                 {
-                    for( uint i = 0; i < 20; ++i )
-                    {
-                        uint nObject = m_pObjectManager->GetNumObjects();
-                        if( nObject > 0 )
-                            m_pObjectManager->DeleteObject( nObject-1 );
-                    }
-
-                    printf( "Objects: %d\n", m_pObjectManager->GetNumObjects() );
                 }
                 break;
             }
@@ -381,38 +317,6 @@ namespace Riot
         // Create the terrain
         m_pTerrain = new CTerrain();
         m_pTerrain->GenerateTerrain();
-        CComponentCollidable::SetTerrain( m_pTerrain );
-
-        //////////////////////////////////////////
-        // Create an object
-        sint nBox = m_pRenderer->CreateMesh();
-
-        static RQuaternion orientation = RQuatFromAxisAngle( RVector3( RandFloat(1.0f), RandFloat(1.0f), RandFloat(1.0f) ), RandFloat( gs_2PI ) );
-        orientation = RQuaternionZero();
-        RTransform t = RTransform( orientation, RVector3( 0.0f, 50.0f, 0.0f ) );
-
-        //////////////////////////////////////////
-        // Add a light
-        t = RTransform( orientation, RVector3( 0.0f, 150.0f, 0.0f ), 0.1f );
-
-        uint nObject = m_pObjectManager->CreateObject();
-        m_pObjectManager->AddComponent( nObject, eComponentLight );
-        m_pObjectManager->AddComponent( nObject, eComponentRender );
-        m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, nBox );
-        m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t  );
-
-        
-        //////////////////////////////////////////
-        // Add a light
-        //t = RTransform( orientation, RVector3( 10.0f, 5.0f, 0.0f ), 0.1f );
-        //
-        //nObject = m_pObjectManager->CreateObject();
-        //m_pObjectManager->AddComponent( nObject, eComponentLight );
-        //m_pObjectManager->AddComponent( nObject, eComponentRender );
-        //m_pObjectManager->SendMessage( eComponentMessageMesh, nObject, pBox );
-        //m_pObjectManager->SendMessage( eComponentMessageTransform, nObject, &t  );
-
-        //SAFE_RELEASE( pBox );
 
         //////////////////////////////////////////
         // Add the character
@@ -422,24 +326,22 @@ namespace Riot
 
         //////////////////////////////////////////
         // Create an object
-        CObject::RegisterFunc( "IntegrateDynamics", IntegrateDynamics );
-        CObject::CreateObjectTemplate( "assets/scripts/baseobject.rs" );
+        m_pObjectManager->RegisterFunc( "IntegrateDynamics", IntegrateDynamics );
+        m_pObjectManager->RegisterFunc( "NormalRender", NormalRender );
+        m_pObjectManager->LoadObjectDeclaration( "assets/scripts/baseobject.rs" );
 
-        CObject o;
-        o.CreateObjectOfType( "testObject1", "baseObject" );
+        uint nObj = m_pObjectManager->CreateObject( 0, "baseObject" );
 
-        RVector3  vAcc = RVector3( 0.0f, -9.8f, 0.0f );
-        RVector3* vPos;
-        RVector3* vVel;
-        ObjectFunc* pFunc;
+        sint* nMesh;
+        sint* nTexture;
+        CObject& o = m_pObjectManager->GetObject( nObj );
 
-        o.GetProperty( "position", (void**)&vPos );
-        o.GetProperty( "velocity", (void**)&vVel );
-        o.GetProperty( "updateFunc", (void**)&pFunc );
+        o.GetProperty( "mesh", (void**)&nMesh );
+        o.GetProperty( "diffuse", (void**)&nTexture );
 
-        pFunc = CObject::GetFunction( "IntegrateDynamics" );
-
-        pFunc( &o, m_fElapsedTime );
+        *nMesh = m_pRenderer->CreateMesh();
+        *nTexture = 0;
+        o.SetRenderFunc( NormalRender );
 
         // Finally reset the timer
         m_MainTimer.Reset();
@@ -473,5 +375,55 @@ namespace Riot
         SAFE_DELETE( m_pInstance );
     }
 
+
+    //////////////////////////////////////////
+    void Engine::IntegrateDynamics( CObject* pObject, float dt )
+    {
+        RVector3* pos0;
+        RVector3* vel0;
+        RVector3* acc0;
+
+        pObject->GetProperty( "position", (void**)&pos0 );
+        pObject->GetProperty( "velocity", (void**)&vel0 );
+        pObject->GetProperty( "acceleration", (void**)&acc0 );
+
+        RVector3 vel05;
+        RVector3 pos1;
+        RVector3 vel1;
+        RVector3 acc1;
+
+        //  1. Calcualte new position
+        pos1    = *pos0 + *vel0*dt + (0.5f * *acc0 * Square(dt));
+
+        //  2. Calculate 1/2 of the new velocity
+        vel05   = *vel0 + 0.5f * *acc0 * dt;
+
+        //  3. Calculate the new acceleration
+        acc1    = *acc0; // force / m;
+
+        //  4. Calculate the other half of the new velocity
+        vel1    = vel05 + 0.5 * acc1 * dt;
+
+        *pos0 = pos1;
+        *vel0 = vel1;
+        *acc0 = acc1;
+    }
+    void Engine::NormalRender( CObject* pObject, float dt )
+    {
+        sint* nMesh;
+        sint* nTex;
+        RVector3* vPos;
+        pObject->GetProperty( "mesh", (void**)&nMesh );
+        pObject->GetProperty( "diffuse", (void**)&nTex );
+        pObject->GetProperty( "position", (void**)&vPos );
+
+        TRenderCommand cmd;
+        RTransform t;
+        cmd.m_nMesh = *nMesh;
+        cmd.m_nTexture = *nTex;
+        t.position = *vPos;
+        
+        m_pRenderer->AddCommand( cmd.Encode(), t );
+    }
 
 } // namespace Riot

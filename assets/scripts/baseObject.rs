@@ -1,11 +1,22 @@
 name			baseObject
-float3			position
-float3			velocity
-float3			acceleration
-bool			gravity
-mesh			mesh
-material		material
-texture			diffuse
-texture			normalmap
-func			updateFunc
-bool			collidable
+rigidbody		rigidBody
+renderable		renderable
+
+name		renderable
+transform	transform
+mesh		mesh
+texture		diffuse
+texture		normal
+material	material
+
+name		rigidBody
+transform	transform
+float3		vel
+float3		acc
+float		mass
+boundingBox	bb
+
+name		torch
+renderable	renderable
+light		flame
+rigidbody	rigidBody

@@ -57,6 +57,7 @@ namespace Riot
 
     class CObject
     {
+        friend class CObjectManager;
     public:
         // CObject constructor
         CObject();
@@ -66,19 +67,15 @@ namespace Riot
         /***************************************\
         | class methods                         |
         \***************************************/
-
-        static void CreateObjectTemplate( const char* szFilename );
-        static void RegisterFunc( const char* szFunc, ObjectFunc* pFunc );
-        static ObjectFunc* GetFunction( const char* szFunc );
-        static ObjectFunc* GetFunction( uint32 nHash );
-
         void CreateObjectFromFile( const char* szFilename );
-
-        void CreateObjectOfType( const char* szName, const char* szType );
 
         void GetProperty( const char* szProp, void** pData );
 
-
+        inline void SetUpdateFunc( ObjectFunc* pFunc );
+        inline void SetRenderFunc( ObjectFunc* pFunc );
+        inline void Update( float fDt );
+        inline void Render( float fDt );
+        
     private:
         /***************************************\
         | class members                         |
@@ -90,11 +87,19 @@ namespace Riot
         static uint32               m_nNumFuncs;
 
         void*   m_pData;
+        ObjectFunc* m_pUpdateFunc;
+        ObjectFunc* m_pRenderFunc;
         sint32  m_nNumProperties;
         sint32  m_nNameHash;
     };
+    inline void CObject::SetUpdateFunc( ObjectFunc* pFunc ) { m_pUpdateFunc = pFunc; }
+    inline void CObject::SetRenderFunc( ObjectFunc* pFunc ) { m_pRenderFunc = pFunc; }
+    inline void CObject::Update( float fDt ) { m_pUpdateFunc( this, fDt ); }
+    inline void CObject::Render( float fDt ) { m_pRenderFunc( this, fDt ); }
 
-    void IntegrateDynamics( CObject* pObject, float dt );
+    //////////////////////////////////////////
+    inline void NullUpdateFunc( CObject* pObject, float dt ) { }
+    inline void NullRenderFunc( CObject* pObject, float dt ) { }
 }
 
 #endif // #ifndef _OBJECT_H_

@@ -430,7 +430,8 @@ namespace Riot
 
         //////////////////////////////////////////
         SetWorldMatrix( transform.GetTransformMatrix() );
-        m_ppMeshes[ DecodeMesh( nCmd ) ]->DrawMesh();
+        sint nMesh = DecodeMesh( nCmd );
+        m_ppMeshes[ nMesh ]->DrawMesh();
     }
 
 } // namespace Riot

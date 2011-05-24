@@ -204,6 +204,8 @@ void* __cdecl operator new[](size_t nSize)
 
 void __cdecl operator delete(void* pVoid)
 {
+    ASSERT( pVoid );
+
     RemoveAllocation( pVoid );
 
     if( pVoid == gs_pPrevAlloc )
@@ -219,6 +221,8 @@ void __cdecl operator delete(void* pVoid)
 
 void __cdecl operator delete[](void* pVoid)
 {
+    ASSERT( pVoid );
+
     RemoveAllocation( pVoid );
 
     if( pVoid == gs_pPrevAlloc )

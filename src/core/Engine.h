@@ -25,6 +25,7 @@ namespace Riot
     class CCamera;
     class CConsole;
     class CCharacter;
+    class CObject;
 
     class Engine : public IListener
     {
@@ -99,6 +100,10 @@ namespace Riot
         //  Shuts down and cleans up the engine
         //-----------------------------------------------------------------------------
         void Shutdown( void );
+        
+        //////////////////////////////////////////
+        static void IntegrateDynamics( CObject* pObject, float dt );
+        static void NormalRender( CObject* pObject, float dt );
 
     private:
         /***************************************\

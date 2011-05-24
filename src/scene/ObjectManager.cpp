@@ -5,12 +5,105 @@ Created:        4/17/2011
 Modified:       5/3/2011 4:28:28 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
+#include <fstream>
 #include "ObjectManager.h"
 #include "Engine.h"
 #include "TaskManager.h"
 
 namespace Riot
 {
+    inline DataType GetDataType( const char* szString )
+    {
+        const uint32 nFloat3Hash = StringHash32( "float3" );
+        const uint32 nBoolHash = StringHash32( "bool" );
+        const uint32 nIntHash = StringHash32( "int" );
+        const uint32 nMeshHash = StringHash32( "mesh" );
+        const uint32 nMaterialHash = StringHash32( "material" );
+        const uint32 nTextureHash = StringHash32( "texture" );
+        const uint32 nFloatHash = StringHash32( "float" );
+        const uint32 nFuncHash = StringHash32( "func" );
+
+        sint nTypeHash = StringHash32( szString );
+
+        if( nTypeHash ==  nFloat3Hash )
+        {
+            return eTypeVector3;                
+        }
+        if( nTypeHash ==  nBoolHash )
+        {
+            return eTypeBool;                
+        }
+        if( nTypeHash ==  nIntHash )
+        {
+            return eTypeInt;                
+        }
+        if( nTypeHash ==  nMeshHash )
+        {
+            return eTypeMesh;                
+        }
+        if( nTypeHash ==  nMaterialHash )
+        {
+            return eTypeMaterial;                
+        }
+        if( nTypeHash ==  nTextureHash )
+        {
+            return eTypeTexture;                
+        }
+        if( nTypeHash ==  nFloatHash )
+        {
+            return eTypeFloat;                
+        }
+        if( nTypeHash == nFuncHash )
+        {
+            return eTypeFunc;
+        }
+        
+
+        //ASSERT( 0 );
+        return eTypeNull;
+    }
+
+    inline byte* GetLine( byte* pIn, byte* pOut )
+    {
+        while( *pIn != 10 && *pIn != 0 )
+        {
+            *pOut++ = *pIn++;
+        }
+
+        if( *pIn == 10 )
+            pIn++;
+
+        *pOut = 0;
+
+        return pIn;
+    }
+
+    inline void SplitLine( byte* pIn, byte* pLeft, byte* pRight )
+    {
+        //////////////////////////////////////////
+        // First fill the left
+        while( *pIn != ' ' && *pIn != '\t' && *pIn != 0 )
+        {
+            *pLeft++ = *pIn++;
+        }
+
+        *pLeft = 0;
+
+        // Skip the spaces
+        while( ( *pIn == ' ' || *pIn == '\t' ) && *pIn != 0 )
+        {
+            pIn++;
+        }
+
+        // Now the right
+        while( *pIn != 0 && *pIn != 10 && *pIn != ' ' )
+        {
+            *pRight++ = *pIn++;
+        }
+        
+        *pRight = 0;
+    }
+
     /*****************************************************************************\
     \*****************************************************************************/
     #define LOAD_COMPONENT( TheComponent )                                          \
@@ -53,31 +146,23 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CObjectManager::Initialize( void )
     {
-        m_nNumObjects   = 0;
+        Memset( m_Objects, 0, sizeof( m_Objects ) );
+        Memset( m_pObjectTypes, 0, sizeof( m_pObjectTypes ) );
+        Memset( m_pFuncs, 0, sizeof( m_pFuncs ) );
+        Memset( m_pFuncNameHashs, 0, sizeof( m_pFuncNameHashs ) );
+        m_nNumObjectTypes = 0;
+        m_nNumFuncs = 0;
+
+        m_nNumObjects = 0;
+
+        sint nIndex = 0;
+        for( sint i = MAX_OBJECTS-1; i >= 0; --i )
+        {
+            m_nFreeSlots[ nIndex++ ] = i;
+        }
         m_nNumFreeSlots = MAX_OBJECTS;
 
-        for( sint i = MAX_OBJECTS - 1, j = 0; i >= 0; --i, ++j )
-        {
-            m_pFreeSlots[j] = i;
-        }
-        
-        // Reset all object indices
-        Memset( m_pObjectIndices, -1, sizeof( m_pObjectIndices ) );
-        Memset( m_pComponentIndices, COMPONENT_FRESH, sizeof( m_pComponentIndices ) );
-
-        // Zero everything out
-        Memset( m_bRegistered, 0, sizeof( m_bRegistered ) );
-        Memset( m_pComponents, 0, sizeof( m_pComponents ) );
-        Memset( m_pMessages, 0, sizeof( m_pMessages ) );
-
-        m_nNumMessages = 0;
-        
-        // Do this for each component
-        LOAD_COMPONENT( CComponentRender );
-        LOAD_COMPONENT( CComponentLight );
-        LOAD_COMPONENT( CComponentRigidBody );
-        LOAD_COMPONENT( CComponentCollidable );
-        LOAD_COMPONENT( CComponentCharacter );
+        Memset( m_nActiveObjects, 0, sizeof( m_nActiveObjects ) );
     }
 
     //-----------------------------------------------------------------------------
@@ -85,15 +170,9 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CObjectManager::Shutdown( void )
     {
-        for( sint i = 0; i < m_nNumObjects; ++i )
+        for( uint i = 0; i < m_nNumObjects; ++i )
         {
-            // Reset them all so the active components can free themselves
-            ResetObject( i );
-        }
-        
-        for( uint i = 0; i < eNUMCOMPONENTS; ++i )
-        {
-            SAFE_DELETE( m_pComponents[i] );
+            SAFE_DELETE( m_Objects[ m_nActiveObjects[i] ].m_pData );
         }
     }
 
@@ -101,285 +180,396 @@ namespace Riot
     //  CreateObject
     //  Creates a new object and returns its index
     //-----------------------------------------------------------------------------
-    uint CObjectManager::CreateObject( void )
+    uint CObjectManager::CreateObject( const char* szName, const char* szType )
     {
-        if( m_nNumObjects >= MAX_OBJECTS )
-            return -1;
+        if( !szType )
+        {
+            ASSERT( 0 );
+        }
 
-        assert( m_nNumObjects < MAX_OBJECTS );
-        assert( m_nNumFreeSlots );
+        uint32 nTypeHash = StringHash32( szType );
 
-        AtomicIncrement( &m_nNumObjects );
-        uint nFreeIndex = AtomicDecrement( &m_nNumFreeSlots );
+        uint32 nNameHash;
+        if( szName )
+        {
+            nNameHash = StringHash32( szName );
+        }
+        else
+        {
+            // Create a "random" hash
+            nNameHash = nTypeHash ^ m_nNumObjects;
+        }
 
-        uint nObjectIndex = m_pFreeSlots[ nFreeIndex ];
+
+        return CreateObject( nNameHash, nTypeHash );
+    }
+    uint CObjectManager::CreateObject( uint32 nNameHash, uint32 nTypeHash )
+    {        
+        static const RVector3       defaultVector3 = RVector3Zero();
+        static const sint32         defaultInt = 0;
+        static const float          defaultFloat = 0.0f;
+        static const bool           defaultBool = false;
+        static const sint32         defaultMesh = 0;
+        static const sint32         defaultTexture = 0;
+        static const sint32         defaultMaterial = 0;
+        static const ObjectFunc*    defaultFunc = NULL;
+
+        sint nObjectIndex = AtomicIncrement( &m_nNumObjects ) - 1;
+        sint nFreeIndex = m_nFreeSlots[ AtomicDecrement( &m_nNumFreeSlots ) ];
+
+        m_nActiveObjects[ nObjectIndex ] = nFreeIndex;
+
+        nObjectIndex = nFreeIndex;
+
+        CObject& o = m_Objects[ nObjectIndex ];
+
+        o.m_nNameHash = nNameHash;
+        //////////////////////////////////////////
+        // Find the correct type
+        uint nType;
+        for( nType = 0; nType < m_nNumObjectTypes; ++nType )
+        {
+            if( m_pObjectTypes[nType].nNameHash == nTypeHash )
+                break;
+        }
+        if( nType == m_nNumObjectTypes )
+        {
+            // We're trying to use an undefined type
+            ASSERT( 0 );
+        }
+
+        //////////////////////////////////////////
+        // Count up the size
+        sint32 nSize = 0;
+        for( uint i = 0; i < m_pObjectTypes[ nType ].nNumProperties; ++i )
+        {
+            switch( m_pObjectTypes[nType].nType[i] )
+            {
+            case eTypeVector3:
+                nSize += sizeof( DataVector3 );
+                break;
+            case eTypeInt:
+                nSize += sizeof( DataInt );
+                break;
+            case eTypeFloat:
+                nSize += sizeof( DataFloat );
+                break;
+            case eTypeBool:
+                nSize += sizeof( DataBool );
+                break;
+            case eTypeMesh:
+                nSize += sizeof( DataMesh );
+                break;
+            case eTypeMaterial:
+                nSize += sizeof( DataMaterial );
+                break;
+            case eTypeTexture:
+                nSize += sizeof( DataTexture );
+                break;
+            case eTypeFunc:
+                nSize += sizeof( DataFunc );
+                break;
+            case eTypeNull:
+                continue;
+            default:
+                ASSERT( 0 );
+                break;
+            }
+        }
+
+        o.m_pData = new byte[ nSize ];
+        o.m_nNumProperties = m_pObjectTypes[ nType ].nNumProperties;
+
+        //////////////////////////////////////////
+        // Now fill the data with the default values
+        byte* pData = (byte*)o.m_pData;
+        for( uint i = 0; i < o.m_nNumProperties; ++i )
+        {
+            switch( m_pObjectTypes[nType].nType[i] )
+            {
+            case eTypeVector3:
+                {
+                    DataVector3* p = (DataVector3*)pData;
+                    p->nType = eTypeVector3;
+                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->data = defaultVector3;
+                    
+                    sint nSize = sizeof( DataVector3 );
+                    pData += nSize;
+                    p->nOffset = nSize;
+                    break;
+                }
+            case eTypeInt:
+                {
+                    DataInt* p = (DataInt*)pData;
+                    p->nType = eTypeInt;
+                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->data = defaultInt;
+                    sint nSize = sizeof( DataInt );
+                    pData += nSize;
+                    p->nOffset = nSize;
+                    break;
+                }
+            case eTypeFloat:
+                {
+                    DataFloat* p = (DataFloat*)pData;
+                    p->nType = eTypeFloat;
+                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->data = defaultFloat;
+                    sint nSize = sizeof( DataFloat );
+                    pData += nSize;
+                    p->nOffset = nSize;
+                    break;
+                }
+            case eTypeBool:
+                {
+                    DataBool* p = (DataBool*)pData;
+                    p->nType = eTypeBool;
+                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->data = defaultBool;
+                    sint nSize = sizeof( DataBool );
+                    pData += nSize;
+                    p->nOffset = nSize;
+                    break;
+                }
+            case eTypeMesh:
+                {
+                    DataMesh* p = (DataMesh*)pData;
+                    p->nType = eTypeMesh;
+                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->data = defaultMesh;
+                    sint nSize = sizeof( DataMesh );
+                    pData += nSize;
+                    p->nOffset = nSize;
+                    break;
+                }
+            case eTypeMaterial:
+                {
+                    DataMaterial* p = (DataMaterial*)pData;
+                    p->nType = eTypeMaterial;
+                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->data = defaultMaterial;
+                    sint nSize = sizeof( DataMaterial );
+                    pData += nSize;
+                    p->nOffset = nSize;
+                    break;
+                }
+            case eTypeTexture:
+                {
+                    DataTexture* p = (DataTexture*)pData;
+                    p->nType = eTypeTexture;
+                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->data = defaultTexture;
+                    sint nSize = sizeof( DataTexture );
+
+                    pData += nSize;
+                    p->nOffset = nSize;
+                    break;
+                }
+            case eTypeFunc:
+                {
+                    DataFunc* p = (DataFunc*)pData;
+                    p->nType = eTypeFunc;
+                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->data = defaultFunc;
+
+                    sint nSize = sizeof( DataFunc );
+
+                    pData += nSize;
+                    p->nOffset = nSize;
+                }
+                break;
+            case eTypeNull:
+                continue;
+            default:
+                ASSERT( 0 );
+                break;
+            }
+        }
+
+        m_Objects[ nObjectIndex ].SetRenderFunc( NullRenderFunc );
+        m_Objects[ nObjectIndex ].SetUpdateFunc( NullUpdateFunc );
 
         return nObjectIndex;
     }
-    
-    //-----------------------------------------------------------------------------
-    //  AddComponent
-    //  Adds a component to the specified object
-    //-----------------------------------------------------------------------------
-    void CObjectManager::AddComponent( uint nObject, eComponentType nType )
+    uint CObjectManager::CreateObjectFromFile( const char* szFilename )
     {
-        CScopedMutex lock( &m_ObjectMutex );
+        ASSERT( 0 );
+        static const uint32 nNameHash = StringHash32( "name" );
+        static const uint32 nTypeHash = StringHash32( "type" );
 
-        uint*       pComponentIndices   = m_pComponents[nType]->m_pComponentIndices;
+        byte pData[1024] = { 0 };
+        byte pLine[256] = { 0 };
+        byte pLeft[128] = { 0 };
+        byte pRight[128] = { 0 };
 
-        uint& nComponentIndex = pComponentIndices[nObject];
+        byte* pReadPos = pData;
 
-        if( nComponentIndex == COMPONENT_FRESH )
+        FILE* f = fopen( szFilename, "rt" );        
+        fread( pData, sizeof( byte ), 1024, f );
+        fclose( f );
+
+        //////////////////////////////////////////
+        // Get the objects name
+        pReadPos = GetLine( pReadPos, pLine );
+        SplitLine( pLine, pLeft, pRight );
+
+        if( StringHash32( (char*)pLeft ) != nNameHash )
         {
-            // Let the component attach itself
-            m_pComponents[nType]->Attach( nObject );
-
+            ASSERT( false );
+            return -1;
         }
-        else if( nComponentIndex & COMPONENT_REMOVED )
+
+        uint32 nName = StringHash32( (char*)pRight );
+
+        //////////////////////////////////////////
+        // Get the objects type
+        pReadPos = GetLine( pReadPos, pLine );
+        SplitLine( pLine, pLeft, pRight );
+        
+        if( StringHash32( (char*)pLeft ) != nTypeHash )
         {
-            nComponentIndex &= COMPONENT_RESET_REMOVED;
-
-            // The component was added and removed
-            // Let the component attach itself
-            m_pComponents[nType]->Reattach( nObject );
-
+            ASSERT( false );
+            return -1;
         }
-        else
+
+        sint32 nType = StringHash32( (char*)pRight );
+
+        //////////////////////////////////////////
+        // Create the default object
+        uint nObject = CreateObject( nName, nType );
+        CObject& o = m_Objects[ nObject ];
+        
+        // Get the rest of the properties
+        while( *pReadPos != 0 )
         {
-            // The component is already attached
-        }
-    }
+            pReadPos = GetLine( pReadPos, pLine );
+            SplitLine( pLine, pLeft, pRight );
 
-    //-----------------------------------------------------------------------------
-    //  RemoveComponent
-    //  Removes a component from the specified object
-    //-----------------------------------------------------------------------------
-    void CObjectManager::RemoveComponent( uint nObject, eComponentType nType, bool bSave )
-    {
-        CScopedMutex lock( &m_ObjectMutex );
-
-        uint*       pComponentIndices   = m_pComponents[nType]->m_pComponentIndices;
-
-        uint&       nComponentIndex = pComponentIndices[nObject];
-
-        if( nComponentIndex == COMPONENT_FRESH )
-        {
-            // There is no component to remove
-            return;
+            void* p = 0;
+            o.GetProperty( (char*)pLeft, &p );
         }
 
-        if( (nComponentIndex & COMPONENT_REMOVED) && bSave == false )
-        {
-            nComponentIndex &= COMPONENT_RESET_REMOVED;
 
-            // The component has been removed, but we want to nuke the data
-            m_pComponents[nType]->RemoveInactive( nObject );
-
-            nComponentIndex = COMPONENT_FRESH;
-            return;
-        }
-
-        // Remove the component
-        if( bSave )
-        {            
-            m_pComponents[nType]->DetachAndSave( nObject);
-
-            nComponentIndex |= COMPONENT_REMOVED;
-        }
-        else
-        {
-            m_pComponents[nType]->Detach( nObject );
-
-            nComponentIndex = COMPONENT_FRESH;
-        }
+        return nObject;
     }
 
     //-----------------------------------------------------------------------------
     //  DeleteObject
-    //  "Deletes" the object, freeing that slot
+    //  Deletes an object
     //-----------------------------------------------------------------------------
-    void CObjectManager::DeleteObject( uint nObject )
+    void CObjectManager::DeleteObject( uint nIndex )
     {
-        assert( m_nNumFreeSlots < MAX_OBJECTS );
-        assert( nObject < m_nNumObjects );
+        SAFE_DELETE( m_Objects[ nIndex ].m_pData );
 
-        ResetObject( nObject );
+        uint nActive = AtomicDecrement( &m_nNumObjects );
 
-        m_pFreeSlots[ AtomicIncrement(&m_nNumFreeSlots) ] = nObject;
-        --m_nNumObjects;
-    }
-
-    //-----------------------------------------------------------------------------
-    //  ResetObject
-    //  Removes all components and resets the object
-    //-----------------------------------------------------------------------------
-    void CObjectManager::ResetObject( uint nObject )
-    {
-        for( uint i = 0; i < eNUMCOMPONENTS; ++i )
+        for( int i = 0; i <= nActive; ++i )
         {
-            eComponentType nType = (eComponentType)i;
-            RemoveComponent( nObject, nType, false );
+            if( m_nActiveObjects[i] == nIndex )
+            {
+                m_nActiveObjects[i] = m_nActiveObjects[ nActive ];
+            }
         }
+
+        m_nFreeSlots[ AtomicIncrement( &m_nNumFreeSlots ) - 1 ] = nIndex;
     }
 
     //-----------------------------------------------------------------------------
-    //  Accessors/mutators
+    //  LoadObjectDeclaration
+    //  Loads an object declaration from a file
     //-----------------------------------------------------------------------------
-    uint CObjectManager::GetNumObjects( void )
+    void CObjectManager::LoadObjectDeclaration( const char* szFilename )
     {
-        return m_nNumObjects;
-    }
-    
-    //-----------------------------------------------------------------------------
-    //  ProcessComponents
-    //  Updates all the components, then resolves issues
-    //-----------------------------------------------------------------------------
-    void CObjectManager::ProcessComponents( void )
-    {
-#if PARALLEL_UPDATE
-        static CTaskManager* pTaskManager = CTaskManager::GetInstance();
+        static const uint32 nNameHash = StringHash32( "name" );
 
-        // First update the components...
-        task_handle_t nProcessTask = pTaskManager->PushTask( ParallelProcessComponents, this, eNUMCOMPONENTS, 1 );
-        pTaskManager->WaitForCompletion( nProcessTask );
+        byte pData[1024] = { 0 };
+        byte pLine[256] = { 0 };
+        byte pLeft[128] = { 0 };
+        byte pRight[128] = { 0 };
 
-        // ...then resolve any discrepencies and handle messages
-        task_handle_t nMessageTask = pTaskManager->PushTask( ParallelProcessComponentMessages, this, m_nNumMessages, 16 );
-        pTaskManager->WaitForCompletion( nMessageTask );
-        //ParallelProcessComponentMessages( this, 0, 0, m_nNumMessages );
-#else
-        ParallelProcessComponents( this, 0, 0, eNUMCOMPONENTS );
-        ParallelProcessComponentMessages( this, 0, 0, m_nNumMessages );
-#endif
-        m_nNumMessages = 0;
+        byte* pReadPos = pData;
+
+        FILE* f = fopen( szFilename, "rt" );
+
+        fread( pData, sizeof( byte ), 1024, f );
+
+        fclose( f );
+
+        //////////////////////////////////////////
+        // Now start the parsing
+
+        TObjectDefinition& def = m_pObjectTypes[ m_nNumObjectTypes++ ];
+
+        // Get the name
+        pReadPos = GetLine( pReadPos, pLine );
+        SplitLine( pLine, pLeft, pRight );
+        if( StringHash32( (char*)pLeft ) != nNameHash )
+        {
+            ASSERT( false );
+            return;
+        }
+        else
+        {
+            def.nNameHash = StringHash32( (char*)pRight );
+        }
+
+        // Get the rest of the properties
+        while( *pReadPos != 0 )
+        {
+            pReadPos = GetLine( pReadPos, pLine );
+            SplitLine( pLine, pLeft, pRight );
+
+            def.nType[ def.nNumProperties ] = GetDataType( (char*)pLeft );
+            def.nTypeHash[ def.nNumProperties ] = StringHash32( (char*)pRight );
+            def.nNumProperties++;
+        }
+
+        // Done!
     }
 
     void CObjectManager::PipelineObjectUpdate( void* pData, uint nThreadId, uint nStart, uint nCount )
     {
         CObjectManager* pManager = (CObjectManager*)pData;
+        float fDt = Engine::m_fElapsedTime;
 
-        pManager->ProcessComponents();
+        pManager->UpdateObjects( fDt );
     }
 
-    void CObjectManager::ParallelProcessComponents( void* pData, uint nThreadId, uint nStart, uint nCount )
+    //-----------------------------------------------------------------------------
+    //  RegisterFunc
+    //  Registers an object function
+    //-----------------------------------------------------------------------------
+    void CObjectManager::RegisterFunc( const char* szFunc, ObjectFunc* pFunc )
     {
-        CObjectManager* pManager = (CObjectManager*)pData;
+        uint32 nFuncHash = StringHash32( szFunc );
 
-        uint nEnd = nStart + nCount;
-        for( uint i = nStart; i < nEnd; ++i )
+        sint32 nIndex = m_nNumFuncs++;
+
+        m_pFuncNameHashs[ nIndex ] = nFuncHash;
+        m_pFuncs[ nIndex ] = pFunc;
+    }
+
+    //-----------------------------------------------------------------------------
+    //  GetFunction
+    //  Returns the function
+    //-----------------------------------------------------------------------------
+    ObjectFunc* CObjectManager::GetFunction( const char* szFunc )
+    {
+        uint32 nHash = StringHash32( szFunc );
+
+        return GetFunction( nHash );
+    }
+    ObjectFunc* CObjectManager::GetFunction( uint32 nHash )
+    {
+        for( sint i = 0; i < m_nNumFuncs; ++i )
         {
-            pManager->m_pComponents[i]->ProcessComponent();
+            if( m_pFuncNameHashs[i] == nHash )
+                return m_pFuncs[i];
         }
-    }
 
-    void CObjectManager::ParallelProcessComponentMessages( void* pData, uint nThreadId, uint nStart, uint nCount )
-    {
-        CObjectManager* pManager = (CObjectManager*)pData;
-
-        uint nEnd = nStart + nCount;
-        for( uint nMessage = nStart; nMessage < nEnd; ++nMessage )
-        {   // Loop through the messages        
-            pManager->SendMessage( pManager->m_pMessages[ nMessage ] );
-        }
-    }
-
-    //-----------------------------------------------------------------------------
-    //  GetComponentIndex
-    //  Returns the objects index in the specified component
-    //-----------------------------------------------------------------------------
-    uint CObjectManager::GetComponentIndex( uint nObject, eComponentType nType )
-    {
-        return m_pComponentIndices[nType][nObject];
-    }
-
-
-    //-----------------------------------------------------------------------------
-    //  PostMessage
-    //  Posts a message to be processed
-    //-----------------------------------------------------------------------------
-    void CObjectManager::PostMessage( CComponentMessage& msg )
-    {
-        ASSERT( m_nNumMessages < MAX_COMPONENT_MESSAGES );
-
-        sint nIndex = AtomicIncrement( &m_nNumMessages ) - 1;
-        m_pMessages[ nIndex ] = msg;
-    }
-
-    void CObjectManager::PostMessage( eComponentMessageType nType, uint nObject, pvoid pData, eComponentType nOrigin )
-    {
-        //PostMessage( nType, nObject, (nativeuint)pData, nOrigin );
-        ASSERT( m_nNumMessages < MAX_COMPONENT_MESSAGES );
-
-        sint nIndex = AtomicIncrement( &m_nNumMessages ) - 1;
-
-        m_pMessages[ nIndex ].m_pData = pData;
-        m_pMessages[ nIndex ].m_nMessageType = nType;
-        m_pMessages[ nIndex ].m_nTargetObject = nObject;
-        m_pMessages[ nIndex ].m_nOrigin = nOrigin;
-    }
-
-    void CObjectManager::PostMessage( eComponentMessageType nType, uint nObject, nativeuint nData, eComponentType nOrigin )
-    {
-        ASSERT( m_nNumMessages < MAX_COMPONENT_MESSAGES );
-
-        sint nIndex = AtomicIncrement( &m_nNumMessages ) - 1;
-
-        m_pMessages[ nIndex ].m_nData = nData;
-        m_pMessages[ nIndex ].m_nMessageType = nType;
-        m_pMessages[ nIndex ].m_nTargetObject = nObject;
-        m_pMessages[ nIndex ].m_nOrigin = nOrigin;
-    }
-
-
-    //-----------------------------------------------------------------------------
-    //  SendMessage
-    //  Sends the message
-    //-----------------------------------------------------------------------------
-    void CObjectManager::SendMessage( CComponentMessage& msg )
-    {
-        for( sint nComponent = 0; nComponent < eNUMCOMPONENTS; ++nComponent )
-        {
-            if(     m_bRegistered[ msg.m_nMessageType ][ nComponent ] == false
-                ||  msg.m_nOrigin == nComponent )
-            {
-                // This component hasn't registered for this message type
-                // OR this is the originating component
-                continue;
-            }
-
-            uint*   pComponentIndices   = m_pComponents[nComponent]->m_pComponentIndices;
-
-            sint nIndex = pComponentIndices[ msg.m_nTargetObject ] & COMPONENT_RESET_REMOVED;
-
-            if( nIndex != COMPONENT_FRESH )
-            {
-                m_pComponents[ nComponent ]->ReceiveMessage( nIndex, msg );
-            }
-        }
-    }
-
-    void CObjectManager::SendMessage( eComponentMessageType nType, uint nObject, pvoid pData, eComponentType nOrigin )
-    {
-        CComponentMessage msg;
-        
-        msg.m_pData = pData;
-        msg.m_nMessageType = nType;
-        msg.m_nTargetObject = nObject;
-        msg.m_nOrigin = nOrigin;
-
-        SendMessage( msg );
-    }
-
-    void CObjectManager::SendMessage( eComponentMessageType nType, uint nObject, nativeuint nData, eComponentType nOrigin )
-    {
-        CComponentMessage msg;
-
-        msg.m_nData = nData;
-        msg.m_nMessageType = nType;
-        msg.m_nTargetObject = nObject;
-        msg.m_nOrigin = nOrigin;
-
-        SendMessage( msg );
+        ASSERT( 0 );
+        return 0;
     }
 
     //-----------------------------------------------------------------------------
@@ -394,6 +584,23 @@ namespace Riot
             {
                 break;
             }
+        }
+    }
+
+    //-----------------------------------------------------------------------------
+    //  UpdateObjects
+    //  Updates the objects
+    //-----------------------------------------------------------------------------
+    void CObjectManager::UpdateObjects( float fDt )
+    {
+        for( uint i = 0; i < m_nNumObjects; ++i )
+        {
+            m_Objects[ m_nActiveObjects[i] ].Update( fDt );
+        }
+        
+        for( uint i = 0; i < m_nNumObjects; ++i )
+        {
+            m_Objects[ m_nActiveObjects[i] ].Render( fDt );
         }
     }
 

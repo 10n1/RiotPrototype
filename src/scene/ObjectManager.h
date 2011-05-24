@@ -9,13 +9,12 @@ Modified by:    Kyle Weicht
 #ifndef _OBJECTMANAGER_H_
 #define _OBJECTMANAGER_H_
 #include "common.h"
-#include "Component.h"
 #include "IListener.h"
 #include "Thread.h"
+#include "Object.h"
 
 namespace Riot
-{
-
+{    
     class CObjectManager : public IListener
     {
         friend class Engine;
@@ -43,78 +42,53 @@ namespace Riot
         //  CreateObject
         //  Creates a new object and returns its index
         //-----------------------------------------------------------------------------
-        uint CreateObject( void );
-
-        //-----------------------------------------------------------------------------
-        //  AddComponent
-        //  Adds a component to the specified object
-        //-----------------------------------------------------------------------------
-        void AddComponent( uint nObject, eComponentType nType );
-
-        //-----------------------------------------------------------------------------
-        //  RemoveComponent
-        //  Removes a component from the specified object
-        //-----------------------------------------------------------------------------
-        void RemoveComponent( uint nObject, eComponentType nType, bool bSave = true );
-
-        //-----------------------------------------------------------------------------
-        //  ReorderComponent
-        //  Lets the object know it has a new index
-        //-----------------------------------------------------------------------------
-        void ReorderComponent( uint nObject, eComponentType nType, sint nNewIndex );
-
+        uint CreateObject( const char* szName, const char* szType );
+        uint CreateObject( uint32 nNameHash, uint32 nTypeHash );
+        uint CreateObjectFromFile( const char* szFilename );
+        
         //-----------------------------------------------------------------------------
         //  DeleteObject
-        //  "Deletes" the object, freeing that slot
+        //  Deletes an object
         //-----------------------------------------------------------------------------
-        void DeleteObject( uint nObject );
+        void DeleteObject( uint nIndex );
 
         //-----------------------------------------------------------------------------
-        //  ResetObject
-        //  Removes all components and resets the object
+        //  LoadObjectDeclaration
+        //  Loads an object declaration from a file
         //-----------------------------------------------------------------------------
-        void ResetObject( uint nObject );
-
-        //-----------------------------------------------------------------------------
-        //  Accessors/mutators
-        //-----------------------------------------------------------------------------
-        uint GetNumObjects( void );
+        void LoadObjectDeclaration( const char* szFilename );
         
+        //-----------------------------------------------------------------------------
+        //  RegisterFunc
+        //  Registers an object function
+        //-----------------------------------------------------------------------------
+        void RegisterFunc( const char* szFunc, ObjectFunc* pFunc );
+        
+        //-----------------------------------------------------------------------------
+        //  GetObject
+        //  Returns an object
+        //-----------------------------------------------------------------------------
+        inline CObject& GetObject( uint nIndex );
+        
+        //-----------------------------------------------------------------------------
+        //  GetFunction
+        //  Returns the function
+        //-----------------------------------------------------------------------------
+        ObjectFunc* GetFunction( const char* szFunc );
+        ObjectFunc* GetFunction( uint32 nHash );
+           
         //-----------------------------------------------------------------------------
         //  ProcessMessage
         //  Processes the input message
         //-----------------------------------------------------------------------------
         void ProcessMessage( const TMessage& msg );
-        
-        //-----------------------------------------------------------------------------
-        //  ProcessComponents
-        //  Updates all the components, then resolves issues
-        //-----------------------------------------------------------------------------
-        void ProcessComponents( void );
-        
-        //-----------------------------------------------------------------------------
-        //  GetComponentIndex
-        //  Returns the objects index in the specified component
-        //-----------------------------------------------------------------------------
-        uint GetComponentIndex( uint nObject, eComponentType nType );
-
-        //-----------------------------------------------------------------------------
-        //  PostMessage
-        //  Posts a message to be processed
-        //-----------------------------------------------------------------------------
-        void PostMessage( CComponentMessage& msg );
-        void PostMessage( eComponentMessageType nType, uint nObject, pvoid pData, eComponentType nOrigin = eNULLCOMPONENT);
-        void PostMessage( eComponentMessageType nType, uint nObject, nativeuint nData, eComponentType nOrigin = eNULLCOMPONENT );
-
-
-        //-----------------------------------------------------------------------------
-        //  SendMessage
-        //  Sends the message
-        //-----------------------------------------------------------------------------
-        void SendMessage( CComponentMessage& msg );
-        void SendMessage( eComponentMessageType nType, uint nObject, pvoid pData, eComponentType nOrigin = eNULLCOMPONENT );
-        void SendMessage( eComponentMessageType nType, uint nObject, nativeuint nData, eComponentType nOrigin = eNULLCOMPONENT );
                 
+        //-----------------------------------------------------------------------------
+        //  UpdateObjects
+        //  Updates the objects
+        //-----------------------------------------------------------------------------
+        void UpdateObjects( float fDt );
+
     private:
         //-----------------------------------------------------------------------------
         //  Parallel functions
@@ -123,42 +97,37 @@ namespace Riot
         static void ParallelProcessComponents( void* pData, uint nThreadId, uint nStart, uint nCount );
         static void ParallelProcessComponentMessages( void* pData, uint nThreadId, uint nStart, uint nCount );
         static void PipelineObjectUpdate( void* pData, uint nThreadId, uint nStart, uint nCount );
+    
     private:
-        enum 
-        { 
-            COMPONENT_REMOVED       = 0x80000000,
-            COMPONENT_RESET_REMOVED = 0x7FFFFFFF,
-            COMPONENT_FRESH         = 0x40000000,
-
-            MAX_COMPONENT_MESSAGES  = MAX_OBJECTS * eNUMCOMPONENTS,
-        };
         /***************************************\
         | class members                         |
         \***************************************/
         static const MessageType    MessagesReceived[];
         static const uint           NumMessagesReceived;
 
-        // These two arrays are functionally identical and store the
-        //  same data. The ObjectIndices array is solely for human
-        //  readability. Every object is contiguous, wheras the
-        //  ComponentIndices array is laid out for Components
-        uint        m_pObjectIndices[eNUMCOMPONENTS][MAX_OBJECTS];
-        uint        m_pComponentIndices[eNUMCOMPONENTS][MAX_OBJECTS];
+        CObject             m_Objects[MAX_OBJECTS];
+        uint32              m_nFreeSlots[ MAX_OBJECTS ];
+        uint32              m_nActiveObjects[ MAX_OBJECTS ];
 
-        IComponent* m_pComponents[eNUMCOMPONENTS];
+        TObjectDefinition   m_pObjectTypes[ 128 ];
+        uint32              m_nNumObjectTypes;
+        uint32              m_pFuncNameHashs[ 128 ];
+        ObjectFunc*         m_pFuncs[ 128 ];
+        uint32              m_nNumFuncs;
 
-        CComponentMessage   m_pMessages[MAX_COMPONENT_MESSAGES];
+        atomic_t            m_nNumObjects;
+        sint32              m_nNumFreeSlots;
 
-        bool                m_bRegistered[eNUMCOMPONENTMESSAGES][eNUMCOMPONENTS];
-
-        uint        m_pFreeSlots[MAX_OBJECTS];
-
-        CMutex      m_ObjectMutex;
-
-        atomic_t    m_nNumFreeSlots;
-        atomic_t    m_nNumObjects;
-        atomic_t    m_nNumMessages;
     };
+
+    //-----------------------------------------------------------------------------
+    //  GetObject
+    //  Returns an object
+    //-----------------------------------------------------------------------------
+    CObject& CObjectManager::GetObject( uint nIndex )
+    {
+        return m_Objects[ nIndex ];
+    }
 
 } // namespace Riot
 
