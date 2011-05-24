@@ -427,14 +427,14 @@ namespace Riot
         CObject o;
         o.CreateObjectOfType( "testObject1", "baseObject" );
 
-        RVector3* vTemp1;
-        RVector3* vTemp2;
+        RVector3  vAcc = RVector3( 0.0f, -9.8f, 0.0f );
+        RVector3* vPos;
+        RVector3* vVel;
 
-        o.GetProperty( "position", (void**)&vTemp1 );
+        o.GetProperty( "position", (void**)&vPos );
+        o.GetProperty( "velocity", (void**)&vVel );
 
-        vTemp1->x = 10.0f;
-
-        o.GetProperty( "position", (void**)&vTemp2 );
+        IntegrateDynamics( vPos, vVel, &vAcc, m_fElapsedTime );
 
         // Finally reset the timer
         m_MainTimer.Reset();

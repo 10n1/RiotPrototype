@@ -414,5 +414,31 @@ namespace Riot
         ASSERT( 0 );
     }
 
+    void IntegrateDynamics( RVector3* pos, RVector3* vel, RVector3* acc, float dt )
+    {
+        RVector3 pos0 = *pos;
+        RVector3 vel0 = *vel;
+        RVector3 acc0 = *acc;
+        RVector3 vel05;
+        RVector3 pos1;
+        RVector3 vel1;
+        RVector3 acc1;
+
+        //  1. Calcualte new position
+        pos1    = pos0 + vel0*dt + (0.5f * acc0 * Square(dt));
+
+        //  2. Calculate 1/2 of the new velocity
+        vel05   = vel0 + 0.5f * acc0 * dt;
+
+        //  3. Calculate the new acceleration
+        acc1    = acc0; // force / m;
+
+        //  4. Calculate the other half of the new velocity
+        vel1    = vel05 + 0.5 * acc1 * dt;
+
+        *pos = pos1;
+        *vel = vel1;
+        *acc = acc1;
+    }
 
 } // namespace Riot

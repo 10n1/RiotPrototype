@@ -81,7 +81,7 @@ namespace Riot
         sint32  m_nNameHash;
     };
 
-
+    void IntegrateDynamics( RVector3* pos, RVector3* vel, RVector3* acc, float dt );
 }
 
 #endif // #ifndef _OBJECT_H_
