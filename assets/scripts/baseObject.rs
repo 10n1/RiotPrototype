@@ -1,4 +1,4 @@
-name			simpleRigidBody
+name			baseObject
 float3			position
 float3			velocity
 float3			acceleration

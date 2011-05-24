@@ -422,8 +422,19 @@ namespace Riot
 
         //////////////////////////////////////////
         // Create an object
+        CObject::CreateObjectTemplate( "assets/scripts/baseobject.rs" );
+
         CObject o;
-        o.CreateObjectTemplate( "assets/scripts/baseobject.rs" );
+        o.CreateObjectOfType( "testObject1", "baseObject" );
+
+        RVector3* vTemp1;
+        RVector3* vTemp2;
+
+        o.GetProperty( "position", (void**)&vTemp1 );
+
+        vTemp1->x = 10.0f;
+
+        o.GetProperty( "position", (void**)&vTemp2 );
 
         // Finally reset the timer
         m_MainTimer.Reset();

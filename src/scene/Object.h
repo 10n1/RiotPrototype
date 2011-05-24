@@ -27,8 +27,9 @@ namespace Riot
     template<class T>
     struct Data
     {
-        DataType    nType;
         uint32      nNameHash;
+        DataType    nType:24;
+        uint32      nOffset:8;
         T           data;
     };
 
@@ -39,6 +40,14 @@ namespace Riot
     typedef Data<sint32>    DataMesh;
     typedef Data<sint32>    DataTexture;
     typedef Data<sint32>    DataMaterial;
+
+    struct TObjectDefinition
+    {
+        DataType    nType[ 128 ];
+        uint32      nTypeHash[ 128 ];
+        uint32      nNameHash;
+        uint32      nNumProperties;
+    };
 
     class CObject
     {
@@ -52,12 +61,21 @@ namespace Riot
         | class methods                         |
         \***************************************/
 
-        void CreateObjectTemplate( const char* szFilename );
+        static void CreateObjectTemplate( const char* szFilename );
+
+        void CreateObjectFromFile( const char* szFilename );
+
+        void CreateObjectOfType( const char* szName, const char* szType );
+
+        void GetProperty( const char* szProp, void** pData );
 
     private:
         /***************************************\
         | class members                         |
         \***************************************/
+        static TObjectDefinition    m_pObjectTypes[ 128 ];
+        static uint32               m_nNumObjectTypes;
+
         void*   m_pData;
         sint32  m_nNumProperties;
         sint32  m_nNameHash;
