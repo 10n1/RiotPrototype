@@ -719,7 +719,7 @@ namespace Riot
         {
             //if( m_Pairs[i].nCount == 3 )
             {
-                Engine::GetObjectManager()->PostMessage( eComponentMessageObjectCollision, m_pObjectIndices[ m_Pairs[i].nObject0 ], m_Pairs[i].nObject1, ComponentType );
+                //Engine::GetObjectManager()->PostMessage( eComponentMessageObjectCollision, m_pObjectIndices[ m_Pairs[i].nObject0 ], m_Pairs[i].nObject1, ComponentType );
             }
         }
 
@@ -750,7 +750,7 @@ namespace Riot
             if( pComponent->m_pTerrain->SphereTerrainCollision( pComponent->m_Volume[i] ) )
             {
                 int x = 0;
-                pManager->PostMessage( eComponentMessageTerrainCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
+                //pManager->PostMessage( eComponentMessageTerrainCollision, pComponent->m_pObjectIndices[ i ], x, pComponent->ComponentType );
             }
         }
     }

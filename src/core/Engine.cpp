@@ -326,8 +326,8 @@ namespace Riot
 
         //////////////////////////////////////////
         // Create an object
-        m_pObjectManager->RegisterFunc( "IntegrateDynamics", IntegrateDynamics );
-        m_pObjectManager->RegisterFunc( "NormalRender", NormalRender );
+        m_pObjectManager->LoadObjectDeclaration( "assets/scripts/renderable.rs" );
+        m_pObjectManager->LoadObjectDeclaration( "assets/scripts/rigidbody.rs" );
         m_pObjectManager->LoadObjectDeclaration( "assets/scripts/baseobject.rs" );
 
         uint nObj = m_pObjectManager->CreateObject( 0, "baseObject" );

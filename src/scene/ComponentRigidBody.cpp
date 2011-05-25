@@ -197,7 +197,7 @@ namespace Riot
                 pComponent->m_Transform[i].position = pos1;
                 pComponent->m_vVelocity[i] = vel1;
 
-                pManager->PostMessage( eComponentMessageTransform, pComponent->m_pObjectIndices[ i ], &pComponent->m_Transform[i], ComponentType );
+                //pManager->PostMessage( eComponentMessageTransform, pComponent->m_pObjectIndices[ i ], &pComponent->m_Transform[i], ComponentType );
 
                 pRenderer->DrawDebugRay( pos1, vel1 );
             }

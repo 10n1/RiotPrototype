@@ -98,10 +98,7 @@ namespace Riot
     {
         Memset( m_Objects, 0, sizeof( m_Objects ) );
         Memset( m_pObjectTypes, 0, sizeof( m_pObjectTypes ) );
-        Memset( m_pFuncs, 0, sizeof( m_pFuncs ) );
-        Memset( m_pFuncNameHashs, 0, sizeof( m_pFuncNameHashs ) );
         m_nNumObjectTypes = 0;
-        m_nNumFuncs = 0;
 
         m_nNumObjects = 0;
 
@@ -155,15 +152,11 @@ namespace Riot
     }
     uint CObjectManager::CreateObject( uint32 nNameHash, uint32 nTypeHash )
     {        
-        static const RVector3       defaultVector3 = RVector3Zero();
+        static const RVector3       defaultFloat3 = RVector3Zero();
         static const sint32         defaultInt = 0;
         static const float          defaultFloat = 0.0f;
         static const bool           defaultBool = false;
-        static const sint32         defaultMesh = 0;
-        static const sint32         defaultTexture = 0;
-        static const sint32         defaultMaterial = 0;
-        static const ObjectFunc*    defaultFunc = NULL;
-        static const RTransform     defaultTransform = RTransform();
+        static const RQuaternion    defaultQuaternion = RQuaternionZero();
 
         sint nObjectIndex = AtomicIncrement( &m_nNumObjects ) - 1;
         sint nFreeIndex = m_nFreeSlots[ AtomicDecrement( &m_nNumFreeSlots ) ];
@@ -194,38 +187,7 @@ namespace Riot
         sint32 nSize = 0;
         for( uint i = 0; i < m_pObjectTypes[ nType ].nNumProperties; ++i )
         {
-            switch( m_pObjectTypes[nType].nType[i] )
-            {
-            case eTypeVector3:
-                nSize += sizeof( DataVector3 );
-                break;
-            case eTypeInt:
-                nSize += sizeof( DataInt );
-                break;
-            case eTypeFloat:
-                nSize += sizeof( DataFloat );
-                break;
-            case eTypeBool:
-                nSize += sizeof( DataBool );
-                break;
-            case eTypeMesh:
-                nSize += sizeof( DataMesh );
-                break;
-            case eTypeMaterial:
-                nSize += sizeof( DataMaterial );
-                break;
-            case eTypeTexture:
-                nSize += sizeof( DataTexture );
-                break;
-            case eTypeTransform:
-                nSize += sizeof( DataTransform );
-                break;
-            case eTypeNull:
-                continue;
-            default:
-                ASSERT( 0 );
-                break;
-            }
+            nSize += GetSizeOfType( m_pObjectTypes[nType].nType[i] );
         }
 
         o.m_pData = new byte[ nSize ];
@@ -236,16 +198,17 @@ namespace Riot
         byte* pData = (byte*)o.m_pData;
         for( uint i = 0; i < o.m_nNumProperties; ++i )
         {
-            switch( m_pObjectTypes[nType].nType[i] )
+            DataType dt = GetDataType( m_pObjectTypes[nType].nType[i] );
+            switch( dt )
             {
-            case eTypeVector3:
+            case eTypeFloat3:
                 {
-                    DataVector3* p = (DataVector3*)pData;
-                    p->nType = eTypeVector3;
+                    DataFloat3* p = (DataFloat3*)pData;
+                    p->nType = eTypeFloat3;
                     p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
-                    p->data = defaultVector3;
+                    p->data = defaultFloat3;
                     
-                    sint nSize = sizeof( DataVector3 );
+                    sint nSize = sizeof( DataFloat3 );
                     pData += nSize;
                     p->nOffset = nSize;
                     break;
@@ -283,50 +246,17 @@ namespace Riot
                     p->nOffset = nSize;
                     break;
                 }
-            case eTypeMesh:
+            case eTypeQuaternion:
                 {
-                    DataMesh* p = (DataMesh*)pData;
-                    p->nType = eTypeMesh;
+                    DataQuaternion* p = (DataQuaternion*)pData;
+                    p->nType = eTypeQuaternion;
                     p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
-                    p->data = defaultMesh;
-                    sint nSize = sizeof( DataMesh );
-                    pData += nSize;
-                    p->nOffset = nSize;
-                    break;
-                }
-            case eTypeMaterial:
-                {
-                    DataMaterial* p = (DataMaterial*)pData;
-                    p->nType = eTypeMaterial;
-                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
-                    p->data = defaultMaterial;
-                    sint nSize = sizeof( DataMaterial );
-                    pData += nSize;
-                    p->nOffset = nSize;
-                    break;
-                }
-            case eTypeTexture:
-                {
-                    DataTexture* p = (DataTexture*)pData;
-                    p->nType = eTypeTexture;
-                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
-                    p->data = defaultTexture;
-                    sint nSize = sizeof( DataTexture );
+                    p->data = defaultQuaternion;
 
+                    sint nSize = sizeof( DataQuaternion );
                     pData += nSize;
                     p->nOffset = nSize;
-                    break;
-                }
-            case eTypeTransform:
-                {
-                    DataTransform* p = (DataTransform*)pData;
-                    p->nType = eTypeTexture;
-                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
-                    p->data = defaultTransform;
 
-                    sint nSize = sizeof( DataTransform );
-                    pData += nSize;
-                    p->nOffset = nSize;
                     break;
                 }
             case eTypeNull:
@@ -445,7 +375,6 @@ namespace Riot
 
         //////////////////////////////////////////
         // Now start the parsing
-
         TObjectDefinition& def = m_pObjectTypes[ m_nNumObjectTypes++ ];
 
         // Get the name
@@ -456,10 +385,7 @@ namespace Riot
             ASSERT( false );
             return;
         }
-        else
-        {
-            def.nNameHash = StringHash32( (char*)pRight );
-        }
+        def.nNameHash = StringHash32( (char*)pRight );
 
         // Get the rest of the properties
         while( *pReadPos != 0 )
@@ -467,9 +393,13 @@ namespace Riot
             pReadPos = GetLine( pReadPos, pLine );
             SplitLine( pLine, pLeft, pRight );
 
-            def.nType[ def.nNumProperties ] = GetDataType( (char*)pLeft );
-            def.nTypeHash[ def.nNumProperties ] = StringHash32( (char*)pRight );
-            def.nNumProperties++;
+            //def.nType[ def.nNumProperties ] = StringHash32( (char*)pLeft );
+            //def.nTypeHash[ def.nNumProperties ] = StringHash32( (char*)pRight );
+            //def.nNumProperties++;
+
+            uint32 nTypeHash = StringHash32( (char*)pLeft );
+            uint32 nNameHash = StringHash32( (char*)pRight );
+            AddPropertyToDefinition( def, nTypeHash, nNameHash );
         }
 
         // Done!
@@ -481,42 +411,6 @@ namespace Riot
         float fDt = Engine::m_fElapsedTime;
 
         pManager->UpdateObjects( fDt );
-    }
-
-    //-----------------------------------------------------------------------------
-    //  RegisterFunc
-    //  Registers an object function
-    //-----------------------------------------------------------------------------
-    void CObjectManager::RegisterFunc( const char* szFunc, ObjectFunc* pFunc )
-    {
-        uint32 nFuncHash = StringHash32( szFunc );
-
-        sint32 nIndex = m_nNumFuncs++;
-
-        m_pFuncNameHashs[ nIndex ] = nFuncHash;
-        m_pFuncs[ nIndex ] = pFunc;
-    }
-
-    //-----------------------------------------------------------------------------
-    //  GetFunction
-    //  Returns the function
-    //-----------------------------------------------------------------------------
-    ObjectFunc* CObjectManager::GetFunction( const char* szFunc )
-    {
-        uint32 nHash = StringHash32( szFunc );
-
-        return GetFunction( nHash );
-    }
-    ObjectFunc* CObjectManager::GetFunction( uint32 nHash )
-    {
-        for( sint i = 0; i < m_nNumFuncs; ++i )
-        {
-            if( m_pFuncNameHashs[i] == nHash )
-                return m_pFuncs[i];
-        }
-
-        ASSERT( 0 );
-        return 0;
     }
 
     //-----------------------------------------------------------------------------
@@ -540,6 +434,68 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CObjectManager::UpdateObjects( float fDt )
     {
+    }
+
+    void CObjectManager::AddPropertyToDefinition( TObjectDefinition& def, uint32 nTypeHash, uint32 nNameHash )
+    {
+        DataType nType = GetDataType( nTypeHash );
+        if( nType != eTypeNull )
+        {   
+            bool bFound = false;
+            for( uint i = 0; i < def.nNumProperties; ++i )
+            {
+                if( def.nTypeHash[i] == nNameHash )
+                {
+                    return;
+                }
+            }
+
+            def.nType[ def.nNumProperties ] = nTypeHash;
+            def.nTypeHash[ def.nNumProperties ] = nNameHash;
+            def.nNumProperties++;
+        }
+        else
+        {
+            for( uint i = 0; i < m_nNumObjectTypes; ++i )
+            {
+                if( m_pObjectTypes[i].nNameHash == nTypeHash )
+                {
+                    for( uint j = 0; j < m_pObjectTypes[i].nNumProperties; ++j )
+                    {
+                        AddPropertyToDefinition( def, m_pObjectTypes[i].nType[j], m_pObjectTypes[i].nTypeHash[j] );
+                    }
+                    return;
+                }
+            }
+        }
+    }
+
+    //-----------------------------------------------------------------------------
+    //  GetSizeOfType
+    //  Returns the size of the type
+    //-----------------------------------------------------------------------------
+    uint CObjectManager::GetSizeOfType( uint32 nTypeHash )
+    {
+        switch( GetDataType( nTypeHash ) )
+        {
+        case eTypeFloat3:
+            return sizeof( DataFloat3 );
+        case eTypeInt:
+            return sizeof( DataInt );
+        case eTypeFloat:
+            return sizeof( DataFloat );
+        case eTypeBool:
+            return sizeof( DataBool );
+        case eTypeQuaternion:
+            return sizeof( DataQuaternion );
+        case eTypeNull:
+            return 0;
+        default:
+            ASSERT( 0 );
+            break;
+        }
+
+        return 0;
     }
 
 } // namespace Riot

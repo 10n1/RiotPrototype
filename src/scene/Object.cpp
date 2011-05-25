@@ -10,13 +10,6 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
-
-    TObjectDefinition    CObject::m_pObjectTypes[ 128 ] = { eTypeNull };
-    uint32               CObject::m_nNumObjectTypes = 0;
-    uint32               CObject::m_pFuncNameHashs[ 128 ] = { 0 };
-    ObjectFunc*          CObject::m_pFuncs[ 128 ] = { NULL };
-    uint32               CObject::m_nNumFuncs = 0;
-
     inline byte* GetLine( byte* pIn, byte* pOut )
     {
         while( *pIn != 10 && *pIn != 0 )
@@ -127,17 +120,17 @@ namespace Riot
         //////////////////////////////////////////
         // Find the correct type
         uint i;
-        for( i = 0; i < m_nNumObjectTypes; ++i )
-        {
-            if( m_pObjectTypes[i].nNameHash == nType )
-                break;
-        }
-
-        if( i == m_nNumObjectTypes )
-        {
-            // We're trying to use an undefined type
-            ASSERT( 0 );
-        }
+        //for( i = 0; i < m_nNumObjectTypes; ++i )
+        //{
+        //    if( m_pObjectTypes[i].nNameHash == nType )
+        //        break;
+        //}
+        //
+        //if( i == m_nNumObjectTypes )
+        //{
+        //    // We're trying to use an undefined type
+        //    ASSERT( 0 );
+        //}
     }
 
     void CObject::GetProperty( const char* szProp, void** pData )

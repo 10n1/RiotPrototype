@@ -59,23 +59,10 @@ namespace Riot
         void LoadObjectDeclaration( const char* szFilename );
         
         //-----------------------------------------------------------------------------
-        //  RegisterFunc
-        //  Registers an object function
-        //-----------------------------------------------------------------------------
-        void RegisterFunc( const char* szFunc, ObjectFunc* pFunc );
-        
-        //-----------------------------------------------------------------------------
         //  GetObject
         //  Returns an object
         //-----------------------------------------------------------------------------
         inline CObject& GetObject( uint nIndex );
-        
-        //-----------------------------------------------------------------------------
-        //  GetFunction
-        //  Returns the function
-        //-----------------------------------------------------------------------------
-        ObjectFunc* GetFunction( const char* szFunc );
-        ObjectFunc* GetFunction( uint32 nHash );
            
         //-----------------------------------------------------------------------------
         //  ProcessMessage
@@ -88,6 +75,12 @@ namespace Riot
         //  Updates the objects
         //-----------------------------------------------------------------------------
         void UpdateObjects( float fDt );
+        
+        //-----------------------------------------------------------------------------
+        //  GetSizeOfType
+        //  Returns the size of the type
+        //-----------------------------------------------------------------------------
+        uint GetSizeOfType( uint32 nTypeHash );
 
     private:
         //-----------------------------------------------------------------------------
@@ -97,6 +90,8 @@ namespace Riot
         static void ParallelProcessComponents( void* pData, uint nThreadId, uint nStart, uint nCount );
         static void ParallelProcessComponentMessages( void* pData, uint nThreadId, uint nStart, uint nCount );
         static void PipelineObjectUpdate( void* pData, uint nThreadId, uint nStart, uint nCount );
+
+        void AddPropertyToDefinition( TObjectDefinition& def, uint32 nTypeHash, uint32 nNameHash );
     
     private:
         /***************************************\
@@ -111,9 +106,6 @@ namespace Riot
 
         TObjectDefinition   m_pObjectTypes[ 128 ];
         uint32              m_nNumObjectTypes;
-        uint32              m_pFuncNameHashs[ 128 ];
-        ObjectFunc*         m_pFuncs[ 128 ];
-        uint32              m_nNumFuncs;
 
         atomic_t            m_nNumObjects;
         sint32              m_nNumFreeSlots;
