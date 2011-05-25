@@ -5,3 +5,4 @@ int		    mesh
 int         diffuse
 int         normal
 int         material
+system		render

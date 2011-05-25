@@ -21,6 +21,9 @@ Modified by:    Kyle Weicht
 #include "Console.h"
 #include "Character.h"
 #include "object.h"
+#include "rendersystem.h"
+#include "collisionsystem.h"
+#include "physicssystem.h"
 
 #include <stdio.h> // included for printf
 
@@ -113,6 +116,9 @@ namespace Riot
 #endif // #if PIPELINED_RENDER
 
             m_pRenderer->AddPointLight( RVector3( 0.0f, 200.0f, 0.0f ), RVector3( 1.0f, 1.0f, 1.0f ), 2000.0f );
+
+            CRenderSystem::ProcessObjects();
+            CPhysicsSystem::ProcessObjects();
 
             //////////////////////////////////////////
             // Render
@@ -332,6 +338,8 @@ namespace Riot
 
         uint nObj = m_pObjectManager->CreateObject( 0, "baseObject" );
 
+        RVector3* v;
+
         sint* nMesh;
         sint* nTexture;
         CObject& o = m_pObjectManager->GetObject( nObj );
@@ -341,6 +349,11 @@ namespace Riot
 
         *nMesh = m_pRenderer->CreateMesh();
         *nTexture = 0;
+
+        o.GetProperty( "position", (void**)&v );
+        *v = RVector3( 0.0f, 200.0f, 0.0f );
+        o.GetProperty( "acceleration", (void**)&v );
+        *v = RVector3( 0.0f, -9.8f, 0.0f );
 
         // Finally reset the timer
         m_MainTimer.Reset();

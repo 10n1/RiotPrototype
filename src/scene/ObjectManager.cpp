@@ -9,6 +9,9 @@ Modified by:    Kyle Weicht
 #include "ObjectManager.h"
 #include "Engine.h"
 #include "TaskManager.h"
+#include "RenderSystem.h"
+#include "CollisionSystem.h"
+#include "PhysicsSystem.h"
 
 namespace Riot
 {
@@ -182,30 +185,32 @@ namespace Riot
             ASSERT( 0 );
         }
 
+        TObjectDefinition& def = m_pObjectTypes[ nType ];
+
         //////////////////////////////////////////
         // Count up the size
         sint32 nSize = 0;
-        for( uint i = 0; i < m_pObjectTypes[ nType ].nNumProperties; ++i )
+        for( uint i = 0; i < def.nNumProperties; ++i )
         {
-            nSize += GetSizeOfType( m_pObjectTypes[nType].nType[i] );
+            nSize += GetSizeOfType( def.nType[i] );
         }
 
         o.m_pData = new byte[ nSize ];
-        o.m_nNumProperties = m_pObjectTypes[ nType ].nNumProperties;
+        o.m_nNumProperties = def.nNumProperties;
 
         //////////////////////////////////////////
         // Now fill the data with the default values
         byte* pData = (byte*)o.m_pData;
         for( uint i = 0; i < o.m_nNumProperties; ++i )
         {
-            eDataType dt = GetDataType( m_pObjectTypes[nType].nType[i] );
+            eDataType dt = GetDataType( def.nType[i] );
             switch( dt )
             {
             case eTypeFloat3:
                 {
                     DataFloat3* p = (DataFloat3*)pData;
                     p->nType = eTypeFloat3;
-                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->nNameHash = def.nTypeHash[i];
                     p->data = defaultFloat3;
                     
                     sint nSize = sizeof( DataFloat3 );
@@ -217,7 +222,7 @@ namespace Riot
                 {
                     DataInt* p = (DataInt*)pData;
                     p->nType = eTypeInt;
-                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->nNameHash = def.nTypeHash[i];
                     p->data = defaultInt;
                     sint nSize = sizeof( DataInt );
                     pData += nSize;
@@ -228,7 +233,7 @@ namespace Riot
                 {
                     DataFloat* p = (DataFloat*)pData;
                     p->nType = eTypeFloat;
-                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->nNameHash = def.nTypeHash[i];
                     p->data = defaultFloat;
                     sint nSize = sizeof( DataFloat );
                     pData += nSize;
@@ -239,7 +244,7 @@ namespace Riot
                 {
                     DataBool* p = (DataBool*)pData;
                     p->nType = eTypeBool;
-                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->nNameHash = def.nTypeHash[i];
                     p->data = defaultBool;
                     sint nSize = sizeof( DataBool );
                     pData += nSize;
@@ -250,7 +255,7 @@ namespace Riot
                 {
                     DataQuaternion* p = (DataQuaternion*)pData;
                     p->nType = eTypeQuaternion;
-                    p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
+                    p->nNameHash = def.nTypeHash[i];
                     p->data = defaultQuaternion;
 
                     sint nSize = sizeof( DataQuaternion );
@@ -266,6 +271,10 @@ namespace Riot
                 break;
             }
         }
+
+        if( def.nSystems & eSystemPhysics ) CPhysicsSystem::AddObject( &o );
+        if( def.nSystems & eSystemRender ) CRenderSystem::AddObject( &o );
+        if( def.nSystems & eSystemCollision ) CCollisionSystem::AddObject( &o );
 
         return nObjectIndex;
     }
@@ -439,7 +448,28 @@ namespace Riot
     void CObjectManager::AddPropertyToDefinition( TObjectDefinition& def, uint32 nTypeHash, uint32 nNameHash )
     {
         eDataType nType = GetDataType( nTypeHash );
-        if( nType != eTypeNull )
+        if( nType == eTypeSystem )
+        {
+            static const uint32 nPhysicsHash = StringHash32( "physics" );
+            static const uint32 nRenderHash = StringHash32( "render" );
+            static const uint32 nCollisionHash = StringHash32( "collision" );
+
+            if( nNameHash == nPhysicsHash )
+            {
+                def.nSystems |= eSystemPhysics;
+                def.nSystems |= eSystemCollision;
+            }
+            else if( nNameHash == nRenderHash ) 
+            {
+                def.nSystems |= eSystemRender;
+                def.nSystems |= eSystemCollision;
+            }
+            else if( nNameHash == nCollisionHash ) 
+            {
+                def.nSystems |= eSystemCollision;
+            }
+        }
+        else if( nType != eTypeNull )
         {   
             bool bFound = false;
             for( uint i = 0; i < def.nNumProperties; ++i )
@@ -464,6 +494,7 @@ namespace Riot
                     {
                         AddPropertyToDefinition( def, m_pObjectTypes[i].nType[j], m_pObjectTypes[i].nTypeHash[j] );
                     }
+                    def.nSystems |= m_pObjectTypes[i].nSystems;
                     return;
                 }
             }
@@ -488,6 +519,8 @@ namespace Riot
             return sizeof( DataBool );
         case eTypeQuaternion:
             return sizeof( DataQuaternion );
+        case eTypeSystem:
+            return 0;
         case eTypeNull:
             return 0;
         default:

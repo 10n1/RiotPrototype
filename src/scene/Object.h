@@ -22,6 +22,7 @@ namespace Riot
         eTypeFloat,
         eTypeBool,
         eTypeQuaternion,
+        eTypeSystem,
     };
 
     enum eControllerSystems
@@ -96,6 +97,7 @@ namespace Riot
         static const uint32 nIntHash = StringHash32( "int" );
         static const uint32 nFloatHash = StringHash32( "float" );
         static const uint32 nQuaternionHash = StringHash32( "quaternion" );
+        static const uint32 nSystemHash = StringHash32( "system" );
 
         if( nTypeHash == nFloat3Hash )
         {
@@ -116,6 +118,10 @@ namespace Riot
         if( nTypeHash == nQuaternionHash )
         {
             return eTypeQuaternion;
+        }
+        if( nTypeHash == nSystemHash )
+        {
+            return eTypeSystem;
         }
 
         //ASSERT( 0 );

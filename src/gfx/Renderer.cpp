@@ -58,6 +58,7 @@ namespace Riot
         m_nTexture = 0;
         m_nTransparant = 0;
         m_nMesh = 0;
+        m_nInstanceCount = 0;
 
         m_fDepth = 0.0f;
     }
