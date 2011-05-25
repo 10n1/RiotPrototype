@@ -32,10 +32,10 @@ enum { GLOBAL_MEMORY_ALLOCATION = 1024*1024*1024 };
 static const byte* AllocateGlobalMemory( void );
 
 static const byte*  gs_pGlobalPool      = AllocateGlobalMemory();
-static volatile byte*   gs_pCurrAlloc       = (byte*)gs_pGlobalPool;
-static volatile byte*   gs_pPrevAlloc       = NULL;
-static atomic_t   gs_nPrevAllocSize   = 0;
-static atomic_t   gs_nActiveMemory    = 0;
+static volatile byte*   gs_pCurrAlloc   = (byte*)gs_pGlobalPool;
+static volatile byte*   gs_pPrevAlloc   = NULL;
+static atomic_t   gs_nPrevAllocSize     = 0;
+static atomic_t   gs_nActiveMemory      = 0;
 
 #ifdef DEBUG
 void AddAllocation(void* pData, uint nSize, const char* szFile, uint nLine);
@@ -67,7 +67,6 @@ size_t RoundUp( size_t nSize )
 static const byte* AllocateGlobalMemory( void )
 {
     byte* pAlloc = (byte*)_mm_malloc(GLOBAL_MEMORY_ALLOCATION, 32);
-    gs_pGlobalPool = pAlloc;
     return pAlloc;
 }
 
@@ -111,7 +110,7 @@ void* __cdecl operator new(size_t nSize, const char* szFile, unsigned int nLine)
 
     // Increment the counters
     AtomicAdd( &gs_nActiveMemory, nSize );
-    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<sint>(&pNewAlloc) );
+    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<sint64>(&pNewAlloc) );
     AtomicExchange( &gs_nPrevAllocSize, nSize );
 
     AddAllocation( pNewAlloc, (uint)nSize, szFile, nLine );
@@ -140,7 +139,7 @@ void* __cdecl operator new[](size_t nSize, const char* szFile, unsigned int nLin
 
     // Increment the counters
     AtomicAdd( &gs_nActiveMemory, nSize );
-    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<sint>(pNewAlloc) );
+    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<sint64>(pNewAlloc) );
     AtomicExchange( &gs_nPrevAllocSize, nSize );
 
     AddAllocation( pNewAlloc, (uint)nSize, szFile, nLine );

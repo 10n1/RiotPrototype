@@ -24,17 +24,16 @@ namespace Riot
     GFX_FORMAT GFX_FORMAT_UINT16        = 0x2;
     GFX_FORMAT GFX_FORMAT_UINT32        = 0x3;
     GFX_FORMAT GFX_FORMAT_FLOAT2        = 0x4;
-
-    const uint GFX_FORMAT_FLOAT3_SIZE   = sizeof( RVector3 );
-    const uint GFX_FORMAT_UINT16_SIZE   = sizeof( uint16 );
-    const uint GFX_FORMAT_UINT32_SIZE   = sizeof( uint32 );
+    GFX_FORMAT GFX_FORMAT_BYTE4         = 0x5;
     //-----------------------------------------------------------------------------
     GFX_SEMANTIC GFX_SEMANTIC_POSITION  = "vPosition";
     GFX_SEMANTIC GFX_SEMANTIC_NORMAL    = "vNormal";
     GFX_SEMANTIC GFX_SEMANTIC_TEXCOORD  = "vTexCoord";
     GFX_SEMANTIC GFX_SEMANTIC_COLOR     = "vColor";
+    GFX_SEMANTIC GFX_SEMANTIC_TRANSFORM = "Transform";
     //-----------------------------------------------------------------------------
-    GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_TRIANGLELIST   = GL_TRIANGLE_STRIP;
+    GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_TRIANGLELIST   = GL_TRIANGLE_STRIP;;
+    GFX_PRIMITIVE_TYPE GFX_PRIMITIVE_LINELIST       = GL_LINE_STRIP;
     //-----------------------------------------------------------------------------
     GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_NEAREST   = 0x1;
     GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_LINEAR    = 0x2;
@@ -45,6 +44,9 @@ namespace Riot
     GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DEFAULT    = 0x1;
     GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DYNAMIC    = 0x2;
     GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_IMMUTABLE  = 0x3;
+    //-----------------------------------------------------------------------------
+    GFX_INPUT_DATA  GFX_INPUT_DATA_PER_VERTEX   = 0x0;
+    GFX_INPUT_DATA  GFX_INPUT_DATA_PER_INSTANCE = 0x1;
     //-----------------------------------------------------------------------------
 
     using namespace SystemOpenGL;
@@ -124,6 +126,10 @@ namespace Riot
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );   
         GLenum nError = glGetError();
     }
+    void COGLDevice::ClearRenderTarget( IGfxRenderTarget* pRT )
+    {
+        
+    }
 
     void COGLDevice::Present( void )
     {
@@ -135,6 +141,14 @@ namespace Riot
     //
     void COGLDevice::SetFillMode( GFX_FILL_MODE nFill )
     {
+    }
+    void COGLDevice::SetDepthTest( bool bTest, bool bWrite )
+    {
+        
+    }
+    void COGLDevice::SetColorWrite( bool bEnable )
+    {
+        
     }
     //
 
@@ -176,6 +190,12 @@ namespace Riot
 
             ASSERT( 0 );
         }
+    }
+    IGfxRenderTarget* COGLDevice::CreateRenderTarget( GFX_FORMAT nFormat, uint nWidth, uint nHeight )
+    {
+        COGLRenderTarget* pRT = new COGLRenderTarget;
+        
+        return pRT;
     }
     //
     
@@ -221,6 +241,10 @@ namespace Riot
     void COGLDevice::UpdateBuffer( IGfxBuffer* pBuffer, void* pData )
     {
     }
+    void COGLDevice::UpdateBuffer( IGfxBuffer* pBuffer, void* pData, uint nSize )
+    {
+        
+    }
     //
 
     //
@@ -263,14 +287,33 @@ namespace Riot
     {
         
     }
+    void COGLDevice::SetPSRenderTarget( uint nIndex, IGfxRenderTarget* pRenderTarget )
+    {
+        
+    }
+    void COGLDevice::SetRenderTarget( IGfxRenderTarget* pRenderTarget )
+    {
+        
+    }
+    void COGLDevice::SetNullRenderTarget( void )
+    {
+        
+    }
     //
 
     //
+    void COGLDevice::Draw( uint nVertexCount )
+    {        
+    }
     void COGLDevice::DrawIndexedPrimitive( uint nIndexCount )
     {
     }
     void COGLDevice::DrawIndexedPrimitiveInstanced( uint nIndexCount, uint nInstanceCount )
     {
+    }
+    void COGLDevice::DrawPrimitive( uint nVertexCount )
+    {
+        
     }
     //
 

@@ -8,13 +8,15 @@ Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _D3DGRAPHICS_H_
 #define _D3DGRAPHICS_H_
+
 #include "common.h"
+
+#if USE_DIRECTX
 #include "Graphics.h"
 #include "GraphicsObjects.h"
 #include "VertexFormats.h"
 #include <D3D11.h>
 
-#if USE_DIRECTX
 
 namespace Riot
 {

@@ -6,7 +6,7 @@ solution "Riot"
  
    -- A project defines one build target
    project "Riot"
-      kind "ConsoleApp"
+      kind "WindowedApp"
       language "C++"
       files { "**.h", "**.cpp", "**.hlsl", "**.png", "**.dds", "**.rs" }
 	  location "projects"

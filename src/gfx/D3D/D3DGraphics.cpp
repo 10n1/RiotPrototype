@@ -6,12 +6,12 @@ Modified:       5/22/2011 1:45:46 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "D3DGraphics.h"
+#if USE_DIRECTX
 #include "Window.h"
 #include "D3DGraphicsObjects.h"
 #include <D3DX11.h>
 #include <D3Dcompiler.h>
 
-#if USE_DIRECTX
 
 namespace Riot
 {
@@ -27,10 +27,6 @@ namespace Riot
     GFX_FORMAT GFX_FORMAT_UINT32        = DXGI_FORMAT_R32_UINT;
     GFX_FORMAT GFX_FORMAT_FLOAT2        = DXGI_FORMAT_R32G32_FLOAT;
     GFX_FORMAT GFX_FORMAT_BYTE4         = DXGI_FORMAT_R8G8B8A8_UNORM;
-
-    const uint GFX_FORMAT_FLOAT3_SIZE   = sizeof( RVector3 );
-    const uint GFX_FORMAT_UINT16_SIZE   = sizeof( uint16 );
-    const uint GFX_FORMAT_UINT32_SIZE   = sizeof( uint32 );
     //-----------------------------------------------------------------------------
     GFX_SEMANTIC GFX_SEMANTIC_POSITION  = "POSITION";
     GFX_SEMANTIC GFX_SEMANTIC_NORMAL    = "NORMAL";

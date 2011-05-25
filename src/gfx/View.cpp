@@ -4,12 +4,12 @@ Author:         Kyle Weicht
 Created:        3/19/2011
 Modified:       5/10/2011 6:21:30 PM
 Modified by:    Kyle Weicht
-\*********************************************************/
+ \*********************************************************/
+#include <string>
 #include "View.h"
 #include "memory.h"
 #include "Renderer.h"
 #include "Engine.h"
-#include <string>
 
 namespace Riot
 {

@@ -68,6 +68,7 @@ namespace Riot
         KEY_ESCAPE  = '\e',
         KEY_ENTER   = 0x0003,
         KEY_SHIFT   = 0xFFFF,
+        KEY_BACKSPACE = 0x7F,
         
         // Arrows
         KEY_LEFT    = 0x02,
@@ -103,6 +104,7 @@ namespace Riot
         KEY_Y = 'y',
         KEY_Z = 'z',
         KEY_SPACE = ' ',
+        KEY_TILDE = 0x60,
 #else
 #endif
 

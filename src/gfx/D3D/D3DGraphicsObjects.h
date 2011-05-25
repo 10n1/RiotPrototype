@@ -9,10 +9,11 @@ Modified by:    Kyle Weicht
 #ifndef _D3DGRAPHICSOBJECTS_H_
 #define _D3DGRAPHICSOBJECTS_H_
 #include "common.h"
-#include "GraphicsObjects.h"
-#include <D3D11.h>
 
 #if USE_DIRECTX
+
+#include "GraphicsObjects.h"
+#include <D3D11.h>
 
 #define BEGIN_DEFINE_GRAPHICS_OBJECT( Name ) \
 class CD3D##Name : public IGfx##Name             \

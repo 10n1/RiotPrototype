@@ -53,11 +53,14 @@ namespace Riot
         void SetClearColor( float fRed, float fGreen, float fBlue, float fAlpha );
         void SetClearDepth( float fDepth );
         void Clear( void );
+        void ClearRenderTarget( IGfxRenderTarget* pRT );
         void Present( void );
         //
         
         //
         void SetFillMode( GFX_FILL_MODE nFill );
+        void SetDepthTest( bool bTest, bool bWrite );
+        void SetColorWrite( bool bEnable );
         //
 
         //
@@ -69,6 +72,7 @@ namespace Riot
             IGfxVertexShader** pShader,
             IGfxVertexLayout** pLayout );
         IGfxPixelShader* CreatePixelShader( const char* szFilename, const char* szEntryPoint );
+        IGfxRenderTarget* CreateRenderTarget( GFX_FORMAT nFormat, uint nWidth, uint nHeight );
         //
         
         //
@@ -84,6 +88,7 @@ namespace Riot
         
         //
         void UpdateBuffer( IGfxBuffer* pBuffer, void* pData );
+        void UpdateBuffer( IGfxBuffer* pBuffer, void* pData, uint nSize );
         //
 
         //
@@ -97,11 +102,17 @@ namespace Riot
         void SetPSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer );
         void SetPSSamplerState( IGfxSamplerState* pState );
         void SetPSTexture( uint nIndex, IGfxTexture2D* pTexture );
+        void SetPSRenderTarget( uint nIndex, IGfxRenderTarget* pRenderTarget );
+        void SetRenderTarget( IGfxRenderTarget* pRenderTarget );
+        void SetNullRenderTarget( void );
+
         //
 
         //
+        void Draw( uint nVertexCount );
         void DrawIndexedPrimitive( uint nIndexCount );
         void DrawIndexedPrimitiveInstanced( uint nIndexCount, uint nInstanceCount );
+        void DrawPrimitive( uint nVertexCount );
         //
 
     private:

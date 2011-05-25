@@ -11,6 +11,7 @@ Modified by:    Kyle Weicht
 #include "types.h"
 #include "config.h"
 
+#define __AVX__ 1
 #include <immintrin.h>
 
 //-----------------------------------------------------------------------------
