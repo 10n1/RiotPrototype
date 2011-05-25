@@ -198,7 +198,7 @@ namespace Riot
         byte* pData = (byte*)o.m_pData;
         for( uint i = 0; i < o.m_nNumProperties; ++i )
         {
-            DataType dt = GetDataType( m_pObjectTypes[nType].nType[i] );
+            eDataType dt = GetDataType( m_pObjectTypes[nType].nType[i] );
             switch( dt )
             {
             case eTypeFloat3:
@@ -438,7 +438,7 @@ namespace Riot
 
     void CObjectManager::AddPropertyToDefinition( TObjectDefinition& def, uint32 nTypeHash, uint32 nNameHash )
     {
-        DataType nType = GetDataType( nTypeHash );
+        eDataType nType = GetDataType( nTypeHash );
         if( nType != eTypeNull )
         {   
             bool bFound = false;
