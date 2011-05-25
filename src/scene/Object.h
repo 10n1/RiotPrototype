@@ -14,7 +14,7 @@ namespace Riot
 {
     class CObject;
 
-    enum DataType
+    enum eDataType
     {
         eTypeNull = 0,
         eTypeFloat3,
@@ -24,11 +24,18 @@ namespace Riot
         eTypeQuaternion,
     };
 
+    enum eControllerSystems
+    {
+        eSystemRender    = 0x1,
+        eSystemPhysics   = 0x2,
+        eSystemCollision = 0x4,
+    };
+
     template<class T>
     struct Data
     {
         uint32      nNameHash;
-        DataType    nType:24;
+        eDataType    nType:24;
         uint32      nOffset:8;
         T           data;
     };
@@ -36,7 +43,7 @@ namespace Riot
     struct TDataType
     {
         uint32      nNameHash;
-        DataType    nType;
+        eDataType    nType;
     };
 
     typedef Data<RVector3>      DataFloat3;
@@ -51,6 +58,7 @@ namespace Riot
         uint32  nTypeHash[ 128 ];
         uint32  nNumProperties;
         uint32  nNameHash;
+        uint32  nSystems;
     };
 
     class CObject
@@ -81,7 +89,7 @@ namespace Riot
     };
 
 
-    inline DataType GetDataType( uint32 nTypeHash )
+    inline eDataType GetDataType( uint32 nTypeHash )
     {
         static const uint32 nFloat3Hash = StringHash32( "float3" );
         static const uint32 nBoolHash = StringHash32( "bool" );
@@ -114,7 +122,7 @@ namespace Riot
         return eTypeNull;
     }
 
-    inline DataType GetDataType( const char* szString )
+    inline eDataType GetDataType( const char* szString )
     {
         sint nTypeHash = StringHash32( szString );
         return GetDataType( nTypeHash );
