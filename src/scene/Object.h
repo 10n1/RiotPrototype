@@ -25,6 +25,7 @@ namespace Riot
         eTypeMaterial,
         eTypeTexture,
         eTypeFunc,
+        eTypeTransform,
     };
 
     template<class T>
@@ -43,6 +44,7 @@ namespace Riot
     typedef Data<sint32>    DataMesh;
     typedef Data<sint32>    DataTexture;
     typedef Data<sint32>    DataMaterial;
+    typedef Data<RTransform>    DataTransform;
 
     typedef void (ObjectFunc)(CObject*,float);
     typedef Data<ObjectFunc*>    DataFunc;
@@ -70,11 +72,6 @@ namespace Riot
         void CreateObjectFromFile( const char* szFilename );
 
         void GetProperty( const char* szProp, void** pData );
-
-        inline void SetUpdateFunc( ObjectFunc* pFunc );
-        inline void SetRenderFunc( ObjectFunc* pFunc );
-        inline void Update( float fDt );
-        inline void Render( float fDt );
         
     private:
         /***************************************\
@@ -87,19 +84,64 @@ namespace Riot
         static uint32               m_nNumFuncs;
 
         void*   m_pData;
-        ObjectFunc* m_pUpdateFunc;
-        ObjectFunc* m_pRenderFunc;
         sint32  m_nNumProperties;
         sint32  m_nNameHash;
     };
-    inline void CObject::SetUpdateFunc( ObjectFunc* pFunc ) { m_pUpdateFunc = pFunc; }
-    inline void CObject::SetRenderFunc( ObjectFunc* pFunc ) { m_pRenderFunc = pFunc; }
-    inline void CObject::Update( float fDt ) { m_pUpdateFunc( this, fDt ); }
-    inline void CObject::Render( float fDt ) { m_pRenderFunc( this, fDt ); }
+    
+    inline DataType GetDataType( const char* szString )
+    {
+        const uint32 nFloat3Hash = StringHash32( "float3" );
+        const uint32 nBoolHash = StringHash32( "bool" );
+        const uint32 nIntHash = StringHash32( "int" );
+        const uint32 nMeshHash = StringHash32( "mesh" );
+        const uint32 nMaterialHash = StringHash32( "material" );
+        const uint32 nTextureHash = StringHash32( "texture" );
+        const uint32 nFloatHash = StringHash32( "float" );
+        const uint32 nFuncHash = StringHash32( "func" );
+        const uint32 nTransformHash = StringHash32( "transform" );
 
-    //////////////////////////////////////////
-    inline void NullUpdateFunc( CObject* pObject, float dt ) { }
-    inline void NullRenderFunc( CObject* pObject, float dt ) { }
+        sint nTypeHash = StringHash32( szString );
+
+        if( nTypeHash ==  nFloat3Hash )
+        {
+            return eTypeVector3;                
+        }
+        if( nTypeHash ==  nBoolHash )
+        {
+            return eTypeBool;                
+        }
+        if( nTypeHash ==  nIntHash )
+        {
+            return eTypeInt;                
+        }
+        if( nTypeHash ==  nMeshHash )
+        {
+            return eTypeMesh;                
+        }
+        if( nTypeHash ==  nMaterialHash )
+        {
+            return eTypeMaterial;                
+        }
+        if( nTypeHash ==  nTextureHash )
+        {
+            return eTypeTexture;                
+        }
+        if( nTypeHash ==  nFloatHash )
+        {
+            return eTypeFloat;                
+        }
+        if( nTypeHash == nFuncHash )
+        {
+            return eTypeFunc;
+        }
+        if( nTypeHash == nTransformHash )
+        {
+            return eTypeTransform;
+        }
+
+        //ASSERT( 0 );
+        return eTypeNull;
+    }
 }
 
 #endif // #ifndef _OBJECT_H_

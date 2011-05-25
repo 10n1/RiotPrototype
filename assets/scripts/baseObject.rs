@@ -1,7 +1,3 @@
-name			baseObject
-rigidbody		rigidBody
-renderable		renderable
-
 name		renderable
 transform	transform
 mesh		mesh
@@ -16,8 +12,6 @@ float3		acc
 float		mass
 boundingBox	bb
 
-name		torch
-renderable	renderable
-light		flame
-rigidbody	rigidBody
-
+name			baseObject
+rigidbody		rigidBody
+renderable		renderable

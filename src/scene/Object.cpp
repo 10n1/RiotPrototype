@@ -57,56 +57,6 @@ namespace Riot
         
         *pRight = 0;
     }
-    inline DataType GetDataType( const char* szString )
-    {
-        const uint32 nFloat3Hash = StringHash32( "float3" );
-        const uint32 nBoolHash = StringHash32( "bool" );
-        const uint32 nIntHash = StringHash32( "int" );
-        const uint32 nMeshHash = StringHash32( "mesh" );
-        const uint32 nMaterialHash = StringHash32( "material" );
-        const uint32 nTextureHash = StringHash32( "texture" );
-        const uint32 nFloatHash = StringHash32( "float" );
-        const uint32 nFuncHash = StringHash32( "func" );
-
-        sint nTypeHash = StringHash32( szString );
-
-        if( nTypeHash ==  nFloat3Hash )
-        {
-            return eTypeVector3;                
-        }
-        if( nTypeHash ==  nBoolHash )
-        {
-            return eTypeBool;                
-        }
-        if( nTypeHash ==  nIntHash )
-        {
-            return eTypeInt;                
-        }
-        if( nTypeHash ==  nMeshHash )
-        {
-            return eTypeMesh;                
-        }
-        if( nTypeHash ==  nMaterialHash )
-        {
-            return eTypeMaterial;                
-        }
-        if( nTypeHash ==  nTextureHash )
-        {
-            return eTypeTexture;                
-        }
-        if( nTypeHash ==  nFloatHash )
-        {
-            return eTypeFloat;                
-        }
-        if( nTypeHash == nFuncHash )
-        {
-            return eTypeFunc;
-        }
-        
-
-        //ASSERT( 0 );
-        return eTypeNull;
-    }
 
     /***************************************\
     | class members                         |
@@ -190,7 +140,6 @@ namespace Riot
         }
     }
 
-
     void CObject::GetProperty( const char* szProp, void** pData )
     {
         const uint32 nPropHash = StringHash32( szProp );
@@ -212,7 +161,8 @@ namespace Riot
             pTemp = (byte*)pTemp + nOffset;
         }
 
-        ASSERT( 0 );
+        // Property wasn't found, return null
+        *pData = NULL;
     }
 
-} // namespace Riot
+} // namespface Riot

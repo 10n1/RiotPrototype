@@ -12,56 +12,6 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
-    inline DataType GetDataType( const char* szString )
-    {
-        const uint32 nFloat3Hash = StringHash32( "float3" );
-        const uint32 nBoolHash = StringHash32( "bool" );
-        const uint32 nIntHash = StringHash32( "int" );
-        const uint32 nMeshHash = StringHash32( "mesh" );
-        const uint32 nMaterialHash = StringHash32( "material" );
-        const uint32 nTextureHash = StringHash32( "texture" );
-        const uint32 nFloatHash = StringHash32( "float" );
-        const uint32 nFuncHash = StringHash32( "func" );
-
-        sint nTypeHash = StringHash32( szString );
-
-        if( nTypeHash ==  nFloat3Hash )
-        {
-            return eTypeVector3;                
-        }
-        if( nTypeHash ==  nBoolHash )
-        {
-            return eTypeBool;                
-        }
-        if( nTypeHash ==  nIntHash )
-        {
-            return eTypeInt;                
-        }
-        if( nTypeHash ==  nMeshHash )
-        {
-            return eTypeMesh;                
-        }
-        if( nTypeHash ==  nMaterialHash )
-        {
-            return eTypeMaterial;                
-        }
-        if( nTypeHash ==  nTextureHash )
-        {
-            return eTypeTexture;                
-        }
-        if( nTypeHash ==  nFloatHash )
-        {
-            return eTypeFloat;                
-        }
-        if( nTypeHash == nFuncHash )
-        {
-            return eTypeFunc;
-        }
-        
-
-        //ASSERT( 0 );
-        return eTypeNull;
-    }
 
     inline byte* GetLine( byte* pIn, byte* pOut )
     {
@@ -213,6 +163,7 @@ namespace Riot
         static const sint32         defaultTexture = 0;
         static const sint32         defaultMaterial = 0;
         static const ObjectFunc*    defaultFunc = NULL;
+        static const RTransform     defaultTransform = RTransform();
 
         sint nObjectIndex = AtomicIncrement( &m_nNumObjects ) - 1;
         sint nFreeIndex = m_nFreeSlots[ AtomicDecrement( &m_nNumFreeSlots ) ];
@@ -266,8 +217,8 @@ namespace Riot
             case eTypeTexture:
                 nSize += sizeof( DataTexture );
                 break;
-            case eTypeFunc:
-                nSize += sizeof( DataFunc );
+            case eTypeTransform:
+                nSize += sizeof( DataTransform );
                 break;
             case eTypeNull:
                 continue;
@@ -366,19 +317,18 @@ namespace Riot
                     p->nOffset = nSize;
                     break;
                 }
-            case eTypeFunc:
+            case eTypeTransform:
                 {
-                    DataFunc* p = (DataFunc*)pData;
-                    p->nType = eTypeFunc;
+                    DataTransform* p = (DataTransform*)pData;
+                    p->nType = eTypeTexture;
                     p->nNameHash = m_pObjectTypes[nType].nTypeHash[i];
-                    p->data = defaultFunc;
+                    p->data = defaultTransform;
 
-                    sint nSize = sizeof( DataFunc );
-
+                    sint nSize = sizeof( DataTransform );
                     pData += nSize;
                     p->nOffset = nSize;
+                    break;
                 }
-                break;
             case eTypeNull:
                 continue;
             default:
@@ -386,9 +336,6 @@ namespace Riot
                 break;
             }
         }
-
-        m_Objects[ nObjectIndex ].SetRenderFunc( NullRenderFunc );
-        m_Objects[ nObjectIndex ].SetUpdateFunc( NullUpdateFunc );
 
         return nObjectIndex;
     }
@@ -593,15 +540,6 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CObjectManager::UpdateObjects( float fDt )
     {
-        for( uint i = 0; i < m_nNumObjects; ++i )
-        {
-            m_Objects[ m_nActiveObjects[i] ].Update( fDt );
-        }
-        
-        for( uint i = 0; i < m_nNumObjects; ++i )
-        {
-            m_Objects[ m_nActiveObjects[i] ].Render( fDt );
-        }
     }
 
 } // namespace Riot

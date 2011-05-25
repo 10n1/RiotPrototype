@@ -9,32 +9,48 @@ Modified by:    Kyle Weicht
 #ifndef _TODO_H_
 #define _TODO_H_
 
-    //Random number generator
-    //High resolution timer
-    Platform detection code
-    //Atomic operations wrapper (_Interlocked*)
-    File system (a complete wrapper around files/directories)
-        Support asyncronous loading/saving
-    Network/socket wrapper
-    //Math library
-    Graphics API wrapper (very low level, just passes draw calls, etc)
-    //Module manager (starts and shuts down all managers, etc)
-    //Memory wrapper (new/delete wrapper)
-    //Assertions
-    Hash functions (hash string to ID)
-    Debug printing
-    Debug logging to file
-    Localization
-    Engine configuation (ini loading)
-    Profiling system
-    File parsers (XML, etc)
-    Scene graph/subdivision
-    Post processing chain
-    2D rendering system
-    Input wrapper
-    //Memory allocator (Off the bat, allocate a lot of memory, all other memory comes out of there)
-    //Aligned allocations
-    //Threading API
-
+    Deferred renderer
+    asset pipeline
+    defining materials by scripts
+    TCP/IP abstraction
+    Server
+    client
+    audio
+    rigid body physics
+    OS X port of client and server
+    Linux port of client and server
+    UI button
+    UI label
+    OpenGL implementation
+    3D button
+    3D text label
+    File IO abstraction
+        Directory crawling
+        loading all files in a directory
+        asyncronous loading/saving
+    frustrum culling
+    function timing/profiling
+    CPU utilization chart
+    the Machine
+    inventory
+    loot
+    pets
+    diffs
+    building system
+    enemy teams
+    team leader AI
+    individulal unit AI
+    multiplayer
+    picking
+    key binding
+    game state machine
+        paused
+        editor
+    particle system
+    multiple camera support
+    logging
+    logging to a file
+    tutorial
+    console
 
 #endif // #ifndef _TODO_H_

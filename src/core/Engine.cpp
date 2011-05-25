@@ -341,7 +341,6 @@ namespace Riot
 
         *nMesh = m_pRenderer->CreateMesh();
         *nTexture = 0;
-        o.SetRenderFunc( NormalRender );
 
         // Finally reset the timer
         m_MainTimer.Reset();
