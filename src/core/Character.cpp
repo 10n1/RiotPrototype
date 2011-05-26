@@ -3,7 +3,6 @@
 #include "ObjectManager.h"
 #include "Mesh.h"
 #include "View.h"
-#include "IComponent.h"
 
 namespace Riot
 {

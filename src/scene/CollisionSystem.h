@@ -70,6 +70,7 @@ namespace Riot
 
         uint AddObject( const RAABB& box, uint nObject );
         void UpdateObject( const RAABB& box, uint nBox );
+        void UpdateObject( RAABB box, CObject* pObject );
         void UpdateXAxis( float fMin, float fMax, uint nBox );
         void UpdateYAxis( float fMin, float fMax, uint nBox );
         void UpdateZAxis( float fMin, float fMax, uint nBox );

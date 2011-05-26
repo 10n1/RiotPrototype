@@ -13,6 +13,8 @@ Modified by:    Kyle Weicht
 
 #define __AVX__ 1
 #include <immintrin.h>
+//#include "xmmintrin.h"
+//#include <xmmintrin.h>
 
 //-----------------------------------------------------------------------------
 //  C standard library replacement functions

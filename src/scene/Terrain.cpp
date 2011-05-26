@@ -9,7 +9,6 @@ Modified by:    Kyle Weicht
 #include "Engine.h"
 #include "Renderer.h"
 #include "Mesh.h"
-#include "ComponentCollidable.h"
 
 namespace Riot
 {    

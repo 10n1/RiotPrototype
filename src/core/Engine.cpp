@@ -332,6 +332,7 @@ namespace Riot
 
         //////////////////////////////////////////
         // Create an object
+        CCollisionSystem::SetTerrain( m_pTerrain );
         m_pObjectManager->LoadObjectDeclaration( "assets/scripts/renderable.rs" );
         m_pObjectManager->LoadObjectDeclaration( "assets/scripts/rigidbody.rs" );
         m_pObjectManager->LoadObjectDeclaration( "assets/scripts/baseobject.rs" );
