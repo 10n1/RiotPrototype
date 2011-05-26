@@ -355,6 +355,8 @@ namespace Riot
         o.GetProperty( "acceleration", (void**)&v );
         *v = RVector3( 0.0f, -9.8f, 0.0f );
 
+        CCollisionSystem::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, &o );
+
         // Finally reset the timer
         m_MainTimer.Reset();
     }

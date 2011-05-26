@@ -1,35 +1,23 @@
 /*********************************************************\
-File:           ComponentCollidable.h
-Purpose:        Allows an object to collide with others or
-                be collided with
+File:           CollisionSystem.h
+Purpose:        
 Author:         Kyle Weicht
-Created:        4/25/2011
-Modified:       5/11/2011 10:33:22 PM
+Created:        5/24/2011
+Modified:       5/24/2011 4:17:04 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#ifndef _COMPONENTCOLLIDABLE_H_
-#define _COMPONENTCOLLIDABLE_H_
-#include "IComponent.h"
-#include "VertexFormats.h"
-//#include "Terrain.h"
-#include "Renderer.h"
-#include "Thread.h"
-
-/*
-CComponentCollidable
-0
-2
-BoundingVolume m_Volume
-VolumeType m_nVolumeType
-*/
+#ifndef _COLLISIONSYSTEM_H_
+#define _COLLISIONSYSTEM_H_
+#include "common.h"
+#include "vertexformats.h"
 
 namespace Riot
 {
+    class CObject;
     class CTerrain;
 
-    class CComponentCollidable : public IComponent
+    class CCollisionSystem
     {
-        //friend struct TBSPNode;
     public:
         enum
         {
@@ -69,16 +57,16 @@ namespace Riot
             uint64 nPair;   // Left 32 bits are object 1, right 32 are object 2
             uint   nObject0;
             uint   nObject1;
+            //uint   nCount;  // Overlap count. Only actually overlapping when this is 3
         };
 
-        TSAPPair    m_Pairs[ MaxComponents ];
-        TSAPBox     m_Boxes[ MaxComponents ];
-        TEndPoint   m_EndPointsX[ MaxComponents * 2 ];
-        TEndPoint   m_EndPointsY[ MaxComponents * 2 ];
-        TEndPoint   m_EndPointsZ[ MaxComponents * 2 ];
-
-        uint        m_nNumPairs;
-        uint        m_nNumBoxes;
+        static TSAPPair    m_Pairs[ MAX_OBJECTS ];
+        static TSAPBox     m_Boxes[ MAX_OBJECTS ];
+        static TEndPoint   m_EndPointsX[ MAX_OBJECTS * 2 ];
+        static TEndPoint   m_EndPointsY[ MAX_OBJECTS * 2 ];
+        static TEndPoint   m_EndPointsZ[ MAX_OBJECTS * 2 ];
+        static uint        m_nNumPairs;
+        static uint        m_nNumBoxes;
 
         uint AddObject( const RAABB& box, uint nObject );
         void UpdateObject( const RAABB& box, uint nBox );
@@ -139,70 +127,59 @@ namespace Riot
 
             return false;
         }
-        
-        friend class CObjectManager;
-    public:
-        // CComponentCollidable constructor
-        CComponentCollidable();
 
-        // CComponentCollidable destructor
-        ~CComponentCollidable();
+        // CCollisionSystem constructor
+        CCollisionSystem();
+
+        // CCollisionSystem destructor
+        ~CCollisionSystem();
         /***************************************\
         | class methods                         |
         \***************************************/
-
-        void Attach( uint nObject );
-        void Reattach( uint nObject );
-        void Detach( uint nObject );
-        void DetachAndSave( uint nObject );
-        void ProcessComponent( void );
-        void ReceiveMessage( uint nSlot, CComponentMessage& msg );
-        void RemoveInactive( uint nObject );
-
-        static const eComponentType ComponentType = eComponentCollidable;
-        static const uint MaxComponents = IComponent::MaxComponents;
-        static const eComponentMessageType MessagesReceived[];
-        static const uint NumMessagesReceived;
         
+        //-----------------------------------------------------------------------------
+        //  AddObject
+        //  Adds an object
+        //-----------------------------------------------------------------------------
+        static void AddObject( CObject* pObject );
+
         //-----------------------------------------------------------------------------
         //  CalculateBoundingSphere
         //  Calculates a bounding sphere to surround the input vertices
         //-----------------------------------------------------------------------------
-        static void CalculateBoundingSphere( const VPosNormalTex* pVerts, uint nNumVerts, uint nIndex );
-        
-        //-----------------------------------------------------------------------------
-        //  SphereTerrainCollision
-        //  Determines if a tree hits any triangles within the node
-        //-----------------------------------------------------------------------------
-        bool SphereTerrainCollision( const RSphere& s );
+        static void CalculateBoundingSphere( const VPosNormalTex* pVerts, uint nNumVerts, CObject* pObject );
 
+        //-----------------------------------------------------------------------------
+        //  PickObject
+        //  Returns the first object hit by the picking ray
+        //-----------------------------------------------------------------------------
+        CObject* PickObject( RVector3 rayOrigin, RVector3 rayDir ); 
+        
         //-----------------------------------------------------------------------------
         //  Accessors/mutators
         //-----------------------------------------------------------------------------
         static inline void SetTerrain( CTerrain* pTerrain );
 
-    private:
-        static void ProcessBatch( void* pData, uint nThreadId, uint nStart, uint nCount );        
+        static void ProcessObjects( void );
 
     private:
         /***************************************\
         | class members                         |
         \***************************************/
-        static CComponentCollidable* m_pInstance;
+        static CObject*     m_pObjects[ MAX_OBJECTS ];
+        static RSphere      m_pBoundingSpheres[ MAX_OBJECTS ];
+        static uint         m_nNumObjects;
 
-        RSphere             m_Volume[MaxComponents];
-
-        CTerrain*           m_pTerrain;
+        static CTerrain*    m_pTerrain;
     };
-
+    
     //-----------------------------------------------------------------------------
     //  Accessors/mutators
     //-----------------------------------------------------------------------------
-    void CComponentCollidable::SetTerrain( CTerrain* pTerrain )
+    void CCollisionSystem::SetTerrain( CTerrain* pTerrain )
     {
-        m_pInstance->m_pTerrain = pTerrain;
+        m_pTerrain = pTerrain;
     }
-
 } // namespace Riot
 
-#endif // #ifndef _COMPONENTCOLLIDABLE_H_
+#endif // #ifndef _COLLISIONSYSTEM_H_
