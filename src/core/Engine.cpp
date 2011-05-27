@@ -357,7 +357,6 @@ namespace Riot
 
         CCollisionSystem::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, &o );
 
-        
         nObj = m_pObjectManager->CreateObject( 0, "baseObject" );
         o = m_pObjectManager->GetObject( nObj );
         o.GetProperty( "mesh", (void**)&nMesh );
@@ -370,6 +369,10 @@ namespace Riot
         *v = RVector3( 0.0f, -9.8f, 0.0f );
 
         CCollisionSystem::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, &o );
+
+        // Picking test
+        CObject* pObject = CCollisionSystem::PickObject( m_pCamera->GetPosition(), RVector3( 0.0f, -4.0f, 10.0f ) );
+        SAFE_DELETE( pObject );
 
         // Finally reset the timer
         m_MainTimer.Reset();

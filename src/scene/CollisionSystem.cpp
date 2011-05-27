@@ -700,8 +700,46 @@ namespace Riot
     //-----------------------------------------------------------------------------
     CObject* CCollisionSystem::PickObject( RVector3 rayOrigin, RVector3 rayDir )
     {
-        // TODO: Pick shit Omar!!!
-        return 0;
+        CObject* pObject = NULL;
+        Normalize( rayDir );
+
+        for( uint i = 0; i < m_nNumObjects; ++i )
+        {
+            if( RaySphereCollision( rayOrigin, rayDir, m_pBoundingSpheres[i] ) )
+            {
+                // NOTE: unless the objects are sorted front to back from the
+                //       camera, there is no warranty this object is the 
+                //       closest to the camera...if there are multiple objects
+                //       in line but the one of the non-closest objects happens
+                //       to be saved in memory before the closest object then 
+                //       that object will be returned...for now.
+                pObject = m_pObjects[i];
+                break;
+            }
+        }
+
+        return pObject;
+    }
+
+    //-----------------------------------------------------------------------------
+    //  RaySphereCollision
+    //  Test if ray collides with sphere
+    //-----------------------------------------------------------------------------
+    bool CCollisionSystem::RaySphereCollision( RVector3& rayOrigin, RVector3& rayDir, RSphere sphere )
+    {
+        RVector3 toSphere = rayOrigin - sphere.position;
+
+        float A = DotProduct( rayDir, rayDir );
+        float B = DotProduct( rayDir, toSphere ) * 2.0f;
+        float C = DotProduct( toSphere, toSphere ) - sphere.radius * sphere.radius;
+        float Discriminant = B * B - 4 * ( A * C );
+
+        if( Discriminant > 0.0f )
+        {
+            return true;
+        }
+
+        return false;
     }
 
 } // namespace Riot

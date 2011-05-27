@@ -154,7 +154,7 @@ namespace Riot
         //  PickObject
         //  Returns the first object hit by the picking ray
         //-----------------------------------------------------------------------------
-        CObject* PickObject( RVector3 rayOrigin, RVector3 rayDir ); 
+        static CObject* PickObject( RVector3 rayOrigin, RVector3 rayDir ); 
         
         //-----------------------------------------------------------------------------
         //  Accessors/mutators
@@ -166,6 +166,13 @@ namespace Riot
         static void Init( void );
 
     private:
+        
+        //-----------------------------------------------------------------------------
+        //  RaySphereCollision
+        //  Test if ray collides with sphere
+        //-----------------------------------------------------------------------------
+        static bool RaySphereCollision( RVector3& rayOrigin, RVector3& rayDir, RSphere sphere );
+
         /***************************************\
         | class members                         |
         \***************************************/
