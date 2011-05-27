@@ -11,8 +11,11 @@ Modified by:    Kyle Weicht
 
 #include "scene/Terrain.h"
 
+#undef new
+
 int main( int argc, char* argv[] )
 {
+    InitializeMemory();
     //////////////////////////////////////////
     // Free our memory last
     atexit( Riot::Memory::ReleasePool );

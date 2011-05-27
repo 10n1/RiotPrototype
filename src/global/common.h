@@ -22,7 +22,9 @@ Modified by:    Kyle Weicht
 // Very basic, low level functionality
 #include "atomic.h"
 #include "memory.h"
+#ifndef OS_OSX // The custom memory allocator currently crashes in OS X...
 #define new DEBUG_NEW
+#endif // #ifndef OS_OSX
 #include "assert.h"
 #include "vectormath.h"
 #include "rand.h"

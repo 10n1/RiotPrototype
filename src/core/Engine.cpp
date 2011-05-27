@@ -169,7 +169,7 @@ namespace Riot
                 {
                     float fFPS = (1.0f/fFPSTime) * 32.0f;
                     sprintf( szFPS, "FPS: %f", fFPS );
-                    printf( "FPS: %f\n", fFPS );
+                    //printf( "FPS: %f\n", fFPS );
 
                     fFPSTime = 0.0f;
                     nFPSFrames = 0;
