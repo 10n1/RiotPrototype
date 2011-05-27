@@ -166,12 +166,6 @@ namespace Riot
         static void Init( void );
 
     private:
-        
-        //-----------------------------------------------------------------------------
-        //  RaySphereCollision
-        //  Test if ray collides with sphere
-        //-----------------------------------------------------------------------------
-        static bool RaySphereCollision( RVector3& rayOrigin, RVector3& rayDir, RSphere sphere );
 
         /***************************************\
         | class members                         |

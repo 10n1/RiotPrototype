@@ -773,6 +773,27 @@ inline bool SphereAABBCollision( const RAABB& b, const RSphere& s )
     return true;
 }
 
+//-----------------------------------------------------------------------------
+//  RaySphereCollision
+//  Test if ray collides with sphere
+//-----------------------------------------------------------------------------
+inline bool RaySphereCollision( const RVector3& rayOrigin, const RVector3& rayDir, const RSphere& sphere )
+{
+    RVector3 toSphere = rayOrigin - sphere.position;
+
+    float A = DotProduct( rayDir, rayDir );
+    float B = DotProduct( rayDir, toSphere ) * 2.0f;
+    float C = DotProduct( toSphere, toSphere ) - sphere.radius * sphere.radius;
+    float Discriminant = B * B - 4 * ( A * C );
+
+    if( Discriminant > 0.0f )
+    {
+        return true;
+    }
+
+    return false;
+}
+
 #pragma warning(disable:4201)
 
 #endif // #ifndef _VECTORMATH_H_

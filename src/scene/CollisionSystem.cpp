@@ -721,25 +721,4 @@ namespace Riot
         return pObject;
     }
 
-    //-----------------------------------------------------------------------------
-    //  RaySphereCollision
-    //  Test if ray collides with sphere
-    //-----------------------------------------------------------------------------
-    bool CCollisionSystem::RaySphereCollision( RVector3& rayOrigin, RVector3& rayDir, RSphere sphere )
-    {
-        RVector3 toSphere = rayOrigin - sphere.position;
-
-        float A = DotProduct( rayDir, rayDir );
-        float B = DotProduct( rayDir, toSphere ) * 2.0f;
-        float C = DotProduct( toSphere, toSphere ) - sphere.radius * sphere.radius;
-        float Discriminant = B * B - 4 * ( A * C );
-
-        if( Discriminant > 0.0f )
-        {
-            return true;
-        }
-
-        return false;
-    }
-
 } // namespace Riot
