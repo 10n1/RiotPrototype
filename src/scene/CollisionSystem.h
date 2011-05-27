@@ -68,18 +68,18 @@ namespace Riot
         static uint        m_nNumPairs;
         static uint        m_nNumBoxes;
 
-        uint AddObject( const RAABB& box, uint nObject );
-        void UpdateObject( const RAABB& box, uint nBox );
-        void UpdateObject( RAABB box, CObject* pObject );
-        void UpdateXAxis( float fMin, float fMax, uint nBox );
-        void UpdateYAxis( float fMin, float fMax, uint nBox );
-        void UpdateZAxis( float fMin, float fMax, uint nBox );
-        void RemoveObject( uint nBox );
+        static uint AddObject( const RAABB& box, uint nObject );
+        static void UpdateObject( const RAABB& box, uint nBox );
+        static void UpdateObject( CObject* pObject );
+        static void UpdateXAxis( float fMin, float fMax, uint nBox );
+        static void UpdateYAxis( float fMin, float fMax, uint nBox );
+        static void UpdateZAxis( float fMin, float fMax, uint nBox );
+        static void RemoveObject( uint nBox );
 
-        void AddPair( uint nObject0, uint nObject1 );
-        void RemovePair( uint nObject0, uint nObject1 );
+        static void AddPair( uint nObject0, uint nObject1 );
+        static void RemovePair( uint nObject0, uint nObject1 );
 
-        inline bool Overlap( uint nObject0, uint nObject1 )
+        static inline bool Overlap( uint nObject0, uint nObject1 )
         {
             //for( uint j = 0; j < 3; ++j )
             //{
@@ -108,17 +108,17 @@ namespace Riot
             return true;
         }
 
-        inline uint IsMin( uint nIndex ) 
+        static inline uint IsMin( uint nIndex ) 
         {
             return nIndex & eSAPBit;
         }
 
-        inline uint IsMax( uint nIndex )
+        static inline uint IsMax( uint nIndex )
         {
             return !IsMin( nIndex );
         }
 
-        inline bool CheckPair( TSAPPair& pair, uint nObj0, uint nObj1 )
+        static inline bool CheckPair( TSAPPair& pair, uint nObj0, uint nObj1 )
         {
             if( (  pair.nObject0 == nObj0 
                 && pair.nObject1 == nObj1 ) ||
@@ -162,6 +162,8 @@ namespace Riot
         static inline void SetTerrain( CTerrain* pTerrain );
 
         static void ProcessObjects( void );
+        
+        static void Init( void );
 
     private:
         /***************************************\

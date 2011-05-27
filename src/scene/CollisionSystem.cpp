@@ -22,11 +22,20 @@ namespace Riot
     CCollisionSystem::TEndPoint   CCollisionSystem::m_EndPointsX[ MAX_OBJECTS * 2 ];
     CCollisionSystem::TEndPoint   CCollisionSystem::m_EndPointsY[ MAX_OBJECTS * 2 ];
     CCollisionSystem::TEndPoint   CCollisionSystem::m_EndPointsZ[ MAX_OBJECTS * 2 ];
-    uint        CCollisionSystem::m_nNumPairs;
-    uint        CCollisionSystem::m_nNumBoxes;
+    uint        CCollisionSystem::m_nNumPairs = 0;
+    uint        CCollisionSystem::m_nNumBoxes = 1;
 
     // CCollisionSystem constructor
     CCollisionSystem::CCollisionSystem()
+    {
+    }
+
+    // CCollisionSystem destructor
+    CCollisionSystem::~CCollisionSystem()
+    {
+    }
+
+    void CCollisionSystem::Init( void )
     {
         // Make sure we don't have any leaves
         m_pTerrain = NULL;
@@ -54,11 +63,6 @@ namespace Riot
         m_EndPointsZ[0].nIndex |= 0x7FFFFFFF;
         m_EndPointsZ[1].fValue =  FLT_MAX;
         m_EndPointsZ[1].nIndex |= 0xFFFFFFFF;
-    }
-
-    // CCollisionSystem destructor
-    CCollisionSystem::~CCollisionSystem()
-    {
     }
     
     uint CCollisionSystem::AddObject( const RAABB& box, uint nObject )
@@ -112,6 +116,29 @@ namespace Riot
         UpdateXAxis( box.min.x, box.max.x, nBox );
         UpdateYAxis( box.min.y, box.max.y, nBox );
         UpdateZAxis( box.min.z, box.max.z, nBox );
+    }
+
+    void CCollisionSystem::UpdateObject( CObject* pObject )
+    {
+        for( uint i = 0; i < m_nNumObjects; ++i )
+        {
+            if( m_pObjects[i] == pObject )
+            {
+                RVector3* v;
+
+                pObject->GetProperty( "position", (void**)&v );
+                m_pBoundingSpheres[i].position = *v;
+                
+                float fRadius = m_pBoundingSpheres[i].radius;
+
+                RVector3 rad( fRadius, fRadius, fRadius );
+
+                RVector3 min = *v - rad;
+                RVector3 max = *v + rad;
+
+                UpdateObject( RAABB( min, max ), i );
+            }
+        }
     }
 
     void CCollisionSystem::UpdateXAxis( float fMin, float fMax, uint nBox )
@@ -593,6 +620,10 @@ namespace Riot
         for( uint i = 0; i < m_nNumPairs; ++i )
         {
             // TODO: something with m_Pairs[i]
+                RVector3* v;
+
+                m_pObjects[ m_Pairs[i].nObject0 ]->GetProperty( "velocity", (void**)&v );
+                *v = RVector3( 0.0f, 20.0f, 0.0f );
         }
 
         for( uint i = 0; i < m_nNumObjects; ++i )
@@ -600,6 +631,12 @@ namespace Riot
             if( m_pTerrain->SphereTerrainCollision( m_pBoundingSpheres[i] ) )
             {
                 // TODO: something...
+                RVector3* v;
+
+                m_pObjects[i]->GetProperty( "velocity", (void**)&v );
+                *v = RVector3Zero();
+                m_pObjects[i]->GetProperty( "acceleration", (void**)&v );
+                *v = RVector3Zero();
             }
 
             // TODO: An object just moved. How do we know?
@@ -612,7 +649,20 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CCollisionSystem::AddObject( CObject* pObject )
     {
-        m_pObjects[ m_nNumObjects++ ] = pObject;
+        RVector3* v;
+
+        pObject->GetProperty( "position", (void**)&v );
+
+        m_pBoundingSpheres[ m_nNumObjects ].position = *v;
+
+        m_pObjects[ m_nNumObjects ] = pObject;
+
+        static const RVector3 infmax( FLT_MAX - 10.0f, FLT_MAX - 10.0f, FLT_MAX - 10.0f );
+        static const RVector3 infmin( -(FLT_MAX - 10.0f), -(FLT_MAX - 10.0f), -(FLT_MAX - 10.0f) );
+
+        AddObject( RAABB( infmin, infmax ), m_nNumObjects );
+
+        m_nNumObjects++;
     }
 
     //-----------------------------------------------------------------------------

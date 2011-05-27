@@ -119,6 +119,7 @@ namespace Riot
 
             CRenderSystem::ProcessObjects();
             CPhysicsSystem::ProcessObjects();
+            CCollisionSystem::ProcessObjects();
 
             //////////////////////////////////////////
             // Render
@@ -332,27 +333,37 @@ namespace Riot
 
         //////////////////////////////////////////
         // Create an object
+        CCollisionSystem::Init();
         CCollisionSystem::SetTerrain( m_pTerrain );
         m_pObjectManager->LoadObjectDeclaration( "assets/scripts/renderable.rs" );
         m_pObjectManager->LoadObjectDeclaration( "assets/scripts/rigidbody.rs" );
         m_pObjectManager->LoadObjectDeclaration( "assets/scripts/baseobject.rs" );
 
         uint nObj = m_pObjectManager->CreateObject( 0, "baseObject" );
-
         RVector3* v;
-
         sint* nMesh;
         sint* nTexture;
-        CObject& o = m_pObjectManager->GetObject( nObj );
-
+        CObject o = m_pObjectManager->GetObject( nObj );
         o.GetProperty( "mesh", (void**)&nMesh );
         o.GetProperty( "diffuse", (void**)&nTexture );
-
         *nMesh = m_pRenderer->CreateMesh();
         *nTexture = 0;
-
         o.GetProperty( "position", (void**)&v );
         *v = RVector3( 0.0f, 200.0f, 0.0f );
+        o.GetProperty( "acceleration", (void**)&v );
+        *v = RVector3( 0.0f, -9.8f, 0.0f );
+
+        CCollisionSystem::CalculateBoundingSphere( m_pRenderer->GetDefaultMeshData(), 24, &o );
+
+        
+        nObj = m_pObjectManager->CreateObject( 0, "baseObject" );
+        o = m_pObjectManager->GetObject( nObj );
+        o.GetProperty( "mesh", (void**)&nMesh );
+        o.GetProperty( "diffuse", (void**)&nTexture );
+        *nMesh = m_pRenderer->CreateMesh();
+        *nTexture = 0;
+        o.GetProperty( "position", (void**)&v );
+        *v = RVector3( 0.0f, 250.0f, 0.0f );
         o.GetProperty( "acceleration", (void**)&v );
         *v = RVector3( 0.0f, -9.8f, 0.0f );
 

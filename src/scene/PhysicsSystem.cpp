@@ -8,6 +8,7 @@ Modified by:    Kyle Weicht
 #include "PhysicsSystem.h"
 #include "Object.h"
 #include "engine.h"
+#include "CollisionSystem.h"
 
 namespace Riot
 {
@@ -78,6 +79,8 @@ namespace Riot
             *pos0 = pos1;
             *vel0 = vel1;
             *acc0 = acc1;
+
+            CCollisionSystem::UpdateObject( pObject );
         }
     }
 
