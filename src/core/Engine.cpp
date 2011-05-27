@@ -121,6 +121,8 @@ namespace Riot
             CPhysicsSystem::ProcessObjects();
             CCollisionSystem::ProcessObjects();
 
+            m_pConsole->Render();
+
             //////////////////////////////////////////
             // Render
             m_pRenderer->Render( m_pTerrain );

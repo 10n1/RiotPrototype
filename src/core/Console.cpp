@@ -8,8 +8,10 @@ Modified by:    Kyle Weicht
 #include "Console.h"
 #include "Input.h"
 #include "Engine.h"
+#include "renderer.h"
 
 #include <stdio.h>
+#include <string> // TODO: String replacement
 
 namespace Riot
 {
@@ -63,6 +65,32 @@ namespace Riot
     {
     }
 
+
+    //-----------------------------------------------------------------------------
+    //  AddLine
+    //-----------------------------------------------------------------------------
+    void CConsole::AddLine( const char* szText )
+    {
+        strcpy( m_Commands[ m_nCurrCommand ].szCommand, szText );
+        m_nCurrCommand++;
+    }
+
+    //-----------------------------------------------------------------------------
+    //  Render
+    //-----------------------------------------------------------------------------
+    void CConsole::Render( void )
+    {
+        static CRenderer* pRenderer = Engine::GetRenderer();
+
+        if( !gnConsoleActive )
+            return;
+
+        for( uint i = 0; i < m_nCurrCommand; ++i )
+        {
+            pRenderer->DrawString( 0, i*15, m_Commands[i].szCommand );
+        }
+    }
+
     //-----------------------------------------------------------------------------
     //  ParseCommand
     //  Parses the command when ENTER is pressed
@@ -79,6 +107,10 @@ namespace Riot
         uint nIndex = 0;
         while( szCmd[nIndex] != ' ' )
         {
+            if( szCmd[nIndex] == 0 )
+            {
+            }
+
             szVariable[nIndex] = szCmd[nIndex];
 
             nIndex++;
