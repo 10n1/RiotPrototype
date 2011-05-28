@@ -471,7 +471,7 @@ namespace Riot
         }
         else if( nType != eTypeNull )
         {   
-            bool bFound = false;
+            
             for( uint i = 0; i < def.nNumProperties; ++i )
             {
                 if( def.nTypeHash[i] == nNameHash )

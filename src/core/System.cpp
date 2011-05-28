@@ -87,6 +87,18 @@ void __cpuid( int* a, int b )
 #endif
 
 
+#include <stddef.h>
+size_t cache_line_size();
+
+#include <sys/sysctl.h>
+size_t cache_line_size() 
+{
+    size_t line_size = 0;
+    size_t sizeof_line_size = sizeof(line_size);
+    sysctlbyname("hw.cachelinesize", &line_size, &sizeof_line_size, 0, 0);
+    return line_size;
+}
+
 
 //-----------------------------------------------------------------------------
 //  Upon first running, determine the CPU capabilities
@@ -158,6 +170,8 @@ static const uint GetCPUCapabilities( void )
     uint8 nAVXSupported      = (nFeatures[2] & BIT_28) ? 1 : 0;
 
     _nAVXSupported    = nOSXSAVESupported & nAVXSupported;
+    
+    sint nCacheLineSize = cache_line_size();
 
     return 1;
 }
