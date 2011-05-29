@@ -165,7 +165,9 @@ namespace Riot
         COGLVertexLayout* pNewLayout = new COGLVertexLayout;
 
         *pShader = pNewShader;
-        *pLayout = pNewLayout;
+        
+        if( pLayout != NULL )
+            *pLayout = pNewLayout;
     }
     IGfxPixelShader* COGLDevice::CreatePixelShader( const char* szFilename, const char* szEntryPoint )
     {

@@ -4,14 +4,14 @@ Author:         Kyle Weicht
 Created:        5/1/2011
 Modified:       5/2/2011 7:44:28 PM
 Modified by:    Kyle Weicht
-\*********************************************************/
+ \*********************************************************/
+#include <stdio.h>
+#include <string> // TODO: String replacement
 #include "Console.h"
 #include "Input.h"
 #include "Engine.h"
 #include "renderer.h"
 
-#include <stdio.h>
-#include <string> // TODO: String replacement
 
 namespace Riot
 {
@@ -105,15 +105,19 @@ namespace Riot
         char szValue[256] = { 0 };
 
         uint nIndex = 0;
-        while( szCmd[nIndex] != ' ' )
+        while( szCmd[nIndex] != ' ' && szCmd[nIndex] != 0 )
         {
-            if( szCmd[nIndex] == 0 )
-            {
-            }
-
             szVariable[nIndex] = szCmd[nIndex];
 
             nIndex++;
+        }
+        
+        // There is no value, just add it and return
+        if( szCmd[nIndex] == 0 )
+        {
+            szVariable[nIndex] = 0;
+            AddLine( szVariable );
+            return;
         }
 
         while( szCmd[nIndex] == ' ' )
@@ -173,8 +177,8 @@ namespace Riot
             break;
         }
 
+        AddLine( szCmd );
         m_nCurrPos = 0;
-        m_nCurrCommand++;
 
         Memset( m_szCurrCommand, 0, sizeof( m_szCurrCommand ) );
     }
