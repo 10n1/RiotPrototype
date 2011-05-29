@@ -54,6 +54,8 @@ namespace Riot
         PFNGLFRONTFACEPROC  glFrontFace  = NULL;
         PFNGLDEPTHRANGEPROC glDepthRange = NULL;
         PFNGLGETERRORPROC   glGetError   = NULL;
+        PFNGLPOLYGONMODEPROC    glPolygonMode = NULL;
+
 
         // OpenGL extensions (OpenGL 1.2+)
         PFNGLBINDFRAMEBUFFERPROC    glBindFramebuffer = NULL;
@@ -84,6 +86,7 @@ namespace Riot
             LOAD_FROM_DLL( PFNGLFRONTFACEPROC , glFrontFace  );
             LOAD_FROM_DLL( PFNGLDEPTHRANGEPROC, glDepthRange );
             LOAD_FROM_DLL( PFNGLGETERRORPROC  , glGetError   );
+            LOAD_FROM_DLL( PFNGLPOLYGONMODEPROC,    glPolygonMode );
 
             // Load the rest from the driver
             GET_OPENGL_EXTENSION( PFNWGLCREATECONTEXTATTRIBSARBPROC, wglCreateContextAttribsARB );

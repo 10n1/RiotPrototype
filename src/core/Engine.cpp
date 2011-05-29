@@ -2,7 +2,7 @@
 File:           Engine.cpp
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/22/2011 1:48:22 PM
+Modified:       5/29/2011 1:23:57 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #include "Engine.h"
@@ -174,7 +174,7 @@ namespace Riot
                     fFPSTime = 0.0f;
                     nFPSFrames = 0;
                 }
-                m_pRenderer->DrawString( 0, 0, szFPS );
+                m_pRenderer->DrawString( 200, 0, szFPS );
             }
 
             if( m_fElapsedTime > 1.0f/60.0f )

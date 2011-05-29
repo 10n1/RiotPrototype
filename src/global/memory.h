@@ -30,8 +30,6 @@ void __cdecl operator delete(void* pVoid);
 void __cdecl operator delete[](void* pVoid);
 #endif // #ifdef RIOT_USE_CUSTOM_ALLOCATOR
 
-void InitializeMemory( void );
-
 namespace Riot
 {
 

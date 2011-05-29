@@ -3,7 +3,7 @@ File:           Input.h
 Purpose:        
 Author:         Kyle Weicht
 Created:        4/10/2011
-Modified:       5/1/2011 6:47:22 PM
+Modified:       5/29/2011 1:22:09 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _INPUT_H_
@@ -61,7 +61,7 @@ namespace Riot
         KEY_Y = 'Y',
         KEY_Z = 'Z',
         KEY_SPACE = ' ',
-        KEY_TILDE = 192,
+        KEY_TILDE = 223,
 
 #elif defined( OS_OSX ) // Defined in NSEvent.h
         // Utility keys

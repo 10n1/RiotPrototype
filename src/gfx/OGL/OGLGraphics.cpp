@@ -38,8 +38,8 @@ namespace Riot
     GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_NEAREST   = 0x1;
     GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_LINEAR    = 0x2;
     //-----------------------------------------------------------------------------
-    GFX_FILL_MODE    GFX_FILL_SOLID     = 0x1;
-    GFX_FILL_MODE    GFX_FILL_WIREFRAME = 0x2;
+    GFX_FILL_MODE    GFX_FILL_SOLID     = GL_FILL;
+    GFX_FILL_MODE    GFX_FILL_WIREFRAME = GL_LINE;
     //-----------------------------------------------------------------------------
     GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DEFAULT    = 0x1;
     GFX_BUFFER_USAGE    GFX_BUFFER_USAGE_DYNAMIC    = 0x2;
@@ -141,6 +141,7 @@ namespace Riot
     //
     void COGLDevice::SetFillMode( GFX_FILL_MODE nFill )
     {
+        glPolygonMode( GL_FRONT_AND_BACK, nFill );
     }
     void COGLDevice::SetDepthTest( bool bTest, bool bWrite )
     {

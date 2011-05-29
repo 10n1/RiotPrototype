@@ -10,6 +10,7 @@ Modified by:    Kyle Weicht
 #ifndef _SYSTEMOPENGL_H_
 #define _SYSTEMOPENGL_H_
 #include "config.h"
+#include "vectormath.h"
 
 #if USE_OPENGL
 
@@ -64,6 +65,7 @@ namespace Riot
         extern PFNGLFRONTFACEPROC       glFrontFace;
         extern PFNGLDEPTHRANGEPROC      glDepthRange;
         extern PFNGLGETERRORPROC        glGetError;
+        extern PFNGLPOLYGONMODEPROC     glPolygonMode;
 
         // OpenGL extensions (OpenGL 1.2+)
         extern PFNGLBINDFRAMEBUFFERPROC     glBindFramebuffer;

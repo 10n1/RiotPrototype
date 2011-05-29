@@ -15,7 +15,6 @@ Modified by:    Kyle Weicht
 
 int main( int argc, char* argv[] )
 {
-    InitializeMemory();
     //////////////////////////////////////////
     // Free our memory last
     atexit( Riot::Memory::ReleasePool );

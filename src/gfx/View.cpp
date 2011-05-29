@@ -2,7 +2,7 @@
 File:           View.cpp
 Author:         Kyle Weicht
 Created:        3/19/2011
-Modified:       5/10/2011 6:21:30 PM
+Modified:       5/29/2011 1:24:30 PM
 Modified by:    Kyle Weicht
  \*********************************************************/
 #include <string>
@@ -125,9 +125,9 @@ namespace Riot
         char szCameraData[256] = { 0 };
 
         sprintf( szCameraData, "Pos:  %f, %f, %f", m_vPosition.x, m_vPosition.y, m_vPosition.z );
-        Engine::GetRenderer()->DrawString( 0, 16, szCameraData );
+        Engine::GetRenderer()->DrawString( 200, 16, szCameraData );
         sprintf( szCameraData, "Look: %f, %f, %f", m_vLook.x, m_vLook.y, m_vLook.z );
-        Engine::GetRenderer()->DrawString( 0, 32, szCameraData );
+        Engine::GetRenderer()->DrawString( 200, 32, szCameraData );
     }
 
     //-----------------------------------------------------------------------------

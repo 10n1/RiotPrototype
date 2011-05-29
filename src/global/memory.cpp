@@ -31,7 +31,7 @@ enum { GLOBAL_MEMORY_ALLOCATION = 1024*1024*1024 };
 
 static const byte* AllocateGlobalMemory( void );
 
-static const byte*  gs_pGlobalPool = NULL;//     = AllocateGlobalMemory();
+static const byte*  gs_pGlobalPool      = AllocateGlobalMemory();
 static volatile byte*   gs_pCurrAlloc   = (byte*)gs_pGlobalPool;
 static volatile byte*   gs_pPrevAlloc   = NULL;
 static atomic_t   gs_nPrevAllocSize     = 0;
@@ -66,22 +66,8 @@ size_t RoundUp( size_t nSize )
 //-----------------------------------------------------------------------------
 static const byte* AllocateGlobalMemory( void )
 {
-    //byte* pAlloc = (byte*)_mm_malloc(GLOBAL_MEMORY_ALLOCATION, 32);
-    //byte* pAlloc = (byte*)malloc(GLOBAL_MEMORY_ALLOCATION);
-    byte* pAlloc = new byte[ GLOBAL_MEMORY_ALLOCATION ];
+    byte* pAlloc = (byte*)_mm_malloc(GLOBAL_MEMORY_ALLOCATION, 32);
     return pAlloc;
-}
-
-void InitializeMemory( void )
-{
-    //if( gs_pGlobalPool )
-    //{
-    //    ASSERT(0);
-    //    return;
-    //}
-    //gs_pGlobalPool = (byte*)_mm_malloc(GLOBAL_MEMORY_ALLOCATION, 32);
-    gs_pGlobalPool = AllocateGlobalMemory();
-    gs_pCurrAlloc = (byte*)gs_pGlobalPool;
 }
 
 namespace Riot

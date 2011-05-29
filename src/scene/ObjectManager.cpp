@@ -12,6 +12,7 @@ Modified by:    Kyle Weicht
 #include "RenderSystem.h"
 #include "CollisionSystem.h"
 #include "PhysicsSystem.h"
+#include "File.h"
 
 namespace Riot
 {
@@ -376,11 +377,9 @@ namespace Riot
 
         byte* pReadPos = pData;
 
-        FILE* f = fopen( szFilename, "rt" );
-
-        fread( pData, sizeof( byte ), 1024, f );
-
-        fclose( f );
+        CFile file;
+        file.LoadFile( szFilename, "r+t" );
+        file.ReadBytes( pData, 1024 );
 
         //////////////////////////////////////////
         // Now start the parsing

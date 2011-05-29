@@ -2,7 +2,7 @@
 File:           Console.cpp
 Author:         Kyle Weicht
 Created:        5/1/2011
-Modified:       5/2/2011 7:44:28 PM
+Modified:       5/29/2011 1:25:56 PM
 Modified by:    Kyle Weicht
  \*********************************************************/
 #include <stdio.h>
@@ -85,10 +85,13 @@ namespace Riot
         if( !gnConsoleActive )
             return;
 
-        for( uint i = 0; i < m_nCurrCommand; ++i )
+        uint i;
+        for( i = 0; i < m_nCurrCommand; ++i )
         {
             pRenderer->DrawString( 0, i*15, m_Commands[i].szCommand );
         }
+
+        pRenderer->DrawString( 0, i * 15, m_szCurrCommand );
     }
 
     //-----------------------------------------------------------------------------
@@ -117,6 +120,8 @@ namespace Riot
         {
             szVariable[nIndex] = 0;
             AddLine( szVariable );
+            Memset( m_szCurrCommand, 0, sizeof( m_szCurrCommand ) );
+            m_nCurrPos = 0;
             return;
         }
 

@@ -121,7 +121,7 @@ extern const uint8  gs_nSIMDWidth;
 //  Build configuration
 //-----------------------------------------------------------------------------
 
-#define USE_OPENGL                      0
+#define USE_OPENGL                      1
 
 //////////////////////////////////////////
 // Graphics API selection
