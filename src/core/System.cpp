@@ -2,7 +2,7 @@
 File:           System.cpp
 Author:         Kyle Weicht
 Created:        4/8/2011
-Modified:       5/1/2011 6:49:18 PM
+Modified:       5/29/2011 1:00:44 PM
 Modified by:    Kyle Weicht
  \*********************************************************/
 #include "OGLGraphics.h"
@@ -86,20 +86,6 @@ void __cpuid( int* a, int b )
 }
 #endif
 
-
-#include <stddef.h>
-size_t cache_line_size();
-
-#include <sys/sysctl.h>
-size_t cache_line_size() 
-{
-    size_t line_size = 0;
-    size_t sizeof_line_size = sizeof(line_size);
-    sysctlbyname("hw.cachelinesize", &line_size, &sizeof_line_size, 0, 0);
-    return line_size;
-}
-
-
 //-----------------------------------------------------------------------------
 //  Upon first running, determine the CPU capabilities
 //-----------------------------------------------------------------------------
@@ -171,8 +157,6 @@ static const uint GetCPUCapabilities( void )
 
     _nAVXSupported    = nOSXSAVESupported & nAVXSupported;
     
-    sint nCacheLineSize = cache_line_size();
-
     return 1;
 }
 
