@@ -165,14 +165,16 @@ namespace Riot
             if( gnShowFPS )
             {
                 static char szFPS[ 255 ] = "FPS: 0";
-                if( nFPSFrames == 32 )
+                if( nFPSFrames == 512 )
                 {
-                    float fFPS = (1.0f/fFPSTime) * 32.0f;
+                    float fFPS = (1.0f/fFPSTime) * 512;
                     sprintf( szFPS, "FPS: %f", fFPS );
                     //printf( "FPS: %f\n", fFPS );
 
                     fFPSTime = 0.0f;
                     nFPSFrames = 0;
+
+                    System::Log( szFPS );
                 }
                 m_pRenderer->DrawString( 200, 0, szFPS );
             }

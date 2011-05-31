@@ -30,6 +30,9 @@ namespace Riot
     {
         strcpy( m_szFilename, szFilename );
         strcpy( m_szFileMode, szFileMode );
+
+        FILE* pf = fopen( szFilename, szFileMode );
+        fclose( pf );
     }
 
     void CFile::ReadBytes( void* szBuffer, uint nNumBytes )

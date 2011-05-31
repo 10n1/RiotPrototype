@@ -14,6 +14,8 @@ Modified by:    Kyle Weicht
 #include "Graphics.h"
 #include "SystemOpenGL.h"
 #include "atomic.h"
+#include "TaskManager.h"
+#include "Console.h"
 
 #ifdef OS_WINDOWS
 #include <Windows.h>
@@ -189,10 +191,12 @@ namespace Riot
     /***************************************\
     | System members
     \***************************************/
+    CFile       System::m_Log;
     CTimer      System::m_GlobalTimer;
     CWindow*    System::m_pMainWindow           = NULL;
     IGraphicsDevice*  System::m_pGraphics       = NULL;
     handle      System::m_pApplication = NULL;
+    task_handle_t    System::m_nLogTask = TASK_INVALID_HANDLE;
 
     /***************************************\
     | Public methods
@@ -204,6 +208,8 @@ namespace Riot
     {
         // Reset the running timer
         m_GlobalTimer.Reset();
+
+        m_Log.LoadFile( "Log.txt", "wt" );
     }
 
     //-----------------------------------------------------------------------------
@@ -466,6 +472,30 @@ namespace Riot
         
         // Grab a reference to it
         m_pGraphics = pDevice;
+    }
+
+    //-----------------------------------------------------------------------------
+    //  Log
+    //  Logs a string into the system log
+    //-----------------------------------------------------------------------------
+    void System::Log( const char* szText )
+    {
+        static CTaskManager* pTaskManager = Engine::GetTaskManager();
+
+        char szLog[1024] = { 0 };
+        
+        sprintf( szLog, "%f:\t%s\n", m_GlobalTimer.GetRunningTime(), szText );
+
+
+        CFile::TFileData data = { &m_Log, (void*)szLog, strlen( szLog ) };
+
+        m_Log.LoadFile( "Log.txt", "at" );
+        m_Log.WriteBytes( (void*)szLog, strlen( szLog ) );
+
+        Engine::GetConsole()->AddLine( szLog );
+
+        //pTaskManager->WaitForCompletion( m_nLogTask );
+        //m_nLogTask = pTaskManager->PushTask( CFile::AsyncWriteBytes, &data, 1, 1 );
     }
 
 } // namespace Riot
