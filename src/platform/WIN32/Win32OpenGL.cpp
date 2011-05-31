@@ -46,13 +46,26 @@ namespace Riot
 #define LOAD_FROM_DLL( type, ext ) ext = (type)GetProcAddress( pOpenGL32, #ext ); ASSERT( ext )
 
         // OpenGl functions
+        PFNGLENABLEPROC     glEnable     = NULL;
+        PFNGLDISABLEPROC    glDisable    = NULL;
         PFNGLCLEARPROC      glClear      = NULL;
         PFNGLCLEARCOLORPROC glClearColor = NULL;
         PFNGLCLEARDEPTHPROC glClearDepth = NULL;
         PFNGLDRAWBUFFERPROC glDrawBuffer = NULL;
+        PFNGLDRAWARRAYSPROC glDrawArrays = NULL;
+        PFNGLDRAWARRAYSINSTANCEDPROC glDrawArraysInstanced = NULL;
         PFNGLVIEWPORTPROC   glViewport   = NULL;
         PFNGLFRONTFACEPROC  glFrontFace  = NULL;
+        PFNGLDEPTHFUNCPROC  glDepthFunc  = NULL;
+        PFNGLDEPTHMASKPROC  glDepthMask  = NULL;
         PFNGLDEPTHRANGEPROC glDepthRange = NULL;
+        PFNGLBLENDFUNCPROC  glBlendFunc  = NULL;
+        PFNGLBLENDEQUATIONPROC  glBlendEquation  = NULL;
+        PFNGLGENTEXTURESPROC glGenTextures = NULL;
+        PFNGLTEXIMAGE2DPROC glTexImage2D = NULL;
+        PFNGLGENBUFFERSPROC glGenBuffers = NULL;
+        PFNGLBUFFERDATAPROC glBufferData = NULL;
+        PFNGLBINDBUFFERPROC glBindBuffer = NULL;
         PFNGLGETERRORPROC   glGetError   = NULL;
         PFNGLPOLYGONMODEPROC    glPolygonMode = NULL;
 
@@ -63,6 +76,7 @@ namespace Riot
         PFNGLDELETESHADERPROC       glDeleteShader = NULL;
         PFNGLCOMPILESHADERPROC      glCompileShader = NULL;
         PFNGLGETSHADERIVPROC        glGetShaderiv = NULL;
+        PFNGLGETPROGRAMIVPROC       glGetProgramiv = NULL;
         PFNGLCREATEPROGRAMPROC      glCreateProgram = NULL;
         PFNGLATTACHSHADERPROC       glAttachShader = NULL;
         PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation = NULL;
@@ -78,15 +92,28 @@ namespace Riot
         void LoadOpenGLExtensions( void )
         {
             // Load the basic OpenGL calls from the DLL
+            LOAD_FROM_DLL( PFNGLENABLEPROC    , glEnable     );
+            LOAD_FROM_DLL( PFNGLDISABLEPROC   , glDisable    );
             LOAD_FROM_DLL( PFNGLCLEARPROC     , glClear      );
             LOAD_FROM_DLL( PFNGLCLEARCOLORPROC, glClearColor );
             LOAD_FROM_DLL( PFNGLCLEARDEPTHPROC, glClearDepth );
             LOAD_FROM_DLL( PFNGLDRAWBUFFERPROC, glDrawBuffer );
+            LOAD_FROM_DLL( PFNGLDRAWARRAYSPROC, glDrawArrays );
+            LOAD_FROM_DLL( PFNGLDRAWARRAYSINSTANCEDPROC, glDrawArraysInstanced );
             LOAD_FROM_DLL( PFNGLVIEWPORTPROC  , glViewport   );
             LOAD_FROM_DLL( PFNGLFRONTFACEPROC , glFrontFace  );
+            LOAD_FROM_DLL( PFNGLDEPTHFUNCPROC,  glDepthFunc  );
+            LOAD_FROM_DLL( PFNGLDEPTHMASKPROC,  glDepthMask  );
             LOAD_FROM_DLL( PFNGLDEPTHRANGEPROC, glDepthRange );
-            LOAD_FROM_DLL( PFNGLGETERRORPROC  , glGetError   );
-            LOAD_FROM_DLL( PFNGLPOLYGONMODEPROC,    glPolygonMode );
+            LOAD_FROM_DLL( PFNGLBLENDFUNCPROC,  glBlendFunc  );
+            LOAD_FROM_DLL( PFNGLBLENDEQUATIONPROC, glBlendEquation );
+            LOAD_FROM_DLL( PFNGLGENTEXTURESPROC, glGenTextures );
+            LOAD_FROM_DLL( PFNGLTEXIMAGE2DPROC, glTexImage2D );
+            LOAD_FROM_DLL( PFNGLGENBUFFERSPROC, glGenBuffers );
+            LOAD_FROM_DLL( PFNGLBUFFERDATAPROC, glBufferData );
+            LOAD_FROM_DLL( PFNGLBINDBUFFERPROC, glBindBuffer );
+            LOAD_FROM_DLL( PFNGLGETERRORPROC,   glGetError   );
+            LOAD_FROM_DLL( PFNGLPOLYGONMODEPROC, glPolygonMode );
 
             // Load the rest from the driver
             GET_OPENGL_EXTENSION( PFNWGLCREATECONTEXTATTRIBSARBPROC, wglCreateContextAttribsARB );
@@ -97,6 +124,7 @@ namespace Riot
             GET_OPENGL_EXTENSION( PFNGLDELETESHADERPROC      , glDeleteShader );
             GET_OPENGL_EXTENSION( PFNGLCOMPILESHADERPROC     , glCompileShader );
             GET_OPENGL_EXTENSION( PFNGLGETSHADERIVPROC       , glGetShaderiv );
+            GET_OPENGL_EXTENSION( PFNGLGETPROGRAMIVPROC      , glGetProgramiv );
             GET_OPENGL_EXTENSION( PFNGLCREATEPROGRAMPROC     , glCreateProgram );
             GET_OPENGL_EXTENSION( PFNGLATTACHSHADERPROC      , glAttachShader );
             GET_OPENGL_EXTENSION( PFNGLBINDATTRIBLOCATIONPROC, glBindAttribLocation );
