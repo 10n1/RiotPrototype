@@ -153,7 +153,7 @@ namespace Riot
             glEnable( GL_DEPTH_TEST );
 
         glDepthMask( (!bWrite) ? GL_FALSE : GL_TRUE );
-        glDepthFunc( GL_LESS );
+        glDepthFunc( GL_LEQUAL );
         glDepthRange( 0.0f, 1.0f );
 
     }
