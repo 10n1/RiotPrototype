@@ -56,7 +56,7 @@ namespace Riot
 
         //////////////////////////////////////////
         // Load vertex shader
-        pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/UI.hlsl",
+        pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/UI",
                                               "VS",
                                               VPosColorTex::Layout,
                                               VPosColorTex::LayoutSize,
@@ -65,7 +65,7 @@ namespace Riot
 
         //////////////////////////////////////////
         // Load pixel shader
-        m_pPixelShader = pDevice->CreatePixelShader( "Assets/Shaders/UI.hlsl", "PS" );
+        m_pPixelShader = pDevice->CreatePixelShader( "Assets/Shaders/UI", "PS" );
 
         //////////////////////////////////////////
         // Load the font texture

@@ -324,20 +324,20 @@ namespace Riot
     {
         //////////////////////////////////////////
         // Load the pixel shaders
-        m_ppPixelShaders[ ePS3DStd ] = m_pDevice->CreatePixelShader( "Assets/Shaders/BasicPixelShader.hlsl", "main" );
-        m_ppPixelShaders[ ePS3DColor ] = m_pDevice->CreatePixelShader( "Assets/Shaders/PosColorPixelShader.hlsl", "main" );
-        m_ppPixelShaders[ ePS2DTex ] = m_pDevice->CreatePixelShader( "Assets/Shaders/UI.hlsl", "PS" );
-        m_ppPixelShaders[ ePS2DFS ] = m_pDevice->CreatePixelShader( "Assets/Shaders/FSQuadPS.hlsl", "main" );
+        m_ppPixelShaders[ ePS3DStd ] = m_pDevice->CreatePixelShader( "Assets/Shaders/BasicPixelShader", "main" );
+        m_ppPixelShaders[ ePS3DColor ] = m_pDevice->CreatePixelShader( "Assets/Shaders/PosColorPixelShader", "main" );
+        m_ppPixelShaders[ ePS2DTex ] = m_pDevice->CreatePixelShader( "Assets/Shaders/UI", "PS" );
+        m_ppPixelShaders[ ePS2DFS ] = m_pDevice->CreatePixelShader( "Assets/Shaders/FSQuadPS", "main" );
 
         //////////////////////////////////////////
         // Load the vertex shaders/layouts
-        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/BasicVertexShader.hlsl", 
+        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/BasicVertexShader", 
             "main", 
             VPosNormalTex::Layout, 
             VPosNormalTex::LayoutSize,
             &m_ppVertexShaders[ eVS3DPosNorTexStd ],
             &m_ppVertexLayouts[ eVS3DPosNorTexStd ] );
-        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/BasicVertexShaderNoTransform.hlsl", 
+        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/BasicVertexShaderNoTransform", 
             "main", 
             VPosNormalTex::Layout, 
             VPosNormalTex::LayoutSize,
@@ -345,14 +345,14 @@ namespace Riot
             NULL );
         m_ppVertexLayouts[ eVS3DPosNorTexNoTransform ] = m_ppVertexLayouts[ eVS3DPosNorTexStd ];
         
-        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/BasicVertexShaderInstanced.hlsl", 
+        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/BasicVertexShaderInstanced", 
             "main", 
             VPosNormalTexInst::Layout, 
             VPosNormalTexInst::LayoutSize,
             &m_ppVertexShaders[ eVS3DPosNorTexInst ],
             &m_ppVertexLayouts[ eVS3DPosNorTexInst ] );
         
-        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/PosColorVertexShader.hlsl", 
+        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/PosColorVertexShader", 
             "main", 
             VPosColor::Layout, 
             VPosColor::LayoutSize,
@@ -360,7 +360,7 @@ namespace Riot
             &m_ppVertexLayouts[ eVS3DPosColStd ] );
 
         
-        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/FSQuadVS.hlsl", 
+        m_pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/FSQuadVS", 
             "main", 
             VPos::Layout, 
             VPos::LayoutSize,

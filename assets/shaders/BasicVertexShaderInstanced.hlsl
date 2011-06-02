@@ -1,5 +1,5 @@
 /*********************************************************\
-File:           BasicVertexShader.hlsl
+File:           BasicVertexShader
 Author:         Kyle Weicht
 Created:        4/17/2011
 Modified:       5/21/2011 2:00:40 PM

@@ -9,10 +9,10 @@ Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEM_H_
 #define _SYSTEM_H_
+#include "File.h"
 #include "common.h"
 #include "timer.h"
 #include "Input.h"
-#include "File.h"
 
 #ifndef OS_WINDOWS
 #include <pthread.h>

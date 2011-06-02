@@ -5,6 +5,7 @@ Created:        4/10/2011
 Modified:       5/21/2011 2:48:12 PM
 Modified by:    Kyle Weicht
  \*********************************************************/
+#include <string.h>
 #include <fstream>
 #include "OGLGraphics.h"
 #include "OGLGraphicsObjects.h"
@@ -185,8 +186,10 @@ namespace Riot
         COGLVertexLayout* pNewLayout = new COGLVertexLayout;
 
         pNewShader->m_nShader = glCreateShader( GL_VERTEX_SHADER );
-
-        LoadShaderProgram( szFilename, pNewShader->m_nShader );
+        
+        char szFormattedName[256] = { 0 };
+        sprintf( szFormattedName, "%s.glsl", szFilename );
+        LoadShaderProgram( szFormattedName, pNewShader->m_nShader );
 
         glCompileShader( pNewShader->m_nShader );
 
@@ -211,8 +214,22 @@ namespace Riot
         
         GLint   nTestVal;
         pShader->m_nShader = glCreateShader( GL_FRAGMENT_SHADER );
+                
+        GLenum nError = glGetError();
+        
+        switch( nError )
+        {
+            case GL_INVALID_ENUM:
+                break;
+            case GL_INVALID_OPERATION:
+                break;
+            default:
+                break;
+        }
 
-        LoadShaderProgram( szFilename, pShader->m_nShader );
+        char szFormattedName[256] = { 0 };
+        sprintf( szFormattedName, "%s.glsl", szFilename );
+        LoadShaderProgram( szFormattedName, pShader->m_nShader );
 
         glCompileShader( pShader->m_nShader );
         // See what errors there were
@@ -385,12 +402,20 @@ namespace Riot
     }
     void COGLDevice::DrawIndexedPrimitive( uint nIndexCount )
     {
+#ifndef OS_OSX
         // NOTE: probably not a good idea ...
         glDrawArraysInstanced( m_nPrimitiveType, 0, nIndexCount, 1 );
+#else
+        glDrawArraysInstancedARB( m_nPrimitiveType, 0, nIndexCount, 1 );
+#endif
     }
     void COGLDevice::DrawIndexedPrimitiveInstanced( uint nIndexCount, uint nInstanceCount )
     {
+#ifndef OS_OSX
         glDrawArraysInstanced( m_nPrimitiveType, 0, nIndexCount, nInstanceCount );
+#else
+        glDrawArraysInstancedARB( m_nPrimitiveType, 0, nIndexCount, 1 );
+#endif
     }
     void COGLDevice::DrawPrimitive( uint nVertexCount )
     {
@@ -416,6 +441,17 @@ namespace Riot
         glShaderSource( nShader, 1, (const GLchar**)pShaders, NULL );
 
         GLenum nError = glGetError();
+        
+        switch( nError )
+        {
+            case GL_INVALID_VALUE:
+                break;
+            case GL_INVALID_OPERATION:
+                break;
+            default:
+                break;
+        }
+        
         ASSERT( nError == GL_NO_ERROR );
 
         if( nError != GL_NO_ERROR )

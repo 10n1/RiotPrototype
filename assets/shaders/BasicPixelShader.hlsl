@@ -1,5 +1,5 @@
 /*********************************************************\
-File:           BasicPixelShader.hlsl
+File:           BasicPixelShader
 Author:         Kyle Weicht
 Created:        4/17/2011
 Modified:       5/23/2011 12:44:35 PM

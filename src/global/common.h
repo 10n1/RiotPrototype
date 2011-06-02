@@ -19,6 +19,9 @@ Modified by:    Kyle Weicht
 #pragma warning(disable:4100)   // Disable the warning about unused function parameters
 #endif
 
+#include <fstream>
+#include <string>
+
 // Very basic, low level functionality
 #include "atomic.h"
 #include "memory.h"
