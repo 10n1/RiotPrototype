@@ -294,7 +294,15 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void Engine::ButtonTest( void )
     {
-        m_pRenderer->GetGraphicsDevice()->SetClearColor( 1.0f, 0.0f, 0.0f, 1.0f);
+        static bool bTest = false;
+        
+        if( !bTest )
+            m_pRenderer->GetGraphicsDevice()->SetClearColor( 1.0f, 0.0f, 0.0f, 1.0f);
+        else
+            m_pRenderer->GetGraphicsDevice()->SetClearColor( 0.0f, 1.0f, 0.0f, 1.0f );
+        
+        bTest = !bTest;
+            
     }
 
     //-----------------------------------------------------------------------------
@@ -324,6 +332,8 @@ namespace Riot
         m_pRenderer->CreateGraphicsDevice( m_pMainWindow );
         
         m_pMessageDispatcher->RegisterListener( UI::m_pInstance, UI::MessagesReceived, UI::NumMessagesReceived);
+        
+        UI::AddButton(0, 50, 0, 50, "LOL Button!", ButtonTest );
 
         // Create the main view and camera
         CView* pView = new CView;

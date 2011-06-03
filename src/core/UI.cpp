@@ -325,8 +325,8 @@ namespace Riot
                 
                 for( uint i = 0; i < m_nNumButtons; ++i )
                 {
-                    if(   x >= m_pButtons[i].nRight
-                       && x <= m_pButtons[i].nLeft
+                    if(   x >= m_pButtons[i].nLeft
+                       && x <= m_pButtons[i].nRight
                        && y >= m_pButtons[i].nTop
                        && y <= m_pButtons[i].nBottom )
                     {

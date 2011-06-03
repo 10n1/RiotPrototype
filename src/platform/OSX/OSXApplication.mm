@@ -182,8 +182,10 @@ using namespace Riot;
     
     NSPoint pt = [theEvent locationInWindow];
     
+    NSRect bounds = [m_pView bounds];
+    
     sint16 nXPos = pt.x;
-    sint16 nYPos = pt.y;
+    sint16 nYPos = bounds.size.height - pt.y;
     
     sint nNewPos = (nXPos << 16) | (nYPos & 0xFFFF);
     
