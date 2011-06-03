@@ -158,6 +158,11 @@ extern const uint8  gs_nSIMDWidth;
 
 #define RIOT_ALIGN_MEMORY           1
 #define RIOT_USE_INTRINSICS         1
+
+#ifndef OS_OSX
 #define RIOT_USE_CUSTOM_ALLOCATOR   1
+#else
+#define RIOT_USE_CUSTOM_ALLOCATOR   0
+#endif
 
 #endif // #ifndef _CONFIG_H_

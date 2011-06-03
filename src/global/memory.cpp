@@ -91,7 +91,7 @@ namespace Riot
 } // namespace Riot
 
 //-----------------------------------------------------------------------------
-#ifdef RIOT_USE_CUSTOM_ALLOCATOR
+#if RIOT_USE_CUSTOM_ALLOCATOR
 
 #ifdef DEBUG
 
@@ -170,7 +170,7 @@ void* __cdecl operator new(size_t nSize)
 
     // Increment the counters
     AtomicAdd( &gs_nActiveMemory, nSize );
-    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<sint>(&pNewAlloc) );
+    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<nativeuint>(&pNewAlloc) );
     AtomicExchange( &gs_nPrevAllocSize, nSize );
 
     // Return it
@@ -192,7 +192,7 @@ void* __cdecl operator new[](size_t nSize)
 
     // Increment the counters
     AtomicAdd( &gs_nActiveMemory, nSize );
-    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<sint>(&pNewAlloc) );
+    AtomicExchange( (volatile sint*)&gs_pPrevAlloc, reinterpret_cast<nativeuint>(&pNewAlloc) );
     AtomicExchange( &gs_nPrevAllocSize, nSize );
 
     // Return it

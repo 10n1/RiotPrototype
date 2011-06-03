@@ -184,6 +184,16 @@ namespace Riot
     {
         COGLVertexShader* pNewShader = new COGLVertexShader;
         COGLVertexLayout* pNewLayout = new COGLVertexLayout;
+        
+#if 1
+        
+        *pShader = pNewShader;
+        
+        if( pLayout != NULL )
+            *pLayout = pNewLayout;
+        
+        return;
+#endif
 
         pNewShader->m_nShader = glCreateShader( GL_VERTEX_SHADER );
         
@@ -211,6 +221,10 @@ namespace Riot
     IGfxPixelShader* COGLDevice::CreatePixelShader( const char* szFilename, const char* szEntryPoint )
     {
         COGLPixelShader* pShader = new COGLPixelShader;
+        
+#if 1
+        return pShader;
+#endif
         
         GLint   nTestVal;
         pShader->m_nShader = glCreateShader( GL_FRAGMENT_SHADER );
@@ -278,6 +292,10 @@ namespace Riot
     IGfxTexture2D* COGLDevice::LoadTexture( const char* szFilename )
     {
         COGLTexture2D* pTexture = new COGLTexture2D;
+        
+#if 1
+        return pTexture;
+#endif
 
         glGenTextures( 1, (GLuint*)&pTexture->m_nTexture );
         // TODO: read in the texture file contents

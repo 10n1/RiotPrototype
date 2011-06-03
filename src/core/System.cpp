@@ -209,7 +209,7 @@ namespace Riot
         // Reset the running timer
         m_GlobalTimer.Reset();
 
-        m_Log.LoadFile( "Log.txt", "wt" );
+        m_Log.LoadFile( "system.log", "wt" );
     }
 
     //-----------------------------------------------------------------------------
@@ -489,7 +489,7 @@ namespace Riot
 
         CFile::TFileData data = { &m_Log, (void*)szLog, strlen( szLog ) };
 
-        m_Log.LoadFile( "Log.txt", "at" );
+        m_Log.LoadFile( "system.log", "at" );
         m_Log.WriteBytes( (void*)szLog, strlen( szLog ) );
 
         Engine::GetConsole()->AddLine( szLog );

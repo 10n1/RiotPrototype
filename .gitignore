@@ -9,9 +9,9 @@ obj
 *.exe
 *.xcbkptlist
 *.xcuserstate
-projects
 *.lik
 *.pdb
 *.ilk
 *.app
 *.idb
+*.log

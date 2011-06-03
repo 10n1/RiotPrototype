@@ -21,9 +21,11 @@ void* __cdecl operator new(size_t nSize, const char* szFile, uint nLine);
 void* __cdecl operator new[](size_t nSize, const char* szFile, uint nLine);
 #define DEBUG_NEW new( __FILE__, __LINE__ )
 #else
+
 void* __cdecl operator new(size_t nSize);
 void* __cdecl operator new[](size_t nSize);
 #define DEBUG_NEW new
+
 #endif // #ifdef DEBUG
 
 void __cdecl operator delete(void* pVoid);
