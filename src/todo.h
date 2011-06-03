@@ -53,4 +53,6 @@ Modified by:    Kyle Weicht
     tutorial
     console
 
+    We need to come up with a way to handle array positions changing (when we remove an object from the middle of an array)
+
 #endif // #ifndef _TODO_H_

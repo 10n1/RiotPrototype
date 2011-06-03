@@ -22,7 +22,7 @@ namespace Riot
         enum
         {
             DOWN    = 0x1,
-            UP      = 0,
+            UP      = 0x0,
         };
 
     public:

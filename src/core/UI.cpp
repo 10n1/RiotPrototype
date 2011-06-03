@@ -20,6 +20,12 @@ namespace Riot
 
     //////////////////////////////////////////
     // static members
+    const MessageType    UI::MessagesReceived[] =
+    {
+        mMouseButtonPressed,
+    };
+    const uint           UI::NumMessagesReceived = ARRAY_LENGTH(MessagesReceived);
+    
     float32                UI::m_fScreenX      = 0.0f;
     float32                UI::m_fScreenY      = 0.0f;
     IGraphicsDevice*       UI::m_pDevice       = NULL;
@@ -31,6 +37,10 @@ namespace Riot
     IGfxBlendState*        UI::m_pFontBlend    = NULL;
     IGfxBuffer*            UI::m_pVertexBuffer = NULL;
     static const uint      gs_nMaxNumChars     = 255 * 6;
+    
+    
+    UIButton            UI::m_pButtons[MAX_BUTTONS] = { 0 };
+    atomic_t            UI::m_nNumButtons = 0;
 
     static const uint   gs_nMaxNumStrings   = 100;
     UIString*           UI::m_pUIStrings[2] = { 0 };//new UIString[ gs_nMaxNumStrings ];
@@ -153,6 +163,35 @@ namespace Riot
         m_pCurrStrings[ nIndex ].nTop = nTop;
         strcpy( m_pCurrStrings[ nIndex ].szText, szText );
     }
+    
+    //-----------------------------------------------------------------------------
+    //  AddButton
+    //  Adds a button to render, returning the id
+    //-----------------------------------------------------------------------------
+    uint UI::AddButton( uint nLeft, uint nRight, uint nTop, uint nBottom, const char* szText, ButtonFunc* pFunc )
+    {
+        ASSERT( m_nNumButtons < MAX_BUTTONS );
+        sint nIndex = AtomicIncrement( &m_nNumButtons ) - 1;
+        
+        ASSERT( pFunc );
+        
+        m_pButtons[ nIndex ].nLeft = nLeft;
+        m_pButtons[ nIndex ].nTop = nTop;
+        m_pButtons[ nIndex ].nRight = nRight;
+        m_pButtons[ nIndex ].nBottom = nBottom;
+        m_pButtons[ nIndex ].pFunc = pFunc;
+        strcpy(m_pButtons[nIndex].szText, szText);
+        
+        return nIndex;
+    }
+    //-----------------------------------------------------------------------------
+    //  RemoveButton
+    //  Removes a button
+    //-----------------------------------------------------------------------------
+    void UI::RemoveButton( uint nIndex )
+    {
+        m_pButtons[ AtomicDecrement(&m_nNumButtons) ] = m_pButtons[nIndex];
+    }
 
     //-----------------------------------------------------------------------------
     //  Draw()
@@ -167,6 +206,12 @@ namespace Riot
         }
 
         //AtomicExchange( &m_nNumStrings, 0 );
+        
+        // Draw all buttons, just as strings for now
+        for( uint i = 0; i < m_nNumButtons; ++i )
+        {
+            DrawString( pDevice, m_pButtons[i].nLeft, m_pButtons[i].nTop, m_pButtons[i].szText);
+        }
     }
 
     //-----------------------------------------------------------------------------
@@ -256,6 +301,14 @@ namespace Riot
         pDevice->Draw( nNumVertices );
 
         SAFE_DELETE_ARRAY( pVertices );
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  ProcessMessage
+    //  Processes the input message
+    //-----------------------------------------------------------------------------
+    void UI::ProcessMessage( const TMessage& msg )
+    {
     }
 
 }

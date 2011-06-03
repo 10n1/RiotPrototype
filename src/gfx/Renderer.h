@@ -409,7 +409,7 @@ namespace Riot
         //////////////////////////////////////////
         // Set the material
         uint m = DecodeMaterial( nCmd );
-        switch( DecodeMaterial( nCmd ) )
+        switch( m )
         {
         case eMatStandard:
             m_pDevice->SetFillMode( GFX_FILL_SOLID );

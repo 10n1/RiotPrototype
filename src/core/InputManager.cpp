@@ -95,7 +95,12 @@ namespace Riot
         {
             if( m_nMouseButtons[i] == DOWN )
             {
-                Engine::PostMsg( TMessage( mMouseButtonDown, i ) );
+                
+                uint64 nMsg = i;
+                nMsg = nMsg << 32;
+                nMsg |= m_nMousePosition;
+                
+                Engine::PostMsg( TMessage( mMouseButtonDown, nMsg ) );
             }
         }
     }
@@ -159,8 +164,12 @@ namespace Riot
                 if( theButton == UP )
                 {
                     theButton = DOWN;
+                    
+                    uint64 nMsg = nButton;
+                    nMsg = nMsg << 32;
+                    nMsg |= m_nMousePosition;
 
-                    Engine::SendMsg( TMessage( mMouseButtonPressed, nButton ) );
+                    Engine::SendMsg( TMessage( mMouseButtonPressed, nMsg ) );
                 }
 
                 break;
@@ -172,9 +181,13 @@ namespace Riot
 
                 if( theButton != UP )
                 {
-                    theButton = UP;
+                    theButton = UP;                    
+                    
+                    uint64 nMsg = nButton;
+                    nMsg = nMsg << 32;
+                    nMsg |= m_nMousePosition;
 
-                    Engine::PostMsg( TMessage( mMouseButtonUp, nButton ) );
+                    Engine::PostMsg( TMessage( mMouseButtonUp, nMsg ) );
                 }
 
                 break;

@@ -10,19 +10,32 @@ Created:        4/24/2011
 #include "common.h"
 #include "Graphics.h"
 #include "GraphicsObjects.h"
+#include "IListener.h"
 
 namespace Riot
 {
     //////////////////////////////////////////
     // UI item definition
+    typedef void (ButtonFunc)(void);
+    
     typedef struct _UIString
     {
         uint nLeft;
         uint nTop;
         char szText[255];
     } UIString;
+    
+    typedef struct _UIButton
+    {
+        char        szText[256];
+        ButtonFunc* pFunc;
+        uint        nLeft;
+        uint        nRight;
+        uint        nTop;
+        uint        nBottom;
+    } UIButton;
 
-    class UI
+    class UI : public IListener
     {
         //---------------------------------------------------------------------------------
         //  Methods
@@ -52,16 +65,41 @@ namespace Riot
         //  Release the memory allocated on Init
         //-----------------------------------------------------------------------------
         static void Destroy( void );
+        //-----------------------------------------------------------------------------
+        //  AddButton
+        //  Adds a button to render, returning the id
+        //-----------------------------------------------------------------------------
+        static uint AddButton( uint nLeft, uint nRight, uint nTop, uint nBottom, const char* szText, ButtonFunc* pFunc );
+        //-----------------------------------------------------------------------------
+        //  RemoveButton
+        //  Removes a button
+        //-----------------------------------------------------------------------------
+        static void RemoveButton( uint nIndex );
         
         //-----------------------------------------------------------------------------
         //  SwapBuffers
         //  Swaps last and previous frames buffers
         //-----------------------------------------------------------------------------
         static void SwapBuffers( void );
+        
+        //-----------------------------------------------------------------------------
+        //  ProcessMessage
+        //  Processes the input message
+        //-----------------------------------------------------------------------------
+        void ProcessMessage( const TMessage& msg );        
 
         //---------------------------------------------------------------------------------
         //  Members
     private:
+        static const MessageType    MessagesReceived[];
+        static const uint           NumMessagesReceived;
+        
+        enum 
+        { 
+            MAX_BUTTONS = 128,
+            MAX_STRINGS = 128,
+        };
+        
         static float32 m_fScreenX;
         static float32 m_fScreenY;
 
@@ -73,6 +111,9 @@ namespace Riot
         static IGfxTexture2D* m_pFontTexture;
         static IGfxBlendState* m_pFontBlend;
         static IGfxBuffer* m_pVertexBuffer;
+        
+        static UIButton m_pButtons[MAX_BUTTONS];
+        static atomic_t m_nNumButtons;
 
         static UIString* m_pUIStrings[2];
         static UIString* m_pCurrStrings;

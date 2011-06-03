@@ -487,15 +487,15 @@ namespace Riot
         sprintf( szLog, "%f:\t%s\n", m_GlobalTimer.GetRunningTime(), szText );
 
 
-        CFile::TFileData data = { &m_Log, (void*)szLog, strlen( szLog ) };
+        static CFile::TFileData data = { &m_Log, (void*)szLog, strlen( szLog ) };
 
         m_Log.LoadFile( "system.log", "at" );
-        m_Log.WriteBytes( (void*)szLog, strlen( szLog ) );
+        //m_Log.WriteBytes( (void*)szLog, strlen( szLog ) );
 
         Engine::GetConsole()->AddLine( szLog );
 
-        //pTaskManager->WaitForCompletion( m_nLogTask );
-        //m_nLogTask = pTaskManager->PushTask( CFile::AsyncWriteBytes, &data, 1, 1 );
+        pTaskManager->WaitForCompletion( m_nLogTask );
+        m_nLogTask = pTaskManager->PushTask( CFile::AsyncWriteBytes, &data, 1, 1 );
     }
 
 } // namespace Riot

@@ -18,8 +18,6 @@ int main( int argc, char* argv[] )
     //////////////////////////////////////////
     // Free our memory last
     atexit( Riot::Memory::ReleasePool );
-    
-    int* x = new int;
 
     //////////////////////////////////////////
     // Run the engine

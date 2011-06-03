@@ -59,7 +59,7 @@ namespace Riot
             , nMessage( 0 )
         {
         }
-        TMessage( MessageType type, uint msg )
+        TMessage( MessageType type, uint64 msg )
             : nType( type )
             , nMessage( msg )
         {
