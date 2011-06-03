@@ -109,6 +109,8 @@ using namespace Riot;
                                                     backing:NSBackingStoreBuffered 
                                                       defer:YES];
     
+    [m_pSystemWindow setAcceptsMouseMovedEvents:TRUE];
+    
     m_pMainWindow = pWindow;
     
     m_pView = [[COSXDefaultView alloc] initWithFrame:NSMakeRect(0, 0, nWidth, nHeight)];
@@ -165,6 +167,31 @@ using namespace Riot;
     char c = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     
     Engine::PostMsg( TMessage( mHardwareKeyboardUp, c ) );
+}
+-(void) mouseDown:(NSEvent *)theEvent
+{
+    Engine::PostMsg( TMessage( mHardwareMouseDown, MOUSE_L_BUTTON )	);
+}
+-(void) mouseUp:(NSEvent *)theEvent
+{
+    Engine::PostMsg( TMessage( mHardwareMouseUp, MOUSE_L_BUTTON )	);
+}
+-(void) mouseMoved:(NSEvent *)theEvent
+{
+    static sint nPrevMousePosition  = 0;
+    
+    NSPoint pt = [theEvent locationInWindow];
+    
+    sint16 nXPos = pt.x;
+    sint16 nYPos = pt.y;
+    
+    sint nNewPos = (nXPos << 16) | (nYPos & 0xFFFF);
+    
+    if( nNewPos != nPrevMousePosition )
+    {
+        nPrevMousePosition = nNewPos;
+        Engine::PostMsg( TMessage( mHardwareMouseMove, nNewPos ) );
+    }
 }
 
 @end
@@ -259,6 +286,11 @@ using namespace Riot;
     return YES;
 }
 
+-(BOOL) setAcceptsMouseMovedEvents
+{
+    return YES;
+}
+
 -(void) m_pOwnerApplication:(NSApplication*)pApplication
 {
     m_pOwnerApplication = pApplication;
@@ -283,5 +315,17 @@ using namespace Riot;
     [ m_pOwnerApplication keyUp:theEvent];
 }
 
+-(void) mouseDown:(NSEvent *)theEvent
+{
+    [ m_pOwnerApplication mouseDown:theEvent ];   
+}
+-(void) mouseUp:(NSEvent *)theEvent
+{
+    [ m_pOwnerApplication mouseUp:theEvent];   
+}
+-(void) mouseMoved:(NSEvent *)theEvent
+{
+    [ m_pOwnerApplication mouseMoved:theEvent];
+}
 
 @end

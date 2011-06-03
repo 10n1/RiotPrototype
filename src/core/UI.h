@@ -37,6 +37,7 @@ namespace Riot
 
     class UI : public IListener
     {
+        friend class Engine;
         //---------------------------------------------------------------------------------
         //  Methods
     public:
@@ -93,6 +94,8 @@ namespace Riot
     private:
         static const MessageType    MessagesReceived[];
         static const uint           NumMessagesReceived;
+        
+        static UI*  m_pInstance;
         
         enum 
         { 

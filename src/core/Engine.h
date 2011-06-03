@@ -87,6 +87,12 @@ namespace Riot
         inline static CRenderer*        GetRenderer( void );
         inline static CObjectManager*   GetObjectManager( void );
         inline static CConsole*         GetConsole( void );   
+        
+        
+        //-----------------------------------------------------------------------------
+        //  ButtonTest
+        //-----------------------------------------------------------------------------
+        static void ButtonTest( void );
 
     private:    
         //-----------------------------------------------------------------------------

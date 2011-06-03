@@ -24,6 +24,7 @@ Modified by:    Kyle Weicht
 #include "rendersystem.h"
 #include "collisionsystem.h"
 #include "physicssystem.h"
+#include "UI.h"
 
 #include <stdio.h> // included for printf
 
@@ -287,6 +288,14 @@ namespace Riot
     {
         m_pMessageDispatcher->RegisterListener( pListener, pMessages, nCount );
     }
+    
+    //-----------------------------------------------------------------------------
+    //  ButtonTest
+    //-----------------------------------------------------------------------------
+    void Engine::ButtonTest( void )
+    {
+        m_pRenderer->GetGraphicsDevice()->SetClearColor( 1.0f, 0.0f, 0.0f, 1.0f);
+    }
 
     //-----------------------------------------------------------------------------
     //  Initialize
@@ -313,6 +322,8 @@ namespace Riot
         m_pMainWindow = System::CreateMainWindow( 1024, 768 );
         // Load the graphics device
         m_pRenderer->CreateGraphicsDevice( m_pMainWindow );
+        
+        m_pMessageDispatcher->RegisterListener( UI::m_pInstance, UI::MessagesReceived, UI::NumMessagesReceived);
 
         // Create the main view and camera
         CView* pView = new CView;

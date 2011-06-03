@@ -26,6 +26,8 @@ namespace Riot
     };
     const uint           UI::NumMessagesReceived = ARRAY_LENGTH(MessagesReceived);
     
+    UI*                    UI::m_pInstance = NULL;
+    
     float32                UI::m_fScreenX      = 0.0f;
     float32                UI::m_fScreenY      = 0.0f;
     IGraphicsDevice*       UI::m_pDevice       = NULL;
@@ -55,6 +57,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void UI::Initialize( IGraphicsDevice* pDevice )
     {
+        m_pInstance = new UI;
+        
         m_pUIStrings[0] = new UIString[ gs_nMaxNumStrings ];
         m_pUIStrings[1] = new UIString[ gs_nMaxNumStrings ];
 
@@ -309,6 +313,32 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void UI::ProcessMessage( const TMessage& msg )
     {
+        switch( msg.nType )
+        {
+            case mMouseButtonPressed:
+            {                
+                uint64 nMsg = msg.nMessage;
+                
+                uint8 nButton = nMsg >> 32;
+                sint x = (nMsg >> 16) & 0xFFFF;
+                sint y = (nMsg >> 0 ) & 0xFFFF;
+                
+                for( uint i = 0; i < m_nNumButtons; ++i )
+                {
+                    if(   x >= m_pButtons[i].nRight
+                       && x <= m_pButtons[i].nLeft
+                       && y >= m_pButtons[i].nTop
+                       && y <= m_pButtons[i].nBottom )
+                    {
+                        m_pButtons[i].pFunc();
+                    }
+                }
+                
+                break;
+            }
+            default:
+                break;
+        }
     }
 
 }
