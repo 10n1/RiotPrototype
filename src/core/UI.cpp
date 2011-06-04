@@ -240,6 +240,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void UI::DrawButton( IGraphicsDevice* pDevice, uint nIndex )
     {        
+        // Shouldn't an alpha ov 0.25 make the button transparent?
         static VPosColorTex pVerts[] = 
         {
             { RVector3( 0.0f, 0.0f, 0.0f ), RVector4( 1.0f, 1.0f, 1.0f, 0.25f ), RVector2( 0.0f, 0.0f ) },
