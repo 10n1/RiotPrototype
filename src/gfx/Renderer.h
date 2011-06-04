@@ -250,6 +250,9 @@ namespace Riot
         inline void SetPixelShader( PixelShader nShader );
         inline void SetVertexShader( VertexShader nShader );
         inline void SetSamplerState( SamplerState nState );
+
+        inline uint GetWidth( void );
+        inline uint GetHeight( void );
         
         //-----------------------------------------------------------------------------
         //  Sort
@@ -399,6 +402,9 @@ namespace Riot
 
         m_pDevice->SetPSSamplerState( m_ppSamplerStates[ nState ] );
     }
+    
+    uint CRenderer::GetWidth( void ) { return m_nWidth; }
+    uint CRenderer::GetHeight( void ) { return m_nHeight; }
 
     //-----------------------------------------------------------------------------
     //  ProcessCommand

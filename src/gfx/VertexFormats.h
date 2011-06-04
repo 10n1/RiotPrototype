@@ -149,7 +149,7 @@ namespace Riot
     struct VPosColorTex
     {
         RVector3 Pos;
-        RVector3 Color;
+        RVector4 Color;
         RVector2 TexCoord;
 
         static InputElementLayout Layout[];

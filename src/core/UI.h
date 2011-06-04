@@ -14,6 +14,8 @@ Created:        4/24/2011
 
 namespace Riot
 {
+    class IGfxVertexBuffer;
+
     //////////////////////////////////////////
     // UI item definition
     typedef void (ButtonFunc)(void);
@@ -28,11 +30,12 @@ namespace Riot
     typedef struct _UIButton
     {
         char        szText[256];
-        ButtonFunc* pFunc;
-        uint        nLeft;
-        uint        nRight;
-        uint        nTop;
-        uint        nBottom;
+        ButtonFunc*         pFunc;
+        IGfxVertexBuffer*   pVB;
+        uint    nLeft;
+        uint    nRight;
+        uint    nTop;
+        uint    nBottom;
     } UIButton;
 
     class UI : public IListener
@@ -56,6 +59,7 @@ namespace Riot
         //  Draw szText at (nLeft, nTop)
         //-----------------------------------------------------------------------------
         static void DrawString( IGraphicsDevice* pDevice, uint nLeft, uint nTop, const char* szText );
+        static void DrawButton( IGraphicsDevice* pDevice, uint nIndex );
         //-----------------------------------------------------------------------------
         //  Draw()
         //  Draw all the strings
@@ -114,6 +118,8 @@ namespace Riot
         static IGfxTexture2D* m_pFontTexture;
         static IGfxBlendState* m_pFontBlend;
         static IGfxBuffer* m_pVertexBuffer;
+        static IGfxTexture2D* m_pWhiteTexture;
+        static IGfxBuffer* m_pIndexBuffer;
         
         static UIButton m_pButtons[MAX_BUTTONS];
         static atomic_t m_nNumButtons;

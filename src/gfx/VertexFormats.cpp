@@ -29,7 +29,7 @@ namespace Riot
     InputElementLayout VPosColorTex::Layout[] = 
     { 
         { GFX_SEMANTIC_POSITION, 0, GFX_FORMAT_FLOAT3, 0, GFX_INPUT_DATA_PER_VERTEX },
-        { GFX_SEMANTIC_COLOR,    0, GFX_FORMAT_FLOAT3, 0, GFX_INPUT_DATA_PER_VERTEX },
+        { GFX_SEMANTIC_COLOR,    0, GFX_FORMAT_FLOAT4, 0, GFX_INPUT_DATA_PER_VERTEX },
         { GFX_SEMANTIC_TEXCOORD, 0, GFX_FORMAT_FLOAT2, 0, GFX_INPUT_DATA_PER_VERTEX },
     };
     IGfxVertexLayout*   VPosColorTex::VertexLayoutObject = NULL;
