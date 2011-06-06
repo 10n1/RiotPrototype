@@ -14,18 +14,30 @@ Modified by:    Kyle Weicht
 #include "Graphics.h"
 #include "SystemOpenGL.h"
 #include "atomic.h"
+#include "TaskManager.h"
+#include "Console.h"
 
 #ifdef OS_WINDOWS
-#include <Windows.h>
-#include "Win32Application.h"
-#include <intrin.h>
+    #include <Windows.h>
+    #include "Win32Application.h"
+    #include <intrin.h>
+    #include <WinSock2.h>
+
 #elif defined( OS_OSX )
-#include <sys/types.h>
-#include <sys/sysctl.h>
-#include "OSXApplication.h"
+    #include <sys/types.h>
+    #include <sys/sysctl.h>
+    #include "OSXApplication.h"
 #else
 // Linux
 #endif
+
+#ifndef OS_WINDOWS
+
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <fcntl.h>
+
+#endif // #ifndef OS_WINDOWS
 
 #ifndef OS_WINDOWS
 void __cpuid( int* a, int b )
@@ -189,10 +201,12 @@ namespace Riot
     /***************************************\
     | System members
     \***************************************/
+    CFile       System::m_Log;
     CTimer      System::m_GlobalTimer;
     CWindow*    System::m_pMainWindow           = NULL;
     IGraphicsDevice*  System::m_pGraphics       = NULL;
     handle      System::m_pApplication = NULL;
+    task_handle_t    System::m_nLogTask = TASK_INVALID_HANDLE;
 
     /***************************************\
     | Public methods
@@ -204,6 +218,18 @@ namespace Riot
     {
         // Reset the running timer
         m_GlobalTimer.Reset();
+
+        m_Log.LoadFile( "system.log", "wt" );
+
+        //////////////////////////////////////////
+        //  Initialize the networking API
+
+#ifdef OS_WINDOWS
+        WSADATA WsaData;
+        int32 nResult = WSAStartup( MAKEWORD(2,2), &WsaData );
+        ASSERT( nResult == NO_ERROR );
+#endif
+
     }
 
     //-----------------------------------------------------------------------------
@@ -212,6 +238,9 @@ namespace Riot
     void System::Shutdown( void )
     {
 #ifdef OS_WINDOWS
+        // Shutdown Winsock
+        WSACleanup();
+
         SAFE_DELETE( m_pApplication );
 #endif // #ifdef OS_WINDOWS
     }
@@ -466,6 +495,30 @@ namespace Riot
         
         // Grab a reference to it
         m_pGraphics = pDevice;
+    }
+
+    //-----------------------------------------------------------------------------
+    //  Log
+    //  Logs a string into the system log
+    //-----------------------------------------------------------------------------
+    void System::Log( const char* szText )
+    {
+        static CTaskManager* pTaskManager = Engine::GetTaskManager();
+
+        char szLog[1024] = { 0 };
+        
+        sprintf( szLog, "%f:\t%s\n", m_GlobalTimer.GetRunningTime(), szText );
+
+
+        static CFile::TFileData data = { &m_Log, (void*)szLog, strlen( szLog ) };
+
+        m_Log.LoadFile( "system.log", "at" );
+        //m_Log.WriteBytes( (void*)szLog, strlen( szLog ) );
+
+        Engine::GetConsole()->AddLine( szLog );
+
+        pTaskManager->WaitForCompletion( m_nLogTask );
+        m_nLogTask = pTaskManager->PushTask( CFile::AsyncWriteBytes, &data, 1, 1 );
     }
 
 } // namespace Riot

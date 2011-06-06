@@ -11,15 +11,23 @@ namespace Riot
 {
     //////////////////////////////////////////
     // UI vertex definition
-    typedef struct _UIVertex
-    {
-        RVector3 vPos;
-        RVector3 vColor;
-        RVector2 vTexcoord;
-    } UIVertex;
+    //typedef struct _VPosColorTex
+    //{
+    //    RVector3 vPos;
+    //    RVector4 vColor;
+    //    RVector2 vTexcoord;
+    //} VPosColorTex;
 
     //////////////////////////////////////////
     // static members
+    const MessageType    UI::MessagesReceived[] =
+    {
+        mMouseButtonPressed,
+    };
+    const uint           UI::NumMessagesReceived = ARRAY_LENGTH(MessagesReceived);
+    
+    UI*                    UI::m_pInstance = NULL;
+    
     float32                UI::m_fScreenX      = 0.0f;
     float32                UI::m_fScreenY      = 0.0f;
     IGraphicsDevice*       UI::m_pDevice       = NULL;
@@ -28,9 +36,15 @@ namespace Riot
     IGfxVertexLayout*      UI::m_pInputLayout  = NULL;
     IGfxSamplerState*      UI::m_pFontSampler  = NULL;
     IGfxTexture2D*         UI::m_pFontTexture  = NULL;
+    IGfxTexture2D*         UI::m_pWhiteTexture = NULL;
     IGfxBlendState*        UI::m_pFontBlend    = NULL;
     IGfxBuffer*            UI::m_pVertexBuffer = NULL;
+    IGfxBuffer*            UI::m_pIndexBuffer  = NULL;
     static const uint      gs_nMaxNumChars     = 255 * 6;
+    
+    
+    UIButton            UI::m_pButtons[MAX_BUTTONS] = { 0 };
+    atomic_t            UI::m_nNumButtons = 0;
 
     static const uint   gs_nMaxNumStrings   = 100;
     UIString*           UI::m_pUIStrings[2] = { 0 };//new UIString[ gs_nMaxNumStrings ];
@@ -45,6 +59,8 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void UI::Initialize( IGraphicsDevice* pDevice )
     {
+        m_pInstance = new UI;
+        
         m_pUIStrings[0] = new UIString[ gs_nMaxNumStrings ];
         m_pUIStrings[1] = new UIString[ gs_nMaxNumStrings ];
 
@@ -56,7 +72,7 @@ namespace Riot
 
         //////////////////////////////////////////
         // Load vertex shader
-        pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/UI.hlsl",
+        pDevice->CreateVertexShaderAndLayout( "Assets/Shaders/UI",
                                               "VS",
                                               VPosColorTex::Layout,
                                               VPosColorTex::LayoutSize,
@@ -65,11 +81,21 @@ namespace Riot
 
         //////////////////////////////////////////
         // Load pixel shader
-        m_pPixelShader = pDevice->CreatePixelShader( "Assets/Shaders/UI.hlsl", "PS" );
+        m_pPixelShader = pDevice->CreatePixelShader( "Assets/Shaders/UI", "PS" );
 
         //////////////////////////////////////////
         // Load the font texture
         m_pFontTexture = pDevice->LoadTexture( "Assets/Textures/Font.dds" );
+        m_pWhiteTexture = pDevice->LoadTexture( "Assets/Textures/white.png" );
+
+        
+        static uint16   pIndices[] =
+        {
+            0, 1, 2,
+            1, 3, 2,
+        };
+
+        m_pIndexBuffer = pDevice->CreateIndexBuffer( sizeof( pIndices ), pIndices, GFX_BUFFER_USAGE_IMMUTABLE );
 
 
         //////////////////////////////////////////
@@ -100,16 +126,16 @@ namespace Riot
 
         //////////////////////////////////////////
         // Init the vertex buffer
-        UIVertex*               pVertices       = new UIVertex[ gs_nMaxNumChars ];
+        VPosColorTex*               pVertices       = new VPosColorTex[ gs_nMaxNumChars ];
 
         for( uint i = 0; i < gs_nMaxNumChars; ++i )
         {
-            pVertices[ i ].vPos = RVector3( 0.0f, 0.0f, 0.0f );
-            pVertices[ i ].vColor = RVector3( 1.0f, 0.0f, 0.0f );
-            pVertices[ i ].vTexcoord = RVector2( 0.0f, 0.0f );
+            pVertices[ i ].Pos = RVector3( 0.0f, 0.0f, 0.0f );
+            pVertices[ i ].Color = RVector4( 1.0f, 0.0f, 0.0f, 1.0f );
+            pVertices[ i ].TexCoord = RVector2( 0.0f, 0.0f );
         }
 
-        m_pVertexBuffer = pDevice->CreateVertexBuffer( gs_nMaxNumChars * sizeof( UIVertex ), pVertices, Riot::GFX_BUFFER_USAGE_DYNAMIC );
+        m_pVertexBuffer = pDevice->CreateVertexBuffer( gs_nMaxNumChars * sizeof( VPosColorTex ), pVertices, Riot::GFX_BUFFER_USAGE_DYNAMIC );
 
         SAFE_DELETE_ARRAY( pVertices );
     }
@@ -124,10 +150,12 @@ namespace Riot
         SAFE_DELETE_ARRAY( m_pUIStrings[1] );
 
         SAFE_RELEASE( m_pVertexShader );
+        SAFE_RELEASE( m_pIndexBuffer );
         SAFE_RELEASE( m_pPixelShader );
         SAFE_RELEASE( m_pInputLayout );
         SAFE_RELEASE( m_pFontSampler );
         SAFE_RELEASE( m_pFontTexture );
+        SAFE_RELEASE( m_pWhiteTexture );
         SAFE_RELEASE( m_pVertexBuffer );
     }
 
@@ -153,6 +181,35 @@ namespace Riot
         m_pCurrStrings[ nIndex ].nTop = nTop;
         strcpy( m_pCurrStrings[ nIndex ].szText, szText );
     }
+    
+    //-----------------------------------------------------------------------------
+    //  AddButton
+    //  Adds a button to render, returning the id
+    //-----------------------------------------------------------------------------
+    uint UI::AddButton( uint nLeft, uint nRight, uint nTop, uint nBottom, const char* szText, ButtonFunc* pFunc )
+    {
+        ASSERT( m_nNumButtons < MAX_BUTTONS );
+        sint nIndex = AtomicIncrement( &m_nNumButtons ) - 1;
+        
+        ASSERT( pFunc );
+        
+        m_pButtons[ nIndex ].nLeft = nLeft;
+        m_pButtons[ nIndex ].nTop = nTop;
+        m_pButtons[ nIndex ].nRight = nRight;
+        m_pButtons[ nIndex ].nBottom = nBottom;
+        m_pButtons[ nIndex ].pFunc = pFunc;
+        strcpy(m_pButtons[nIndex].szText, szText);
+        
+        return nIndex;
+    }
+    //-----------------------------------------------------------------------------
+    //  RemoveButton
+    //  Removes a button
+    //-----------------------------------------------------------------------------
+    void UI::RemoveButton( uint nIndex )
+    {
+        m_pButtons[ AtomicDecrement(&m_nNumButtons) ] = m_pButtons[nIndex];
+    }
 
     //-----------------------------------------------------------------------------
     //  Draw()
@@ -167,12 +224,56 @@ namespace Riot
         }
 
         //AtomicExchange( &m_nNumStrings, 0 );
+        
+        // Draw all buttons, just as strings for now
+        pDevice->SetIndexBuffer( m_pIndexBuffer, 2 );
+        for( uint i = 0; i < m_nNumButtons; ++i )
+        {
+            DrawButton( pDevice, i );
+            DrawString( pDevice, m_pButtons[i].nLeft, m_pButtons[i].nTop, m_pButtons[i].szText );
+        }
     }
 
     //-----------------------------------------------------------------------------
     //  DrawString
     //  Draw szText at (nLeft, nTop)
     //-----------------------------------------------------------------------------
+    void UI::DrawButton( IGraphicsDevice* pDevice, uint nIndex )
+    {        
+        // Shouldn't an alpha ov 0.25 make the button transparent?
+        static VPosColorTex pVerts[] = 
+        {
+            { RVector3( 0.0f, 0.0f, 0.0f ), RVector4( 1.0f, 1.0f, 1.0f, 0.25f ), RVector2( 0.0f, 0.0f ) },
+            { RVector3( 0.0f, 0.0f, 0.0f ), RVector4( 1.0f, 1.0f, 1.0f, 0.25f ), RVector2( 0.0f, 1.0f ) },
+            { RVector3( 0.0f, 0.0f, 0.0f ), RVector4( 1.0f, 1.0f, 1.0f, 0.25f ), RVector2( 1.0f, 0.0f ) },
+            { RVector3( 0.0f, 0.0f, 0.0f ), RVector4( 1.0f, 1.0f, 1.0f, 0.25f ), RVector2( 1.0f, 1.0f ) },
+        };
+
+        float fWidth = Engine::GetRenderer()->GetWidth();
+        float fHeight = Engine::GetRenderer()->GetHeight();
+
+        pVerts[ 0 ].Pos = RVector3( m_pButtons[ nIndex ].nLeft/fWidth, m_pButtons[ nIndex ].nBottom/fHeight, 0.0f );
+        pVerts[ 1 ].Pos = RVector3( m_pButtons[ nIndex ].nLeft/fWidth, m_pButtons[ nIndex ].nTop/fHeight, 0.0f );
+        pVerts[ 2 ].Pos = RVector3( m_pButtons[ nIndex ].nRight/fWidth, m_pButtons[ nIndex ].nBottom/fHeight, 0.0f );
+        pVerts[ 3 ].Pos = RVector3( m_pButtons[ nIndex ].nRight/fWidth, m_pButtons[ nIndex ].nTop/fHeight, 0.0f );
+
+        pVerts[0].Pos -= RVector3( 1.0f, 1.0f, 0.0f );
+        pVerts[1].Pos -= RVector3( 1.0f, 1.0f, 0.0f );
+        pVerts[2].Pos -= RVector3( 1.0f, 1.0f, 0.0f );
+        pVerts[3].Pos -= RVector3( 1.0f, 1.0f, 0.0f );
+
+        pVerts[0].Pos.y *= -1;
+        pVerts[1].Pos.y *= -1;
+        pVerts[2].Pos.y *= -1;
+        pVerts[3].Pos.y *= -1;
+
+        pDevice->SetPSTexture( 0, m_pWhiteTexture );
+        pDevice->UpdateBuffer( m_pVertexBuffer, pVerts, 4 * VPosColorTex::VertexStride );
+        pDevice->SetVertexBuffer( 0, m_pVertexBuffer, VPosColorTex::VertexStride );
+        pDevice->DrawIndexedPrimitive( 6 );
+
+    }
+
     void UI::DrawString( IGraphicsDevice* pDevice, uint nLeft, uint nTop, const char* szText )
     {
         float32 fScaleFactor = 2.0f;
@@ -188,7 +289,7 @@ namespace Riot
 
         // Vertices info
         uint nNumVertices = nNumChars * 6;
-        UIVertex* pVertices = new UIVertex[ nNumVertices ];
+        VPosColorTex* pVertices = new VPosColorTex[ nNumVertices ];
         uint j = 0;
 
         // Create quads for the string
@@ -211,34 +312,34 @@ namespace Riot
 
             // Triangle 1
             // left bottom
-            pVertices[ j + 0 ].vPos      = RVector3( fLeftX,  fBottomY, 0.0f );
-            pVertices[ j + 0 ].vColor    = RVector3( 1.0f, 1.0f, 0.0f );
-            pVertices[ j + 0 ].vTexcoord = RVector2( fTexcoord_x0, fTexcoord_y1 );
+            pVertices[ j + 0 ].Pos      = RVector3( fLeftX,  fBottomY, 0.0f );
+            pVertices[ j + 0 ].Color    = RVector4( 1.0f, 1.0f, 0.0f, 1.0f );
+            pVertices[ j + 0 ].TexCoord = RVector2( fTexcoord_x0, fTexcoord_y1 );
             // left top
-            pVertices[ j + 1 ].vPos      = RVector3( fLeftX,  fTopY, 0.0f );
-            pVertices[ j + 1 ].vColor    = RVector3( 1.0f, 1.0f, 0.0f );
-            pVertices[ j + 1 ].vTexcoord = RVector2( fTexcoord_x0, fTexcoord_y0 );
+            pVertices[ j + 1 ].Pos      = RVector3( fLeftX,  fTopY, 0.0f );
+            pVertices[ j + 1 ].Color    = RVector4( 1.0f, 1.0f, 0.0f, 1.0f );
+            pVertices[ j + 1 ].TexCoord = RVector2( fTexcoord_x0, fTexcoord_y0 );
             // right top
-            pVertices[ j + 2 ].vPos      = RVector3( fRightX, fTopY, 0.0f );
-            pVertices[ j + 2 ].vColor    = RVector3( 1.0f, 1.0f, 0.0f );
-            pVertices[ j + 2 ].vTexcoord = RVector2( fTexcoord_x1, fTexcoord_y0 );
+            pVertices[ j + 2 ].Pos      = RVector3( fRightX, fTopY, 0.0f );
+            pVertices[ j + 2 ].Color    = RVector4( 1.0f, 1.0f, 0.0f, 1.0f );
+            pVertices[ j + 2 ].TexCoord = RVector2( fTexcoord_x1, fTexcoord_y0 );
             // Triangle 2
             // left bottom
-            pVertices[ j + 3 ].vPos      = RVector3( fLeftX,  fBottomY, 0.0f );
-            pVertices[ j + 3 ].vColor    = RVector3( 1.0f, 1.0f, 0.0f );
-            pVertices[ j + 3 ].vTexcoord = RVector2( fTexcoord_x0, fTexcoord_y1 );
+            pVertices[ j + 3 ].Pos      = RVector3( fLeftX,  fBottomY, 0.0f );
+            pVertices[ j + 3 ].Color    = RVector4( 1.0f, 1.0f, 0.0f, 1.0f );
+            pVertices[ j + 3 ].TexCoord = RVector2( fTexcoord_x0, fTexcoord_y1 );
             // right top
-            pVertices[ j + 4 ].vPos      = RVector3( fRightX, fTopY, 0.0f );
-            pVertices[ j + 4 ].vColor    = RVector3( 1.0f, 1.0f, 0.0f );
-            pVertices[ j + 4 ].vTexcoord = RVector2( fTexcoord_x1, fTexcoord_y0 );
+            pVertices[ j + 4 ].Pos      = RVector3( fRightX, fTopY, 0.0f );
+            pVertices[ j + 4 ].Color    = RVector4( 1.0f, 1.0f, 0.0f, 1.0f );
+            pVertices[ j + 4 ].TexCoord = RVector2( fTexcoord_x1, fTexcoord_y0 );
             // right bottom
-            pVertices[ j + 5 ].vPos      = RVector3( fRightX, fBottomY, 0.0f );
-            pVertices[ j + 5 ].vColor    = RVector3( 1.0f, 1.0f, 0.0f );
-            pVertices[ j + 5 ].vTexcoord = RVector2( fTexcoord_x1, fTexcoord_y1 );
+            pVertices[ j + 5 ].Pos      = RVector3( fRightX, fBottomY, 0.0f );
+            pVertices[ j + 5 ].Color    = RVector4( 1.0f, 1.0f, 0.0f, 1.0f );
+            pVertices[ j + 5 ].TexCoord = RVector2( fTexcoord_x1, fTexcoord_y1 );
         }
 
         // Update the vertex buffer
-        pDevice->UpdateBuffer( m_pVertexBuffer, pVertices, nNumVertices * sizeof( UIVertex ) );
+        pDevice->UpdateBuffer( m_pVertexBuffer, pVertices, nNumVertices * sizeof( VPosColorTex ) );
 
         // Set the shaders
         pDevice->SetVertexShader( m_pVertexShader );
@@ -248,14 +349,49 @@ namespace Riot
         pDevice->SetPSSamplerState( m_pFontSampler );
         pDevice->SetPSTexture( 0, m_pFontTexture );
         //m_pContext->OMSetBlendState( m_pFontBlend, 0, 0xFFFFFFFF );
+        pDevice->SetDepthTest( false, false );
 
         // Draw text
         pDevice->SetVertexLayout( m_pInputLayout );
-        pDevice->SetVertexBuffer( 0, m_pVertexBuffer, sizeof( UIVertex ) );
+        pDevice->SetVertexBuffer( 0, m_pVertexBuffer, sizeof( VPosColorTex ) );
         pDevice->SetPrimitiveType( Riot::GFX_PRIMITIVE_TRIANGLELIST );
         pDevice->Draw( nNumVertices );
 
         SAFE_DELETE_ARRAY( pVertices );
+    }
+    
+    //-----------------------------------------------------------------------------
+    //  ProcessMessage
+    //  Processes the input message
+    //-----------------------------------------------------------------------------
+    void UI::ProcessMessage( const TMessage& msg )
+    {
+        switch( msg.nType )
+        {
+            case mMouseButtonPressed:
+            {                
+                uint64 nMsg = msg.nMessage;
+                
+                uint8 nButton = nMsg >> 32;
+                sint x = (nMsg >> 16) & 0xFFFF;
+                sint y = (nMsg >> 0 ) & 0xFFFF;
+                
+                for( uint i = 0; i < m_nNumButtons; ++i )
+                {
+                    if(   x >= m_pButtons[i].nLeft
+                       && x <= m_pButtons[i].nRight
+                       && y >= m_pButtons[i].nTop
+                       && y <= m_pButtons[i].nBottom )
+                    {
+                        m_pButtons[i].pFunc();
+                    }
+                }
+                
+                break;
+            }
+            default:
+                break;
+        }
     }
 
 }

@@ -466,7 +466,9 @@ namespace Riot
         Result              nResult         = rResultSuccess;
 
         // First compile the shader
-        nResult = CompileShader( szFilename, szEntryPoint, m_szVSProfile, &pShaderBlob );
+        char szFormattedFilename[256] = { 0 };
+        sprintf( szFormattedFilename, "%s.hlsl", szFilename );
+        nResult = CompileShader( szFormattedFilename, szEntryPoint, m_szVSProfile, &pShaderBlob );
         ASSERT( nResult == rResultSuccess );
 
         void* pShaderCode = pShaderBlob->GetBufferPointer();
@@ -556,7 +558,9 @@ namespace Riot
         ID3DBlob*   pShaderBlob = NULL;
         Result      nResult = rResultSuccess;
         // First compile the shader
-        nResult = CompileShader( szFilename, szEntryPoint, m_szPSProfile, &pShaderBlob );
+        char szFormattedFilename[256] = { 0 };
+        sprintf( szFormattedFilename, "%s.hlsl", szFilename );
+        nResult = CompileShader( szFormattedFilename, szEntryPoint, m_szPSProfile, &pShaderBlob );
         ASSERT( nResult == rResultSuccess );
 
         // Then create the shader

@@ -10,20 +10,37 @@ Created:        4/24/2011
 #include "common.h"
 #include "Graphics.h"
 #include "GraphicsObjects.h"
+#include "IListener.h"
 
 namespace Riot
 {
+    class IGfxVertexBuffer;
+
     //////////////////////////////////////////
     // UI item definition
+    typedef void (ButtonFunc)(void);
+    
     typedef struct _UIString
     {
         uint nLeft;
         uint nTop;
         char szText[255];
     } UIString;
-
-    class UI
+    
+    typedef struct _UIButton
     {
+        char        szText[256];
+        ButtonFunc*         pFunc;
+        IGfxVertexBuffer*   pVB;
+        uint    nLeft;
+        uint    nRight;
+        uint    nTop;
+        uint    nBottom;
+    } UIButton;
+
+    class UI : public IListener
+    {
+        friend class Engine;
         //---------------------------------------------------------------------------------
         //  Methods
     public:
@@ -42,6 +59,7 @@ namespace Riot
         //  Draw szText at (nLeft, nTop)
         //-----------------------------------------------------------------------------
         static void DrawString( IGraphicsDevice* pDevice, uint nLeft, uint nTop, const char* szText );
+        static void DrawButton( IGraphicsDevice* pDevice, uint nIndex );
         //-----------------------------------------------------------------------------
         //  Draw()
         //  Draw all the strings
@@ -52,16 +70,43 @@ namespace Riot
         //  Release the memory allocated on Init
         //-----------------------------------------------------------------------------
         static void Destroy( void );
+        //-----------------------------------------------------------------------------
+        //  AddButton
+        //  Adds a button to render, returning the id
+        //-----------------------------------------------------------------------------
+        static uint AddButton( uint nLeft, uint nRight, uint nTop, uint nBottom, const char* szText, ButtonFunc* pFunc );
+        //-----------------------------------------------------------------------------
+        //  RemoveButton
+        //  Removes a button
+        //-----------------------------------------------------------------------------
+        static void RemoveButton( uint nIndex );
         
         //-----------------------------------------------------------------------------
         //  SwapBuffers
         //  Swaps last and previous frames buffers
         //-----------------------------------------------------------------------------
         static void SwapBuffers( void );
+        
+        //-----------------------------------------------------------------------------
+        //  ProcessMessage
+        //  Processes the input message
+        //-----------------------------------------------------------------------------
+        void ProcessMessage( const TMessage& msg );        
 
         //---------------------------------------------------------------------------------
         //  Members
     private:
+        static const MessageType    MessagesReceived[];
+        static const uint           NumMessagesReceived;
+        
+        static UI*  m_pInstance;
+        
+        enum 
+        { 
+            MAX_BUTTONS = 128,
+            MAX_STRINGS = 128,
+        };
+        
         static float32 m_fScreenX;
         static float32 m_fScreenY;
 
@@ -73,6 +118,11 @@ namespace Riot
         static IGfxTexture2D* m_pFontTexture;
         static IGfxBlendState* m_pFontBlend;
         static IGfxBuffer* m_pVertexBuffer;
+        static IGfxTexture2D* m_pWhiteTexture;
+        static IGfxBuffer* m_pIndexBuffer;
+        
+        static UIButton m_pButtons[MAX_BUTTONS];
+        static atomic_t m_nNumButtons;
 
         static UIString* m_pUIStrings[2];
         static UIString* m_pCurrStrings;

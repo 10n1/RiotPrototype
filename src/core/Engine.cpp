@@ -24,6 +24,7 @@ Modified by:    Kyle Weicht
 #include "rendersystem.h"
 #include "collisionsystem.h"
 #include "physicssystem.h"
+#include "UI.h"
 
 #include <stdio.h> // included for printf
 
@@ -165,14 +166,16 @@ namespace Riot
             if( gnShowFPS )
             {
                 static char szFPS[ 255 ] = "FPS: 0";
-                if( nFPSFrames == 32 )
+                if( nFPSFrames == 512 )
                 {
-                    float fFPS = (1.0f/fFPSTime) * 32.0f;
+                    float fFPS = (1.0f/fFPSTime) * 512;
                     sprintf( szFPS, "FPS: %f", fFPS );
                     //printf( "FPS: %f\n", fFPS );
 
                     fFPSTime = 0.0f;
                     nFPSFrames = 0;
+
+                    System::Log( szFPS );
                 }
                 m_pRenderer->DrawString( 200, 0, szFPS );
             }
@@ -285,6 +288,22 @@ namespace Riot
     {
         m_pMessageDispatcher->RegisterListener( pListener, pMessages, nCount );
     }
+    
+    //-----------------------------------------------------------------------------
+    //  ButtonTest
+    //-----------------------------------------------------------------------------
+    void Engine::ButtonTest( void )
+    {
+        static bool bTest = false;
+        
+        if( !bTest )
+            m_pRenderer->GetGraphicsDevice()->SetClearColor( 1.0f, 0.0f, 0.0f, 1.0f);
+        else
+            m_pRenderer->GetGraphicsDevice()->SetClearColor( 0.0f, 1.0f, 0.0f, 1.0f );
+        
+        bTest = !bTest;
+            
+    }
 
     //-----------------------------------------------------------------------------
     //  Initialize
@@ -311,6 +330,10 @@ namespace Riot
         m_pMainWindow = System::CreateMainWindow( 1024, 768 );
         // Load the graphics device
         m_pRenderer->CreateGraphicsDevice( m_pMainWindow );
+        
+        m_pMessageDispatcher->RegisterListener( UI::m_pInstance, UI::MessagesReceived, UI::NumMessagesReceived);
+        
+        UI::AddButton(0, 50, 0, 50, "LOL Button!", ButtonTest );
 
         // Create the main view and camera
         CView* pView = new CView;

@@ -61,7 +61,7 @@ namespace Riot
         KEY_Y = 'Y',
         KEY_Z = 'Z',
         KEY_SPACE = ' ',
-        KEY_TILDE = 223,
+        KEY_TILDE = 0xC0, // VK_OEM_3
 
 #elif defined( OS_OSX ) // Defined in NSEvent.h
         // Utility keys

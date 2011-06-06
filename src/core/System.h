@@ -9,6 +9,7 @@ Modified by:    Kyle Weicht
 \*********************************************************/
 #ifndef _SYSTEM_H_
 #define _SYSTEM_H_
+#include "File.h"
 #include "common.h"
 #include "timer.h"
 #include "Input.h"
@@ -22,6 +23,7 @@ namespace Riot
 {
     class CWindow;
     class IGraphicsDevice;
+    typedef uint        task_handle_t;
 
     class System
     {
@@ -145,21 +147,30 @@ namespace Riot
         static void ProcessOSMessages( void );
         
         //-----------------------------------------------------------------------------
-        //  IGraphicsDevice
+        //  CreateOpenGLDevice
         //  Creates and returns an OpenGL interface for the specified window
         //-----------------------------------------------------------------------------
         static void CreateOpenGLDevice( IGraphicsDevice* pDevice, CWindow* pWindow );
+        
+        //-----------------------------------------------------------------------------
+        //  Log
+        //  Logs a string into the system log
+        //-----------------------------------------------------------------------------
+        static void Log( const char* szText );
 
     private:
         /***************************************\
         | class members                         |
         \***************************************/
+        static CFile        m_Log;
         static CTimer       m_GlobalTimer;
         static CWindow*     m_pMainWindow;
         static IGraphicsDevice*   m_pGraphics;
 
         static handle   m_pApplication; // Type CWin32Application
                                         //      COSXApplication
+
+        static task_handle_t    m_nLogTask;
 
         // These are all made constant so they can be read from anywhere without
         //  acesssors

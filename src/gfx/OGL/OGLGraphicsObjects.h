@@ -53,6 +53,11 @@ namespace Riot
     END_DEFINE_GRAPHICS_OBJECT;    
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------    
+    BEGIN_DEFINE_GRAPHICS_OBJECT( ShaderProgram )
+        GLint   m_nProgram;
+    END_DEFINE_GRAPHICS_OBJECT;
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
     BEGIN_DEFINE_GRAPHICS_OBJECT( VertexShader )
         GLint   m_nShader;
     END_DEFINE_GRAPHICS_OBJECT;

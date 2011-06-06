@@ -73,6 +73,7 @@ namespace Riot
             IGfxVertexLayout** pLayout );
         IGfxPixelShader* CreatePixelShader( const char* szFilename, const char* szEntryPoint );
         IGfxRenderTarget* CreateRenderTarget( GFX_FORMAT nFormat, uint nWidth, uint nHeight );
+        IGfxShaderProgram* CreateShaderProgram( IGfxVertexShader* pVertexShader, IGfxPixelShader* pPixelShader );
         //
         
         //
@@ -120,6 +121,10 @@ namespace Riot
         | class members                         |
         \***************************************/
         SystemOpenGL::TOpenGLDevice m_pDevice;
+
+        uint m_nPrimitiveType;
+        IGfxVertexShader* m_pActiveVertexShader;
+        IGfxPixelShader* m_pActivePixelShader;
     };
 
 } // namespace Riot

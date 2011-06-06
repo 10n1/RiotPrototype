@@ -19,12 +19,17 @@ Modified by:    Kyle Weicht
 #pragma warning(disable:4100)   // Disable the warning about unused function parameters
 #endif
 
+#include <fstream>
+#include <string>
+
 // Very basic, low level functionality
 #include "atomic.h"
 #include "memory.h"
-#ifndef OS_OSX // The custom memory allocator currently crashes in OS X...
+
+#if RIOT_USE_CUSTOM_ALLOCATOR
 #define new DEBUG_NEW
-#endif // #ifndef OS_OSX
+#endif // #if RIOT_USE_CUSTOM_ALLOCATOR
+
 #include "assert.h"
 #include "vectormath.h"
 #include "rand.h"

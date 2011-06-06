@@ -156,7 +156,8 @@ namespace Riot
             }
         case mMouseButtonDown:
             {
-                switch( msg.nMessage )
+                uint8 nButton = msg.nMessage >> 32;
+                switch( nButton )
                 {
                 case MOUSE_L_BUTTON:
                     {
@@ -168,7 +169,8 @@ namespace Riot
             }
         case mMouseButtonUp:
             {
-                switch( msg.nMessage )
+                uint8 nButton = msg.nMessage >> 32;
+                switch( nButton )
                 {
                 case MOUSE_L_BUTTON:
                     {

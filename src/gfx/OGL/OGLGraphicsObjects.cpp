@@ -8,6 +8,15 @@ Modified by:    Kyle Weicht
 #include "OGLGraphicsObjects.h"
 #if USE_OPENGL
 
+#define DECLARE_SIMPLE_GRAPHICS_OBJECT( Name, Object )   \
+    COGL##Name::COGL##Name()                    \
+        : Object( -1 )                          \
+    {                                           \
+    }                                           \
+    COGL##Name::~COGL##Name()                   \
+    {                                           \
+    }    
+
 namespace Riot
 {    
 //-----------------------------------------------------------------------------
@@ -25,63 +34,25 @@ namespace Riot
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-
-    COGLBuffer::COGLBuffer()
-        : m_nBuffer( -1 )
-    {
-    }
-
-    COGLBuffer::~COGLBuffer()
-    {
-    }
-
+    DECLARE_SIMPLE_GRAPHICS_OBJECT( Buffer, m_nBuffer );
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-    COGLVertexShader::COGLVertexShader()
-        : m_nShader( -1 )
-    {
-    }
-    COGLVertexShader::~COGLVertexShader()
-    {
-    }    
+    DECLARE_SIMPLE_GRAPHICS_OBJECT( ShaderProgram, m_nProgram );
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-    COGLPixelShader::COGLPixelShader()
-        : m_nShader( -1 )
-    {
-    }
-    COGLPixelShader::~COGLPixelShader()
-    {
-    }    
+    DECLARE_SIMPLE_GRAPHICS_OBJECT( VertexShader, m_nShader );
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-    COGLVertexLayout::COGLVertexLayout()
-        : m_nLayout( -1 )
-    {
-    }
-    COGLVertexLayout::~COGLVertexLayout()
-    {
-    }    
+    DECLARE_SIMPLE_GRAPHICS_OBJECT( PixelShader, m_nShader );
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-    COGLTexture2D::COGLTexture2D()
-        : m_nTexture(-1)
-    {
-    }
-    COGLTexture2D::~COGLTexture2D()
-    {
-        
-    }
+    DECLARE_SIMPLE_GRAPHICS_OBJECT( VertexLayout, m_nLayout );
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-    COGLSamplerState::COGLSamplerState()
-        : m_nState(-1)
-    {
-    }
-    COGLSamplerState::~COGLSamplerState()
-    {
-        
-    }
+    DECLARE_SIMPLE_GRAPHICS_OBJECT( Texture2D, m_nTexture );
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    DECLARE_SIMPLE_GRAPHICS_OBJECT( SamplerState, m_nState );
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 

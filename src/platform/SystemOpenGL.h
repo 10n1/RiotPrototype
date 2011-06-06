@@ -57,13 +57,26 @@ namespace Riot
 
 #ifdef OS_WINDOWS
         // OpenGl functions
+        extern PFNGLENABLEPROC          glEnable;
+        extern PFNGLDISABLEPROC         glDisable;
         extern PFNGLCLEARPROC           glClear;
         extern PFNGLCLEARCOLORPROC      glClearColor;
         extern PFNGLCLEARDEPTHPROC      glClearDepth;
         extern PFNGLDRAWBUFFERPROC      glDrawBuffer;
+        extern PFNGLDRAWARRAYSPROC      glDrawArrays;
+        extern PFNGLDRAWARRAYSINSTANCEDPROC      glDrawArraysInstanced;
         extern PFNGLVIEWPORTPROC        glViewport;
         extern PFNGLFRONTFACEPROC       glFrontFace;
+        extern PFNGLDEPTHFUNCPROC       glDepthFunc;
+        extern PFNGLDEPTHMASKPROC       glDepthMask;
         extern PFNGLDEPTHRANGEPROC      glDepthRange;
+        extern PFNGLBLENDFUNCPROC       glBlendFunc;
+        extern PFNGLBLENDEQUATIONPROC   glBlendEquation;
+        extern PFNGLGENTEXTURESPROC     glGenTextures;
+        extern PFNGLTEXIMAGE2DPROC      glTexImage2D;
+        extern PFNGLGENBUFFERSPROC      glGenBuffers;
+        extern PFNGLBUFFERDATAPROC      glBufferData;
+        extern PFNGLBINDBUFFERPROC      glBindBuffer;
         extern PFNGLGETERRORPROC        glGetError;
         extern PFNGLPOLYGONMODEPROC     glPolygonMode;
 
@@ -73,6 +86,7 @@ namespace Riot
         extern PFNGLDELETESHADERPROC        glDeleteShader;
         extern PFNGLCOMPILESHADERPROC       glCompileShader;
         extern PFNGLGETSHADERIVPROC         glGetShaderiv;
+        extern PFNGLGETPROGRAMIVPROC        glGetProgramiv;
         extern PFNGLCREATEPROGRAMPROC       glCreateProgram;
         extern PFNGLATTACHSHADERPROC        glAttachShader;
         extern PFNGLBINDATTRIBLOCATIONPROC  glBindAttribLocation;
