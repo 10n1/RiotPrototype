@@ -77,4 +77,10 @@ namespace Riot
 
     }
 
+    void CSocket::SendData( void* pData, uint nDataSize, Address nAddress, uint16 nPort )
+    {
+        sockaddr_in;
+    }
+
+
 }// namespace Riot

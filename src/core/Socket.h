@@ -12,6 +12,17 @@ Modified by:    Kyle Weicht
 
 namespace Riot
 {
+
+typedef uint32 Address;
+
+inline uint32 BuildAddres( uint8 a, uint8 b, uint8 c, uint8 d )
+{
+    uint32 nAddress = 0;
+    nAddress = ( a << 24 ) | ( b << 16 ) | ( c << 8 ) | d ;
+
+    return nAddress;
+}
+
 class CSocket
 {
 public:
@@ -25,6 +36,7 @@ public:
     \***************************************/
 
     void OpenSocket( uint16 nPort );
+    void SendData( void* pData, uint nDataSize, Address nAddress, uint16 nPort );
 
 private:
     /***************************************\
