@@ -25,7 +25,7 @@ solution "Riot"
 		 
 	 configuration "windows"
 		defines "WIN32"
-		links { "d3d11", "d3dx11", "d3dcompiler" }
+		links { "d3d11", "d3dx11", "d3dcompiler", "wsock32" }
 		includedirs { "src/gfx/d3d", "src/platform/win32" }
 		excludes "**OSX**"
 		flags { "NoMinimalRebuild" }
