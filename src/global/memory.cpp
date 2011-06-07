@@ -27,7 +27,7 @@ using namespace Riot;
 #include <stdio.h>
 #include <string.h>
 
-enum { GLOBAL_MEMORY_ALLOCATION = 1024*1024*1024 };
+enum { GLOBAL_MEMORY_ALLOCATION = 32*1024*1024 };
 
 static const byte* AllocateGlobalMemory( void );
 

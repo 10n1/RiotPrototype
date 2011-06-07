@@ -18,16 +18,26 @@ Modified by:    Kyle Weicht
 #include "Console.h"
 
 #ifdef OS_WINDOWS
-#include <Windows.h>
-#include "Win32Application.h"
-#include <intrin.h>
+    #include <Windows.h>
+    #include "Win32Application.h"
+    #include <intrin.h>
+    #include <WinSock2.h>
+
 #elif defined( OS_OSX )
-#include <sys/types.h>
-#include <sys/sysctl.h>
-#include "OSXApplication.h"
+    #include <sys/types.h>
+    #include <sys/sysctl.h>
+    #include "OSXApplication.h"
 #else
 // Linux
 #endif
+
+#ifndef OS_WINDOWS
+
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <fcntl.h>
+
+#endif // #ifndef OS_WINDOWS
 
 #ifndef OS_WINDOWS
 void __cpuid( int* a, int b )
@@ -210,6 +220,16 @@ namespace Riot
         m_GlobalTimer.Reset();
 
         m_Log.LoadFile( "system.log", "wt" );
+
+        //////////////////////////////////////////
+        //  Initialize the networking API
+
+#ifdef OS_WINDOWS
+        WSADATA WsaData;
+        int32 nResult = WSAStartup( MAKEWORD(2,2), &WsaData );
+        ASSERT( nResult == NO_ERROR );
+#endif
+
     }
 
     //-----------------------------------------------------------------------------
@@ -218,6 +238,9 @@ namespace Riot
     void System::Shutdown( void )
     {
 #ifdef OS_WINDOWS
+        // Shutdown Winsock
+        WSACleanup();
+
         SAFE_DELETE( m_pApplication );
 #endif // #ifdef OS_WINDOWS
     }
