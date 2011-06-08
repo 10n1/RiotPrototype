@@ -25,6 +25,7 @@ Modified by:    Kyle Weicht
 #include "collisionsystem.h"
 #include "physicssystem.h"
 #include "UI.h"
+#include "Socket.h"
 
 #include <stdio.h> // included for printf
 
@@ -396,6 +397,12 @@ namespace Riot
         // Picking test
         CObject* pObject = CCollisionSystem::PickObject( m_pCamera->GetPosition(), RVector3( 0.0f, -4.0f, 10.0f ) );
         SAFE_DELETE( pObject );
+        
+        
+        //////////////////////////////////////////
+        // Network test
+        CSocket s;
+        s.OpenSocket( 30000 );
 
         // Finally reset the timer
         m_MainTimer.Reset();

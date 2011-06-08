@@ -424,7 +424,7 @@ namespace Riot
         // NOTE: probably not a good idea ...
         glDrawArraysInstanced( m_nPrimitiveType, 0, nIndexCount, 1 );
 #else
-        glDrawArraysInstancedARB( m_nPrimitiveType, 0, nIndexCount, 1 );
+        glDrawArraysInstanced( m_nPrimitiveType, 0, nIndexCount, 1 );
 #endif
     }
     void COGLDevice::DrawIndexedPrimitiveInstanced( uint nIndexCount, uint nInstanceCount )
@@ -432,7 +432,7 @@ namespace Riot
 #ifndef OS_OSX
         glDrawArraysInstanced( m_nPrimitiveType, 0, nIndexCount, nInstanceCount );
 #else
-        glDrawArraysInstancedARB( m_nPrimitiveType, 0, nIndexCount, 1 );
+        glDrawArraysInstanced( m_nPrimitiveType, 0, nIndexCount, 1 );
 #endif
     }
     void COGLDevice::DrawPrimitive( uint nVertexCount )

@@ -51,6 +51,7 @@
 		3688C1C11398B053002A02E5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C0B641398AF9700A7F697 /* Foundation.framework */; };
 		3688C1C21398B055002A02E5 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C0B631398AF9700A7F697 /* CoreData.framework */; };
 		368C0B601398AF9700A7F697 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368C0B5F1398AF9700A7F697 /* Cocoa.framework */; };
+		36FD9E9A139CA0FA00A8697C /* Socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36FD9E98139CA0FA00A8697C /* Socket.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -145,6 +146,8 @@
 		368C0B621398AF9700A7F697 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		368C0B631398AF9700A7F697 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		368C0B641398AF9700A7F697 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		36FD9E98139CA0FA00A8697C /* Socket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Socket.cpp; sourceTree = "<group>"; };
+		36FD9E99139CA0FA00A8697C /* Socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Socket.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -190,6 +193,8 @@
 		3688C1331398B028002A02E5 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				36FD9E98139CA0FA00A8697C /* Socket.cpp */,
+				36FD9E99139CA0FA00A8697C /* Socket.h */,
 				3688C1341398B028002A02E5 /* Camera.cpp */,
 				3688C1351398B028002A02E5 /* Camera.h */,
 				3688C1361398B028002A02E5 /* Character.cpp */,
@@ -456,6 +461,7 @@
 				3688C1BA1398B028002A02E5 /* PhysicsSystem.cpp in Sources */,
 				3688C1BB1398B028002A02E5 /* RenderSystem.cpp in Sources */,
 				3688C1BC1398B028002A02E5 /* Terrain.cpp in Sources */,
+				36FD9E9A139CA0FA00A8697C /* Socket.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -466,6 +472,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
@@ -474,6 +482,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Release;

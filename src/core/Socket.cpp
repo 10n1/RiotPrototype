@@ -10,7 +10,7 @@ Modified by:    Kyle Weicht
 
 #ifdef OS_WINDOWS
 
-#include <WinSock2.h>
+    #include <WinSock2.h>
 
 #else
 
@@ -57,7 +57,7 @@ namespace Riot
 
         sint32 nResult = bind( m_nHandle, (const sockaddr*)&address, sizeof( sockaddr_in ) );
 
-        ASSERT( nResult > 0 );
+        ASSERT( nResult == 0 );
 
         //////////////////////////////////////////
 #ifndef OS_WINDOWS
@@ -76,10 +76,40 @@ namespace Riot
 #endif
 
     }
+    
+    void CSocket::CloseSocket( void )
+    {
+        
+    }
 
     void CSocket::SendData( void* pData, uint nDataSize, Address nAddress, uint16 nPort )
     {
-        sockaddr_in;
+        sockaddr_in add;
+        add.sin_family = AF_INET;
+        add.sin_addr.s_addr = htonl( nAddress );
+        add.sin_port = htons( nPort );
+        
+        sint32 nSentBytes = sendto( m_nHandle, pData, nDataSize, 0, (sockaddr*)&add, sizeof( sockaddr_in ) );
+        
+        ASSERT( nSentBytes == nDataSize ); // TODO: This can't be handled by an assert
+                                           // there needs to be a graceful way to handle this error
+    }
+    
+    void CSocket::ReceiveData(void *pData, uint nDataSize)
+    {
+        for( ;; )
+        {
+            byte pPacketData[256];
+            uint nMaxPacketSize = sizeof( pPacketData );
+            
+#ifdef OS_WINDOWS
+            typedef int32 socklen_t;
+#endif
+            sockaddr_in from;
+            socklen_t   fromLength = sizeof( from );
+            
+            int nReceived = recvfrom( m_nHandle, (char*)pPacketData, nMaxPacketSize, 0, (sockaddr*)&from, &fromLength );
+        }
     }
 
 

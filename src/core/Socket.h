@@ -36,8 +36,10 @@ public:
     \***************************************/
 
     void OpenSocket( uint16 nPort );
+    void CloseSocket( void );
     void SendData( void* pData, uint nDataSize, Address nAddress, uint16 nPort );
-
+    void ReceiveData( void* pData, uint nDataSize );
+    
 private:
     /***************************************\
     | class members                         |
