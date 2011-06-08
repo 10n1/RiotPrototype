@@ -35,8 +35,9 @@ namespace Riot
         fclose( pf );
     }
 
-    void CFile::ReadBytes( void* szBuffer, uint nNumBytes )
+    uint CFile::ReadBytes( void* szBuffer, uint nNumBytes )
     {
+        uint nTotalRead;
         uint nResult;
         fpos_t pos;
         FILE* pf = fopen( m_szFilename, m_szFileMode );
@@ -44,8 +45,8 @@ namespace Riot
         pos = m_nPos;
         fsetpos( pf, &pos );
 
-        nResult = fread( szBuffer, 1, nNumBytes, pf );
-        ASSERT( nResult != 0 );
+        nTotalRead = fread( szBuffer, 1, nNumBytes, pf );
+        ASSERT( nTotalRead != 0 );
 
         nResult = fgetpos( pf, &pos );
 
@@ -54,10 +55,13 @@ namespace Riot
         m_nPos = pos;
 
         fclose( pf );
+        
+        return nTotalRead;
     }
 
-    void CFile::WriteBytes( void* pData, uint nNumBytes )
+    uint CFile::WriteBytes( void* pData, uint nNumBytes )
     {
+        uint nTotalWritten;
         uint nResult;
         fpos_t pos;
         FILE* pf = fopen( m_szFilename, m_szFileMode );
@@ -65,8 +69,8 @@ namespace Riot
         pos = m_nPos;
         fsetpos( pf, &pos );
 
-        nResult = fwrite( pData, 1, nNumBytes, pf );
-        ASSERT( nResult != 0 );
+        nTotalWritten = fwrite( pData, 1, nNumBytes, pf );
+        ASSERT( nTotalWritten != 0 );
 
         nResult = fgetpos( pf, &pos );
 
@@ -75,6 +79,8 @@ namespace Riot
         m_nPos = pos;
 
         fclose( pf );
+        
+        return nTotalWritten;
     }
 
     void CFile::AsyncReadBytes( void* pData, uint nThreadId, uint nStart, uint nCount )

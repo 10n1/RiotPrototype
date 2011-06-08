@@ -36,9 +36,11 @@ namespace Riot
 
         void LoadFile( const char* szFilename, const char* szFileMode );
 
-        void ReadBytes( void* szBuffer, uint nNumBytes );
+        // Return the number of bytes read
+        uint ReadBytes( void* szBuffer, uint nNumBytes );
 
-        void WriteBytes( void* pData, uint nNumBytes );
+        // Return the number of bytes written
+        uint WriteBytes( void* pData, uint nNumBytes );
 
         static void AsyncReadBytes( void* pData, uint nThreadId, uint nStart, uint nCount );
         static void AsyncWriteBytes( void* pData, uint nThreadId, uint nStart, uint nCount );
