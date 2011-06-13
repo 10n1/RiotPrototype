@@ -15,7 +15,7 @@ namespace Riot
 
 typedef uint32 Address;
 
-inline uint32 BuildAddres( uint8 a, uint8 b, uint8 c, uint8 d )
+inline uint32 BuildAddress( uint8 a, uint8 b, uint8 c, uint8 d )
 {
     uint32 nAddress = 0;
     nAddress = ( a << 24 ) | ( b << 16 ) | ( c << 8 ) | d ;
@@ -47,6 +47,6 @@ private:
     sint32  m_nHandle;
 };
 
-}// namespace Riot
+} // namespace Riot
 
 #endif // #ifndef _SOCKET_H_

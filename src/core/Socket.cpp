@@ -79,7 +79,11 @@ namespace Riot
     
     void CSocket::CloseSocket( void )
     {
-        
+#ifdef OS_WINDOWS
+        closesocket( m_nHandle );
+#else
+        close( m_nHandle );
+#endif
     }
 
     void CSocket::SendData( void* pData, uint nDataSize, Address nAddress, uint16 nPort )
@@ -109,6 +113,14 @@ namespace Riot
             socklen_t   fromLength = sizeof( from );
             
             int nReceived = recvfrom( m_nHandle, (char*)pPacketData, nMaxPacketSize, 0, (sockaddr*)&from, &fromLength );
+            
+            if( nReceived <= 0 )
+                break;
+            
+            uint nFromAddress = ntohl( from.sin_addr.s_addr );
+            uint nFromPort = ntohs( from.sin_port );
+            
+            // Now what?!
         }
     }
 

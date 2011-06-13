@@ -151,6 +151,22 @@ namespace Riot
             //////////////////////////////////////////
             //  Process this frames messages
             m_pMessageDispatcher->ProcessMessages();
+            
+            
+            //////////////////////////////////////////
+            // Network test
+            CSocket out;
+            CSocket in;
+            byte pData[512] = "LOL!!!";
+            byte pInData[512] = "SADFACETIMELOL!!!";
+            out.OpenSocket( 30000 );
+            in.OpenSocket( 30000 );
+            
+            out.SendData( pData, sizeof( pData ), BuildAddress( 127, 0, 0, 1), 30000 );
+            in.ReceiveData( pInData, sizeof( pInData ) );
+            
+            in.CloseSocket();
+            out.CloseSocket();
 
 
             //////////////////////////////////////////
@@ -398,11 +414,6 @@ namespace Riot
         CObject* pObject = CCollisionSystem::PickObject( m_pCamera->GetPosition(), RVector3( 0.0f, -4.0f, 10.0f ) );
         SAFE_DELETE( pObject );
         
-        
-        //////////////////////////////////////////
-        // Network test
-        CSocket s;
-        s.OpenSocket( 30000 );
 
         // Finally reset the timer
         m_MainTimer.Reset();
