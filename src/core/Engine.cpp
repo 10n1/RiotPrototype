@@ -156,16 +156,13 @@ namespace Riot
             //////////////////////////////////////////
             // Network test
             CSocket out;
-            CSocket in;
             byte pData[512] = "LOL!!!";
             byte pInData[512] = "SADFACETIMELOL!!!";
             out.OpenSocket( 30000 );
-            in.OpenSocket( 30000 );
             
             out.SendData( pData, sizeof( pData ), BuildAddress( 127, 0, 0, 1), 30000 );
-            in.ReceiveData( pInData, sizeof( pInData ) );
+            out.ReceiveData( pInData, sizeof( pInData ) );
             
-            in.CloseSocket();
             out.CloseSocket();
 
 

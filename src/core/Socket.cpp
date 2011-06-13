@@ -93,7 +93,7 @@ namespace Riot
         add.sin_addr.s_addr = htonl( nAddress );
         add.sin_port = htons( nPort );
         
-        sint32 nSentBytes = sendto( m_nHandle, pData, nDataSize, 0, (sockaddr*)&add, sizeof( sockaddr_in ) );
+        sint32 nSentBytes = sendto( m_nHandle, (const char*)pData, nDataSize, 0, (sockaddr*)&add, sizeof( sockaddr_in ) );
         
         ASSERT( nSentBytes == nDataSize ); // TODO: This can't be handled by an assert
                                            // there needs to be a graceful way to handle this error
