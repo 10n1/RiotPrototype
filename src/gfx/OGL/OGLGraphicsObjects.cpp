@@ -22,16 +22,18 @@ namespace Riot
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
-    // COGLRenderTarget constructor
-    COGLRenderTarget::COGLRenderTarget()
-    {
-    }
-
-    // COGLRenderTarget destructor
-    COGLRenderTarget::~COGLRenderTarget()
-    {
-    }
-
+//    // COGLRenderTarget constructor
+//    COGLRenderTarget::COGLRenderTarget()
+//    {
+//    }
+//
+//    // COGLRenderTarget destructor
+//    COGLRenderTarget::~COGLRenderTarget()
+//    {
+//    }
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    DECLARE_SIMPLE_GRAPHICS_OBJECT( RenderTarget, m_nRT );
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
     DECLARE_SIMPLE_GRAPHICS_OBJECT( Buffer, m_nBuffer );

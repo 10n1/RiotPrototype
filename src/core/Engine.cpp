@@ -123,7 +123,7 @@ namespace Riot
             CPhysicsSystem::ProcessObjects();
             CCollisionSystem::ProcessObjects();
 
-            m_pConsole->Render();
+//            m_pConsole->Render();
 
             //////////////////////////////////////////
             // Render
@@ -133,12 +133,12 @@ namespace Riot
             m_pTaskManager->WaitForCompletion( nObjectUpdateHandle );
 #endif // #if PIPELINED_RENDER
 
-            //////////////////////////////////////////
-            // Update terrain
-            if( bUpdateTerrain )
-            {
-                m_pTerrain->CenterTerrain( m_pCamera->GetPosition(), 250.0f );
-            }
+//            //////////////////////////////////////////
+//            // Update terrain
+//            if( bUpdateTerrain )
+//            {
+//                m_pTerrain->CenterTerrain( m_pCamera->GetPosition(), 250.0f );
+//            }
 
             //////////////////////////////////////////
             //  Process OS messages

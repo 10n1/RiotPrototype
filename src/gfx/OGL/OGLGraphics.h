@@ -125,6 +125,9 @@ namespace Riot
         uint m_nPrimitiveType;
         IGfxVertexShader* m_pActiveVertexShader;
         IGfxPixelShader* m_pActivePixelShader;
+        InputElementLayout* m_pInputLayout;
+        uint m_nLayoutCount;
+        bool m_bCreateShaderProgram;
     };
 
 } // namespace Riot

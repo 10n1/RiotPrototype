@@ -33,19 +33,24 @@ namespace Riot
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
-    class COGLRenderTarget : public IGfxRenderTarget
-    {
-        friend class COGLDevice;
-    public:
-        // COGLRenderTarget constructor
-        COGLRenderTarget();
+//    class COGLRenderTarget : public IGfxRenderTarget
+//    {
+//        friend class COGLDevice;
+//    public:
+//        // COGLRenderTarget constructor
+//        COGLRenderTarget();
+//
+//        // COGLRenderTarget destructor
+//        ~COGLRenderTarget();
+//
+//    private:
+//    };
 
-        // COGLRenderTarget destructor
-        ~COGLRenderTarget();
-
-    private:
-    };
-
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    BEGIN_DEFINE_GRAPHICS_OBJECT( RenderTarget )
+        GLint m_nRT;
+    END_DEFINE_GRAPHICS_OBJECT;
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
     BEGIN_DEFINE_GRAPHICS_OBJECT( Buffer )

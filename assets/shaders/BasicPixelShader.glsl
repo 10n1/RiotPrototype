@@ -5,7 +5,6 @@ Created:        4/17/2011
 Modified:       4/17/2011 11:47:24 PM
 Modified by:    Kyle Weicht
 \*********************************************************/
-#version 330
 
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
@@ -15,34 +14,25 @@ uniform vec4 vLightPos[8];
 uniform int nActiveLights;
 
 //--------------------------------------------------------------------------------------
-in vec4 ScreenPos;
-in vec4 Pos;
-in vec3 Normal;
+vec4 ScreenPos;
+vec4 Pos;
+vec4 Normal;
 
-out vec4 fFinalColor;
+vec4 fFinalColor;
 
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
 void main( void )
 {
-    //float4 finalColor = 0.0f;
-    //
-    //for( int i = 0; i < nActiveLights; ++i )
-    //{
-    //    float3 vLightDir = normalize( vLightPos[i] - input.Pos );
-    //    finalColor += saturate( dot( vLightDir, normalize(input.Normal) ) );
-    //}
-    //
-    //return finalColor;
-
-    
-    fFinalColor = vec4( 0.0f, 0.0f, 0.0f, 0.0f );
+    fFinalColor = vec4( 0.0, 0.0, 0.0, 0.0 );
 
     for( int i = 0; i < nActiveLights; ++i )
     {
         vec3 vLightDir = normalize( vLightPos[i].xyz - Pos.xyz );
-        //fFinalColor += saturate( dot( vLightDir, normalize(Normal) ) );
-        fFinalColor += clamp( dot( vLightDir, normalize(Normal) ), 0.0f, 1.0f );
+        fFinalColor += clamp( dot( vec4(vLightDir,1), normalize(Normal) ), 0.0, 1.0 );
     }
+
+    gl_FragColor = fFinalColor;
 }
+

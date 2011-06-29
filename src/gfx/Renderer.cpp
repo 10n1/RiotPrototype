@@ -223,7 +223,7 @@ namespace Riot
         SAFE_RELEASE( m_pLightCB );
         SAFE_RELEASE( m_pDevice );
 
-        UI::Destroy();
+//        UI::Destroy();
     }
 
     //-----------------------------------------------------------------------------
@@ -258,7 +258,7 @@ namespace Riot
         CreateDefaultObjects();
 
         // Init UI
-        UI::Initialize( m_pDevice );
+//        UI::Initialize( m_pDevice );
 
     }
 
@@ -326,7 +326,7 @@ namespace Riot
         // Load the pixel shaders
         m_ppPixelShaders[ ePS3DStd ] = m_pDevice->CreatePixelShader( "Assets/Shaders/BasicPixelShader", "main" );
         m_ppPixelShaders[ ePS3DColor ] = m_pDevice->CreatePixelShader( "Assets/Shaders/PosColorPixelShader", "main" );
-        m_ppPixelShaders[ ePS2DTex ] = m_pDevice->CreatePixelShader( "Assets/Shaders/UI", "PS" );
+        m_ppPixelShaders[ ePS2DTex ] = m_pDevice->CreatePixelShader( "Assets/Shaders/UIPixelShader", "main" );
         m_ppPixelShaders[ ePS2DFS ] = m_pDevice->CreatePixelShader( "Assets/Shaders/FSQuadPS", "main" );
 
         //////////////////////////////////////////
@@ -421,39 +421,41 @@ namespace Riot
         SetViewProj( m_pCurrentView->GetViewMatrix(), m_pCurrentView->GetProjMatrix() );
 
 
-        if( m_pTestRT )
-        {
-            m_pDevice->ClearRenderTarget( m_pTestRT );
-            m_pDevice->SetRenderTarget( m_pTestRT );
-        }
+//        if( m_pTestRT )
+//        {
+//            m_pDevice->ClearRenderTarget( m_pTestRT );
+//            m_pDevice->SetRenderTarget( m_pTestRT );
+//        }
 
-        //////////////////////////////////////////
-        //  Z pre-pass
-        {
-            m_pDevice->SetColorWrite( true );
-            m_pDevice->SetDepthTest( true, true );
-
-            //////////////////////////////////////////
-            // Render the terrain
-            SetVertexShader( eVS3DPosNorTexNoTransform );
-            SetPixelShader( ePS3DStd );
-            pTerrain->Render();
-            SetVertexShader( eVS3DPosNorTexStd );
-
-            //////////////////////////////////////////
-            // Perform basic object rendering
-            for( sint i = 0; i < m_nPrevNumCommands; ++i )
-            {
-                ProcessCommand( m_pPrevCommands[i], m_pPrevTransforms[i] );
-            }
-        }
+//        //////////////////////////////////////////
+//        //  Z pre-pass
+//        {
+//            m_pDevice->SetColorWrite( true );
+//            m_pDevice->SetDepthTest( true, true );
+//
+//            //////////////////////////////////////////
+//            // Render the terrain
+//            SetVertexShader( eVS3DPosNorTexNoTransform );
+//            SetPixelShader( ePS3DStd );
+//            pTerrain->Render();
+//            SetVertexShader( eVS3DPosNorTexStd );
+//
+//            //////////////////////////////////////////
+//            // Perform basic object rendering
+//            for( sint i = 0; i < m_nPrevNumCommands; ++i )
+//            {
+//                ProcessCommand( m_pPrevCommands[i], m_pPrevTransforms[i] );
+//            }
+//        }
 
         //////////////////////////////////////////
         //  Actual rendering
         {
             m_pDevice->SetColorWrite( true );
-            m_pDevice->SetDepthTest( true, false );
-
+//            m_pDevice->SetDepthTest( true, false );
+            // TEMP!
+            m_pDevice->SetDepthTest( true, true );
+            
             //////////////////////////////////////////
             // Render the terrain
             SetVertexShader( eVS3DPosNorTexNoTransform );
@@ -461,115 +463,117 @@ namespace Riot
             pTerrain->Render();
             SetVertexShader( eVS3DPosNorTexStd );
 
+            /*
             //////////////////////////////////////////
             // Perform basic object rendering
             for( sint i = 0; i < m_nPrevNumCommands; ++i )
             {
                 ProcessCommand( m_pPrevCommands[i], m_pPrevTransforms[i] );
             }
+            */
         }
 
-        //////////////////////////////////////////
-        // Draw the debug volumes
-        if( gnShowBoundingVolumes )
-        {
-            m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
-            SetVertexShader( eVS3DPosColStd );
-            SetPixelShader( ePS3DColor );
+//        //////////////////////////////////////////
+//        // Draw the debug volumes
+//        if( gnShowBoundingVolumes )
+//        {
+//            m_pDevice->SetFillMode( GFX_FILL_WIREFRAME );
+//            SetVertexShader( eVS3DPosColStd );
+//            SetPixelShader( ePS3DColor );
+//
+//            // Draw the debug boxes
+//            for( sint i = 0; i < m_nPrevNumBoxes; ++i )
+//            {
+//                RVector3 vMin = m_pPrevDebugBoxes[i].box.min;
+//                RVector3 vMax = m_pPrevDebugBoxes[i].box.max;
+//                RVector3 vColor = m_pPrevDebugBoxes[i].color;
+//
+//                RMatrix4 mWorld = RMatrix4Identity();
+//                SetWorldMatrix( mWorld );
+//
+//                VPosColor vertices[] =
+//                {
+//                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+//
+//                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
+//
+//                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+//
+//                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+//
+//                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
+//
+//                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+//                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
+//                };
+//
+//                m_pDevice->UpdateBuffer( m_ppMeshes[m_nDebugBox]->m_pVertexBuffer, vertices );
+//
+//                m_ppMeshes[m_nDebugBox]->DrawMesh();
+//            }
+//
+//            // Draw the rays
+//            m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_LINELIST );
+//            for( sint i = 0; i < m_nPrevNumRays; ++i )
+//            {
+//                RVector3 vStart = m_pPrevDebugRays[i].start;
+//                RVector3 vEnd = m_pPrevDebugRays[i].end;
+//
+//                RVector4 vWhite( 1.0f, 1.0f, 1.0f, 1.0f );
+//                RVector4 vBlack( 0.0f, 0.0f, 0.0f, 0.0f );
+//                VPosColor vertices[] =
+//                {
+//                    { vStart, vBlack },
+//                    { vEnd, vWhite },
+//                };
+//
+//                m_pDevice->UpdateBuffer( m_pLineBuffer, vertices );
+//
+//                m_pDevice->SetVertexBuffer( 0, m_pLineBuffer, VPosColor::VertexStride );
+//                m_pDevice->DrawPrimitive( 2 );
+//            }
+//
+//            m_pDevice->SetFillMode( GFX_FILL_SOLID );
+//            m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
+//            SetVertexShader( eVS3DPosNorTexStd );
+//            SetPixelShader( ePS3DStd );
+//        }
 
-            // Draw the debug boxes
-            for( sint i = 0; i < m_nPrevNumBoxes; ++i )
-            {
-                RVector3 vMin = m_pPrevDebugBoxes[i].box.min;
-                RVector3 vMax = m_pPrevDebugBoxes[i].box.max;
-                RVector3 vColor = m_pPrevDebugBoxes[i].color;
-
-                RMatrix4 mWorld = RMatrix4Identity();
-                SetWorldMatrix( mWorld );
-
-                VPosColor vertices[] =
-                {
-                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
-
-                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
-                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
-
-                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
-                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
-
-                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
-
-                    { RVector3(  vMin.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMin.z ), Homogonize( vColor ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMin.z ), Homogonize( vColor ) },
-
-                    { RVector3(  vMin.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
-                    { RVector3(  vMax.x,  vMin.y,  vMax.z ), Homogonize( vColor ) },
-                    { RVector3(  vMax.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
-                    { RVector3(  vMin.x,  vMax.y,  vMax.z ), Homogonize( vColor ) },
-                };
-
-                m_pDevice->UpdateBuffer( m_ppMeshes[m_nDebugBox]->m_pVertexBuffer, vertices );
-
-                m_ppMeshes[m_nDebugBox]->DrawMesh();
-            }
-
-            // Draw the rays
-            m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_LINELIST );
-            for( sint i = 0; i < m_nPrevNumRays; ++i )
-            {
-                RVector3 vStart = m_pPrevDebugRays[i].start;
-                RVector3 vEnd = m_pPrevDebugRays[i].end;
-
-                RVector4 vWhite( 1.0f, 1.0f, 1.0f, 1.0f );
-                RVector4 vBlack( 0.0f, 0.0f, 0.0f, 0.0f );
-                VPosColor vertices[] =
-                {
-                    { vStart, vBlack },
-                    { vEnd, vWhite },
-                };
-
-                m_pDevice->UpdateBuffer( m_pLineBuffer, vertices );
-
-                m_pDevice->SetVertexBuffer( 0, m_pLineBuffer, VPosColor::VertexStride );
-                m_pDevice->DrawPrimitive( 2 );
-            }
-
-            m_pDevice->SetFillMode( GFX_FILL_SOLID );
-            m_pDevice->SetPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST );
-            SetVertexShader( eVS3DPosNorTexStd );
-            SetPixelShader( ePS3DStd );
-        }
-
-        m_pDevice->SetDefaultRenderDepthTarget();
-        m_pDevice->SetDepthTest( false, false );
-
-        SetVertexShader( eVS2DPos );
-        SetPixelShader( ePS2DFS );
-        SetSamplerState( eSamplerNearest );
-
-        if( m_pTestRT )
-        m_pDevice->SetPSRenderTarget( 0, m_pTestRT );
-
-        m_pDevice->SetVertexBuffer( 0, m_pFSRectVB, VPos::VertexStride );
-        m_pDevice->SetIndexBuffer( m_pFSRectIB, 2 );
-
-        m_pDevice->DrawIndexedPrimitive( 6 );
+//        m_pDevice->SetDefaultRenderDepthTarget();
+//        m_pDevice->SetDepthTest( false, false );
+//
+//        SetVertexShader( eVS2DPos );
+//        SetPixelShader( ePS2DFS );
+//        SetSamplerState( eSamplerNearest );
+//
+//        if( m_pTestRT )
+//        m_pDevice->SetPSRenderTarget( 0, m_pTestRT );
+//
+//        m_pDevice->SetVertexBuffer( 0, m_pFSRectVB, VPos::VertexStride );
+//        m_pDevice->SetIndexBuffer( m_pFSRectIB, 2 );
+//
+//        m_pDevice->DrawIndexedPrimitive( 6 );
         
         //////////////////////////////////////////
         // Draw the UI
-        UI::Draw( m_pDevice );
+//        UI::Draw( m_pDevice );
 
         // Present
         m_pDevice->Present();
@@ -985,7 +989,7 @@ namespace Riot
         m_nNumRays      = 0;
         m_pCurrLights->nNumActiveLights = 0;
 
-        UI::SwapBuffers();
+//        UI::SwapBuffers();
     }
 
     //-----------------------------------------------------------------------------
@@ -994,7 +998,7 @@ namespace Riot
     //-----------------------------------------------------------------------------
     void CRenderer::DrawString( uint nLeft, uint nTop, const char* szText )
     {
-        UI::AddString( nLeft, nTop, szText );
+//        UI::AddString( nLeft, nTop, szText );
     }
 
     //-----------------------------------------------------------------------------

@@ -1,34 +1,45 @@
 /*********************************************************\
-File:           FSQuadPS
-Author:         Kyle Weicht
-Created:        4/17/2011
-Modified:       5/22/2011 11:51:11 AM
-Modified by:    Kyle Weicht
+File:           FSQuadVS
 \*********************************************************/
+
+/*
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
 //--------------------------------------------------------------------------------------
-//Texture2D       diffuseTexture : register( t0 );
-//SamplerState    linearSampler : register( s0 );
 
 //--------------------------------------------------------------------------------------
-/*
+struct VS_INPUT
+{
+    float2 Pos          : POSITION;
+};
+
 struct PS_INPUT
 {
     float4 ScreenPos    : SV_POSITION;
     float2 TexCoords    : TEXCOORD0;
 };
-*/
-vec4 ScreenPos;
-vec2 TexCooords;
+
 
 //--------------------------------------------------------------------------------------
-// Pixel Shader
+// Vertex Shader
 //--------------------------------------------------------------------------------------
-//float4 main( PS_INPUT input ) : SV_Target
-void main( vec2 TexCoords )
+PS_INPUT main( VS_INPUT input )
 {
-    //float4 fTexColor = diffuseTexture.Sample( linearSampler, input.TexCoords );
-    //return fTexColor;
-    gl_FragColor = vec4( 1.0, 1.0, 0.0, 1.0 ); // TODO: sample diffuse texture
+    PS_INPUT output = (PS_INPUT)0;
+    output.ScreenPos.xy = input.Pos;
+    output.ScreenPos.z = 0;
+    output.ScreenPos.w = 1;
+
+    output.TexCoords = (input.Pos + 1.0f) / 2.0f;
+    output.TexCoords.y *= -1;
+    
+    return output;
+}
+*/
+
+vec4 vPos;
+
+void main()
+{
+    gl_Position = vec4( vPos.x, vPos.y, 0, 1 );
 }

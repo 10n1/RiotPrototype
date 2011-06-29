@@ -87,6 +87,8 @@ namespace Riot
             pDevice->DrawIndexedPrimitive( nHighIndices );
         }
         
+        /*
+        
         // Medium
         pDevice->SetIndexBuffer( m_pMedIndexBuffer, sizeof( uint16 ) );
         for( uint i = 0; i < nNumMedTiles; ++i )
@@ -102,6 +104,8 @@ namespace Riot
             pDevice->SetVertexBuffer( 0, m_pLowTiles[i].m_pVertexBuffer, VPosNormalTex::VertexStride );
             pDevice->DrawIndexedPrimitive( nLowIndices );
         }
+         
+        */
     }
 
     //-----------------------------------------------------------------------------

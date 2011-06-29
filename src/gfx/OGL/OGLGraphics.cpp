@@ -9,6 +9,7 @@ Modified by:    Kyle Weicht
 #include <fstream>
 #include "OGLGraphics.h"
 #include "OGLGraphicsObjects.h"
+#include "File.h"
 
 #if USE_OPENGL
 
@@ -20,11 +21,11 @@ namespace Riot
     //-----------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------
-    GFX_FORMAT GFX_FORMAT_FLOAT4        = 0x5;
-    GFX_FORMAT GFX_FORMAT_FLOAT3        = 0x1;
+    GFX_FORMAT GFX_FORMAT_FLOAT4        = 0x4;
+    GFX_FORMAT GFX_FORMAT_FLOAT3        = 0x3;
+    GFX_FORMAT GFX_FORMAT_FLOAT2        = 0x2;
     GFX_FORMAT GFX_FORMAT_UINT16        = 0x2;
     GFX_FORMAT GFX_FORMAT_UINT32        = 0x3;
-    GFX_FORMAT GFX_FORMAT_FLOAT2        = 0x4;
     GFX_FORMAT GFX_FORMAT_BYTE4         = 0x5;
     //-----------------------------------------------------------------------------
     GFX_SEMANTIC GFX_SEMANTIC_POSITION  = "vPosition";
@@ -38,6 +39,10 @@ namespace Riot
     //-----------------------------------------------------------------------------
     GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_NEAREST   = 0x1;
     GFX_TEXTURE_SAMPLE GFX_TEXTURE_SAMPLE_LINEAR    = 0x2;
+    
+    typedef struct _GfxTextureSampler
+    {
+    } GfxTextureSampler;
     //-----------------------------------------------------------------------------
     GFX_FILL_MODE    GFX_FILL_SOLID     = GL_FILL;
     GFX_FILL_MODE    GFX_FILL_WIREFRAME = GL_LINE;
@@ -55,6 +60,9 @@ namespace Riot
     // COGLDevice constructor
     COGLDevice::COGLDevice()
         : m_nPrimitiveType( GFX_PRIMITIVE_TRIANGLELIST )
+        , m_bCreateShaderProgram( true )
+        , m_pActiveVertexShader( NULL )
+        , m_pActivePixelShader( NULL )
     {
         Memset( &m_pDevice, 0, sizeof( m_pDevice ) );
     }
@@ -78,7 +86,7 @@ namespace Riot
         GLenum nError = glGetError();
         
         // Switch the cull mode
-        glFrontFace( GL_CW );
+        glFrontFace( GL_CCW );
         nError = glGetError();
         glDepthRange( 0.0f, 1.0f );
         nError = glGetError();
@@ -130,7 +138,7 @@ namespace Riot
     }
     void COGLDevice::ClearRenderTarget( IGfxRenderTarget* pRT )
     {
-        
+        // TODO: clear specific render target
     }
 
     void COGLDevice::Present( void )
@@ -183,23 +191,14 @@ namespace Riot
             IGfxVertexLayout** pLayout )
     {
         COGLVertexShader* pNewShader = new COGLVertexShader;
-        COGLVertexLayout* pNewLayout = new COGLVertexLayout;
-        
-#if 1
-        
-        *pShader = pNewShader;
-        
-        if( pLayout != NULL )
-            *pLayout = pNewLayout;
-        
-        return;
-#endif
+        COGLVertexLayout* pNewLayout = new COGLVertexLayout;        
 
+        // 1. Create the vertex shader
         pNewShader->m_nShader = glCreateShader( GL_VERTEX_SHADER );
         
         char szFormattedName[256] = { 0 };
         sprintf( szFormattedName, "%s.glsl", szFilename );
-        LoadShaderProgram( szFormattedName, pNewShader->m_nShader );
+        Result rLoadShader = LoadShaderProgram( szFormattedName, pNewShader->m_nShader );
 
         glCompileShader( pNewShader->m_nShader );
 
@@ -215,16 +214,24 @@ namespace Riot
 
         *pShader = pNewShader;
         
+        // 2. Create the vertex layout...
+        //    Generate an array buffer object to store the vertex attributes
+        m_pInputLayout = Layout;
+        m_nLayoutCount = nLayoutCount;
+        glGenVertexArraysAPPLE( 1, (GLuint*)&pNewLayout->m_nLayout );
+        glBindVertexArrayAPPLE( pNewLayout->m_nLayout );
+        for ( uint i = 0; i < nLayoutCount; ++i ) 
+        {
+            glVertexAttribPointer( Layout[i].nIndex, Layout[i].nFormat, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0 );
+        }
+        glBindVertexArrayAPPLE( 0 );
+        
         if( pLayout != NULL )
             *pLayout = pNewLayout;
     }
     IGfxPixelShader* COGLDevice::CreatePixelShader( const char* szFilename, const char* szEntryPoint )
     {
         COGLPixelShader* pShader = new COGLPixelShader;
-        
-#if 1
-        return pShader;
-#endif
         
         GLint   nTestVal;
         pShader->m_nShader = glCreateShader( GL_FRAGMENT_SHADER );
@@ -262,15 +269,27 @@ namespace Riot
     {
         COGLRenderTarget* pRT = new COGLRenderTarget;
         
+        glGenRenderbuffers( 1, (GLuint*)&pRT->m_nRT );
+        glRenderbufferStorage( GL_RENDERBUFFER, nFormat, nWidth, nHeight );
+        
         return pRT;
     }
     IGfxShaderProgram* COGLDevice::CreateShaderProgram( IGfxVertexShader* pVertexShader, IGfxPixelShader* pPixelShader )
     {
+        if( !m_bCreateShaderProgram )
+            return NULL;  // hmmmm...
+        
         COGLShaderProgram* pShaderProgram = new COGLShaderProgram;
-        GLuint program = glCreateProgram();
+        pShaderProgram->m_nProgram = glCreateProgram();
 
         glAttachShader( pShaderProgram->m_nProgram, ( (COGLVertexShader*)pVertexShader )->m_nShader );
         glAttachShader( pShaderProgram->m_nProgram, ( (COGLPixelShader*)pPixelShader )->m_nShader );
+        
+        // set attrib locations
+        for( uint i = 0; i < m_nLayoutCount; ++i )
+        {
+            glBindAttribLocation( pShaderProgram->m_nProgram, m_pInputLayout[i].nIndex, m_pInputLayout[i].szSemanticName );
+        }
 
         glLinkProgram( pShaderProgram->m_nProgram );
 
@@ -283,6 +302,8 @@ namespace Riot
 
             ASSERT( 0 );
         }
+        
+        m_bCreateShaderProgram = false;
 
         return pShaderProgram;
     }
@@ -293,14 +314,13 @@ namespace Riot
     {
         COGLTexture2D* pTexture = new COGLTexture2D;
         
-#if 1
-        return pTexture;
-#endif
-
         glGenTextures( 1, (GLuint*)&pTexture->m_nTexture );
         // TODO: read in the texture file contents
-
+        CFile fTextureFile;
+        fTextureFile.LoadFile( szFilename, "rb" );
         GLbyte* pTextureBits;
+//        uint nTotalRead = fTextureFile.ReadBytes( pTextureBits, <#uint nNumBytes#>);
+
         sint nTexWidth;
         sint nTexHeight;
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, nTexWidth, nTexHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pTextureBits );
@@ -311,6 +331,8 @@ namespace Riot
     {
         COGLSamplerState* pState = new COGLSamplerState;
         
+        // TODO
+        
         return pState;
     }
     //
@@ -319,6 +341,9 @@ namespace Riot
     IGfxBuffer* COGLDevice::CreateConstantBuffer( uint nSize, void* pInitialData, GFX_BUFFER_USAGE nUsage )
     {
         COGLBuffer* pBuffer = new COGLBuffer;
+        
+        glGenBuffers( 1, (GLuint*)&pBuffer->m_nBuffer );
+        glBufferData( GL_UNIFORM_BUFFER, nSize, pInitialData, nUsage );
 
         return pBuffer;
     }
@@ -347,16 +372,28 @@ namespace Riot
     //
     void COGLDevice::UpdateBuffer( IGfxBuffer* pBuffer, void* pData )
     {
+        GLvoid* pMappedData;
+        // NOTE: need a way to determine the buffer binding type in order
+        //       to map/unmap...also need the size of pData
+//        pMappedData = glMapBuffer(<#GLenum target#>, GL_WRITE_ONLY );
+//        Memcpy( pMappedData, pData, <#uint nSize#>)
+//        glUnmapBuffer(<#GLenum target#>);
     }
     void COGLDevice::UpdateBuffer( IGfxBuffer* pBuffer, void* pData, uint nSize )
     {
-        
+        GLvoid* pMappedData;
+        // NOTE: need a way to determine the buffer binding type in order
+        //       to map/unmap
+//        pMappedData = glMapBuffer(<#GLenum target#>, GL_WRITE_ONLY );
+//        Memcpy( pMappedData, pData, nSize );
+//        glUnmapBuffer(<#GLenum target#>);
     }
     //
 
     //
     void COGLDevice::SetVertexLayout( IGfxVertexLayout* pLayout )
     {
+        glBindVertexArrayAPPLE( ( (COGLVertexLayout*)pLayout )->m_nLayout );
     }
 
     void COGLDevice::SetVertexBuffer( uint nIndex, IGfxBuffer* pBuffer, uint nStride )
@@ -376,50 +413,69 @@ namespace Riot
     
     void COGLDevice::SetVertexShader( IGfxVertexShader* pShader )
     {
-        m_pActiveVertexShader = pShader;
+        m_bCreateShaderProgram = m_bCreateShaderProgram || ((COGLVertexShader*)m_pActiveVertexShader)->m_nShader != ((COGLVertexShader*)pShader)->m_nShader;
+        
+        if( m_bCreateShaderProgram )
+            m_pActiveVertexShader = pShader;
     }
 
     void COGLDevice::SetPixelShader( IGfxPixelShader* pShader )
     {
-        m_pActivePixelShader = pShader;
+        m_bCreateShaderProgram = m_bCreateShaderProgram || ((COGLPixelShader*)m_pActivePixelShader)->m_nShader != ((COGLPixelShader*)pShader)->m_nShader;
+        
+        if( m_bCreateShaderProgram )
+            m_pActivePixelShader = pShader;
     }
 
     void COGLDevice::SetVSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer )
     {
+        glBindBuffer( GL_UNIFORM_BUFFER, ( (COGLBuffer*)pBuffer )->m_nBuffer );
     }
 
     void COGLDevice::SetPSConstantBuffer( uint nIndex, IGfxBuffer* pBuffer )
     {
+        // NOTE: I think this is necessary in case the VS and PS don't share
+        //       constant buffers (or in OpenGL speak: uniform blocks)
+        glBindBuffer( GL_UNIFORM_BUFFER, ( (COGLBuffer*)pBuffer )->m_nBuffer );
     }
     void COGLDevice::SetPSSamplerState( IGfxSamplerState* pState )
     {
-        
+        // TODO
     }
     void COGLDevice::SetPSTexture( uint nIndex, IGfxTexture2D* pTexture )
     {
-        
+        // TODO
     }
     void COGLDevice::SetPSRenderTarget( uint nIndex, IGfxRenderTarget* pRenderTarget )
     {
-        
+        // TODO
+//        glBindRenderbuffer( GL_RENDERBUFFER, ( (COGLRenderTarget*)pRenderTarget )->m_nRT );
     }
     void COGLDevice::SetRenderTarget( IGfxRenderTarget* pRenderTarget )
     {
-        
+        glBindRenderbuffer( GL_RENDERBUFFER, ( (COGLRenderTarget*)pRenderTarget )->m_nRT );
     }
     void COGLDevice::SetNullRenderTarget( void )
     {
-        
+        // "unbinding" active render target
+        glBindRenderbuffer( GL_RENDERBUFFER, 0 );
     }
     //
 
     //
     void COGLDevice::Draw( uint nVertexCount )
-    {        
+    {
+        IGfxShaderProgram* pShaderProgram = CreateShaderProgram( m_pActiveVertexShader, m_pActivePixelShader );
+        glUseProgram( (GLuint)( (COGLShaderProgram*)pShaderProgram )->m_nProgram );
         glDrawArrays( m_nPrimitiveType, 0, nVertexCount );
     }
+    
+    // Both of these functions use the appropriate glDrawElements*
+    // calls because they use index buffer...otherwise they would
+    // just use glDrawArrays*
     void COGLDevice::DrawIndexedPrimitive( uint nIndexCount )
     {
+<<<<<<< HEAD
 #ifndef OS_OSX
         // NOTE: probably not a good idea ...
         glDrawArraysInstanced( m_nPrimitiveType, 0, nIndexCount, 1 );
@@ -434,20 +490,40 @@ namespace Riot
 #else
         glDrawArraysInstanced( m_nPrimitiveType, 0, nIndexCount, 1 );
 #endif
+=======
+        // NOTE: make sure that the second parameter is correct.
+        //       it seems from the definition in the back of the
+        //       book that it should be stride and not the index count
+        IGfxShaderProgram* pShaderProgram = CreateShaderProgram( m_pActiveVertexShader, m_pActivePixelShader );
+        COGLShaderProgram* poglShaderProgram = (COGLShaderProgram*)pShaderProgram;
+//        glUseProgram( (GLuint)( (COGLShaderProgram*)pShaderProgram )->m_nProgram );
+        glUseProgram( (GLuint)poglShaderProgram->m_nProgram );
+        glDrawElements( m_nPrimitiveType, 3, GL_UNSIGNED_INT, 0 );
     }
+    void COGLDevice::DrawIndexedPrimitiveInstanced( uint nIndexCount, uint nInstanceCount )
+    {
+        // NOTE: ^read the note for DrawIndexedPrimitive
+        IGfxShaderProgram* pShaderProgram = CreateShaderProgram( m_pActiveVertexShader, m_pActivePixelShader );
+        glUseProgram( (GLuint)( (COGLShaderProgram*)pShaderProgram )->m_nProgram );
+        glDrawElementsInstancedARB( m_nPrimitiveType, 3, GL_UNSIGNED_INT, 0, nInstanceCount );
+>>>>>>> OpenGL work in progress...
+    }
+    
     void COGLDevice::DrawPrimitive( uint nVertexCount )
     {
+        IGfxShaderProgram* pShaderProgram = CreateShaderProgram( m_pActiveVertexShader, m_pActivePixelShader );
+        glUseProgram( (GLuint)( (COGLShaderProgram*)pShaderProgram )->m_nProgram );
         glDrawArrays( m_nPrimitiveType, 0, nVertexCount );
     }
     //
 
     Result LoadShaderProgram( const char* szFilename, GLuint nShader )
     {
+        byte szBuffer[1024*16] = { 0 };
+        
         FILE* pFile = fopen( szFilename, "rb" );
         ASSERT( pFile );
         
-        byte szBuffer[1024*16] = { 0 };
-
         fread( szBuffer, sizeof(byte), 1024*16, pFile );
 
         fclose( pFile );
@@ -465,6 +541,16 @@ namespace Riot
             case GL_INVALID_VALUE:
                 break;
             case GL_INVALID_OPERATION:
+                break;
+            case GL_INVALID_ENUM:
+                break;
+            case GL_STACK_OVERFLOW:
+                break;
+            case GL_STACK_UNDERFLOW:
+                break;
+            case GL_OUT_OF_MEMORY:
+                break;
+            case GL_TABLE_TOO_LARGE:
                 break;
             default:
                 break;
