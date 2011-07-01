@@ -14,9 +14,9 @@ uniform vec4 vLightPos[8];
 uniform int nActiveLights;
 
 //--------------------------------------------------------------------------------------
-vec4 ScreenPos;
-vec4 Pos;
-vec4 Normal;
+//varying vec4 ScreenPos;
+varying vec4 Pos;
+varying vec4 Normal;
 
 vec4 fFinalColor;
 

@@ -37,7 +37,7 @@ PS_INPUT main( VS_INPUT input )
 }
 */
 
-vec4 vPos;
+attribute vec4 vPos;
 
 void main()
 {

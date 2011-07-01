@@ -14,16 +14,16 @@ uniform mat4 mWorld;
 
 //--------------------------------------------------------------------------------------
 //in vec4 vPosition;
-vec4 vPosition;
+attribute vec4 vPosition;
 //in vec3 vNormal;
-vec3 vNormal;
+attribute vec3 vNormal;
 
 //out vec4 ScreenPos;
-vec4 ScreenPos;
+//varying vec4 ScreenPos;
 //out vec4 Pos;
-vec4 Pos;
+varying vec4 Pos;
 //out vec3 Normal;
-vec4 Normal;
+varying vec4 Normal;
 
 //--------------------------------------------------------------------------------------
 // Vertex Shader
@@ -37,9 +37,9 @@ void main( void )
     
     
     Pos       = vPosition * mWorld;
-    ScreenPos = Pos * mViewProj;
+    //ScreenPos = Pos * mViewProj;
     Normal    = vec4( vNormal, 1 ) * mWorld;
 
     //gl_Normal = Normal;
-    gl_Position = ScreenPos;
+    gl_Position = Pos * mViewProj; //ScreenPos;
 }

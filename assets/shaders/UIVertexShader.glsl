@@ -2,7 +2,7 @@
 // File: UIVertexShader.glsl
 //--------------------------------------------------------------------------------------
 
-vec4 vPos;
+attribute vec4 vPos;
 
 void main()
 {
