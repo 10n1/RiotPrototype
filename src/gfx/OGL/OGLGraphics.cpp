@@ -475,22 +475,6 @@ namespace Riot
     // just use glDrawArrays*
     void COGLDevice::DrawIndexedPrimitive( uint nIndexCount )
     {
-<<<<<<< HEAD
-#ifndef OS_OSX
-        // NOTE: probably not a good idea ...
-        glDrawArraysInstanced( m_nPrimitiveType, 0, nIndexCount, 1 );
-#else
-        glDrawArraysInstanced( m_nPrimitiveType, 0, nIndexCount, 1 );
-#endif
-    }
-    void COGLDevice::DrawIndexedPrimitiveInstanced( uint nIndexCount, uint nInstanceCount )
-    {
-#ifndef OS_OSX
-        glDrawArraysInstanced( m_nPrimitiveType, 0, nIndexCount, nInstanceCount );
-#else
-        glDrawArraysInstanced( m_nPrimitiveType, 0, nIndexCount, 1 );
-#endif
-=======
         // NOTE: make sure that the second parameter is correct.
         //       it seems from the definition in the back of the
         //       book that it should be stride and not the index count
@@ -506,7 +490,6 @@ namespace Riot
         IGfxShaderProgram* pShaderProgram = CreateShaderProgram( m_pActiveVertexShader, m_pActivePixelShader );
         glUseProgram( (GLuint)( (COGLShaderProgram*)pShaderProgram )->m_nProgram );
         glDrawElementsInstancedARB( m_nPrimitiveType, 3, GL_UNSIGNED_INT, 0, nInstanceCount );
->>>>>>> OpenGL work in progress...
     }
     
     void COGLDevice::DrawPrimitive( uint nVertexCount )
