@@ -1,9 +1,5 @@
 /*********************************************************\
 File:           BasicPixelShader.glsl
-Author:         Kyle Weicht
-Created:        4/17/2011
-Modified:       4/17/2011 11:47:24 PM
-Modified by:    Kyle Weicht
 \*********************************************************/
 
 //--------------------------------------------------------------------------------------
@@ -14,7 +10,6 @@ uniform vec4 vLightPos[8];
 uniform int nActiveLights;
 
 //--------------------------------------------------------------------------------------
-//varying vec4 ScreenPos;
 varying vec4 Pos;
 varying vec4 Normal;
 

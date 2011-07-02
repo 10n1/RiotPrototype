@@ -282,8 +282,10 @@ namespace Riot
         COGLShaderProgram* pShaderProgram = new COGLShaderProgram;
         pShaderProgram->m_nProgram = glCreateProgram();
 
-        glAttachShader( pShaderProgram->m_nProgram, ( (COGLVertexShader*)pVertexShader )->m_nShader );
-        glAttachShader( pShaderProgram->m_nProgram, ( (COGLPixelShader*)pPixelShader )->m_nShader );
+//        glAttachShader( pShaderProgram->m_nProgram, ( (COGLVertexShader*)pVertexShader )->m_nShader );
+//        glAttachShader( pShaderProgram->m_nProgram, ( (COGLPixelShader*)pPixelShader )->m_nShader );
+        glAttachShader( pShaderProgram->m_nProgram, ( (COGLVertexShader*)m_pActiveVertexShader )->m_nShader );
+        glAttachShader( pShaderProgram->m_nProgram, ( (COGLPixelShader*)m_pActivePixelShader )->m_nShader );
         
         // set attrib locations
         for( uint i = 0; i < m_nLayoutCount; ++i )
